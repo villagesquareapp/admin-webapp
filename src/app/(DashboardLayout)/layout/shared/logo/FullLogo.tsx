@@ -5,7 +5,7 @@ const FullLogo = () => {
   return (
     <Link href={"/"}>
       <Image
-        src={"/vs-images/vs_logo.png"}
+        src={"/vs_images/vs_logo.png"}
         width={60}
         height={60}
         alt="logo"
