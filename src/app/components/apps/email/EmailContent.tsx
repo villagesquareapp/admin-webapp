@@ -1,13 +1,5 @@
 "use client";
-import {
-  Alert,
-  Badge,
-  Button,
-  Drawer,
-  HR,
-  Textarea,
-  Tooltip,
-} from "flowbite-react";
+import { Alert, Badge, Button, Drawer, HR, Textarea, Tooltip } from "flowbite-react";
 import React, { useState, useContext } from "react";
 import SimpleBar from "simplebar-react";
 import Image from "next/image";
@@ -21,10 +13,7 @@ interface MailListItemProps {
   onCloseMail: () => void;
 }
 
-const EmailContent: React.FC<MailListItemProps> = ({
-  openMailValue,
-  onCloseMail,
-}) => {
+const EmailContent: React.FC<MailListItemProps> = ({ openMailValue, onCloseMail }) => {
   const [isTextboxVisible, setIsTextboxVisible] = useState(false);
   const { selectedEmail, deleteEmail, toggleStar, toggleImportant }: any =
     useContext(EmailContext);
@@ -74,11 +63,7 @@ const EmailContent: React.FC<MailListItemProps> = ({
         className="lg:relative lg:transform-none lg:h-auto lg:bg-transparent w-full lg:z-[0]"
       >
         <div className="lg:hidden block p-6 pb-2">
-          <Button
-            color={"outlineprimary"}
-            onClick={onCloseMail}
-            className="py-0"
-          >
+          <Button color={"outlineprimary"} onClick={onCloseMail} className="py-0">
             <Icon icon="solar:round-arrow-left-linear" height={18}></Icon>Back
           </Button>
         </div>
@@ -91,9 +76,10 @@ const EmailContent: React.FC<MailListItemProps> = ({
                   onClick={() => toggleStar(selectedEmail.id)}
                 >
                   {selectedEmail.starred === true ? (
-                    <Icon icon='solar:star-bold' className="text-warning" height="18" />
+                    <Icon icon="solar:star-bold" className="text-warning" height="18" />
                   ) : (
-                    <Icon icon='solar:star-line-duotone'
+                    <Icon
+                      icon="solar:star-line-duotone"
                       height="17"
                       className="text-dark dark:text-darklink group-hover:text-primary"
                     />
@@ -102,7 +88,9 @@ const EmailContent: React.FC<MailListItemProps> = ({
               </Tooltip>
               <Tooltip content={"Important"}>
                 <div className="btn-circle-hover cursor-pointer group">
-                  <Icon icon="solar:info-circle-outline" className="text-dark dark:text-darklink group-hover:text-primary"
+                  <Icon
+                    icon="solar:info-circle-outline"
+                    className="text-dark dark:text-darklink group-hover:text-primary"
                     height="18"
                     onClick={() => toggleImportant(selectedEmail.id)}
                     style={{
@@ -113,7 +101,12 @@ const EmailContent: React.FC<MailListItemProps> = ({
               </Tooltip>
               <Tooltip content={"Delete"}>
                 <div className="btn-circle-hover cursor-pointer group">
-                  <Icon icon="solar:trash-bin-minimalistic-outline" className="text-dark dark:text-darklink group-hover:text-primary" height="18" onClick={handleDelete} />
+                  <Icon
+                    icon="solar:trash-bin-minimalistic-outline"
+                    className="text-dark dark:text-darklink group-hover:text-primary"
+                    height="18"
+                    onClick={handleDelete}
+                  />
                 </div>
               </Tooltip>
             </div>
@@ -159,31 +152,36 @@ const EmailContent: React.FC<MailListItemProps> = ({
                     <HR className="my-6" />
                     <h6 className="text-sm">Attachments</h6>
                     <div className="grid grid-cols-12 gap-6 mt-4">
-                      {selectedEmail.attchments.map((attach: { id: React.Key | null | undefined; image: string | StaticImport; title: string | number | bigint | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<React.AwaitedReactNode> | Iterable<React.ReactNode> | null | undefined; fileSize: string | number | bigint | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<React.AwaitedReactNode> | Iterable<React.ReactNode> | null | undefined; }) => (
-                        <div
-                          className="lg:col-span-4 md:col-span-6 col-span-12"
-                          key={attach.id}
-                        >
-                          <div className="flex items-center gap-3 group cursor-pointer">
-                            <div className="bg-muted dark:bg-darkmuted p-3 rounded-md">
-                              <Image
-                                src={attach.image}
-                                height={24}
-                                width={24}
-                                alt="download"
-                              />
-                            </div>
-                            <div>
-                              <h5 className="text-sm group-hover:text-primary">
-                                {attach.title}
-                              </h5>
-                              <p className="text-sm text-darklink">
-                                {attach.fileSize}
-                              </p>
+                      {selectedEmail.attchments.map(
+                        (attach: {
+                          id: React.Key | null | undefined;
+                          image: string | StaticImport;
+                          title: string;
+                          fileSize: string;
+                        }) => (
+                          <div
+                            className="lg:col-span-4 md:col-span-6 col-span-12"
+                            key={attach.id}
+                          >
+                            <div className="flex items-center gap-3 group cursor-pointer">
+                              <div className="bg-muted dark:bg-darkmuted p-3 rounded-md">
+                                <Image
+                                  src={attach.image}
+                                  height={24}
+                                  width={24}
+                                  alt="download"
+                                />
+                              </div>
+                              <div>
+                                <h5 className="text-sm group-hover:text-primary">
+                                  {attach.title}
+                                </h5>
+                                <p className="text-sm text-darklink">{attach.fileSize}</p>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      ))}
+                        )
+                      )}
                     </div>
                     <HR className="my-4" />
                   </>
@@ -205,11 +203,7 @@ const EmailContent: React.FC<MailListItemProps> = ({
                 </span>
               </div>
               {isTextboxVisible && (
-                <Textarea
-                  className="form-control-textarea mt-4"
-                  required
-                  rows={4}
-                ></Textarea>
+                <Textarea className="form-control-textarea mt-4" required rows={4}></Textarea>
               )}
             </div>
           </SimpleBar>

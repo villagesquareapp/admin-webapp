@@ -25,9 +25,7 @@ const InvoiceDetail = () => {
   // Find the invoice that matches the billFrom extracted from the URL
   useEffect(() => {
     if (getTitle) {
-      const invoice = invoices.find(
-        (p: { billFrom: string }) => p.billFrom === getTitle
-      );
+      const invoice = invoices.find((p: { billFrom: string }) => p.billFrom === getTitle);
       if (invoice) {
         setSelectedInvoice(invoice);
       }
@@ -39,9 +37,9 @@ const InvoiceDetail = () => {
   }
 
   const orderDate = selectedInvoice.orderDate
-    ? (isValid(parseISO(selectedInvoice.orderDate))
+    ? isValid(parseISO(selectedInvoice.orderDate))
       ? format(parseISO(selectedInvoice.orderDate), "EEEE, MMMM dd, yyyy")
-      : "Invalid Date")
+      : "Invalid Date"
     : format(new Date(), "EEEE, MMMM dd, yyyy");
   return (
     <>
@@ -69,7 +67,7 @@ const InvoiceDetail = () => {
             <p>{selectedInvoice.billToPhone}</p>
             {/* <p>Total Cost: {selectedInvoice.totalCost}</p>
             <p>Status: {selectedInvoice.status}</p> */}
-            <p>OrderDate:  {orderDate}</p>
+            <p>OrderDate: {orderDate}</p>
           </div>
         </div>
       </div>
@@ -85,62 +83,10 @@ const InvoiceDetail = () => {
             {selectedInvoice.orders.map(
               (
                 order: {
-                  itemName:
-                  | string
-                  | number
-                  | bigint
-                  | boolean
-                  | React.ReactElement<
-                    any,
-                    string | React.JSXElementConstructor<any>
-                  >
-                  | Iterable<React.ReactNode>
-                  | React.ReactPortal
-                  | Promise<React.AwaitedReactNode>
-                  | null
-                  | undefined;
-                  unitPrice:
-                  | string
-                  | number
-                  | bigint
-                  | boolean
-                  | React.ReactElement<
-                    any,
-                    string | React.JSXElementConstructor<any>
-                  >
-                  | Iterable<React.ReactNode>
-                  | React.ReactPortal
-                  | Promise<React.AwaitedReactNode>
-                  | null
-                  | undefined;
-                  units:
-                  | string
-                  | number
-                  | bigint
-                  | boolean
-                  | React.ReactElement<
-                    any,
-                    string | React.JSXElementConstructor<any>
-                  >
-                  | Iterable<React.ReactNode>
-                  | React.ReactPortal
-                  | Promise<React.AwaitedReactNode>
-                  | null
-                  | undefined;
-                  unitTotalPrice:
-                  | string
-                  | number
-                  | bigint
-                  | boolean
-                  | React.ReactElement<
-                    any,
-                    string | React.JSXElementConstructor<any>
-                  >
-                  | Iterable<React.ReactNode>
-                  | React.ReactPortal
-                  | Promise<React.AwaitedReactNode>
-                  | null
-                  | undefined;
+                  itemName: React.ReactNode;
+                  unitPrice: React.ReactNode;
+                  units: React.ReactNode;
+                  unitTotalPrice: React.ReactNode;
                 },
                 index: React.Key | null | undefined
               ) => (
@@ -180,10 +126,7 @@ const InvoiceDetail = () => {
         </div>
         <div className="flex justify-end gap-3 mt-4">
           <Button color={"warning"}>
-            <Link href={`/apps/invoice/edit/${selectedInvoice.billFrom}`}>
-
-              Edit Invoice
-            </Link>
+            <Link href={`/apps/invoice/edit/${selectedInvoice.billFrom}`}>Edit Invoice</Link>
           </Button>
           <Button color="primary">
             <Link href="/apps/invoice/list">Back to Invoice List</Link>

@@ -42,7 +42,6 @@ const EditInvoicePage = () => {
     }
   }, [getTitle, invoices]);
 
-
   const router = useRouter();
 
   const handleSave = async () => {
@@ -53,7 +52,7 @@ const EditInvoicePage = () => {
       setShowAlert(true);
 
       // Navigate to the list page
-      router.push('/apps/invoice/list');
+      router.push("/apps/invoice/list");
     } catch (error) {
       console.error("Error updating invoice:", error);
     }
@@ -62,8 +61,6 @@ const EditInvoicePage = () => {
       setShowAlert(false);
     }, 5000);
   };
-
-
 
   // Function to cancel editing
   const handleCancel = () => {
@@ -124,9 +121,7 @@ const EditInvoicePage = () => {
 
   // Function to delete an item from the invoice
   const handleDeleteItem = (index: any) => {
-    const updatedOrders = editedInvoice.orders.filter(
-      (_: any, i: any) => i !== index
-    );
+    const updatedOrders = editedInvoice.orders.filter((_: any, i: any) => i !== index);
 
     const updatedInvoice = {
       ...editedInvoice,
@@ -194,9 +189,7 @@ const EditInvoicePage = () => {
               id="billto"
               name="billto"
               value={editedInvoice.billTo}
-              onChange={(e) =>
-                setEditedInvoice({ ...editedInvoice, billTo: e.target.value })
-              }
+              onChange={(e) => setEditedInvoice({ ...editedInvoice, billTo: e.target.value })}
               className="form-control"
             />
           </div>
@@ -207,9 +200,7 @@ const EditInvoicePage = () => {
             <Select
               className="select-rounded-transparent"
               value={editedInvoice.status}
-              onChange={(e) =>
-                setEditedInvoice({ ...editedInvoice, status: e.target.value })
-              }
+              onChange={(e) => setEditedInvoice({ ...editedInvoice, status: e.target.value })}
             >
               <option value="pending">Pending</option>
               <option value="delivered">Delivered</option>
@@ -268,20 +259,7 @@ const EditInvoicePage = () => {
                   itemName: string | number | readonly string[] | undefined;
                   unitPrice: string | number | readonly string[] | undefined;
                   units: string | number | readonly string[] | undefined;
-                  unitTotalPrice:
-                  | string
-                  | number
-                  | bigint
-                  | boolean
-                  | React.ReactElement<
-                    any,
-                    string | React.JSXElementConstructor<any>
-                  >
-                  | Iterable<React.ReactNode>
-                  | React.ReactPortal
-                  | Promise<React.AwaitedReactNode>
-                  | null
-                  | undefined;
+                  unitTotalPrice: React.ReactNode;
                 },
                 index: React.Key | null | undefined
               ) => (
@@ -290,9 +268,7 @@ const EditInvoicePage = () => {
                     <TextInput
                       type="text"
                       value={order.itemName}
-                      onChange={(e) =>
-                        handleOrderChange(index, "itemName", e.target.value)
-                      }
+                      onChange={(e) => handleOrderChange(index, "itemName", e.target.value)}
                       className="form-control"
                     />
                   </Table.Cell>
@@ -301,11 +277,7 @@ const EditInvoicePage = () => {
                       type="number"
                       value={order.unitPrice}
                       onChange={(e) =>
-                        handleOrderChange(
-                          index,
-                          "unitPrice",
-                          parseFloat(e.target.value)
-                        )
+                        handleOrderChange(index, "unitPrice", parseFloat(e.target.value))
                       }
                       className="form-control"
                     />
@@ -315,11 +287,7 @@ const EditInvoicePage = () => {
                       type="number"
                       value={order.units}
                       onChange={(e) =>
-                        handleOrderChange(
-                          index,
-                          "units",
-                          parseInt(e.target.value)
-                        )
+                        handleOrderChange(index, "units", parseInt(e.target.value))
                       }
                       className="form-control"
                     />
@@ -335,10 +303,7 @@ const EditInvoicePage = () => {
                         className="btn-circle p-0 mb-2"
                         onClick={() => handleDeleteItem(index)}
                       >
-                        <Icon
-                          icon="solar:trash-bin-minimalistic-outline"
-                          height={18}
-                        />
+                        <Icon icon="solar:trash-bin-minimalistic-outline" height={18} />
                       </Button>
                     </Tooltip>
                   </Table.Cell>

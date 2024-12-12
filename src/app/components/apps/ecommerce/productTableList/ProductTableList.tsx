@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import {
   Badge,
   Table,
@@ -79,9 +79,7 @@ const ProductTablelist = () => {
     const selectAllValue = !selectAll;
     setSelectAll(selectAllValue);
     if (selectAllValue) {
-      setSelectedProducts(
-        filteredAndSortedProducts.map((product: { id: any }) => product.id)
-      );
+      setSelectedProducts(filteredAndSortedProducts.map((product: { id: any }) => product.id));
     } else {
       setSelectedProducts([]);
     }
@@ -92,9 +90,7 @@ const ProductTablelist = () => {
     if (index === -1) {
       setSelectedProducts([...selectedProducts, productId]);
     } else {
-      setSelectedProducts(
-        selectedProducts.filter((id: number) => id !== productId)
-      );
+      setSelectedProducts(selectedProducts.filter((id: number) => id !== productId));
     }
   };
 
@@ -178,15 +174,11 @@ const ProductTablelist = () => {
                 <Table.HeadCell className="text-base font-semibold py-3">
                   Products
                 </Table.HeadCell>
-                <Table.HeadCell className="text-base font-semibold py-3">
-                  Date
-                </Table.HeadCell>
+                <Table.HeadCell className="text-base font-semibold py-3">Date</Table.HeadCell>
                 <Table.HeadCell className="text-base font-semibold py-3">
                   Status
                 </Table.HeadCell>
-                <Table.HeadCell className="text-base font-semibold py-3">
-                  Price
-                </Table.HeadCell>
+                <Table.HeadCell className="text-base font-semibold py-3">Price</Table.HeadCell>
                 <Table.HeadCell className="text-base font-semibold py-3">
                   Action
                 </Table.HeadCell>
@@ -198,50 +190,11 @@ const ProductTablelist = () => {
                     item: {
                       id: number;
                       photo: string;
-                      title:
-                      | string
-                      | number
-                      | bigint
-                      | boolean
-                      | React.ReactElement<
-                        any,
-                        string | React.JSXElementConstructor<any>
-                      >
-                      | Iterable<React.ReactNode>
-                      | React.ReactPortal
-                      | Promise<React.AwaitedReactNode>
-                      | null
-                      | undefined;
-                      category:
-                      | string
-                      | number
-                      | bigint
-                      | boolean
-                      | React.ReactElement<
-                        any,
-                        string | React.JSXElementConstructor<any>
-                      >
-                      | Iterable<React.ReactNode>
-                      | React.ReactPortal
-                      | Promise<React.AwaitedReactNode>
-                      | null
-                      | undefined;
+                      title: React.ReactNode;
+                      category: React.ReactNode;
                       created: string | number | Date;
                       stock: boolean;
-                      price:
-                      | string
-                      | number
-                      | bigint
-                      | boolean
-                      | React.ReactElement<
-                        any,
-                        string | React.JSXElementConstructor<any>
-                      >
-                      | Iterable<React.ReactNode>
-                      | React.ReactPortal
-                      | Promise<React.AwaitedReactNode>
-                      | null
-                      | undefined;
+                      price: React.ReactNode;
                     },
                     index: React.Key | null | undefined
                   ) => (
@@ -264,9 +217,7 @@ const ProductTablelist = () => {
                           />
                           <div className="text-no-wrap">
                             <h6 className="text-base">{item.title}</h6>
-                            <p className="text-sm text-darklink">
-                              {item.category}
-                            </p>
+                            <p className="text-sm text-darklink">{item.category}</p>
                           </div>
                         </div>
                       </Table.Cell>
@@ -303,20 +254,11 @@ const ProductTablelist = () => {
                             className="flex gap-3"
                             onClick={() => handleEdit(item.id)}
                           >
-                            <Icon
-                              icon="solar:pen-new-square-broken"
-                              height={18}
-                            />
+                            <Icon icon="solar:pen-new-square-broken" height={18} />
                             <span>Edit</span>
                           </Dropdown.Item>
-                          <Dropdown.Item
-                            onClick={handleDelete}
-                            className="flex gap-3"
-                          >
-                            <Icon
-                              icon="solar:trash-bin-minimalistic-outline"
-                              height={18}
-                            />
+                          <Dropdown.Item onClick={handleDelete} className="flex gap-3">
+                            <Icon icon="solar:trash-bin-minimalistic-outline" height={18} />
                             <span>Delete</span>
                           </Dropdown.Item>
                         </Dropdown>
@@ -360,11 +302,7 @@ const ProductTablelist = () => {
             {editedProduct && (
               <>
                 <div className="col-span-12 lg:col-span-6">
-                  <Label
-                    htmlFor="ttl"
-                    value="Title"
-                    className="mb-2 block capitalize"
-                  />
+                  <Label htmlFor="ttl" value="Title" className="mb-2 block capitalize" />
                   <TextInput
                     id="ttl"
                     value={editedProduct.title}
@@ -378,11 +316,7 @@ const ProductTablelist = () => {
                   />
                 </div>
                 <div className="col-span-12  lg:col-span-6">
-                  <Label
-                    htmlFor="price"
-                    value="Price"
-                    className="mb-2 block capitalize"
-                  />
+                  <Label htmlFor="price" value="Price" className="mb-2 block capitalize" />
                   <TextInput
                     id="price"
                     className="form-control"
@@ -396,11 +330,7 @@ const ProductTablelist = () => {
                   />
                 </div>
                 <div className="col-span-12  lg:col-span-6">
-                  <Label
-                    htmlFor="stck"
-                    value="Stock"
-                    className="mb-2 block capitalize"
-                  />
+                  <Label htmlFor="stck" value="Stock" className="mb-2 block capitalize" />
                   <Select
                     id="stck"
                     className="select-md"
@@ -418,11 +348,7 @@ const ProductTablelist = () => {
                   </Select>
                 </div>
                 <div className="col-span-12  lg:col-span-6">
-                  <Label
-                    htmlFor="dt"
-                    value="Date"
-                    className="mb-2 block capitalize"
-                  />
+                  <Label htmlFor="dt" value="Date" className="mb-2 block capitalize" />
                   <DatePicker
                     selected={selectedDate}
                     onChange={handleDateChange}
@@ -433,11 +359,7 @@ const ProductTablelist = () => {
                   />
                 </div>
                 <div className="col-span-12">
-                  <Label
-                    htmlFor="img"
-                    value="Image URL"
-                    className="mb-2 block capitalize"
-                  />
+                  <Label htmlFor="img" value="Image URL" className="mb-2 block capitalize" />
                   <TextInput
                     id="img"
                     className="form-control"
@@ -448,7 +370,11 @@ const ProductTablelist = () => {
                 </div>
 
                 <div className="col-span-12 ">
-                  <Label htmlFor="imgPreview" value="Image Preview" className="mb-2 block capitalize" />
+                  <Label
+                    htmlFor="imgPreview"
+                    value="Image Preview"
+                    className="mb-2 block capitalize"
+                  />
                   {imageURL && (
                     <img
                       id="imgPreview"
@@ -477,11 +403,7 @@ const ProductTablelist = () => {
           rounded
           className="fixed mx-auto start-0 end-0 top-3 w-fit z-[50]"
           icon={() => (
-            <Icon
-              icon="solar:archive-minimalistic-broken"
-              className=""
-              height={22}
-            />
+            <Icon icon="solar:archive-minimalistic-broken" className="" height={22} />
           )}
         >
           <span className="ms-2">Please select products to delete.</span>
@@ -492,5 +414,3 @@ const ProductTablelist = () => {
 };
 
 export default ProductTablelist;
-
-
