@@ -11,7 +11,7 @@ const Miniicons: MiniiconsType[] = [
     icon: "solar:layers-line-duotone",
     tooltip: "Dashboards",
   },
-  // @Todo Remove from here
+  // @Remove from here
   // {
   //   id: 2,
   //   icon: "solar:notes-line-duotone",
@@ -52,7 +52,7 @@ const Miniicons: MiniiconsType[] = [
   //   icon: "solar:mirror-left-line-duotone",
   //   tooltip: "Docs & Others",
   // },
-  // @Todo Remove to here
+  // @Remove to here
 ];
 
 export default Miniicons;

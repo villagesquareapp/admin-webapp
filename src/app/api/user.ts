@@ -11,10 +11,10 @@ export const getUserStats = async () => {
     );
 };
 
-export const getUsers = async () => {
+export const getUsers = async (page: number = 1, limit: number = 10) => {
     const token = await getToken()
-    return await apiGet<IUsers>(
-        `users`,
+    return await apiGet<IUsersResponse>(
+        `users?page=${page}&limit=${limit}`,
         token
     );
 };

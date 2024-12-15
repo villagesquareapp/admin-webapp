@@ -1,13 +1,19 @@
 import { getUserStats, getUsers } from "@/app/api/user";
 import SmallCards from "@/app/components/dashboards/ecommerce/smallCards";
-import shape5 from "/public/images/shapes/circle-white-shape.png";
-import shape4 from "/public/images/shapes/circlr-shape.png";
+import UserTable from "./UserTable";
 import shape1 from "/public/images/shapes/danger-card-shape.png";
 import shape2 from "/public/images/shapes/secondary-card-shape.png";
 import shape3 from "/public/images/shapes/success-card-shape.png";
 
-const Page = async () => {
-  const [userStats, users] = await Promise.all([getUserStats(), getUsers()]);
+const Page = async ({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string | string[] | undefined };
+}) => {
+  const page = Number(searchParams.page) || 1;
+  const limit = Number(searchParams.limit) || 20;
+
+  const [userStats, users] = await Promise.all([getUserStats(), getUsers(page, limit)]);
 
   const overviewData: IOverviewData[] = [
     {
@@ -20,7 +26,7 @@ const Page = async () => {
     },
     {
       total: userStats?.data?.logged_in_users || 0,
-      icon: "mdi:post",
+      icon: "mdi:login",
       bgcolor: "success",
       title: "Logged In Users",
       shape: shape2,
@@ -28,7 +34,7 @@ const Page = async () => {
     },
     {
       total: userStats?.data?.reported_users || 0,
-      icon: "mdi:store",
+      icon: "mdi:flag",
       bgcolor: "primary",
       title: "Reported Users",
       shape: shape3,
@@ -36,7 +42,7 @@ const Page = async () => {
     },
     {
       total: userStats?.data?.today_active_users || 0,
-      icon: "mdi:store",
+      icon: "mdi:account-check",
       bgcolor: "primary",
       title: "Today Active Users",
       shape: shape3,
@@ -44,7 +50,7 @@ const Page = async () => {
     },
     {
       total: userStats?.data?.today_new_users || 0,
-      icon: "mdi:store",
+      icon: "mdi:account-plus",
       bgcolor: "primary",
       title: "Today New Users",
       shape: shape3,
@@ -62,7 +68,14 @@ const Page = async () => {
         <div className="col-span-12">
           <SmallCards overviewData={overviewData} />
         </div>
-        {/* @Todo - Remove from here */}
+        <div className="col-span-12">
+          <UserTable
+            users={users?.data || null}
+            totalPages={users?.data?.last_page || 1}
+            currentPage={page}
+            pageSize={limit}
+          />
+        </div>
       </div>
     </>
   );

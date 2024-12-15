@@ -41,7 +41,7 @@ interface IUsers {
     reported_users: number
 }
 
-interface IPosts {
+interface IPostStats {
     total_posts: number,
     total_image_posts: number,
     today_posts: number,
@@ -101,6 +101,7 @@ interface IUserPost {
 interface IUsers {
     user_details: {
         profile: {
+            username: string,
             profile_picture: string,
             profile_banner: string,
             followers: number
@@ -112,4 +113,72 @@ interface IUsers {
         },
         posts: IUserPost[]
     }
+    actions?: any
 }
+
+interface IUsersResponse extends IPaginatedResponse<IUsers[]> { }
+
+interface IMedia {
+    uuid: string,
+    post_id: string,
+    media_filename: string,
+    media_url: string,
+    transcoded_media_url: string | null,
+    media_type: string,
+    media_size: string,
+    media_thumbnail: string,
+    is_transcode_complete: boolean,
+    media_duration: string | null,
+    created_at: string,
+    updated_at: string,
+    deleted_at: string | null
+}
+
+
+interface IPosts {
+    uuid: string,
+    caption: string,
+    views_count: number,
+    shares_count: number,
+    likes_count: number,
+    comments_count: number,
+    created_at: string,
+    user: {
+        uuid: string,
+        name: string,
+        username: string,
+        email: string,
+        registration_type: string,
+        account_type: string,
+        phone_number: string | null,
+        profile_picture: string,
+        cover_photo: string,
+        gender: string,
+        dob: string | null,
+        country: string,
+        city: string,
+        profession: string,
+        bio: string,
+        timezone: string,
+        verified_status: number,
+        online: boolean,
+        last_online: string | null,
+        is_private: boolean,
+        has_two_factor_auth: boolean,
+        status: string,
+        address: string | null,
+        latitude: string | null,
+        longitude: string | null,
+        referrer: string | null,
+        referral_code: string,
+        referral_count: number,
+        can_reset_password: boolean,
+        created_at: string,
+        updated_at: string,
+        deleted_at: string | null
+    },
+    media: IMedia[]
+    actions?: any
+}
+
+interface IPostResponse extends IPaginatedResponse<IPosts[]> { }

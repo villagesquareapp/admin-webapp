@@ -35,8 +35,6 @@ const AuthLogin = () => {
         callbackUrl: "/",
       });
 
-      console.log("THE RESULT", result);
-
       if (!result) {
         throw new Error("Authentication failed");
       }
@@ -46,7 +44,7 @@ const AuthLogin = () => {
       } else {
         setIsRedirecting(true);
         toast.success("Logged in successfully");
-        router.push("/");
+        window.location.href = "/";
       }
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Authentication failed");

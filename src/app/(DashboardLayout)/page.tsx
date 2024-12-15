@@ -80,8 +80,8 @@ const Page = async () => {
         <div className="col-span-12">
           <SmallCards overviewData={overviewData} />
         </div>
-        {/* @Todo - Remove from here */}
-        <div className="lg:col-span-8 col-span-12">
+        {/* @Remove from here */}
+        {/* <div className="lg:col-span-8 col-span-12">
           <SalesProfit />
         </div>
         <div className="lg:col-span-4 col-span-12">
@@ -95,8 +95,8 @@ const Page = async () => {
         </div>
         <div className="lg:col-span-4 col-span-12">
           <AnnualProfit />
-        </div>
-        {/* @Todo - Remove to here */}
+        </div> */}
+        {/* @Remove to here */}
         <div className="lg:col-span-8 col-span-12">
           <TopProducts />
         </div>

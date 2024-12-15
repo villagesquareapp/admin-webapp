@@ -2,7 +2,7 @@
 import React from "react";
 import CardBox from "../../shared/CardBox";
 import { Badge, Dropdown } from "flowbite-react";
-import { HiOutlineDotsVertical  } from "react-icons/hi";
+import { HiOutlineDotsVertical } from "react-icons/hi";
 import { Table } from "flowbite-react";
 
 import product1 from "/public/images/svgs/icon-materialM.svg";
@@ -123,7 +123,7 @@ const TopProducts = () => {
     <>
       <CardBox>
         <div className="flex items-center justify-between">
-          <h5 className="card-title">Top Performing Products</h5>
+          <h5 className="card-title">Pending verifications</h5>
           <div>
             <Dropdown
               label=""
@@ -142,7 +142,7 @@ const TopProducts = () => {
         </div>
 
         <div className="overflow-x-auto">
-          <Table >
+          <Table>
             <Table.Head>
               <Table.HeadCell className="ps-0">Product name</Table.HeadCell>
               <Table.HeadCell>Category</Table.HeadCell>
@@ -167,16 +167,10 @@ const TopProducts = () => {
                     </div>
                   </Table.Cell>
                   <Table.Cell>
-                    <Badge color={`light${item.statuscolor}`}>
-                      {item.statustext}
-                    </Badge>
+                    <Badge color={`light${item.statuscolor}`}>{item.statustext}</Badge>
                   </Table.Cell>
-                  <Table.Cell className="text-darklink">
-                    {item.sales}
-                  </Table.Cell>
-                  <Table.Cell className="text-darklink">
-                    {item.earnings}
-                  </Table.Cell>
+                  <Table.Cell className="text-darklink">{item.sales}</Table.Cell>
+                  <Table.Cell className="text-darklink">{item.earnings}</Table.Cell>
                   <Table.Cell className="pe-0 text-end">
                     <div className="flex gap-2 items-center justify-end">
                       {item.techicon.map((logo, i) => (

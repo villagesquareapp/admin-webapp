@@ -59,7 +59,7 @@ const RecentTransaction = () => {
     <>
       <CardBox>
         <div className="flex items-center justify-between">
-          <h5 className="card-title">Recent Transactions</h5>
+          <h5 className="card-title">Withdrawals</h5>
           <div>
             <Dropdown
               label=""

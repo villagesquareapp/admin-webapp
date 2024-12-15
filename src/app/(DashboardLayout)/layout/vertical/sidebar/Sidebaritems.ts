@@ -71,7 +71,7 @@ const SidebarContent: MenuItem[] = [
             id: uniqueId(),
             url: "/dashboards/wallets",
           },
-          // @Todo Remove from here
+          // @Remove from here
           // {
           //   name: "Front Pages",
           //   id: uniqueId(),
@@ -114,10 +114,10 @@ const SidebarContent: MenuItem[] = [
           //     },
           //   ],
           // },
-          // @Todo Remove to here
+          // @Remove to here
         ],
       },
-      // @Todo Remove from here
+      // @Remove from here
       // {
       //   heading: "Apps",
       //   children: [
@@ -276,7 +276,7 @@ const SidebarContent: MenuItem[] = [
 
       //   ],
       // },
-      // @Todo Remove to here
+      // @Remove to here
     ],
   },
 
