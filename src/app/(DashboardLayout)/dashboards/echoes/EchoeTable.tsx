@@ -20,7 +20,7 @@ const EchoeTable = ({
   pageSize: number;
 }) => {
   if (!echoes) return <div>No echoes found</div>;
-  const columnHelper = createColumnHelper<ILivestreams>();
+  const columnHelper = createColumnHelper<IEchoes>();
 
   const columns = [
     columnHelper.accessor("host.profile_picture", {
@@ -71,6 +71,18 @@ const EchoeTable = ({
         <p className="text-darklink dark:text-bodytext text-sm">{info.getValue() || 0}</p>
       ),
       header: () => <span>Duration</span>,
+    }),
+    columnHelper.accessor("status", {
+      cell: (info) => (
+        <p
+          className={`text-darklink dark:text-bodytext rounded-full px-2 py-1 text-sm text-white capitalize ${
+            info.getValue() === "live" ? "bg-green-500" : "bg-yellow-400"
+          }`}
+        >
+          {info.getValue()}
+        </p>
+      ),
+      header: () => <span>Status</span>,
     }),
     columnHelper.accessor("created_at", {
       cell: (info) => (

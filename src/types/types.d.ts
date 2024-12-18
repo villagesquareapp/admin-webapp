@@ -230,13 +230,14 @@ interface ILivestreams {
 
 interface ILivestreamResponse extends IPaginatedResponse<ILivestreams[]> { }
 
-interface IEchos {
+interface IEchoes {
     uuid: string,
     title: string,
     users: number,
     gifts: number,
     duration: number,
     cover: string,
+    status: 'ended' | 'live',
     created_at: string,
     host: {
         uuid: string,
@@ -281,7 +282,7 @@ interface IEchos {
     actions?: any
 }
 
-interface IEchosResponse extends IPaginatedResponse<IEchos[]> { }
+interface IEchosResponse extends IPaginatedResponse<IEchoes[]> { }
 
 interface IMarketProduct {
     uuid: string,

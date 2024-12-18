@@ -42,8 +42,6 @@ const Page = async ({
     },
   ];
 
-  console.log("echoes:", echoes);
-
   return (
     <>
       <div className="grid grid-cols-12 gap-30">
