@@ -42,6 +42,16 @@ const PostTable = ({
       ),
       header: () => <span>Post</span>,
     }),
+    columnHelper.accessor("caption", {
+      cell: (info) => (
+        <div className="max-w-80">
+          <p className="text-darklink dark:text-body text-sm break-words whitespace-normal">
+            {info.getValue() || 0}
+          </p>
+        </div>
+      ),
+      header: () => <span>Caption</span>,
+    }),
     columnHelper.accessor("views_count", {
       cell: (info) => (
         <p className="text-darklink dark:text-bodytext text-sm">{info.getValue() || 0}</p>

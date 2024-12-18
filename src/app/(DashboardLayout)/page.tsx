@@ -19,7 +19,7 @@ const Page = async ({
 }) => {
   const page = Number(searchParams.page) || 1;
   const limit = Number(searchParams.limit) || 20;
-  
+
   const [userStats, postStats, marketSquareStats, liveStreamStats, echoStats, users] =
     await Promise.all([
       getUserStats(),
@@ -29,6 +29,8 @@ const Page = async ({
       getEchoStats(),
       getUsers(page, limit),
     ]);
+
+  console.log("USER STATS", userStats);
 
   const overviewData: IOverviewData[] = [
     {
@@ -75,7 +77,7 @@ const Page = async ({
 
   return (
     <>
-      <div className="grid grid-cols-12 gap-30">
+      <div className="grid grid-cols-12 gap-y-8 lg:gap-x-30 lg:gap-y-30">
         {/* <div className="lg:col-span-6  col-span-12">
           <Welcome />
         </div> */}
@@ -106,8 +108,7 @@ const Page = async ({
             totalPages={users?.data?.last_page || 1}
             currentPage={page}
             pageSize={limit}
-            
-           />
+          />
         </div>
         <div className="lg:col-span-4 col-span-12">
           <Withdrawals />

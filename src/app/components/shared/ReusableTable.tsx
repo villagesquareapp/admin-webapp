@@ -75,7 +75,7 @@ function ReusableTable({
 
   return (
     <>
-      <CardBox className="border rounded-md md:rounded-3xl  shadow-md border-ld overflow-hidden mb-28">
+      <CardBox className="border rounded-md md:rounded-3xl  shadow-md border-ld overflow-hidden">
         {tableTitle && (
           <div className="flex items-center justify-between">
             <h5 className="card-title">{tableTitle}</h5>
@@ -183,7 +183,7 @@ function ReusableTable({
                 </option>
               ))}
             </select>
-            <div className="flex gap-2">
+            <div className="flex gap-2 mt-2 md:m-0">
               <Button
                 size="small"
                 onClick={() => handlePageChange(1)}
