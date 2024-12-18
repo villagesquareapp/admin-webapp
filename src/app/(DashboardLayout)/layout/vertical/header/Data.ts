@@ -107,28 +107,32 @@ interface SearchType {
 
 const SearchLinks: SearchType[] = [
   {
-    title: "Analytics",
-    href: "/dashboards/analytics",
+    title: "Overview",
+    href: "/dashboards/livestreams",
   },
   {
-    title: "eCommerce",
-    href: "/dashboards/eCommerce",
+    title: "Users",
+    href: "/dashboards/users",
   },
   {
-    title: "CRM",
-    href: "/dashboards/crm",
+    title: "Live Streams",
+    href: "/dashboards/livestreams",
   },
   {
-    title: "Contacts",
-    href: "/dashboards/eCommerce",
+    title: "Echoes",
+    href: "/dashboards/echoes",
   },
   {
     title: "Posts",
     href: "/dashboards/posts",
   },
   {
-    title: "Details",
-    href: "/dashboards/details",
+    title: "Market Squares",
+    href: "/dashboards/markets",
+  },
+  {
+    title: "Wallets",
+    href: "/dashboards/wallets",
   },
 ];
 
@@ -191,7 +195,7 @@ interface NotificationType {
   icon: any;
   subtitle: string;
   bgcolor: string;
-  color:string;
+  color: string;
   time: string;
 }
 
@@ -199,7 +203,7 @@ const Notification: NotificationType[] = [
   {
     icon: "solar:widget-3-line-duotone",
     bgcolor: "bg-lighterror dark:bg-lighterror",
-    color:'text-error',
+    color: 'text-error',
     title: "Launch Admin",
     subtitle: "Just see the my new admin!",
     time: "9:30 AM",
@@ -207,7 +211,7 @@ const Notification: NotificationType[] = [
   {
     icon: "solar:calendar-line-duotone",
     bgcolor: "bg-lightprimary dark:bg-lightprimary",
-    color:'text-primary',
+    color: 'text-primary',
     title: "Event Today",
     subtitle: "Just a reminder that you have event",
     time: "9:15 AM",
@@ -215,7 +219,7 @@ const Notification: NotificationType[] = [
   {
     icon: "solar:settings-line-duotone",
     bgcolor: "bg-lightsecondary dark:bg-lightsecondary",
-    color:'text-secondary',
+    color: 'text-secondary',
     title: "Settings",
     subtitle: "You can customize this template as you want",
     time: "4:36 PM",
@@ -223,7 +227,7 @@ const Notification: NotificationType[] = [
   {
     icon: "solar:widget-4-line-duotone",
     bgcolor: "bg-lightwarning dark:bg-lightwarning ",
-    color:'text-warning',
+    color: 'text-warning',
     title: "Launch Admin",
     subtitle: "Just see the my new admin!",
     time: "9:30 AM",
@@ -231,7 +235,7 @@ const Notification: NotificationType[] = [
   {
     icon: "solar:calendar-line-duotone",
     bgcolor: "bg-lightprimary dark:bg-lightprimary",
-    color:'text-primary',
+    color: 'text-primary',
     title: "Event Today",
     subtitle: "Just a reminder that you have event",
     time: "9:15 AM",
@@ -239,7 +243,7 @@ const Notification: NotificationType[] = [
   {
     icon: "solar:settings-line-duotone",
     bgcolor: "bg-lightsecondary dark:bg-lightsecondary",
-    color:'text-secondary',
+    color: 'text-secondary',
     title: "Settings",
     subtitle: "You can customize this template as you want",
     time: "4:36 PM",
