@@ -56,6 +56,14 @@ const Page = async ({
       shape: shape3,
       link: "",
     },
+    {
+      total: userStats?.data?.today_new_users || 0,
+      icon: "mdi:account-plus",
+      bgcolor: "primary",
+      title: "Today New Users",
+      shape: shape3,
+      link: "",
+    },
   ];
 
   return (

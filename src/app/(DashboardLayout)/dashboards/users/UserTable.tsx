@@ -1,6 +1,7 @@
 "use client";
 
 import ReusableTable from "@/app/components/shared/ReusableTable";
+import { formatDate } from "@/utils/dateUtils";
 import { Icon } from "@iconify/react";
 import { IconDotsVertical } from "@tabler/icons-react";
 import { createColumnHelper } from "@tanstack/react-table";
@@ -66,6 +67,16 @@ const UserTable = ({
         </p>
       ),
       header: () => <span>Posts</span>,
+    }),
+    columnHelper.accessor("user_details.profile.created_at", {
+      cell: (info) => {
+        return (
+          <p className="text-darklink dark:text-bodytext text-sm">
+            {formatDate(info.getValue())}
+          </p>
+        );
+      },
+      header: () => <span>Created At</span>,
     }),
     columnHelper.accessor("actions", {
       cell: () => (

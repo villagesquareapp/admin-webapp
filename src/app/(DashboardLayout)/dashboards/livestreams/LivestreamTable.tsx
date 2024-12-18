@@ -1,34 +1,34 @@
 "use client";
 
 import ReusableTable from "@/app/components/shared/ReusableTable";
-import { formatDate } from "@/utils/dateUtils";
 import { Icon } from "@iconify/react";
 import { IconDotsVertical } from "@tabler/icons-react";
 import { createColumnHelper } from "@tanstack/react-table";
 import { Dropdown } from "flowbite-react";
 import Image from "next/image";
+import { formatDate } from "@/utils/dateUtils";
 
-const PostTable = ({
-  posts,
+const LivestreamTable = ({
+  livestreams,
   totalPages,
   currentPage,
   pageSize,
 }: {
-  posts: IPostResponse | null;
+  livestreams: ILivestreamResponse | null;
   totalPages: number;
   currentPage: number;
   pageSize: number;
 }) => {
-  if (!posts) return <div>No posts found</div>;
-  const columnHelper = createColumnHelper<IPosts>();
+  if (!livestreams) return <div>No livestreams found</div>;
+  const columnHelper = createColumnHelper<ILivestreams>();
 
   const columns = [
-    columnHelper.accessor("user.username", {
+    columnHelper.accessor("host.profile_picture", {
       cell: (info) => (
         <div className="flex gap-3 items-center">
           <div className="relative size-10 rounded-full">
             <Image
-              src={info.row.original.user.profile_picture}
+              src={info.getValue()}
               alt="icon"
               fill
               className="rounded-full object-cover"
@@ -36,44 +36,48 @@ const PostTable = ({
           </div>
 
           <div className="truncat line-clamp-2 sm:max-w-56">
-            <h6 className="text-base">{info.row.original.user.username}</h6>
+            <h6 className="text-base">{info.row.original.host.username}</h6>
           </div>
         </div>
       ),
-      header: () => <span>Post</span>,
+      header: () => <span>Host</span>,
     }),
-    columnHelper.accessor("views_count", {
+    columnHelper.accessor("title", {
+      cell: (info) => (
+        <p className="text-darklink dark:text-bodytext text-sm">{info.getValue() || "-"}</p>
+      ),
+      header: () => <span>Title</span>,
+    }),
+    columnHelper.accessor("category.name", {
       cell: (info) => (
         <p className="text-darklink dark:text-bodytext text-sm">{info.getValue() || 0}</p>
       ),
-      header: () => <span>Views</span>,
+      header: () => <span>Category</span>,
     }),
-    columnHelper.accessor("shares_count", {
+    columnHelper.accessor("users", {
       cell: (info) => (
         <p className="text-darklink dark:text-bodytext text-sm">{info.getValue() || 0}</p>
       ),
-      header: () => <span>Shares</span>,
+      header: () => <span>Streamers</span>,
     }),
-    columnHelper.accessor("likes_count", {
+    columnHelper.accessor("gifts", {
       cell: (info) => (
         <p className="text-darklink dark:text-bodytext text-sm">{info.getValue() || 0}</p>
       ),
-      header: () => <span>Likes</span>,
+      header: () => <span>Gifts</span>,
     }),
-    columnHelper.accessor("comments_count", {
+    columnHelper.accessor("duration", {
       cell: (info) => (
         <p className="text-darklink dark:text-bodytext text-sm">{info.getValue() || 0}</p>
       ),
-      header: () => <span>Comments</span>,
+      header: () => <span>Duration</span>,
     }),
     columnHelper.accessor("created_at", {
-      cell: (info) => {
-        return (
-          <p className="text-darklink dark:text-bodytext text-sm">
-            {formatDate(info.getValue())}
-          </p>
-        );
-      },
+      cell: (info) => (
+        <p className="text-darklink dark:text-bodytext text-sm">
+          {formatDate(info.row.original.created_at)}
+        </p>
+      ),
       header: () => <span>Created At</span>,
     }),
     columnHelper.accessor("actions", {
@@ -105,7 +109,9 @@ const PostTable = ({
   return (
     <div className="col-span-12">
       <ReusableTable
-        tableData={posts?.data && Array.isArray(posts?.data) ? posts?.data : []}
+        tableData={
+          livestreams?.data && Array.isArray(livestreams?.data) ? livestreams?.data : []
+        }
         columns={columns}
         totalPages={totalPages}
         currentPage={currentPage}
@@ -115,4 +121,4 @@ const PostTable = ({
   );
 };
 
-export default PostTable;
+export default LivestreamTable;

@@ -1,5 +1,64 @@
-const Page = () => {
-  return <div>Enter</div>;
+import { getEchoes, getEchoStats } from "@/app/api/echo";
+import SmallCards from "@/app/components/dashboards/ecommerce/smallCards";
+import EchoeTable from "./EchoeTable";
+import shape1 from "/public/images/shapes/danger-card-shape.png";
+import shape2 from "/public/images/shapes/secondary-card-shape.png";
+import shape3 from "/public/images/shapes/success-card-shape.png";
+
+const Page = async ({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string | string[] | undefined };
+}) => {
+  const page = Number(searchParams.page) || 1;
+  const limit = Number(searchParams.limit) || 20;
+
+  const [echoStats, echoes] = await Promise.all([getEchoStats(), getEchoes(page, limit)]);
+
+  const overviewData: IOverviewData[] = [
+    {
+      total: echoStats?.data?.total_echoes || 0,
+      icon: "mdi:video-outline",
+      bgcolor: "secondary",
+      title: "Total Echoes",
+      shape: shape1,
+      link: "",
+    },
+    {
+      total: echoStats?.data?.new_echoes || 0,
+      icon: "mdi:video-plus-outline",
+      bgcolor: "success",
+      title: "New Echoes",
+      shape: shape2,
+      link: "",
+    },
+    {
+      total: echoStats?.data?.live_echoes || 0,
+      icon: "mdi:broadcast",
+      bgcolor: "primary",
+      title: "Currently Live",
+      shape: shape3,
+      link: "",
+    },
+  ];
+
+  return (
+    <>
+      <div className="grid grid-cols-12 gap-30">
+        <div className="col-span-12">
+          <SmallCards overviewData={overviewData} />
+        </div>
+        <div className="col-span-12">
+          <EchoeTable
+            echoes={echoes?.data || null}
+            totalPages={echoes?.data?.last_page || 1}
+            currentPage={page}
+            pageSize={limit}
+          />
+        </div>
+      </div>
+    </>
+  );
 };
 
 export default Page;

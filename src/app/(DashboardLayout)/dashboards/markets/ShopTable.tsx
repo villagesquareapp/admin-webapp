@@ -8,27 +8,27 @@ import { createColumnHelper } from "@tanstack/react-table";
 import { Dropdown } from "flowbite-react";
 import Image from "next/image";
 
-const PostTable = ({
-  posts,
+const ShopTable = ({
+  shops,
   totalPages,
   currentPage,
   pageSize,
 }: {
-  posts: IPostResponse | null;
+  shops: IMarketSquareShopsResponse | null;
   totalPages: number;
   currentPage: number;
   pageSize: number;
 }) => {
-  if (!posts) return <div>No posts found</div>;
-  const columnHelper = createColumnHelper<IPosts>();
+  if (!shops) return <div>No shops found</div>;
+  const columnHelper = createColumnHelper<IMarketSquareShops>();
 
   const columns = [
-    columnHelper.accessor("user.username", {
+    columnHelper.accessor("logo", {
       cell: (info) => (
         <div className="flex gap-3 items-center">
           <div className="relative size-10 rounded-full">
             <Image
-              src={info.row.original.user.profile_picture}
+              src={info.getValue()}
               alt="icon"
               fill
               className="rounded-full object-cover"
@@ -36,35 +36,37 @@ const PostTable = ({
           </div>
 
           <div className="truncat line-clamp-2 sm:max-w-56">
-            <h6 className="text-base">{info.row.original.user.username}</h6>
+            <h6 className="text-base">{info.row.original.name}</h6>
           </div>
         </div>
       ),
-      header: () => <span>Post</span>,
+      header: () => <span>Shop</span>,
     }),
-    columnHelper.accessor("views_count", {
+    columnHelper.accessor("tagline", {
       cell: (info) => (
-        <p className="text-darklink dark:text-bodytext text-sm">{info.getValue() || 0}</p>
+        <p className="text-darklink dark:text-bodytext text-sm">{info.getValue() || "-"}</p>
       ),
-      header: () => <span>Views</span>,
+      header: () => <span>Tagline</span>,
     }),
-    columnHelper.accessor("shares_count", {
+    columnHelper.accessor("location", {
       cell: (info) => (
-        <p className="text-darklink dark:text-bodytext text-sm">{info.getValue() || 0}</p>
+        <p className="text-darklink dark:text-bodytext text-sm">{info.getValue() || "-"}</p>
       ),
-      header: () => <span>Shares</span>,
+      header: () => <span>Location</span>,
     }),
-    columnHelper.accessor("likes_count", {
+    columnHelper.accessor("address", {
       cell: (info) => (
-        <p className="text-darklink dark:text-bodytext text-sm">{info.getValue() || 0}</p>
+        <p className="text-darklink dark:text-bodytext text-sm">{info.getValue() || "-"}</p>
       ),
-      header: () => <span>Likes</span>,
+      header: () => <span>Address</span>,
     }),
-    columnHelper.accessor("comments_count", {
+    columnHelper.accessor("products", {
       cell: (info) => (
-        <p className="text-darklink dark:text-bodytext text-sm">{info.getValue() || 0}</p>
+        <p className="text-darklink dark:text-bodytext text-sm">
+          {info.row.original.products.length || 0}
+        </p>
       ),
-      header: () => <span>Comments</span>,
+      header: () => <span>Products</span>,
     }),
     columnHelper.accessor("created_at", {
       cell: (info) => {
@@ -105,7 +107,7 @@ const PostTable = ({
   return (
     <div className="col-span-12">
       <ReusableTable
-        tableData={posts?.data && Array.isArray(posts?.data) ? posts?.data : []}
+        tableData={shops?.data && Array.isArray(shops?.data) ? shops?.data : []}
         columns={columns}
         totalPages={totalPages}
         currentPage={currentPage}
@@ -115,4 +117,4 @@ const PostTable = ({
   );
 };
 
-export default PostTable;
+export default ShopTable;

@@ -33,14 +33,6 @@ interface IUserstat {
     reported_users: number
 }
 
-interface IUsers {
-    total_users: number
-    today_new_users: number
-    today_active_users: number
-    logged_in_users: number
-    reported_users: number
-}
-
 interface IPostStats {
     total_posts: number,
     total_image_posts: number,
@@ -51,13 +43,14 @@ interface IPostStats {
     android_posts: number
 }
 
-interface IMarketSquares {
+interface IMarketSquareStats {
     total_products: number,
     today_products: number,
+    total_shops: number,
     reported_products: number
 }
 
-interface IEchos {
+interface IEchoStats {
     total_echoes: number,
     new_echoes: number,
     live_echoes: number,
@@ -65,7 +58,7 @@ interface IEchos {
     total_comments: number
 }
 
-interface ILivestreams {
+interface ILivestreamStats {
     total_livestreams: number,
     new_livestreams: number,
     currently_live: number
@@ -104,7 +97,8 @@ interface IUsers {
             username: string,
             profile_picture: string,
             profile_banner: string,
-            followers: number
+            followers: number,
+            created_at: string
         },
         shop: {
             logo: string,
@@ -182,3 +176,134 @@ interface IPosts {
 }
 
 interface IPostResponse extends IPaginatedResponse<IPosts[]> { }
+
+interface ILivestreams {
+    uuid: string,
+    title: string,
+    users: number,
+    gifts: number,
+    duration: number,
+    cover: string,
+    created_at: string,
+    host: {
+        uuid: string,
+        name: string,
+        username: string,
+        email: string,
+        registration_type: string,
+        account_type: string,
+        phone_number: string | null,
+        profile_picture: string,
+        cover_photo: string | null,
+        gender: string | null,
+        dob: string | null,
+        country: string | null,
+        city: string | null,
+        profession: string | null,
+        bio: string | null,
+        timezone: string,
+        verified_status: number,
+        online: boolean,
+        last_online: string | null,
+        is_private: boolean,
+        has_two_factor_auth: boolean,
+        status: string,
+        address: string,
+        latitude: string | null,
+        longitude: string | null,
+        referrer: string | null,
+        referral_code: string,
+        referral_count: number,
+        can_reset_password: boolean,
+        created_at: string,
+        updated_at: string,
+        deleted_at: string | null
+    },
+    category: {
+        id: number,
+        name: string,
+        created_at: string,
+        updated_at: string
+    }
+    actions?: any
+}
+
+interface ILivestreamResponse extends IPaginatedResponse<ILivestreams[]> { }
+
+interface IEchos {
+    uuid: string,
+    title: string,
+    users: number,
+    gifts: number,
+    duration: number,
+    cover: string,
+    created_at: string,
+    host: {
+        uuid: string,
+        name: string,
+        username: string,
+        email: string,
+        registration_type: string,
+        account_type: string,
+        phone_number: string | null,
+        profile_picture: string,
+        cover_photo: string,
+        gender: string,
+        dob: string | null,
+        country: string,
+        city: string,
+        profession: string,
+        bio: string,
+        timezone: string,
+        verified_status: number,
+        online: boolean,
+        last_online: string | null,
+        is_private: boolean,
+        has_two_factor_auth: boolean,
+        status: string,
+        address: string | null,
+        latitude: string | null,
+        longitude: string | null,
+        referrer: string | null,
+        referral_code: string,
+        referral_count: number,
+        can_reset_password: boolean,
+        created_at: string,
+        updated_at: string,
+        deleted_at: string | null
+    },
+    category: {
+        id: number,
+        name: string,
+        created_at: string,
+        updated_at: string
+    },
+    actions?: any
+}
+
+interface IEchosResponse extends IPaginatedResponse<IEchos[]> { }
+
+interface IMarketProduct {
+    uuid: string,
+    name: string,
+    price: number,
+    description: string,
+    created_at: string,
+    updated_at: string
+}
+
+interface IMarketSquareShops {
+    uuid: string,
+    name: string,
+    logo: string,
+    tagline: string | null,
+    website: string | null,
+    location: string | null,
+    address: string | null,
+    created_at: string,
+    updated_at: string,
+    products: IMarketProduct[]
+    actions?: any
+}
+
+interface IMarketSquareShopsResponse extends IPaginatedResponse<IMarketSquareShops[]> { }

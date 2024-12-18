@@ -1,30 +1,33 @@
 import { getEchoStats } from "../api/echo";
-import { getLiveStreamStats } from "../api/livestream";
+import { getLivestreamStats } from "../api/livestream";
 import { getMarketSquareStats } from "../api/market-square";
 import { getPostStats } from "../api/post";
-import { getUserStats } from "../api/user";
-import AnnualProfit from "../components/dashboards/ecommerce/AnnualProfit";
-import MarketingReport from "../components/dashboards/ecommerce/MarketingReport";
-import Payments from "../components/dashboards/ecommerce/Payments";
-import ProductSales from "../components/dashboards/ecommerce/ProductSales";
-import RecentTransaction from "../components/dashboards/ecommerce/RecentTransaction";
-import SalesProfit from "../components/dashboards/ecommerce/SalesProfit";
-import TopProducts from "../components/dashboards/ecommerce/TopProducts";
+import { getUsers, getUserStats } from "../api/user";
 import SmallCards from "../components/dashboards/ecommerce/smallCards";
+import PendingVerifications from "./PendingVerifications";
+import Withdrawals from "./Withdrawals";
+import shape5 from "/public/images/shapes/circle-white-shape.png";
+import shape4 from "/public/images/shapes/circlr-shape.png";
 import shape1 from "/public/images/shapes/danger-card-shape.png";
 import shape2 from "/public/images/shapes/secondary-card-shape.png";
 import shape3 from "/public/images/shapes/success-card-shape.png";
-import shape4 from "/public/images/shapes/circlr-shape.png";
-import shape5 from "/public/images/shapes/circle-white-shape.png";
 
-const Page = async () => {
-  const [userStats, postStats, marketSquareStats, liveStreamStats, echoStats] =
+const Page = async ({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string | string[] | undefined };
+}) => {
+  const page = Number(searchParams.page) || 1;
+  const limit = Number(searchParams.limit) || 20;
+  
+  const [userStats, postStats, marketSquareStats, liveStreamStats, echoStats, users] =
     await Promise.all([
       getUserStats(),
       getPostStats(),
       getMarketSquareStats(),
-      getLiveStreamStats(),
+      getLivestreamStats(),
       getEchoStats(),
+      getUsers(page, limit),
     ]);
 
   const overviewData: IOverviewData[] = [
@@ -98,10 +101,16 @@ const Page = async () => {
         </div> */}
         {/* @Remove to here */}
         <div className="lg:col-span-8 col-span-12">
-          <TopProducts />
+          <PendingVerifications
+            users={users?.data || null}
+            totalPages={users?.data?.last_page || 1}
+            currentPage={page}
+            pageSize={limit}
+            
+           />
         </div>
         <div className="lg:col-span-4 col-span-12">
-          <RecentTransaction />
+          <Withdrawals />
         </div>
       </div>
     </>

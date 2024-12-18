@@ -4,31 +4,37 @@ import {
   IconChevronRight,
   IconChevronsLeft,
   IconChevronsRight,
+  IconDatabaseOff,
 } from "@tabler/icons-react";
 import {
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
-  getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { Button } from "flowbite-react";
-import React from "react";
+import { Button, Dropdown } from "flowbite-react";
 import { useRouter, useSearchParams } from "next/navigation";
+import React from "react";
+import { HiOutlineDotsVertical } from "react-icons/hi";
+import CardBox from "./CardBox";
 
 function ReusableTable({
   tableData,
   columns,
   totalPages = 1,
   currentPage = 1,
-  pageSize = 10,
+  pageSize = 20,
+  dropdownItems,
+  tableTitle,
 }: {
   tableData: any[];
   columns: any[];
   totalPages?: number;
   currentPage?: number;
   pageSize?: number;
+  dropdownItems?: string[];
+  tableTitle?: string;
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -69,7 +75,28 @@ function ReusableTable({
 
   return (
     <>
-      <div className="border rounded-md border-ld overflow-hidden">
+      <CardBox className="border rounded-md md:rounded-3xl  shadow-md border-ld overflow-hidden mb-28">
+        {tableTitle && (
+          <div className="flex items-center justify-between">
+            <h5 className="card-title">{tableTitle}</h5>
+            <div>
+              <Dropdown
+                label=""
+                dismissOnClick={false}
+                renderTrigger={() => (
+                  <span className="h-9 w-9 flex justify-center items-center rounded-full hover:bg-lightprimary hover:text-primary cursor-pointer">
+                    <HiOutlineDotsVertical size={22} />
+                  </span>
+                )}
+              >
+                {dropdownItems?.map((items, index) => {
+                  return <Dropdown.Item key={index}>{items}</Dropdown.Item>;
+                })}
+              </Dropdown>
+            </div>
+          </div>
+        )}
+
         <div className="overflow-x-auto">
           <table className="min-w-full">
             <thead>
@@ -89,18 +116,32 @@ function ReusableTable({
               ))}
             </thead>
             <tbody className="divide-y divide-border dark:divide-darkborder">
-              {table.getRowModel().rows.map((row) => (
-                <tr
-                  key={row.id}
-                  className="transition-colors cursor-pointer hover:bg-gray-800/10 dark:hover:bg-gray-50/10"
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <td key={cell.id} className="whitespace-nowrap py-3 px-4">
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </td>
-                  ))}
+              {table.getRowModel().rows.length > 0 ? (
+                table.getRowModel().rows.map((row) => (
+                  <tr
+                    key={row.id}
+                    className="transition-colors cursor-pointer hover:bg-gray-800/10 dark:hover:bg-gray-50/10"
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <td key={cell.id} className="whitespace-nowrap py-3 px-4">
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </td>
+                    ))}
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={columns.length} className="text-center py-8 text-gray-500">
+                    <div className="flex flex-col items-center justify-center gap-2">
+                      <IconDatabaseOff className="w-12 h-12 text-gray-400" />
+                      <p className="text-lg font-medium">No data available</p>
+                      <p className="text-sm text-gray-400">
+                        There are no records to display at the moment.
+                      </p>
+                    </div>
+                  </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         </div>
@@ -174,7 +215,7 @@ function ReusableTable({
             </div>
           </div>
         </div>
-      </div>
+      </CardBox>
     </>
   );
 }
