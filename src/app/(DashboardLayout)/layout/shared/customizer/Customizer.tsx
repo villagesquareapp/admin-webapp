@@ -22,14 +22,7 @@ export const Customizer = () => {
     document.body.setAttribute("data-color-theme", cvalue);
   };
 
-
-  const Slider: React.FC<SliderProps> = ({
-    value,
-    min,
-    max,
-    valueLabelDisplay,
-    onChange,
-  }) => (
+  const Slider: React.FC<SliderProps> = ({ value, min, max, valueLabelDisplay, onChange }) => (
     <input
       type="range"
       value={value}
@@ -94,7 +87,8 @@ export const Customizer = () => {
 
   return (
     <div>
-      <div>
+      {/* =========== Settings button ============= */}
+      {/* <div>
         <Button
           color={"primary"}
           className="h-14 w-14 flex justify-center items-center fixed bottom-6 end-6  rounded-full hover:bg-primaryemphasis"
@@ -102,7 +96,7 @@ export const Customizer = () => {
         >
           <IconSettings />
         </Button>
-      </div>
+      </div> */}
       <Drawer
         open={isOpen}
         onClose={handleClose}
@@ -122,40 +116,33 @@ export const Customizer = () => {
               <Button
                 color={"primary"}
                 className={`border bg-transparent text-darklink btn-shadow border-ld  dark:text-white hover:bg-lightprimary hover:text-primary rounded-md py-3 px-3 dark:hover:text-white 
-                ${activeMode === "light"
+                ${
+                  activeMode === "light"
                     ? "active text-primary bg-lightprimary border-none"
                     : ""
-                  }`}
+                }`}
                 onClick={() => {
                   setActiveMode("light");
                 }}
               >
                 <span className="flex items-center">
-                  <Icon
-                    icon="solar:sun-bold-duotone"
-                    width="20"
-                    className="me-2"
-                  />
+                  <Icon icon="solar:sun-bold-duotone" width="20" className="me-2" />
                   Light
                 </span>
               </Button>
               <Button
                 color={"primary"}
-                className={`border bg-transparent dark:text-white border-ld text-darklink hover:bg-lightprimary hover:text-primary rounded-md py-3 px-3 ${activeMode === "dark"
-                  ? "active text-primary bg-lightprimary border-none"
-                  : ""
-                  }`}
+                className={`border bg-transparent dark:text-white border-ld text-darklink hover:bg-lightprimary hover:text-primary rounded-md py-3 px-3 ${
+                  activeMode === "dark"
+                    ? "active text-primary bg-lightprimary border-none"
+                    : ""
+                }`}
                 onClick={() => {
                   setActiveMode("dark");
                 }}
               >
                 <span className="flex items-center">
-                  <Icon
-                    icon="solar:moon-bold-duotone"
-                    width="20"
-                    className="me-2"
-                  />{" "}
-                  Dark
+                  <Icon icon="solar:moon-bold-duotone" width="20" className="me-2" /> Dark
                 </span>
               </Button>
             </div>
@@ -165,39 +152,28 @@ export const Customizer = () => {
             <div className="flex gap-4 mb-7">
               <Button
                 color={"primary"}
-                className={`border bg-transparent text-darklink dark:text-white border-ld  hover:bg-lightprimary hover:text-primary rounded-md py-3 px-3  dark:hover:text-white ${activeDir === "ltr"
-                  ? "text-primary bg-lightprimary border-none"
-                  : ""
-                  }`}
+                className={`border bg-transparent text-darklink dark:text-white border-ld  hover:bg-lightprimary hover:text-primary rounded-md py-3 px-3  dark:hover:text-white ${
+                  activeDir === "ltr" ? "text-primary bg-lightprimary border-none" : ""
+                }`}
                 onClick={() => {
                   setActiveDir("ltr");
                 }}
               >
                 <span className="flex items-center">
-                  <Icon
-                    icon="solar:align-left-line-duotone"
-                    width="20"
-                    className="me-2"
-                  />{" "}
-                  LTR
+                  <Icon icon="solar:align-left-line-duotone" width="20" className="me-2" /> LTR
                 </span>
               </Button>
               <Button
                 color={"primary"}
-                className={`border bg-transparent btn-shadow border-ld text-darklink dark:text-white hover:bg-lightprimary hover:text-primary rounded-md py-3 px-3 ${activeDir === "rtl"
-                  ? "text-primary bg-lightprimary border-none"
-                  : ""
-                  }`}
+                className={`border bg-transparent btn-shadow border-ld text-darklink dark:text-white hover:bg-lightprimary hover:text-primary rounded-md py-3 px-3 ${
+                  activeDir === "rtl" ? "text-primary bg-lightprimary border-none" : ""
+                }`}
                 onClick={() => {
                   setActiveDir("rtl");
                 }}
               >
                 <span className="flex items-center">
-                  <Icon
-                    icon="solar:align-right-line-duotone"
-                    width="20"
-                    className="me-2"
-                  />{" "}
+                  <Icon icon="solar:align-right-line-duotone" width="20" className="me-2" />{" "}
                   RTL
                 </span>
               </Button>
@@ -212,11 +188,7 @@ export const Customizer = () => {
                   onClick={() => addAttributeToBody(theme.disp)}
                   className="border bg-transparent text-link dark:text-white border-ld py-5 px-6 rounded-md cursor-pointer "
                 >
-                  <Tooltip
-                    content={theme.disp}
-                    placement="top"
-                    animation="duration-500"
-                  >
+                  <Tooltip content={theme.disp} placement="top" animation="duration-500">
                     <label
                       className=" h-6 w-6 rounded-full block cursor-pointer flex items-center justify-center"
                       style={{ backgroundColor: theme.bgColor }}
@@ -236,10 +208,9 @@ export const Customizer = () => {
             <div className="flex flex-wrap  gap-4 mb-7">
               <Button
                 color={"primary"}
-                className={`border bg-transparent btn-shadow border-ld text-darklink dark:text-white hover:bg-lightprimary hover:text-primary rounded-md py-3 px-2  dark:hover:text-white ${activeLayout === "vertical"
-                  ? "text-primary bg-lightprimary border-none"
-                  : ""
-                  }`}
+                className={`border bg-transparent btn-shadow border-ld text-darklink dark:text-white hover:bg-lightprimary hover:text-primary rounded-md py-3 px-2  dark:hover:text-white ${
+                  activeLayout === "vertical" ? "text-primary bg-lightprimary border-none" : ""
+                }`}
                 onClick={() => setActiveLayout("vertical")}
               >
                 <span className="flex items-center">
@@ -254,10 +225,11 @@ export const Customizer = () => {
               <Button
                 color={"primary"}
                 onClick={() => setActiveLayout("horizontal")}
-                className={`border bg-transparent text-link dark:text-white border-ld text-darklink hover:bg-lightprimary hover:text-primary rounded-md py-3 px-2 ${activeLayout === "horizontal"
-                  ? "text-primary bg-lightprimary border-none"
-                  : ""
-                  }`}
+                className={`border bg-transparent text-link dark:text-white border-ld text-darklink hover:bg-lightprimary hover:text-primary rounded-md py-3 px-2 ${
+                  activeLayout === "horizontal"
+                    ? "text-primary bg-lightprimary border-none"
+                    : ""
+                }`}
               >
                 <span className="flex items-center">
                   <Icon
@@ -275,10 +247,9 @@ export const Customizer = () => {
             <div className="flex flex-wrap  gap-4 mb-7">
               <Button
                 color={"primary"}
-                className={`border bg-transparent btn-shadow border-ld text-darklink dark:text-white hover:bg-lightprimary hover:text-primary rounded-md py-3 px-2   dark:hover:text-white ${isLayout === "boxed"
-                  ? "text-primary bg-lightprimary border-none"
-                  : ""
-                  }`}
+                className={`border bg-transparent btn-shadow border-ld text-darklink dark:text-white hover:bg-lightprimary hover:text-primary rounded-md py-3 px-2   dark:hover:text-white ${
+                  isLayout === "boxed" ? "text-primary bg-lightprimary border-none" : ""
+                }`}
                 onClick={() => setIsLayout("boxed")}
               >
                 <span className="flex items-center">
@@ -292,10 +263,9 @@ export const Customizer = () => {
               </Button>
               <Button
                 color={"primary"}
-                className={`border bg-transparent text-link dark:text-white border-ld text-darklink hover:bg-lightprimary hover:text-primary rounded-md py-3 px-2 ${isLayout === "full"
-                  ? "text-primary bg-lightprimary border-none"
-                  : ""
-                  }`}
+                className={`border bg-transparent text-link dark:text-white border-ld text-darklink hover:bg-lightprimary hover:text-primary rounded-md py-3 px-2 ${
+                  isLayout === "full" ? "text-primary bg-lightprimary border-none" : ""
+                }`}
                 onClick={() => setIsLayout("full")}
               >
                 <span className="flex items-center">
@@ -314,35 +284,29 @@ export const Customizer = () => {
             <div className="flex flex-wrap  gap-4 mb-7">
               <Button
                 color={"primary"}
-                className={`border bg-transparent btn-shadow border-ld text-darklink dark:text-white hover:bg-lightprimary hover:text-primary rounded-md py-3 px-2   dark:hover:text-white ${isCollapse == "full-sidebar"
-                  ? "text-primary bg-lightprimary border-none"
-                  : ""
-                  }`}
+                className={`border bg-transparent btn-shadow border-ld text-darklink dark:text-white hover:bg-lightprimary hover:text-primary rounded-md py-3 px-2   dark:hover:text-white ${
+                  isCollapse == "full-sidebar"
+                    ? "text-primary bg-lightprimary border-none"
+                    : ""
+                }`}
                 onClick={() => setIsCollapse("full-sidebar")}
               >
                 <span className="flex items-center">
-                  <Icon
-                    icon="solar:mirror-left-line-duotone"
-                    width="20"
-                    className="me-2"
-                  />
+                  <Icon icon="solar:mirror-left-line-duotone" width="20" className="me-2" />
                   Full
                 </span>
               </Button>
               <Button
                 color={"primary"}
-                className={`border bg-transparent text-link dark:text-white border-ld text-darklink hover:bg-lightprimary hover:text-primary rounded-md py-3 px-2 ${isCollapse == "mini-sidebar"
-                  ? "text-primary bg-lightprimary border-none"
-                  : ""
-                  }`}
+                className={`border bg-transparent text-link dark:text-white border-ld text-darklink hover:bg-lightprimary hover:text-primary rounded-md py-3 px-2 ${
+                  isCollapse == "mini-sidebar"
+                    ? "text-primary bg-lightprimary border-none"
+                    : ""
+                }`}
                 onClick={() => setIsCollapse("mini-sidebar")}
               >
                 <span className="flex items-center">
-                  <Icon
-                    icon="solar:mirror-right-line-duotone"
-                    width="20"
-                    className="me-2"
-                  />
+                  <Icon icon="solar:mirror-right-line-duotone" width="20" className="me-2" />
                   Collapse
                 </span>
               </Button>
@@ -353,33 +317,25 @@ export const Customizer = () => {
             <div className="flex flex-wrap  gap-4 mb-7">
               <Button
                 color={"primary"}
-                className={`border bg-transparent btn-shadow border-ld text-darklink dark:text-white hover:bg-lightprimary hover:text-primary rounded-md py-3 px-2  ${!isCardShadow
-                  ? "text-primary bg-lightprimary border-none"
-                  : ""
-                  }`}
+                className={`border bg-transparent btn-shadow border-ld text-darklink dark:text-white hover:bg-lightprimary hover:text-primary rounded-md py-3 px-2  ${
+                  !isCardShadow ? "text-primary bg-lightprimary border-none" : ""
+                }`}
                 onClick={() => setIsCardShadow(false)}
               >
                 <span className="flex items-center">
-                  <Icon
-                    icon="solar:three-squares-line-duotone"
-                    width="20"
-                    className="me-2"
-                  />
+                  <Icon icon="solar:three-squares-line-duotone" width="20" className="me-2" />
                   Border
                 </span>
               </Button>
               <Button
                 color={"primary"}
-                className={`border bg-transparent text-link dark:text-white border-ld text-darklink hover:bg-lightprimary hover:text-primary rounded-md py-3 px-2 dark:hover:text-white ${isCardShadow ? "text-primary bg-lightprimary border-none" : ""
-                  }`}
+                className={`border bg-transparent text-link dark:text-white border-ld text-darklink hover:bg-lightprimary hover:text-primary rounded-md py-3 px-2 dark:hover:text-white ${
+                  isCardShadow ? "text-primary bg-lightprimary border-none" : ""
+                }`}
                 onClick={() => setIsCardShadow(true)}
               >
                 <span className="flex items-center">
-                  <Icon
-                    icon="solar:three-squares-bold-duotone"
-                    width="20"
-                    className="me-2"
-                  />
+                  <Icon icon="solar:three-squares-bold-duotone" width="20" className="me-2" />
                   Shadow
                 </span>
               </Button>

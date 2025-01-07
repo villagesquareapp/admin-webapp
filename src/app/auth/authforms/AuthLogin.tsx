@@ -43,7 +43,6 @@ const AuthLogin = () => {
         toast.error(result?.error);
       } else {
         setIsRedirecting(true);
-        toast.success("Logged in successfully");
         window.location.href = "/";
       }
     } catch (error) {

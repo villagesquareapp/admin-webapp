@@ -95,9 +95,28 @@ interface IUsers {
     user_details: {
         profile: {
             username: string,
+            name: string,
+            email: string,
+            phone: string | null,
+            address: {
+                city: string,
+                country: string,
+                address: string,
+                timezone: string
+            },
+            gender: string,
+            date_of_birth: string,
+            profession: string,
+            bio: string,
+            last_online: string | null,
+            status: string,
+            verified: number,
             profile_picture: string,
             profile_banner: string,
             followers: number,
+            is_private: boolean,
+            account_type: string,
+            registration_type: string,
             created_at: string
         },
         shop: {
@@ -107,7 +126,6 @@ interface IUsers {
         },
         posts: IUserPost[]
     }
-    actions?: any
 }
 
 interface IUsersResponse extends IPaginatedResponse<IUsers[]> { }
@@ -308,3 +326,20 @@ interface IMarketSquareShops {
 }
 
 interface IMarketSquareShopsResponse extends IPaginatedResponse<IMarketSquareShops[]> { }
+
+interface ITicketstat {
+    total: number,
+    open: number,
+    in_progress: number,
+    resolved: number,
+    closed: number
+}
+
+interface ITicket {
+    title: string,
+    description: string,
+    status: 'open' | 'in_progress' | 'resolved' | 'closed',
+    actions?: any
+}
+
+interface ITicketResponse extends IPaginatedResponse<ITicket[]> { }

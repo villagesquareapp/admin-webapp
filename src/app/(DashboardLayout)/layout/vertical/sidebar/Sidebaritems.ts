@@ -71,6 +71,18 @@ const SidebarContent: MenuItem[] = [
             id: uniqueId(),
             url: "/dashboards/wallets",
           },
+          {
+            name: "Tickets",
+            icon: "solar:ticket-line-duotone",
+            id: uniqueId(),
+            url: "/dashboards/tickets",
+          },
+          {
+            name: "Reports",
+            icon: "solar:chart-2-line-duotone",
+            id: uniqueId(),
+            url: "/dashboards/reports",
+          },
           // @Remove from here
           // {
           //   name: "Front Pages",

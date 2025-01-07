@@ -23,6 +23,14 @@ const PostTable = ({
   const columnHelper = createColumnHelper<IPosts>();
 
   const columns = [
+    columnHelper.accessor("caption", {
+      cell: (info) => (
+        <div className="max-w-80">
+          <h6 className="text-base break-words whitespace-normal">{info.getValue() || 0}</h6>
+        </div>
+      ),
+      header: () => <span>Caption</span>,
+    }),
     columnHelper.accessor("user.username", {
       cell: (info) => (
         <div className="flex gap-3 items-center">
@@ -36,21 +44,13 @@ const PostTable = ({
           </div>
 
           <div className="truncat line-clamp-2 sm:max-w-56">
-            <h6 className="text-base">{info.row.original.user.username}</h6>
+            <p className="text-darklink dark:text-body text-sm">
+              {info.row.original.user.username}
+            </p>
           </div>
         </div>
       ),
-      header: () => <span>Post</span>,
-    }),
-    columnHelper.accessor("caption", {
-      cell: (info) => (
-        <div className="max-w-80">
-          <p className="text-darklink dark:text-body text-sm break-words whitespace-normal">
-            {info.getValue() || 0}
-          </p>
-        </div>
-      ),
-      header: () => <span>Caption</span>,
+      header: () => <span>Author</span>,
     }),
     columnHelper.accessor("views_count", {
       cell: (info) => (
@@ -84,7 +84,7 @@ const PostTable = ({
           </p>
         );
       },
-      header: () => <span>Created At</span>,
+      header: () => <span>Date Posted</span>,
     }),
     columnHelper.accessor("actions", {
       cell: () => (

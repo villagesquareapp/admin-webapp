@@ -3,6 +3,7 @@
 import React, { useContext, useEffect } from "react";
 import { Sidebar } from "flowbite-react";
 import { IconSidebar } from "./IconSidebar";
+import Logo from "../../shared/logo/Logo";
 import SidebarContent from "./Sidebaritems";
 import NavItems from "./NavItems";
 import NavCollapse from "./NavCollapse";
@@ -13,9 +14,7 @@ import { usePathname } from "next/navigation";
 
 const SidebarLayout = () => {
   const { selectedIconId, setSelectedIconId } = useContext(CustomizerContext) || {};
-  const selectedContent = SidebarContent.find(
-    (data) => data.id === selectedIconId
-  );
+  const selectedContent = SidebarContent.find((data) => data.id === selectedIconId);
 
   const pathname = usePathname();
 
@@ -48,22 +47,27 @@ const SidebarLayout = () => {
   return (
     <>
       <div className="xl:block hidden">
-
-        <div className="minisidebar-icon border-e border-ld bg-white dark:bg-darkgray fixed start-0 z-[1]">
+        {/* <div className="minisidebar-icon border-e border-ld bg-white dark:bg-darkgray fixed start-0 z-[1]">
           <IconSidebar />
           <SideProfile />
-        </div>
+        </div> */}
         <Sidebar
-          className="fixed menu-sidebar pt-8 bg-white dark:bg-darkgray ps-4 rtl:pe-4 rtl:ps-0"
+          className="fixed menu-sidebar pt-6 bg-white dark:bg-darkgray ps-4 rtl:pe-4 rtl:ps-0"
           aria-label="Sidebar with multi-level dropdown example"
         >
           <SimpleBar className="h-[calc(100vh_-_85px)]">
             <Sidebar.Items className="pe-4 rtl:pe-0 rtl:ps-4">
-              <Sidebar.ItemGroup className="sidebar-nav hide-menu ">
+              <Sidebar.ItemGroup className="sidebar-nav hide-menu">
+                <div className="flex items-center gap-3">
+                  <Logo size={40} />{" "}
+                  <p className="text-lg font-bold text-black dark:text-white">
+                    Village Square
+                  </p>
+                </div>
                 {selectedContent &&
                   selectedContent.items?.map((item, index) => (
                     <React.Fragment key={index}>
-                      <h5 className="text-link font-semibold text-sm caption ">
+                      <h5 className="text-link font-semibold text-sm caption">
                         {item.heading}
                       </h5>
                       {item.children?.map((child, index) => (

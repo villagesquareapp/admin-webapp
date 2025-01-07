@@ -76,7 +76,7 @@ const ShopTable = ({
           </p>
         );
       },
-      header: () => <span>Created At</span>,
+      header: () => <span>Date Added</span>,
     }),
     columnHelper.accessor("actions", {
       cell: () => (

@@ -78,7 +78,7 @@ const LivestreamTable = ({
           {formatDate(info.row.original.created_at)}
         </p>
       ),
-      header: () => <span>Created At</span>,
+      header: () => <span>Date Created</span>,
     }),
     columnHelper.accessor("actions", {
       cell: () => (
