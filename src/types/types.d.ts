@@ -126,6 +126,7 @@ interface IUsers {
         },
         posts: IUserPost[]
     }
+    actions?: any
 }
 
 interface IUsersResponse extends IPaginatedResponse<IUsers[]> { }
