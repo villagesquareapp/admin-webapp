@@ -27,7 +27,7 @@ const Page = async ({
       total: postStats?.data?.today_posts || 0,
       icon: "mdi:calendar-today",
       bgcolor: "primary",
-      title: "Today Active Posts",
+      title: "Today's Active Posts",
       shape: shape3,
       link: "",
     },

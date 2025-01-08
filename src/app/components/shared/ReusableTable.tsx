@@ -27,6 +27,7 @@ function ReusableTable({
   pageSize = 20,
   dropdownItems,
   tableTitle,
+  onRowClick,
 }: {
   tableData: any[];
   columns: any[];
@@ -35,6 +36,7 @@ function ReusableTable({
   pageSize?: number;
   dropdownItems?: string[];
   tableTitle?: string;
+  onRowClick?: (row: any) => void;
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -121,6 +123,7 @@ function ReusableTable({
                   <tr
                     key={row.id}
                     className="transition-colors cursor-pointer hover:bg-gray-800/10 dark:hover:bg-gray-50/10"
+                    onClick={() => onRowClick?.(row.original)}
                   >
                     {row.getVisibleCells().map((cell) => (
                       <td key={cell.id} className="whitespace-nowrap py-3 px-4">

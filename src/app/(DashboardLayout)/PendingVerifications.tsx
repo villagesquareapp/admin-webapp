@@ -58,31 +58,31 @@ const PendingVerifications = ({
       },
       header: () => <span>Created At</span>,
     }),
-    columnHelper.accessor("actions", {
-      cell: () => (
-        <Dropdown
-          label=""
-          dismissOnClick={false}
-          renderTrigger={() => (
-            <span className="h-9 w-9 flex justify-center items-center rounded-full hover:bg-lightprimary hover:text-primary cursor-pointer">
-              <IconDotsVertical size={22} />
-            </span>
-          )}
-        >
-          {[
-            { icon: "solar:add-circle-outline", listtitle: "Add" },
-            { icon: "solar:pen-new-square-broken", listtitle: "Edit" },
-            { icon: "solar:trash-bin-minimalistic-outline", listtitle: "Delete" },
-          ].map((item, index) => (
-            <Dropdown.Item key={index} className="flex gap-3">
-              <Icon icon={item.icon} height={18} />
-              <span>{item.listtitle}</span>
-            </Dropdown.Item>
-          ))}
-        </Dropdown>
-      ),
-      header: () => <span></span>,
-    }),
+    // columnHelper.accessor("actions", {
+    //   cell: () => (
+    //     <Dropdown
+    //       label=""
+    //       dismissOnClick={false}
+    //       renderTrigger={() => (
+    //         <span className="h-9 w-9 flex justify-center items-center rounded-full hover:bg-lightprimary hover:text-primary cursor-pointer">
+    //           <IconDotsVertical size={22} />
+    //         </span>
+    //       )}
+    //     >
+    //       {[
+    //         { icon: "solar:add-circle-outline", listtitle: "Add" },
+    //         { icon: "solar:pen-new-square-broken", listtitle: "Edit" },
+    //         { icon: "solar:trash-bin-minimalistic-outline", listtitle: "Delete" },
+    //       ].map((item, index) => (
+    //         <Dropdown.Item key={index} className="flex gap-3">
+    //           <Icon icon={item.icon} height={18} />
+    //           <span>{item.listtitle}</span>
+    //         </Dropdown.Item>
+    //       ))}
+    //     </Dropdown>
+    //   ),
+    //   header: () => <span></span>,
+    // }),
   ];
   return (
     <div className="col-span-12">

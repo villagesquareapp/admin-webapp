@@ -109,7 +109,7 @@ interface IUsers {
             profession: string,
             bio: string,
             last_online: string | null,
-            status: string,
+            status: 'active' | 'suspended' | 'inactive',
             verified: number,
             profile_picture: string,
             profile_banner: string,
@@ -328,6 +328,13 @@ interface IMarketSquareShops {
 
 interface IMarketSquareShopsResponse extends IPaginatedResponse<IMarketSquareShops[]> { }
 
+interface ITickerUser {
+    name: string,
+    username: string,
+    email: string,
+    profile_picture: string
+}
+
 interface ITicketstat {
     total: number,
     open: number,
@@ -340,6 +347,7 @@ interface ITicket {
     title: string,
     description: string,
     status: 'open' | 'in_progress' | 'resolved' | 'closed',
+    user: ITickerUser,
     actions?: any
 }
 

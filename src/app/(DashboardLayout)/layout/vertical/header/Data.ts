@@ -131,9 +131,17 @@ const SearchLinks: SearchType[] = [
     href: "/dashboards/markets",
   },
   {
-    title: "Wallets",
-    href: "/dashboards/wallets",
+    title: "Tickets",
+    href: "/dashboards/tickets",
   },
+  {
+    title: "Reports",
+    href: "/dashboards/reports",
+  },
+  // {
+  //   title: "Wallets",
+  //   href: "/dashboards/wallets",
+  // },
 ];
 
 //   Message Data

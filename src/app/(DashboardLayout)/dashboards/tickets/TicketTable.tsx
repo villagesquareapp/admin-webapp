@@ -5,6 +5,7 @@ import { Icon } from "@iconify/react";
 import { IconDotsVertical } from "@tabler/icons-react";
 import { createColumnHelper } from "@tanstack/react-table";
 import { Dropdown } from "flowbite-react";
+import Image from "next/image";
 
 const TicketTable = ({
   tickets,
@@ -32,6 +33,27 @@ const TicketTable = ({
         <p className="text-darklink dark:text-bodytext text-sm">{info.getValue() || "--"}</p>
       ),
       header: () => <span>Description</span>,
+    }),
+    columnHelper.accessor("user.username", {
+      cell: (info) => (
+        <div className="flex gap-3 items-center">
+          <div className="relative size-12 rounded-full">
+            <Image
+              src={info.row.original.user.profile_picture}
+              alt="icon"
+              fill
+              className="rounded-full object-cover"
+            />
+          </div>
+          <div className="truncat line-clamp-2 sm:max-w-56 flex flex-col">
+            <p className="font-medium">{info.row.original.user.name}</p>
+            <p className="text-sm text-darklink dark:text-bodytext">
+              @{info.row.original.user.username}
+            </p>
+          </div>
+        </div>
+      ),
+      header: () => <span>User</span>,
     }),
     columnHelper.accessor("status", {
       cell: (info) => {
@@ -71,31 +93,31 @@ const TicketTable = ({
       },
       header: () => <span>Status</span>,
     }),
-    columnHelper.accessor("actions", {
-      cell: () => (
-        <Dropdown
-          label=""
-          dismissOnClick={false}
-          renderTrigger={() => (
-            <span className="h-9 w-9 flex justify-center items-center rounded-full hover:bg-lightprimary hover:text-primary cursor-pointer">
-              <IconDotsVertical size={22} />
-            </span>
-          )}
-        >
-          {[
-            { icon: "solar:add-circle-outline", listtitle: "Add" },
-            { icon: "solar:pen-new-square-broken", listtitle: "Edit" },
-            { icon: "solar:trash-bin-minimalistic-outline", listtitle: "Delete" },
-          ].map((item, index) => (
-            <Dropdown.Item key={index} className="flex gap-3">
-              <Icon icon={item.icon} height={18} />
-              <span>{item.listtitle}</span>
-            </Dropdown.Item>
-          ))}
-        </Dropdown>
-      ),
-      header: () => <span></span>,
-    }),
+    // columnHelper.accessor("actions", {
+    //   cell: () => (
+    //     <Dropdown
+    //       label=""
+    //       dismissOnClick={false}
+    //       renderTrigger={() => (
+    //         <span className="h-9 w-9 flex justify-center items-center rounded-full hover:bg-lightprimary hover:text-primary cursor-pointer">
+    //           <IconDotsVertical size={22} />
+    //         </span>
+    //       )}
+    //     >
+    //       {[
+    //         { icon: "solar:add-circle-outline", listtitle: "Add" },
+    //         { icon: "solar:pen-new-square-broken", listtitle: "Edit" },
+    //         { icon: "solar:trash-bin-minimalistic-outline", listtitle: "Delete" },
+    //       ].map((item, index) => (
+    //         <Dropdown.Item key={index} className="flex gap-3">
+    //           <Icon icon={item.icon} height={18} />
+    //           <span>{item.listtitle}</span>
+    //         </Dropdown.Item>
+    //       ))}
+    //     </Dropdown>
+    //   ),
+    //   header: () => <span></span>,
+    // }),
   ];
   return (
     <div className="col-span-12">

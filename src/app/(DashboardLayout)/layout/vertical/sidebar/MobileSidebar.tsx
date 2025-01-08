@@ -11,16 +11,14 @@ import SideProfile from "./SideProfile/SideProfile";
 
 const MobileSidebar = () => {
   const { selectedIconId, setSelectedIconId } = useContext(CustomizerContext) || {};
-  const selectedContent = SidebarContent.find(
-    (data) => data.id === selectedIconId
-  );
+  const selectedContent = SidebarContent.find((data) => data.id === selectedIconId);
   return (
     <>
       <div>
-        <div className="minisidebar-icon border-e border-ld bg-white dark:bg-darkgray fixed start-0 z-[1] ">
+        {/* <div className="minisidebar-icon border-e border-ld bg-white dark:bg-darkgray fixed start-0 z-[1] ">
           <IconSidebar />
           <SideProfile/>
-        </div>
+        </div> */}
         <Sidebar
           className="fixed menu-sidebar pt-8 bg-white dark:bg-darkgray transition-all"
           aria-label="Sidebar with multi-level dropdown example"

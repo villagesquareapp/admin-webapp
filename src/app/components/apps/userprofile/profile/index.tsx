@@ -4,9 +4,13 @@ import Photos from "@/app/components/apps/userprofile/profile/Photos";
 import Post from "@/app/components/apps/userprofile/profile/Post";
 import ProfileBanner from "@/app/components/apps/userprofile/profile/ProfileBanner";
 import React from "react";
-import { UserDataProvider } from '@/app/context/UserDataContext/index';
+import { UserDataProvider } from "@/app/context/UserDataContext/index";
 
-const UserProfileApp = () => {
+interface UserProfileAppProps {
+  user: IUsers | null;
+}
+
+const UserProfileApp = ({ user }: UserProfileAppProps) => {
   return (
     <>
       <UserDataProvider>

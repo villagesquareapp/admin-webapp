@@ -26,7 +26,7 @@ const EchoeTable = ({
     columnHelper.accessor("host.profile_picture", {
       cell: (info) => (
         <div className="flex gap-3 items-center">
-          <div className="relative size-10 rounded-full">
+          <div className="relative size-12 rounded-full">
             <Image
               src={info.getValue()}
               alt="icon"
@@ -35,8 +35,11 @@ const EchoeTable = ({
             />
           </div>
 
-          <div className="truncat line-clamp-2 sm:max-w-56">
-            <h6 className="text-base">{info.row.original.host.username}</h6>
+          <div className="truncat line-clamp-2 sm:max-w-56 flex flex-col">
+            <h6 className="text-base">{info.row.original.host.name}</h6>
+            <p className="text-sm text-darklink dark:text-bodytext">
+              @{info.row.original.host.username}
+            </p>
           </div>
         </div>
       ),
@@ -44,7 +47,11 @@ const EchoeTable = ({
     }),
     columnHelper.accessor("title", {
       cell: (info) => (
-        <p className="text-darklink dark:text-bodytext text-sm">{info.getValue() || "-"}</p>
+        <div className="max-w-80">
+          <p className="text-darklink dark:text-bodytext text-sm truncate">
+            {info.getValue() || "-"}
+          </p>
+        </div>
       ),
       header: () => <span>Title</span>,
     }),
@@ -67,21 +74,43 @@ const EchoeTable = ({
       header: () => <span>Gifts</span>,
     }),
     columnHelper.accessor("duration", {
-      cell: (info) => (
-        <p className="text-darklink dark:text-bodytext text-sm">{info.getValue() || 0}</p>
-      ),
+      cell: (info) => {
+        const minutes = info.getValue() || 0;
+        const hours = Math.floor(minutes / 60);
+        const remainingMinutes = minutes % 60;
+
+        let formattedDuration = "";
+
+        if (hours > 0) {
+          formattedDuration += `${hours}${hours === 1 ? "hr" : "hrs"}`;
+          if (remainingMinutes > 0) {
+            formattedDuration += ` ${remainingMinutes}min`;
+          }
+        } else {
+          formattedDuration = `${minutes}min`;
+        }
+
+        return <p className="text-darklink dark:text-bodytext text-sm">{formattedDuration}</p>;
+      },
       header: () => <span>Duration</span>,
     }),
     columnHelper.accessor("status", {
-      cell: (info) => (
-        <p
-          className={`text-darklink dark:text-bodytext rounded-full px-2 py-1 text-sm text-white capitalize ${
-            info.getValue() === "live" ? "bg-green-500" : "bg-yellow-400"
-          }`}
-        >
-          {info.getValue()}
-        </p>
-      ),
+      cell: (info) => {
+        const statusStyles = {
+          live: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300",
+          ended: "bg-amber-100 text-amber-900 dark:bg-amber-900 dark:text-amber-200",
+        };
+
+        return (
+          <p
+            className={`rounded-full px-2 py-1 text-sm w-20 text-center capitalize ${
+              statusStyles[info.getValue() as keyof typeof statusStyles]
+            }`}
+          >
+            {info.getValue()}
+          </p>
+        );
+      },
       header: () => <span>Status</span>,
     }),
     columnHelper.accessor("created_at", {
@@ -92,31 +121,31 @@ const EchoeTable = ({
       ),
       header: () => <span>Date Created</span>,
     }),
-    columnHelper.accessor("actions", {
-      cell: () => (
-        <Dropdown
-          label=""
-          dismissOnClick={false}
-          renderTrigger={() => (
-            <span className="h-9 w-9 flex justify-center items-center rounded-full hover:bg-lightprimary hover:text-primary cursor-pointer">
-              <IconDotsVertical size={22} />
-            </span>
-          )}
-        >
-          {[
-            { icon: "solar:add-circle-outline", listtitle: "Add" },
-            { icon: "solar:pen-new-square-broken", listtitle: "Edit" },
-            { icon: "solar:trash-bin-minimalistic-outline", listtitle: "Delete" },
-          ].map((item, index) => (
-            <Dropdown.Item key={index} className="flex gap-3">
-              <Icon icon={item.icon} height={18} />
-              <span>{item.listtitle}</span>
-            </Dropdown.Item>
-          ))}
-        </Dropdown>
-      ),
-      header: () => <span></span>,
-    }),
+    // columnHelper.accessor("actions", {
+    //   cell: () => (
+    //     <Dropdown
+    //       label=""
+    //       dismissOnClick={false}
+    //       renderTrigger={() => (
+    //         <span className="h-9 w-9 flex justify-center items-center rounded-full hover:bg-lightprimary hover:text-primary cursor-pointer">
+    //           <IconDotsVertical size={22} />
+    //         </span>
+    //       )}
+    //     >
+    //       {[
+    //         { icon: "solar:add-circle-outline", listtitle: "Add" },
+    //         { icon: "solar:pen-new-square-broken", listtitle: "Edit" },
+    //         { icon: "solar:trash-bin-minimalistic-outline", listtitle: "Delete" },
+    //       ].map((item, index) => (
+    //         <Dropdown.Item key={index} className="flex gap-3">
+    //           <Icon icon={item.icon} height={18} />
+    //           <span>{item.listtitle}</span>
+    //         </Dropdown.Item>
+    //       ))}
+    //     </Dropdown>
+    //   ),
+    //   header: () => <span></span>,
+    // }),
   ];
   return (
     <div className="col-span-12">

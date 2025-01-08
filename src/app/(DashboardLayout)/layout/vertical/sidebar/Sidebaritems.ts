@@ -42,12 +42,6 @@ const SidebarContent: MenuItem[] = [
             url: "/dashboards/users",
           },
           {
-            name: "Live Streams",
-            icon: "solar:play-stream-line-duotone",
-            id: uniqueId(),
-            url: "/dashboards/livestreams",
-          },
-          {
             name: "Posts",
             icon: "solar:document-text-line-duotone",
             id: uniqueId(),
@@ -60,17 +54,23 @@ const SidebarContent: MenuItem[] = [
             url: "/dashboards/echoes",
           },
           {
+            name: "Live Streams",
+            icon: "solar:play-stream-line-duotone",
+            id: uniqueId(),
+            url: "/dashboards/livestreams",
+          },
+          {
             name: "Market Squares",
             icon: "solar:shop-2-line-duotone",
             id: uniqueId(),
             url: "/dashboards/markets",
           },
-          {
-            name: "Wallets",
-            icon: "solar:wallet-money-line-duotone",
-            id: uniqueId(),
-            url: "/dashboards/wallets",
-          },
+          // {
+          //   name: "Wallets",
+          //   icon: "solar:wallet-money-line-duotone",
+          //   id: uniqueId(),
+          //   url: "/dashboards/wallets",
+          // },
           {
             name: "Tickets",
             icon: "solar:ticket-line-duotone",

@@ -4,15 +4,22 @@ import Sidebar from "./layout/vertical/sidebar/Sidebar";
 import Header from "./layout/vertical/header/Header";
 import { Customizer } from "./layout/shared/customizer/Customizer";
 import { CustomizerContext } from "@/app/context/customizerContext";
+import Logo from "./layout/shared/logo/Logo";
 
 export default function Layout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const { activeLayout, isLayout } = useContext(CustomizerContext);
+  const { activeLayout, isLayout, isCollapse } = useContext(CustomizerContext);
+
   return (
     <div className="flex w-full min-h-screen">
+      {isCollapse == "mini-sidebar" ? (
+        <div className="flex fixed left-4 top-5 items-center gap-3 ">
+          <Logo size={40} />{" "}
+        </div>
+      ) : null}
       <div className="page-wrapper flex w-full">
         {/* Header/sidebar */}
         {activeLayout == "vertical" ? <Sidebar /> : null}

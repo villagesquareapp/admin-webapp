@@ -34,7 +34,7 @@ const PostTable = ({
     columnHelper.accessor("user.username", {
       cell: (info) => (
         <div className="flex gap-3 items-center">
-          <div className="relative size-10 rounded-full">
+          <div className="relative size-12 rounded-full">
             <Image
               src={info.row.original.user.profile_picture}
               alt="icon"
@@ -43,9 +43,10 @@ const PostTable = ({
             />
           </div>
 
-          <div className="truncat line-clamp-2 sm:max-w-56">
-            <p className="text-darklink dark:text-body text-sm">
-              {info.row.original.user.username}
+          <div className="truncat line-clamp-2 sm:max-w-56 flex flex-col">
+            <p className="font-medium">{info.row.original.user.name}</p>
+            <p className="text-sm text-darklink dark:text-bodytext">
+              @{info.row.original.user.username}
             </p>
           </div>
         </div>
@@ -54,25 +55,33 @@ const PostTable = ({
     }),
     columnHelper.accessor("views_count", {
       cell: (info) => (
-        <p className="text-darklink dark:text-bodytext text-sm">{info.getValue() || 0}</p>
+        <p className="text-darklink dark:text-bodytext text-sm text-center">
+          {info.getValue() || 0}
+        </p>
       ),
       header: () => <span>Views</span>,
     }),
     columnHelper.accessor("shares_count", {
       cell: (info) => (
-        <p className="text-darklink dark:text-bodytext text-sm">{info.getValue() || 0}</p>
+        <p className="text-darklink dark:text-bodytext text-sm text-center">
+          {info.getValue() || 0}
+        </p>
       ),
       header: () => <span>Shares</span>,
     }),
     columnHelper.accessor("likes_count", {
       cell: (info) => (
-        <p className="text-darklink dark:text-bodytext text-sm">{info.getValue() || 0}</p>
+        <p className="text-darklink dark:text-bodytext text-sm text-center">
+          {info.getValue() || 0}
+        </p>
       ),
       header: () => <span>Likes</span>,
     }),
     columnHelper.accessor("comments_count", {
       cell: (info) => (
-        <p className="text-darklink dark:text-bodytext text-sm">{info.getValue() || 0}</p>
+        <p className="text-darklink dark:text-bodytext text-sm text-center">
+          {info.getValue() || 0}
+        </p>
       ),
       header: () => <span>Comments</span>,
     }),
@@ -86,31 +95,31 @@ const PostTable = ({
       },
       header: () => <span>Date Posted</span>,
     }),
-    columnHelper.accessor("actions", {
-      cell: () => (
-        <Dropdown
-          label=""
-          dismissOnClick={false}
-          renderTrigger={() => (
-            <span className="h-9 w-9 flex justify-center items-center rounded-full hover:bg-lightprimary hover:text-primary cursor-pointer">
-              <IconDotsVertical size={22} />
-            </span>
-          )}
-        >
-          {[
-            { icon: "solar:add-circle-outline", listtitle: "Add" },
-            { icon: "solar:pen-new-square-broken", listtitle: "Edit" },
-            { icon: "solar:trash-bin-minimalistic-outline", listtitle: "Delete" },
-          ].map((item, index) => (
-            <Dropdown.Item key={index} className="flex gap-3">
-              <Icon icon={item.icon} height={18} />
-              <span>{item.listtitle}</span>
-            </Dropdown.Item>
-          ))}
-        </Dropdown>
-      ),
-      header: () => <span></span>,
-    }),
+    // columnHelper.accessor("actions", {
+    //   cell: () => (
+    //     <Dropdown
+    //       label=""
+    //       dismissOnClick={false}
+    //       renderTrigger={() => (
+    //         <span className="h-9 w-9 flex justify-center items-center rounded-full hover:bg-lightprimary hover:text-primary cursor-pointer">
+    //           <IconDotsVertical size={22} />
+    //         </span>
+    //       )}
+    //     >
+    //       {[
+    //         { icon: "solar:add-circle-outline", listtitle: "Add" },
+    //         { icon: "solar:pen-new-square-broken", listtitle: "Edit" },
+    //         { icon: "solar:trash-bin-minimalistic-outline", listtitle: "Delete" },
+    //       ].map((item, index) => (
+    //         <Dropdown.Item key={index} className="flex gap-3">
+    //           <Icon icon={item.icon} height={18} />
+    //           <span>{item.listtitle}</span>
+    //         </Dropdown.Item>
+    //       ))}
+    //     </Dropdown>
+    //   ),
+    //   header: () => <span></span>,
+    // }),
   ];
   return (
     <div className="col-span-12">
