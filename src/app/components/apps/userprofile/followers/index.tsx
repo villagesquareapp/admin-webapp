@@ -1,9 +1,8 @@
-"use client"
+"use client";
 import FollowerCard from "@/app/components/apps/userprofile/followers/FollowerCard";
 import ProfileBanner from "@/app/components/apps/userprofile/profile/ProfileBanner";
 import React from "react";
-import { UserDataProvider } from '@/app/context/UserDataContext/index';
-
+import { UserDataProvider } from "@/app/context/UserDataContext/index";
 
 const FollowersApp = () => {
   return (
@@ -12,7 +11,7 @@ const FollowersApp = () => {
         <div className="grid grid-cols-12 gap-6">
           {/* Banner */}
           <div className="col-span-12">
-            <ProfileBanner />
+            <ProfileBanner user={null} />
           </div>
           {/* FollowerCard */}
           <div className="col-span-12">
