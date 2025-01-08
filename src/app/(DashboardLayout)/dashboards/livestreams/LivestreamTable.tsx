@@ -53,33 +53,25 @@ const LivestreamTable = ({
     }),
     columnHelper.accessor("category.name", {
       cell: (info) => (
-        <p className="text-darklink dark:text-bodytext text-sm text-center">
-          {info.getValue() || 0}
-        </p>
+        <p className="text-darklink dark:text-bodytext text-sm">{info.getValue() || 0}</p>
       ),
       header: () => <span>Category</span>,
     }),
     columnHelper.accessor("users", {
       cell: (info) => (
-        <p className="text-darklink dark:text-bodytext text-sm text-center">
-          {info.getValue() || 0}
-        </p>
+        <p className="text-darklink dark:text-bodytext text-sm">{info.getValue() || 0}</p>
       ),
       header: () => <span>Streamers</span>,
     }),
     columnHelper.accessor("gifts", {
       cell: (info) => (
-        <p className="text-darklink dark:text-bodytext text-sm text-center">
-          {info.getValue() || 0}
-        </p>
+        <p className="text-darklink dark:text-bodytext text-sm">{info.getValue() || 0}</p>
       ),
       header: () => <span>Gifts</span>,
     }),
     columnHelper.accessor("duration", {
       cell: (info) => (
-        <p className="text-darklink dark:text-bodytext text-sm text-center">
-          {info.getValue() || 0}
-        </p>
+        <p className="text-darklink dark:text-bodytext text-sm">{info.getValue() || 0}</p>
       ),
       header: () => <span>Duration</span>,
     }),

@@ -20,7 +20,7 @@ const PendingVerifications = ({
   pageSize: number;
 }) => {
   if (!users) return <div>No users found</div>;
-  const columnHelper = createColumnHelper<IUsers>();
+  const columnHelper = createColumnHelper<IUser>();
 
   const columns = [
     columnHelper.accessor("user_details.profile.profile_picture", {

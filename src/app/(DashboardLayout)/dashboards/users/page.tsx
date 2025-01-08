@@ -14,15 +14,15 @@ const Page = async ({
 }) => {
   const page = Number(searchParams.page) || 1;
   const limit = Number(searchParams.limit) || 20;
-  const username = searchParams.username as string;
+  const userId = searchParams.userId as string;
 
   const [userStats, users] = await Promise.all([getUserStats(), getUsers(page, limit)]);
 
   const selectedUser =
-    username && users?.data?.data
+    userId && users?.data?.data
       ? users.data.data
           .flat()
-          .find((user: IUsers) => user?.user_details?.profile?.username === username)
+          .find((user: IUser) => user?.user_details?.profile?.id === userId)
       : null;
 
   const overviewData: IOverviewData[] = [
@@ -87,13 +87,13 @@ const Page = async ({
       title: "Users",
     },
     {
-      title: selectedUser?.user_details?.profile?.name || username,
+      title: selectedUser?.user_details?.profile?.name || "",
     },
   ];
 
   return (
     <>
-      {username ? (
+      {userId ? (
         <>
           <BreadcrumbComp title="User Profile" items={BCrumb} />
           <UserProfileApp user={selectedUser || null} />

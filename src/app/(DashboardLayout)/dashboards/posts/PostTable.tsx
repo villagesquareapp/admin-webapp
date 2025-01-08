@@ -1,12 +1,12 @@
 "use client";
 
+import CardBox from "@/app/components/shared/CardBox";
 import ReusableTable from "@/app/components/shared/ReusableTable";
 import { formatDate } from "@/utils/dateUtils";
-import { Icon } from "@iconify/react";
-import { IconDotsVertical } from "@tabler/icons-react";
 import { createColumnHelper } from "@tanstack/react-table";
-import { Dropdown } from "flowbite-react";
 import Image from "next/image";
+import { useState } from "react";
+import PostDialog from "./PostDialog";
 
 const PostTable = ({
   posts,
@@ -19,8 +19,16 @@ const PostTable = ({
   currentPage: number;
   pageSize: number;
 }) => {
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [selectedPost, setSelectedPost] = useState<IPosts | null>(null);
+
   if (!posts) return <div>No posts found</div>;
   const columnHelper = createColumnHelper<IPosts>();
+
+  const handleRowClick = (post: IPosts) => {
+    setSelectedPost(post);
+    setIsDialogOpen(true);
+  };
 
   const columns = [
     columnHelper.accessor("caption", {
@@ -55,33 +63,25 @@ const PostTable = ({
     }),
     columnHelper.accessor("views_count", {
       cell: (info) => (
-        <p className="text-darklink dark:text-bodytext text-sm text-center">
-          {info.getValue() || 0}
-        </p>
+        <p className="text-darklink dark:text-bodytext text-sm">{info.getValue() || 0}</p>
       ),
       header: () => <span>Views</span>,
     }),
     columnHelper.accessor("shares_count", {
       cell: (info) => (
-        <p className="text-darklink dark:text-bodytext text-sm text-center">
-          {info.getValue() || 0}
-        </p>
+        <p className="text-darklink dark:text-bodytext text-sm">{info.getValue() || 0}</p>
       ),
       header: () => <span>Shares</span>,
     }),
     columnHelper.accessor("likes_count", {
       cell: (info) => (
-        <p className="text-darklink dark:text-bodytext text-sm text-center">
-          {info.getValue() || 0}
-        </p>
+        <p className="text-darklink dark:text-bodytext text-sm">{info.getValue() || 0}</p>
       ),
       header: () => <span>Likes</span>,
     }),
     columnHelper.accessor("comments_count", {
       cell: (info) => (
-        <p className="text-darklink dark:text-bodytext text-sm text-center">
-          {info.getValue() || 0}
-        </p>
+        <p className="text-darklink dark:text-bodytext text-sm">{info.getValue() || 0}</p>
       ),
       header: () => <span>Comments</span>,
     }),
@@ -129,6 +129,13 @@ const PostTable = ({
         totalPages={totalPages}
         currentPage={currentPage}
         pageSize={pageSize}
+        onRowClick={handleRowClick}
+      />
+      <PostDialog
+        isOpen={isDialogOpen}
+        setIsOpen={setIsDialogOpen}
+        post={selectedPost}
+        postId={selectedPost?.uuid}
       />
     </div>
   );

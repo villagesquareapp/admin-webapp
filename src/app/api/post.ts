@@ -19,3 +19,11 @@ export const getPosts = async (page: number = 1, limit: number = 20) => {
         token
     );
 };
+
+export const getSinglePost = async (uuid: string) => {
+    const token = await getToken()
+    return await apiGet<ISinglePost>(
+        `posts/${uuid}`,
+        token
+    );
+};

@@ -5,6 +5,8 @@ import { formatDate } from "@/utils/dateUtils";
 import { createColumnHelper } from "@tanstack/react-table";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
+import PremiumIcon from "/public/images/svgs/vs-svgs/premium.svg";
+import CheckBadgeIcon from "/public/images/svgs/vs-svgs/check-badge.svg";
 
 const UserTable = ({
   users,
@@ -20,17 +22,17 @@ const UserTable = ({
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const handleRowClick = (user: IUsers) => {
+  const handleRowClick = (user: IUser) => {
     const params = new URLSearchParams(searchParams.toString());
-    params.set("username", user.user_details.profile.username);
+    params.set("userId", user.user_details.profile.id);
     router.push(`?${params.toString()}`);
   };
 
   if (!users) return <div>No users found</div>;
-  const columnHelper = createColumnHelper<IUsers>();
+  const columnHelper = createColumnHelper<IUser>();
 
   const columns = [
-    columnHelper.accessor("user_details.profile.profile_picture", {
+    columnHelper.accessor("user_details.profile.id", {
       cell: (info) => (
         <div className="flex gap-3 items-center">
           <div className="relative size-12 rounded-full">
@@ -38,7 +40,7 @@ const UserTable = ({
               <div className="size-3 rounded-full bg-green-500 absolute bottom-0 right-1 z-10"></div>
             )}
             <Image
-              src={info.getValue()}
+              src={info.row.original.user_details.profile.profile_picture}
               alt="icon"
               fill
               className="rounded-full object-cover"
@@ -46,7 +48,21 @@ const UserTable = ({
           </div>
 
           <div className="truncat line-clamp-2 sm:max-w-56 flex flex-col">
-            <h6 className="text-base">{info.row.original.user_details.profile.name}</h6>
+            <div className="flex items-center gap-1">
+              <h6 className="text-base">{info.row.original.user_details.profile.name}</h6>
+              {info.row.original.user_details.profile.checkmark && (
+                <Image src={CheckBadgeIcon} alt="premium" width={25} height={25} />
+              )}
+              {info.row.original.user_details.profile.premium && (
+                <Image
+                  src={PremiumIcon}
+                  alt="premium"
+                  className="-ml-1.5"
+                  width={18}
+                  height={18}
+                />
+              )}
+            </div>
             <p className="text-sm text-darklink dark:text-bodytext">
               @{info.row.original.user_details.profile.username}
             </p>
@@ -63,7 +79,7 @@ const UserTable = ({
     }),
     columnHelper.accessor("user_details.posts", {
       cell: (info) => (
-        <p className="text-darklink dark:text-bodytext text-sm text-center">
+        <p className="text-darklink dark:text-bodytext text-sm">
           {info.row.original.user_details.posts.length || 0}
         </p>
       ),
@@ -71,9 +87,7 @@ const UserTable = ({
     }),
     columnHelper.accessor("user_details.profile.followers", {
       cell: (info) => (
-        <p className="text-darklink dark:text-bodytext text-sm text-center">
-          {info.getValue() || 0}
-        </p>
+        <p className="text-darklink dark:text-bodytext text-sm">{info.getValue() || 0}</p>
       ),
       header: () => <span>Followers</span>,
     }),

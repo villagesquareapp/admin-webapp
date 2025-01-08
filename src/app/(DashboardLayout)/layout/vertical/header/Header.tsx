@@ -70,7 +70,7 @@ const Header = ({ layoutType }: HeaderPropsType) => {
   return (
     <>
       <header
-        className={`sticky top-0 z-[5] ${
+        className={`sticky top-0 z-[99] ${
           isSticky ? "bg-lightgray dark:bg-dark shadow-md fixed w-full" : "bg-transparent"
         }`}
       >

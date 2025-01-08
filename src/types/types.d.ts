@@ -91,9 +91,10 @@ interface IUserPost {
     created_at: string
 }
 
-interface IUsers {
+interface IUser {
     user_details: {
         profile: {
+            id: string,
             username: string,
             name: string,
             email: string,
@@ -114,7 +115,11 @@ interface IUsers {
             profile_picture: string,
             profile_banner: string,
             followers: number,
+            following: number,
+            posts_count: number,
             is_private: boolean,
+            checkmark: boolean,
+            premium: boolean,
             account_type: string,
             registration_type: string,
             created_at: string
@@ -129,22 +134,12 @@ interface IUsers {
     actions?: any
 }
 
-interface IUsersResponse extends IPaginatedResponse<IUsers[]> { }
+interface IUsersResponse extends IPaginatedResponse<IUser[]> { }
 
 interface IMedia {
-    uuid: string,
-    post_id: string,
-    media_filename: string,
-    media_url: string,
-    transcoded_media_url: string | null,
-    media_type: string,
-    media_size: string,
-    media_thumbnail: string,
-    is_transcode_complete: boolean,
-    media_duration: string | null,
-    created_at: string,
-    updated_at: string,
-    deleted_at: string | null
+    thumbnail: string,
+    url: string,
+    type: 'image' | 'video'
 }
 
 
@@ -352,3 +347,42 @@ interface ITicket {
 }
 
 interface ITicketResponse extends IPaginatedResponse<ITicket[]> { }
+
+interface IComment {
+    text: string,
+    user: {
+        name: string,
+        profile_picture: string,
+        created_at: string,
+        updated_at: string
+    },
+    likes: number,
+    created_at: string,
+    updated_at: string
+}
+
+interface ISinglePost {
+    post_details: {
+        metrics: {
+            likes: number,
+            comments: number,
+            shares: number,
+            views: number,
+            address: string,
+            privacy: string,
+            created_at: string,
+            updated_at: string
+        },
+        user: {
+            name: string,
+            profile_picture: string,
+            created_at: string,
+            updated_at: string
+        },
+        content: {
+            caption: string,
+            media: IMedia[]
+        },
+        comments: IComment[]
+    }
+}
