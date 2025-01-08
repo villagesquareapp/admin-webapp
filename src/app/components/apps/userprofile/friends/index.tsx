@@ -1,8 +1,8 @@
-"use client"
-import FriendsCard from '@/app/components/apps/userprofile/friends/FriendsCard';
-import ProfileBanner from '@/app/components/apps/userprofile/profile/ProfileBanner'
-import React from 'react'
-import { UserDataProvider } from '@/app/context/UserDataContext/index';
+"use client";
+import FriendsCard from "@/app/components/apps/userprofile/friends/FriendsCard";
+import ProfileBanner from "@/app/components/apps/userprofile/profile/ProfileBanner";
+import React from "react";
+import { UserDataProvider } from "@/app/context/UserDataContext/index";
 
 const FriendsApp = () => {
   return (
@@ -11,7 +11,7 @@ const FriendsApp = () => {
         <div className="grid grid-cols-12 gap-6">
           {/* Banner */}
           <div className="col-span-12">
-            <ProfileBanner />
+            <ProfileBanner user={null} />
           </div>
           {/* FriendsCard */}
           <div className="col-span-12">
@@ -20,7 +20,7 @@ const FriendsApp = () => {
         </div>
       </UserDataProvider>
     </>
-  )
-}
+  );
+};
 
-export default FriendsApp
+export default FriendsApp;
