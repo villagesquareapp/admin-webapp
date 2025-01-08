@@ -1,16 +1,14 @@
 "use client";
 
-import React, { useContext, useEffect } from "react";
-import { Sidebar } from "flowbite-react";
-import { IconSidebar } from "./IconSidebar";
-import Logo from "../../shared/logo/Logo";
-import SidebarContent from "./Sidebaritems";
-import NavItems from "./NavItems";
-import NavCollapse from "./NavCollapse";
 import { CustomizerContext } from "@/app/context/customizerContext";
-import SimpleBar from "simplebar-react";
-import SideProfile from "./SideProfile/SideProfile";
+import { Sidebar } from "flowbite-react";
 import { usePathname } from "next/navigation";
+import React, { useContext, useEffect } from "react";
+import SimpleBar from "simplebar-react";
+import Logo from "../../shared/logo/Logo";
+import NavCollapse from "./NavCollapse";
+import NavItems from "./NavItems";
+import SidebarContent from "./Sidebaritems";
 
 const SidebarLayout = () => {
   const { selectedIconId, setSelectedIconId } = useContext(CustomizerContext) || {};

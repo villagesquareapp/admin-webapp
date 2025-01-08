@@ -1,13 +1,12 @@
 "use client";
-import React, { useContext } from "react";
-import { Sidebar } from "flowbite-react";
-import { IconSidebar } from "./IconSidebar";
-import SidebarContent from "./Sidebaritems";
-import NavItems from "./NavItems";
-import NavCollapse from "./NavCollapse";
 import { CustomizerContext } from "@/app/context/customizerContext";
+import { Sidebar } from "flowbite-react";
+import React, { useContext } from "react";
 import SimpleBar from "simplebar-react";
-import SideProfile from "./SideProfile/SideProfile";
+import Logo from "../../shared/logo/Logo";
+import NavCollapse from "./NavCollapse";
+import NavItems from "./NavItems";
+import SidebarContent from "./Sidebaritems";
 
 const MobileSidebar = () => {
   const { selectedIconId, setSelectedIconId } = useContext(CustomizerContext) || {};
@@ -26,6 +25,12 @@ const MobileSidebar = () => {
           <SimpleBar className="h-[calc(100vh_-_85px)]">
             <Sidebar.Items className="ps-4 pe-4">
               <Sidebar.ItemGroup className="sidebar-nav">
+                <div className="flex items-center gap-3">
+                  <Logo size={40} />{" "}
+                  <p className="text-lg font-bold text-black dark:text-white">
+                    Village Square
+                  </p>
+                </div>
                 {selectedContent &&
                   selectedContent.items?.map((item, index) => (
                     <React.Fragment key={index}>
