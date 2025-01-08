@@ -96,7 +96,7 @@ const Page = async ({
       {username ? (
         <>
           <BreadcrumbComp title="User Profile" items={BCrumb} />
-          <UserProfileApp user={selectedUser} />
+          <UserProfileApp user={selectedUser || null} />
         </>
       ) : (
         <div className="grid grid-cols-12 gap-30">

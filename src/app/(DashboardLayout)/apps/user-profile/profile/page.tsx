@@ -18,7 +18,7 @@ const UserProfile = () => {
   return (
     <>
       <BreadcrumbComp title="User Profile" items={BCrumb} />
-      <UserProfileApp />
+      <UserProfileApp user={null} />
     </>
   );
 };
