@@ -14,7 +14,7 @@ const Introduction = ({ user }: { user: IUser }) => {
               <Icon icon="solar:letter-outline" height="20" className="text-ld" /> Email:
             </div>
             <p className="text-ld font-semibold">
-              {user?.user_details?.profile?.email || "-No Email-"}
+              {user?.user_details?.profile?.email || "N/A"}
             </p>
           </div>
           <div className="flex gap-3 items-center">
@@ -22,7 +22,7 @@ const Introduction = ({ user }: { user: IUser }) => {
               <Icon icon="solar:user-outline" height="20" className="text-ld" /> Gender:
             </div>
             <p className="text-ld font-semibold capitalize">
-              {user?.user_details?.profile?.gender || "-Gender not added-"}
+              {user?.user_details?.profile?.gender || "N/A"}
             </p>
           </div>
           <div className="flex gap-3 items-center">
@@ -31,7 +31,7 @@ const Introduction = ({ user }: { user: IUser }) => {
               Birth:
             </div>
             <p className="text-ld font-semibold">
-              {user?.user_details?.profile?.date_of_birth || "-No Date of Birth-"}
+              {user?.user_details?.profile?.date_of_birth || "N/A"}
             </p>
           </div>
           <div className="flex gap-3 items-center">
@@ -39,7 +39,7 @@ const Introduction = ({ user }: { user: IUser }) => {
               <Icon icon="solar:phone-outline" height="20" className="text-ld" /> Phone:
             </div>
             <p className="text-ld font-semibold">
-              {user?.user_details?.profile?.phone || "-No Phone-"}
+              {user?.user_details?.profile?.phone || "N/A"}
             </p>
           </div>
           <div className="flex gap-3 items-center">
@@ -48,7 +48,7 @@ const Introduction = ({ user }: { user: IUser }) => {
               Profession:
             </div>
             <p className="text-ld font-semibold">
-              {user?.user_details?.profile?.profession || "-No Profession-"}
+              {user?.user_details?.profile?.profession || "N/A"}
             </p>
           </div>
 
@@ -58,7 +58,7 @@ const Introduction = ({ user }: { user: IUser }) => {
               Type:
             </div>
             <p className="text-ld font-semibold capitalize">
-              {user?.user_details?.profile?.account_type || "-No Account Type-"}
+              {user?.user_details?.profile?.account_type || "N/A"}
             </p>
           </div>
           <div className="flex gap-3 items-center">
@@ -67,7 +67,7 @@ const Introduction = ({ user }: { user: IUser }) => {
               Registration Type:
             </div>
             <p className="text-ld font-semibold capitalize">
-              {user?.user_details?.profile?.registration_type || "-No Registration Type-"}
+              {user?.user_details?.profile?.registration_type || "N/A"}
             </p>
           </div>
           <div className="flex gap-3 items-center">
@@ -76,7 +76,7 @@ const Introduction = ({ user }: { user: IUser }) => {
               Timezone:
             </div>
             <p className="text-ld font-semibold capitalize">
-              {user?.user_details?.profile?.address?.timezone || "-No timezone-"}
+              {user?.user_details?.profile?.address?.timezone || "N/A"}
             </p>
           </div>
 
@@ -85,7 +85,7 @@ const Introduction = ({ user }: { user: IUser }) => {
               <Icon icon="solar:map-point-outline" height="20" className="text-ld" /> Address:
             </div>
             <p className="text-ld font-semibold">
-              {user?.user_details?.profile?.address?.address || "-No Address-"}
+              {user?.user_details?.profile?.address?.address || "N/A"}
             </p>
           </div>
         </div>

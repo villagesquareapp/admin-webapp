@@ -215,6 +215,11 @@ const PostDialog = ({
                           <p className="text-sm pl-10">{comment.text}</p>
                         </div>
                       ))}
+                      {!postDetails?.post_details?.comments?.length && (
+                        <div className="text-center text-gray-500 font-semibold mt-20">
+                          No comments yet!
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>

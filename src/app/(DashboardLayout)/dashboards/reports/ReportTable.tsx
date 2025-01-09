@@ -6,7 +6,7 @@ import { IconDotsVertical } from "@tabler/icons-react";
 import { createColumnHelper } from "@tanstack/react-table";
 import { Dropdown } from "flowbite-react";
 
-const TicketTable = ({
+const ReportTable = ({
   tickets,
   totalPages,
   currentPage,
@@ -110,4 +110,4 @@ const TicketTable = ({
   );
 };
 
-export default TicketTable;
+export default ReportTable;

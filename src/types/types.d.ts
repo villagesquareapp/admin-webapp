@@ -33,6 +33,16 @@ interface IUserstat {
     reported_users: number
 }
 
+interface IReportStats {
+    total_reports: number,
+    total_user_reports: number,
+    total_post_reports: number,
+    total_echo_reports: number,
+    total_live_stream_reports: number,
+    total_marketplace_reports: number,
+    total_comment_reports: number
+}
+
 interface IPostStats {
     total_posts: number,
     total_image_posts: number,
