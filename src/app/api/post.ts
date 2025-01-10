@@ -13,6 +13,8 @@ export const getPostStats = async () => {
 };
 
 export const getPosts = async (page: number = 1, limit: number = 20) => {
+    console.log("PAGE I GOT", page);
+    console.log("LIMIT I GOT", limit);
     const token = await getToken()
     return await apiGet<IPostResponse>(
         `posts?page=${page}&limit=${limit}`,

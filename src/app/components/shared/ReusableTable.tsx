@@ -121,6 +121,10 @@ function ReusableTable({
     });
   };
 
+  console.log("PAGE I GOT", currentPage);
+  console.log("PAGE SIZE I GOT", pageSize);
+  console.log("SEARCH PARAMS I GOT", searchParams);
+
   return (
     <>
       <CardBox className="border rounded-md md:rounded-3xl  shadow-md border-ld overflow-hidden">

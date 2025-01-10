@@ -11,7 +11,7 @@ const Page = async ({
 }) => {
   const page = Number(searchParams.page) || 1;
   const limit = Number(searchParams.limit) || 20;
-  const [postStats, posts] = await Promise.all([getPostStats(), getPosts()]);
+  const [postStats, posts] = await Promise.all([getPostStats(), getPosts(page, limit)]);
 
   const overviewData: IOverviewData[] = [
     {
