@@ -3,7 +3,7 @@ import React from "react";
 import { Badge, Breadcrumb } from "flowbite-react";
 import CardBox from "@/app/components/shared/CardBox";
 import { Icon } from "@iconify/react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 interface BreadCrumbType {
   subtitle?: string;
@@ -14,13 +14,6 @@ interface BreadCrumbType {
 
 const BreadcrumbComp = ({ items, title }: BreadCrumbType) => {
   const router = useRouter();
-  const searchParams = useSearchParams();
-
-  const handleBack = () => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.delete("userId");
-    router.replace(`?${params.toString()}`);
-  };
 
   return (
     <>
@@ -31,7 +24,7 @@ const BreadcrumbComp = ({ items, title }: BreadCrumbType) => {
               icon="solar:arrow-left-line-duotone"
               height={25}
               className="cursor-pointer"
-              onClick={handleBack}
+              onClick={() => router.back()}
             />
             <h6 className="text-base">{title}</h6>
           </div>

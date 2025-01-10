@@ -1,7 +1,7 @@
 "use client";
 
 import UserProfileApp from "@/app/components/apps/userprofile/profile";
-import BreadcrumbComp from "../../layout/shared/breadcrumb/BreadcrumbComp";
+import MyBreadcrumbComp from "../../layout/shared/breadcrumb/MyBreadcrumbComp";
 
 export default function UserProfileWrapper({
   user,
@@ -12,7 +12,7 @@ export default function UserProfileWrapper({
 }) {
   return (
     <>
-      <BreadcrumbComp title="User Profile" items={breadcrumbs} />
+      <MyBreadcrumbComp title="User Profile" items={breadcrumbs} />
       <UserProfileApp user={user} />
     </>
   );
