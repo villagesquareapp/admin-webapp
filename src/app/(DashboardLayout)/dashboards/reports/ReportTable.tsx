@@ -1,110 +1,140 @@
 "use client";
 
 import ReusableTable from "@/app/components/shared/ReusableTable";
+import { formatDate } from "@/utils/dateUtils";
 import { Icon } from "@iconify/react";
 import { IconDotsVertical } from "@tabler/icons-react";
 import { createColumnHelper } from "@tanstack/react-table";
 import { Dropdown } from "flowbite-react";
+import Image from "next/image";
 
 const ReportTable = ({
-  tickets,
+  reports,
   totalPages,
   currentPage,
   pageSize,
+  filterDropdowns,
 }: {
-  tickets: ITicketResponse | null;
+  reports: IReportResponse | null;
   totalPages: number;
   currentPage: number;
   pageSize: number;
+  filterDropdowns: any;
 }) => {
-  if (!tickets) return <div>No tickets found</div>;
-  const columnHelper = createColumnHelper<ITicket>();
+  if (!reports) return <div>No reports found</div>;
+  const columnHelper = createColumnHelper<IReport>();
 
   const columns = [
-    columnHelper.accessor("title", {
+    columnHelper.accessor("reason", {
+      cell: (info) => (
+        <p className="text-darklink dark:text-bodytext font-[500] text-sm">
+          {info.getValue() || "--"}
+        </p>
+      ),
+      header: () => <span>Reason</span>,
+    }),
+    columnHelper.accessor("report_type", {
       cell: (info) => (
         <p className="text-darklink dark:text-bodytext text-sm">{info.getValue() || "--"}</p>
       ),
-      header: () => <span>Title</span>,
+      header: () => <span>Type</span>,
     }),
-    columnHelper.accessor("description", {
+    columnHelper.accessor("report_service_type", {
       cell: (info) => (
         <p className="text-darklink dark:text-bodytext text-sm">{info.getValue() || "--"}</p>
       ),
-      header: () => <span>Description</span>,
+      header: () => <span>Service</span>,
     }),
-    columnHelper.accessor("status", {
+    columnHelper.accessor("reported_user.uuid", {
+      cell: (info) => (
+        <div className="flex gap-3 items-center">
+          <div className="relative size-12 rounded-full">
+            <Image
+              src={
+                info?.row?.original?.reported_user?.profile_picture ||
+                "/images/vs_images/vs-default-profile-pic.png"
+              }
+              alt="icon"
+              fill
+              className="rounded-full object-cover"
+            />
+          </div>
+
+          <p className="text-sm text-darklink dark:text-bodytext">
+            @{info.row.original.reported_user.username}
+          </p>
+        </div>
+      ),
+      header: () => <span>Reported User</span>,
+    }),
+    columnHelper.accessor("reporter.uuid", {
+      cell: (info) => (
+        <div className="flex gap-3 items-center">
+          <div className="relative size-12 rounded-full">
+            <Image
+              src={
+                info.row.original.reporter.profile_picture ||
+                "/images/vs_images/vs-default-profile-pic.png"
+              }
+              alt="icon"
+              fill
+              className="rounded-full object-cover"
+            />
+          </div>
+
+          <p className="text-sm text-darklink dark:text-bodytext">
+            @{info.row.original.reporter.username}
+          </p>
+        </div>
+      ),
+      header: () => <span>Reporter</span>,
+    }),
+    columnHelper.accessor("created_at", {
       cell: (info) => {
-        const status = info.getValue();
-        let statusColor = "";
-        let bgColor = "";
-
-        switch (status) {
-          case "open":
-            statusColor = "text-blue-600 dark:text-blue-400";
-            bgColor = "bg-blue-100/60 dark:bg-blue-900/30";
-            break;
-          case "in_progress":
-            statusColor = "text-yellow-600 dark:text-yellow-400";
-            bgColor = "bg-yellow-100/60 dark:bg-yellow-900/30";
-            break;
-          case "resolved":
-            statusColor = "text-green-600 dark:text-green-400";
-            bgColor = "bg-green-100/60 dark:bg-green-900/30";
-            break;
-          case "closed":
-            statusColor = "text-gray-600 dark:text-gray-400";
-            bgColor = "bg-gray-100/60 dark:bg-gray-900/30";
-            break;
-          default:
-            statusColor = "text-gray-600 dark:text-gray-400";
-            bgColor = "bg-gray-100/60 dark:bg-gray-900/30";
-        }
-
         return (
-          <span
-            className={`px-3 py-1 rounded-full text-xs font-medium ${statusColor} ${bgColor} capitalize`}
-          >
-            {status || "--"}
-          </span>
+          <p className="text-darklink dark:text-bodytext text-sm">
+            {formatDate(info.getValue())}
+          </p>
         );
       },
-      header: () => <span>Status</span>,
+      header: () => <span>Date Reported</span>,
     }),
-    columnHelper.accessor("actions", {
-      cell: () => (
-        <Dropdown
-          label=""
-          dismissOnClick={false}
-          renderTrigger={() => (
-            <span className="h-9 w-9 flex justify-center items-center rounded-full hover:bg-lightprimary hover:text-primary cursor-pointer">
-              <IconDotsVertical size={22} />
-            </span>
-          )}
-        >
-          {[
-            { icon: "solar:add-circle-outline", listtitle: "Add" },
-            { icon: "solar:pen-new-square-broken", listtitle: "Edit" },
-            { icon: "solar:trash-bin-minimalistic-outline", listtitle: "Delete" },
-          ].map((item, index) => (
-            <Dropdown.Item key={index} className="flex gap-3">
-              <Icon icon={item.icon} height={18} />
-              <span>{item.listtitle}</span>
-            </Dropdown.Item>
-          ))}
-        </Dropdown>
-      ),
-      header: () => <span></span>,
-    }),
+    // columnHelper.accessor("actions", {
+    //   cell: () => (
+    //     <Dropdown
+    //       label=""
+    //       dismissOnClick={false}
+    //       renderTrigger={() => (
+    //         <span className="h-9 w-9 flex justify-center items-center rounded-full hover:bg-lightprimary hover:text-primary cursor-pointer">
+    //           <IconDotsVertical size={22} />
+    //         </span>
+    //       )}
+    //     >
+    //       {[
+    //         { icon: "solar:add-circle-outline", listtitle: "Add" },
+    //         { icon: "solar:pen-new-square-broken", listtitle: "Edit" },
+    //         { icon: "solar:trash-bin-minimalistic-outline", listtitle: "Delete" },
+    //       ].map((item, index) => (
+    //         <Dropdown.Item key={index} className="flex gap-3">
+    //           <Icon icon={item.icon} height={18} />
+    //           <span>{item.listtitle}</span>
+    //         </Dropdown.Item>
+    //       ))}
+    //     </Dropdown>
+    //   ),
+    //   header: () => <span></span>,
+    // }),
   ];
   return (
     <div className="col-span-12">
       <ReusableTable
-        tableData={tickets?.data && Array.isArray(tickets?.data) ? tickets?.data : []}
+        tableData={reports?.data && Array.isArray(reports?.data) ? reports?.data : []}
         columns={columns}
         totalPages={totalPages}
         currentPage={currentPage}
         pageSize={pageSize}
+        filterDropdowns={filterDropdowns}
+        tableTitle="All Reports"
       />
     </div>
   );

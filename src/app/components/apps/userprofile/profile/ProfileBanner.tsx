@@ -1,18 +1,9 @@
-import React from "react";
-import {
-  TbBrandDribbble,
-  TbBrandFacebook,
-  TbBrandYoutube,
-  TbFileDescription,
-  TbUserCheck,
-  TbUserCircle,
-} from "react-icons/tb";
 import CardBox from "@/app/components/shared/CardBox";
 import Image from "next/image";
+import { TbFileDescription, TbUserCheck, TbUserCircle } from "react-icons/tb";
 import Banner from "/public/images/backgrounds/profilebg.jpg";
-import Link from "next/link";
-import { Button } from "flowbite-react";
-import ProfileTab from "./ProfileTab";
+import CheckBadgeIcon from "/public/images/svgs/vs-svgs/check-badge.svg";
+import PremiumIcon from "/public/images/svgs/vs-svgs/premium.svg";
 
 const ProfileBanner = ({ user }: { user: IUser | null }) => {
   return (
@@ -60,11 +51,19 @@ const ProfileBanner = ({ user }: { user: IUser | null }) => {
                     className="rounded-full object-cover z-10 border-4 border-white dark:border-darkborder"
                   />
                 </div>
-                <h5 className="text-lg mt-3">
-                  {user?.user_details?.profile?.name || "-No name-"}
-                </h5>
+                <div>
+                  <div className="flex items-center justify-center gap-1">
+                    <h5 className="text-base ">{user?.user_details?.profile?.name}</h5>
+                    {user?.user_details?.profile?.check_mark && (
+                      <Image src={CheckBadgeIcon} alt="premium" width={28} height={28} />
+                    )}
+                    {user?.user_details?.profile?.premium && (
+                      <Image src={PremiumIcon} alt="premium" width={18} height={18} />
+                    )}
+                  </div>
+                </div>
                 <p className="text-darklink">
-                  {user?.user_details?.profile?.username || "-No username-"}
+                  {user?.user_details?.profile?.username || "N/A"}
                 </p>
               </div>
             </div>

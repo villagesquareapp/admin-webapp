@@ -8,7 +8,7 @@ import { PiHeartFill } from "react-icons/pi";
 
 const SocialPostActionButtons = ({ post }: { post: IPosts }) => {
   return (
-    <div className="flex flex-row justify-between items-center px-4">
+    <div className="flex flex-row justify-between items-center mt-6 px-4">
       <div className="flex flex-row gap-x-7 items-center">
         <div className="flex flex-row gap-x-1 items-center">
           <PiHeartFill className={`size-6 cursor-pointer`} />

@@ -25,7 +25,7 @@ const UserTable = ({
   const handleRowClick = (user: IUser) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set("userId", user.user_details.profile.id);
-    router.push(`?${params.toString()}`);
+    router.replace(`?${params.toString()}`);
   };
 
   if (!users) return <div>No users found</div>;
@@ -50,17 +50,11 @@ const UserTable = ({
           <div className="truncat line-clamp-2 sm:max-w-56 flex flex-col">
             <div className="flex items-center gap-1">
               <h6 className="text-base">{info.row.original.user_details.profile.name}</h6>
-              {info.row.original.user_details.profile.checkmark && (
-                <Image src={CheckBadgeIcon} alt="premium" width={25} height={25} />
+              {info.row.original.user_details.profile.check_mark && (
+                <Image src={CheckBadgeIcon} alt="premium" width={28} height={28} />
               )}
               {info.row.original.user_details.profile.premium && (
-                <Image
-                  src={PremiumIcon}
-                  alt="premium"
-                  className="-ml-1.5"
-                  width={18}
-                  height={18}
-                />
+                <Image src={PremiumIcon} alt="premium" width={18} height={18} />
               )}
             </div>
             <p className="text-sm text-darklink dark:text-bodytext">

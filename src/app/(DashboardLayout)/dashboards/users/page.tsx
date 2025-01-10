@@ -1,11 +1,10 @@
 import { getUserStats, getUsers } from "@/app/api/user";
 import SmallCards from "@/app/components/dashboards/ecommerce/smallCards";
 import UserTable from "./UserTable";
+import UserProfileWrapper from "./UserProfileWrapper";
 import shape1 from "/public/images/shapes/danger-card-shape.png";
 import shape2 from "/public/images/shapes/secondary-card-shape.png";
 import shape3 from "/public/images/shapes/success-card-shape.png";
-import BreadcrumbComp from "../../layout/shared/breadcrumb/BreadcrumbComp";
-import UserProfileApp from "@/app/components/apps/userprofile/profile";
 
 const Page = async ({
   searchParams,
@@ -66,15 +65,6 @@ const Page = async ({
       shape: shape3,
       link: "",
     },
-
-    {
-      total: userStats?.data?.today_new_users || 0,
-      icon: "mdi:account-plus",
-      bgcolor: "primary",
-      title: "Today's New Users",
-      shape: shape3,
-      link: "",
-    },
   ];
 
   const BCrumb = [
@@ -94,10 +84,7 @@ const Page = async ({
   return (
     <>
       {userId ? (
-        <>
-          <BreadcrumbComp title="User Profile" items={BCrumb} />
-          <UserProfileApp user={selectedUser || null} />
-        </>
+        <UserProfileWrapper user={selectedUser || null} breadcrumbs={BCrumb} />
       ) : (
         <div className="grid grid-cols-12 gap-30">
           <div className="col-span-12">

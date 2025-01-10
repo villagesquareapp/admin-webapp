@@ -13,11 +13,19 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { Button, Dropdown } from "flowbite-react";
+import { Button, Dropdown, Select } from "flowbite-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import React from "react";
 import { HiOutlineDotsVertical } from "react-icons/hi";
 import CardBox from "./CardBox";
+
+// Add this interface for filter dropdowns
+interface FilterDropdown {
+  label: string;
+  key: string;
+  options: { value: string; label: string }[];
+  defaultValue?: string;
+}
 
 function ReusableTable({
   tableData,
@@ -28,6 +36,7 @@ function ReusableTable({
   dropdownItems,
   tableTitle,
   onRowClick,
+  filterDropdowns,
 }: {
   tableData: any[];
   columns: any[];
@@ -37,12 +46,42 @@ function ReusableTable({
   dropdownItems?: string[];
   tableTitle?: string;
   onRowClick?: (row: any) => void;
+  filterDropdowns?: FilterDropdown[];
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [data] = React.useState(() =>
     tableData && Array.isArray(tableData) ? [...tableData] : []
   );
+
+  // Add state for each filter
+  const [filterValues, setFilterValues] = React.useState<{ [key: string]: string }>({});
+
+  // Initialize filter values
+  React.useEffect(() => {
+    if (filterDropdowns) {
+      const initialValues: { [key: string]: string } = {};
+      filterDropdowns.forEach((filter) => {
+        initialValues[filter.label] = filter.defaultValue || "";
+      });
+      setFilterValues(initialValues);
+    }
+  }, [filterDropdowns]);
+
+  // Handle filter change
+  const handleFilterChange = (key: string, value: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+
+    if (value) {
+      params.set(key, value);
+    } else {
+      params.delete(key);
+    }
+
+    // Reset to first page when filter changes
+    params.set("page", "1");
+    router.push(`?${params.toString()}`);
+  };
 
   const table = useReactTable({
     data,
@@ -78,26 +117,62 @@ function ReusableTable({
   return (
     <>
       <CardBox className="border rounded-md md:rounded-3xl  shadow-md border-ld overflow-hidden">
-        {tableTitle && (
-          <div className="flex items-center justify-between">
-            <h5 className="card-title">{tableTitle}</h5>
-            <div>
-              <Dropdown
-                label=""
-                dismissOnClick={false}
-                renderTrigger={() => (
-                  <span className="h-9 w-9 flex justify-center items-center rounded-full hover:bg-lightprimary hover:text-primary cursor-pointer">
-                    <HiOutlineDotsVertical size={22} />
-                  </span>
-                )}
-              >
-                {dropdownItems?.map((items, index) => {
-                  return <Dropdown.Item key={index}>{items}</Dropdown.Item>;
-                })}
-              </Dropdown>
+        <div className="flex md:items-center md:justify-between mb-4">
+          <div className="flex items-center gap-4 w-full justify-between flex-col md:flex-row">
+            {tableTitle && <h5 className="card-title">{tableTitle}</h5>}
+            <div className="flex items-center gap-3 flex-col md:flex-row">
+              {/* Add the filter dropdowns */}
+              {filterDropdowns && (
+                <div className="flex items-center gap-3 flex-col md:flex-row">
+                  {filterDropdowns.map((filter, index) => (
+                    <div key={index} className="min-w-[200px]">
+                      <Select
+                        value={searchParams.get(filter.key) || ""}
+                        onChange={(e) => handleFilterChange(filter.key, e.target.value)}
+                        className="rounded-lg"
+                        theme={{
+                          field: {
+                            select: {
+                              base: "block w-full border disabled:cursor-not-allowed disabled:opacity-50 focus:ring-2 rounded-lg",
+                              colors: {
+                                gray: "bg-gray-50 border-gray-300 text-gray-900 focus:border-primary focus:ring-primary dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-primary dark:focus:ring-primary",
+                              },
+                            },
+                          },
+                        }}
+                      >
+                        {filter.options.map((option) => (
+                          <option key={option.value} value={option.value}>
+                            {option.label}
+                          </option>
+                        ))}
+                      </Select>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
+
+            {/* Move the existing dropdown to the right */}
+            {dropdownItems && (
+              <div>
+                <Dropdown
+                  label=""
+                  dismissOnClick={false}
+                  renderTrigger={() => (
+                    <span className="h-9 w-9 flex justify-center items-center rounded-full hover:bg-lightprimary hover:text-primary cursor-pointer">
+                      <HiOutlineDotsVertical size={22} />
+                    </span>
+                  )}
+                >
+                  {dropdownItems?.map((items, index) => {
+                    return <Dropdown.Item key={index}>{items}</Dropdown.Item>;
+                  })}
+                </Dropdown>
+              </div>
+            )}
           </div>
-        )}
+        </div>
 
         <div className="overflow-x-auto">
           <table className="min-w-full">

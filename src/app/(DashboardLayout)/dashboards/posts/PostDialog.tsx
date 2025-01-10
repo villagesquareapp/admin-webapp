@@ -46,6 +46,14 @@ const PostDialog = ({
     fetchPostDetails();
   }, [postId, isOpen]);
 
+  // Reset states when dialog closes
+  useEffect(() => {
+    if (!isOpen) {
+      setCurrentMediaIndex(0);
+      setPostDetails(null);
+    }
+  }, [isOpen]);
+
   if (!post) return null;
 
   const media = post.media || [];
@@ -111,119 +119,133 @@ const PostDialog = ({
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 h-[calc(100%-4rem)]">
-                <div className="grid overflow-y-auto col-span-1 w-full bg-white/60 dark:bg-darkgray">
-                  <div className="relative grid grid-cols-1 h-fit my-auto center place-self-center">
-                    {media.length > 1 && (
-                      <>
-                        <button
-                          onClick={handlePrevMedia}
-                          className="absolute left-4 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full bg-black/50 hover:bg-black/70 transition-colors"
-                        >
-                          <Icon
-                            icon="solar:arrow-left-linear"
-                            className="text-white"
-                            width={24}
-                            height={24}
-                          />
-                        </button>
-                        <button
-                          onClick={handleNextMedia}
-                          className="absolute right-4 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full bg-black/50 hover:bg-black/70 transition-colors"
-                        >
-                          <Icon
-                            icon="solar:arrow-right-linear"
-                            className="text-white"
-                            width={24}
-                            height={24}
-                          />
-                        </button>
-                      </>
-                    )}
-
-                    {media.length > 0 && (
-                      <div key={media[currentMediaIndex]?.url}>
-                        {media[currentMediaIndex]?.type === "image" && (
-                          <div className="w-full aspect-[4/5] relative rounded-xl overflow-hidden">
-                            <Image
-                              className="object-cover"
-                              src={media[currentMediaIndex]?.url || ""}
-                              alt="post"
-                              fill
-                              sizes="500px"
-                              quality={90}
-                              priority
-                            />
-                          </div>
-                        )}
-                        {media[currentMediaIndex]?.type === "video" && (
-                          <PostVideo
-                            src={media[currentMediaIndex]?.url || ""}
-                            showEchoButtons={false}
-                          />
-                        )}
-                      </div>
-                    )}
-
-                    {!media.length && (
-                      <div className="font-bold text-2xl p-6">
-                        <PostText text={displayPost.caption} />
-                      </div>
-                    )}
-
-                    {media.length > 1 && (
-                      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
-                        {media.map((_, index) => (
-                          <button
-                            key={index}
-                            onClick={() => setCurrentMediaIndex(index)}
-                            className={`w-2 h-2 rounded-full transition-colors ${
-                              index === currentMediaIndex ? "bg-white" : "bg-white/50"
-                            }`}
-                          />
-                        ))}
-                      </div>
-                    )}
+              {loading ? (
+                <div className="flex-1 flex items-center justify-center">
+                  <div className="text-center">
+                    <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]" />
+                    <p className="mt-4 text-gray-600 dark:text-gray-400">
+                      Loading post details...
+                    </p>
                   </div>
                 </div>
-                <div className="col-span-1 w-full h-full flex flex-col relative">
-                  <div className="sticky gap-y-4 bg-background z-10 border-b pt-4 pb-2">
-                    <PostHeader post={displayPost} />
-                    <PostText text={displayPost.caption} />
-                    <SocialPostActionButtons post={displayPost} />
-                  </div>
-                  <div className="h-[60dvh] max-h-[600px] overflow-y-auto">
-                    <div className="p-4 space-y-4">
-                      {postDetails?.post_details.comments.map((comment, index) => (
-                        <div key={index} className="space-y-2">
-                          <div className="flex items-center gap-2">
-                            <div className="relative w-8 h-8 rounded-full overflow-hidden">
+              ) : (
+                <div className="grid grid-cols-2 h-[calc(100%-4rem)]">
+                  <div className="grid overflow-y-auto col-span-1 w-full bg-white/60 dark:bg-darkgray">
+                    <div className="relative grid grid-cols-1 h-fit my-auto center place-self-center">
+                      {media.length > 1 && (
+                        <>
+                          <button
+                            onClick={handlePrevMedia}
+                            className="absolute left-4 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full bg-black/50 hover:bg-black/70 transition-colors"
+                          >
+                            <Icon
+                              icon="solar:arrow-left-linear"
+                              className="text-white"
+                              width={24}
+                              height={24}
+                            />
+                          </button>
+                          <button
+                            onClick={handleNextMedia}
+                            className="absolute right-4 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full bg-black/50 hover:bg-black/70 transition-colors"
+                          >
+                            <Icon
+                              icon="solar:arrow-right-linear"
+                              className="text-white"
+                              width={24}
+                              height={24}
+                            />
+                          </button>
+                        </>
+                      )}
+
+                      {media.length > 0 && (
+                        <div key={media[currentMediaIndex]?.url}>
+                          {media[currentMediaIndex]?.type === "image" && (
+                            <div className="w-full aspect-[4/5] relative rounded-xl overflow-hidden">
                               <Image
-                                src={comment.user.profile_picture}
-                                alt={comment.user.name}
-                                fill
                                 className="object-cover"
+                                src={media[currentMediaIndex]?.url || ""}
+                                alt="post"
+                                fill
+                                sizes="500px"
+                                quality={90}
+                                priority
                               />
                             </div>
-                            <span className="font-semibold">{comment.user.name}</span>
-                            <span className="text-sm text-gray-500">
-                              {formatDistanceToNow(new Date(comment.created_at), {
-                                addSuffix: true,
-                              })}
-                            </span>
-                          </div>
-                          <p className="text-sm pl-10">{comment.text}</p>
+                          )}
+                          {media[currentMediaIndex]?.type === "video" && (
+                            <PostVideo
+                              src={media[currentMediaIndex]?.url || ""}
+                              showEchoButtons={false}
+                            />
+                          )}
                         </div>
-                      ))}
-                      {!postDetails?.post_details?.comments?.length && (
-                        <div className="text-center text-gray-500 font-semibold mt-20">
-                          No comments yet!
+                      )}
+
+                      {!media.length && (
+                        <div className="font-bold text-2xl p-6">
+                          <PostText text={displayPost.caption} />
+                        </div>
+                      )}
+
+                      {media.length > 1 && (
+                        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+                          {media.map((_, index) => (
+                            <button
+                              key={index}
+                              onClick={() => setCurrentMediaIndex(index)}
+                              className={`w-2 h-2 rounded-full transition-colors ${
+                                index === currentMediaIndex ? "bg-white" : "bg-white/50"
+                              }`}
+                            />
+                          ))}
                         </div>
                       )}
                     </div>
                   </div>
+                  <div className="col-span-1 w-full h-full flex flex-col relative">
+                    <div className="sticky gap-y-4 bg-background z-10 border-b pt-4 pb-2">
+                      <div className="flex mb-6">
+                        <PostHeader post={displayPost} />
+                      </div>
+
+                      <PostText text={displayPost.caption} />
+                      <SocialPostActionButtons post={displayPost} />
+                    </div>
+                    <div className="h-[60dvh] max-h-[600px] overflow-y-auto">
+                      <div className="p-4 space-y-4">
+                        {postDetails?.post_details.comments.map((comment, index) => (
+                          <div key={index} className="space-y-2">
+                            <div className="flex items-center gap-2">
+                              <div className="relative w-8 h-8 rounded-full overflow-hidden">
+                                <Image
+                                  src={comment.user.profile_picture}
+                                  alt={comment.user.name}
+                                  fill
+                                  className="object-cover"
+                                />
+                              </div>
+                              <span className="font-semibold">{comment.user.name}</span>
+                              <span className="text-sm text-gray-500">
+                                {formatDistanceToNow(new Date(comment.created_at), {
+                                  addSuffix: true,
+                                })}
+                              </span>
+                            </div>
+                            <p className="text-sm pl-10">{comment.text}</p>
+                          </div>
+                        ))}
+                        {!postDetails?.post_details?.comments?.length && (
+                          <div className="text-center text-gray-500 font-semibold mt-20">
+                            No comments yet!
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              </div>
+              )}
             </DialogPanel>
           </div>
         </Dialog>

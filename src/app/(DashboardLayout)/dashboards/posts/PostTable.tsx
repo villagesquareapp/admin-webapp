@@ -30,11 +30,18 @@ const PostTable = ({
     setIsDialogOpen(true);
   };
 
+  const handleDialogClose = () => {
+    setIsDialogOpen(false);
+    setSelectedPost(null);
+  };
+
   const columns = [
     columnHelper.accessor("caption", {
       cell: (info) => (
         <div className="max-w-80">
-          <h6 className="text-base break-words whitespace-normal">{info.getValue() || 0}</h6>
+          <p className="font-[500] text-base break-words whitespace-normal">
+            {info.getValue() || 0}
+          </p>
         </div>
       ),
       header: () => <span>Caption</span>,
@@ -133,7 +140,7 @@ const PostTable = ({
       />
       <PostDialog
         isOpen={isDialogOpen}
-        setIsOpen={setIsDialogOpen}
+        setIsOpen={handleDialogClose}
         post={selectedPost}
         postId={selectedPost?.uuid}
       />
