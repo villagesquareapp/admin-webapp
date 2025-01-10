@@ -30,8 +30,6 @@ const Page = async ({
       getUsers(page, limit),
     ]);
 
-  console.log("USER STATS", userStats);
-
   const overviewData: IOverviewData[] = [
     {
       total: userStats?.data?.total_users || 0,

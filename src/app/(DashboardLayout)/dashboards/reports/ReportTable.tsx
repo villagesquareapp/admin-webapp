@@ -1,5 +1,6 @@
 "use client";
 
+import LoadingComponent from "@/app/components/shared/LoadingComponent";
 import ReusableTable from "@/app/components/shared/ReusableTable";
 import { formatDate } from "@/utils/dateUtils";
 import { Icon } from "@iconify/react";
@@ -21,7 +22,7 @@ const ReportTable = ({
   pageSize: number;
   filterDropdowns: any;
 }) => {
-  if (!reports) return <div>No reports found</div>;
+  if (!reports) return <LoadingComponent />;
   const columnHelper = createColumnHelper<IReport>();
 
   const columns = [
@@ -50,19 +51,19 @@ const ReportTable = ({
         <div className="flex gap-3 items-center">
           <div className="relative size-12 rounded-full">
             <Image
-              src={
-                info?.row?.original?.reported_user?.profile_picture ||
-                "/images/vs_images/vs-default-profile-pic.png"
-              }
+              src={info.row.original.reported_user.profile_picture}
               alt="icon"
               fill
               className="rounded-full object-cover"
             />
           </div>
 
-          <p className="text-sm text-darklink dark:text-bodytext">
-            @{info.row.original.reported_user.username}
-          </p>
+          <div className="truncat line-clamp-2 sm:max-w-56 flex flex-col">
+            <p className="font-medium">{info.row.original.reported_user.name}</p>
+            <p className="text-sm text-darklink dark:text-bodytext">
+              @{info.row.original.reported_user.username}
+            </p>
+          </div>
         </div>
       ),
       header: () => <span>Reported User</span>,
@@ -72,19 +73,19 @@ const ReportTable = ({
         <div className="flex gap-3 items-center">
           <div className="relative size-12 rounded-full">
             <Image
-              src={
-                info.row.original.reporter.profile_picture ||
-                "/images/vs_images/vs-default-profile-pic.png"
-              }
+              src={info.row.original.reporter.profile_picture}
               alt="icon"
               fill
               className="rounded-full object-cover"
             />
           </div>
 
-          <p className="text-sm text-darklink dark:text-bodytext">
-            @{info.row.original.reporter.username}
-          </p>
+          <div className="truncat line-clamp-2 sm:max-w-56 flex flex-col">
+            <p className="font-medium">{info.row.original.reporter.name}</p>
+            <p className="text-sm text-darklink dark:text-bodytext">
+              @{info.row.original.reporter.username}
+            </p>
+          </div>
         </div>
       ),
       header: () => <span>Reporter</span>,

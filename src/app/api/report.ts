@@ -32,6 +32,8 @@ export const getAllReports = async (
         params.append('type', type);
     }
 
+    console.log("THE PARAMS", params.toString())
+
     return await apiGet<IReportResponse>(
         `reports/service?${params.toString()}`,
         token

@@ -10,8 +10,8 @@ const Page = async ({
 }: {
   searchParams: { [key: string]: string | string[] | undefined };
 }) => {
-  const page = Number(searchParams.all_reports_page) || 1;
-  const limit = Number(searchParams.all_reports_limit) || 20;
+  const page = Number(searchParams.page) || 1;
+  const limit = Number(searchParams.limit) || 20;
   const service = searchParams.service?.toString();
   const type = searchParams.type?.toString();
 
@@ -45,8 +45,6 @@ const Page = async ({
     getReportStats(),
     getAllReports(page, limit, service, type),
   ]);
-
-  console.log("reports:", reports?.data?.data[0]);
 
   const overviewData: IOverviewData[] = [
     {

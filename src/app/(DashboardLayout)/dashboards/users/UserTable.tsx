@@ -47,7 +47,7 @@ const UserTable = ({
             />
           </div>
 
-          <div className="truncat line-clamp-2 sm:max-w-56 flex flex-col">
+          <div className="sm:max-w-56 flex flex-col">
             <div className="flex items-center gap-1">
               <h6 className="text-base">{info.row.original.user_details.profile.name}</h6>
               {info.row.original.user_details.profile.check_mark && (

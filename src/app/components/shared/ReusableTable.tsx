@@ -50,9 +50,6 @@ function ReusableTable({
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [data] = React.useState(() =>
-    tableData && Array.isArray(tableData) ? [...tableData] : []
-  );
 
   // Add state for each filter
   const [filterValues, setFilterValues] = React.useState<{ [key: string]: string }>({});
@@ -80,11 +77,15 @@ function ReusableTable({
 
     // Reset to first page when filter changes
     params.set("page", "1");
-    router.push(`?${params.toString()}`);
+
+    // Use router.replace instead of push
+    router.replace(`?${params.toString()}`, {
+      scroll: false,
+    });
   };
 
   const table = useReactTable({
-    data,
+    data: tableData,
     columns,
     filterFns: {},
     state: {
@@ -104,14 +105,20 @@ function ReusableTable({
     const params = new URLSearchParams(searchParams.toString());
     params.set("page", String(newPage));
     params.set("limit", String(pageSize));
-    router.push(`?${params.toString()}`);
+
+    router.replace(`?${params.toString()}`, {
+      scroll: false,
+    });
   };
 
   const handlePageSizeChange = (newPageSize: number) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set("page", "1");
     params.set("limit", String(newPageSize));
-    router.push(`?${params.toString()}`);
+
+    router.replace(`?${params.toString()}`, {
+      scroll: false,
+    });
   };
 
   return (
@@ -225,7 +232,7 @@ function ReusableTable({
         </div>
         <div className="sm:flex gap-2 p-3 items-center justify-between">
           <div className="flex items-center gap-2">
-            <h1 className="text-gray-700">{data.length} Rows</h1>
+            <h1 className="text-gray-700">{tableData.length} Rows</h1>
           </div>
           <div className="sm:flex items-center gap-2">
             <div className="flex">
