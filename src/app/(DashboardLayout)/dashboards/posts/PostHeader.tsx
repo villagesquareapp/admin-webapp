@@ -44,7 +44,7 @@ const PostHeader = ({
           alt={post?.user?.name || ""}
           width={35}
           height={35}
-          className="size-12 border-foreground rounded-full border-[1.5px]"
+          className="size-12 border-foreground rounded-full border-[1.5px] "
         />
         <div className="flex flex-col gap-y-1">
           <span className="flex flex-row gap-x-2 items-center">

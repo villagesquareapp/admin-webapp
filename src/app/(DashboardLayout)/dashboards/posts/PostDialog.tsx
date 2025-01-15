@@ -107,7 +107,7 @@ const PostDialog = ({
               exit={{ opacity: 0, scale: 0.95 }}
               className="w-full max-w-[1100px] flex flex-col h-[95dvh] max-h-[850px] overflow-hidden p-0 gap-0 rounded-lg bg-white dark:bg-darkgray shadow-md dark:dark-shadow-md"
             >
-              <div className="sticky top-0 bg-background border-b z-50 m-0 h-16 p-0">
+              <div className="sticky top-0 bg-background border-b dark:border-gray-600 z-50 m-0 h-16 p-0">
                 <div className="flex items-center justify-between px-6 py-3">
                   <DialogTitle className="text-center flex-1 m-0">Post Details</DialogTitle>
                   <Button
@@ -205,7 +205,7 @@ const PostDialog = ({
                     </div>
                   </div>
                   <div className="col-span-1 w-full h-full flex flex-col relative">
-                    <div className="sticky gap-y-4 bg-background z-10 border-b pt-4 pb-2">
+                    <div className="sticky gap-y-4 bg-background z-10 border-b dark:border-gray-600 pt-4 pb-2">
                       <div className="flex mb-6">
                         <PostHeader post={displayPost} />
                       </div>

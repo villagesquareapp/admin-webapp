@@ -70,9 +70,24 @@ const LivestreamTable = ({
       header: () => <span>Gifts</span>,
     }),
     columnHelper.accessor("duration", {
-      cell: (info) => (
-        <p className="text-darklink dark:text-bodytext text-sm">{info.getValue() || 0}</p>
-      ),
+      cell: (info) => {
+        const minutes = info.getValue() || 0;
+        const hours = Math.floor(minutes / 60);
+        const remainingMinutes = minutes % 60;
+
+        let formattedDuration = "";
+
+        if (hours > 0) {
+          formattedDuration += `${hours}${hours === 1 ? "hr" : "hrs"}`;
+          if (remainingMinutes > 0) {
+            formattedDuration += ` ${remainingMinutes}min`;
+          }
+        } else {
+          formattedDuration = `${minutes}min`;
+        }
+
+        return <p className="text-darklink dark:text-bodytext text-sm">{formattedDuration}</p>;
+      },
       header: () => <span>Duration</span>,
     }),
     columnHelper.accessor("created_at", {

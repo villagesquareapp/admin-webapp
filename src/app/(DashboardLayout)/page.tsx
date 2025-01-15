@@ -37,7 +37,7 @@ const Page = async ({
       bgcolor: "secondary",
       title: "Total Users",
       shape: shape1,
-      link: "/dashboard/users",
+      link: "/dashboards/users",
     },
     {
       total: postStats?.data?.total_posts || 0,
@@ -45,7 +45,7 @@ const Page = async ({
       bgcolor: "success",
       title: "Total Posts",
       shape: shape2,
-      link: "/dashboard/posts",
+      link: "/dashboards/posts",
     },
     {
       total: marketSquareStats?.data?.total_products || 0,
@@ -53,7 +53,7 @@ const Page = async ({
       bgcolor: "primary",
       title: "Total Market Squares",
       shape: shape3,
-      link: "/dashboard/markets",
+      link: "/dashboards/markets",
     },
     {
       total: liveStreamStats?.data?.total_livestreams || 0,
@@ -61,7 +61,7 @@ const Page = async ({
       bgcolor: "info",
       title: "Total Live Streams",
       shape: shape4,
-      link: "/dashboard/livestreams",
+      link: "/dashboards/livestreams",
     },
     {
       total: echoStats?.data?.total_echoes || 0,
@@ -69,7 +69,7 @@ const Page = async ({
       bgcolor: "warning",
       title: "Total Echoes",
       shape: shape5,
-      link: "/dashboard/echoes",
+      link: "/dashboards/echoes",
     },
   ];
 
