@@ -1,12 +1,10 @@
 "use client";
 
 import ReusableTable from "@/app/components/shared/ReusableTable";
+import { DetailComp, UserDetailsComp } from "@/app/components/shared/TableSnippets";
 import { formatDate } from "@/utils/dateUtils";
 import { createColumnHelper } from "@tanstack/react-table";
-import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
-import PremiumIcon from "/public/images/svgs/vs-svgs/premium.svg";
-import CheckBadgeIcon from "/public/images/svgs/vs-svgs/check-badge.svg";
 
 const UserTable = ({
   users,
@@ -34,42 +32,24 @@ const UserTable = ({
   const columns = [
     columnHelper.accessor("user_details.profile.id", {
       cell: (info) => (
-        <div className="flex gap-3 items-center">
-          <div className="relative size-12 rounded-full">
-            {!info.row.original.user_details.profile.last_online && (
-              <div className="size-3 rounded-full bg-green-500 absolute bottom-0 right-1 z-10"></div>
-            )}
-            <Image
-              src={info.row.original.user_details.profile.profile_picture}
-              alt="icon"
-              fill
-              className="rounded-full object-cover"
-            />
-          </div>
-
-          <div className="sm:max-w-56 flex flex-col">
-            <div className="flex items-center gap-1">
-              <h6 className="text-base">{info.row.original.user_details.profile.name}</h6>
-              {info.row.original.user_details.profile.check_mark && (
-                <Image src={CheckBadgeIcon} alt="premium" width={28} height={28} />
-              )}
-              {info.row.original.user_details.profile.premium && (
-                <Image src={PremiumIcon} alt="premium" width={18} height={18} />
-              )}
-            </div>
-            <p className="text-sm text-darklink dark:text-bodytext">
-              @{info.row.original.user_details.profile.username}
-            </p>
-          </div>
-        </div>
+        <UserDetailsComp
+          user={{
+            name: info.row.original.user_details.profile.name,
+            username: info.row.original.user_details.profile.username,
+            email: info.row.original.user_details.profile.email,
+            last_online: info.row.original.user_details.profile.last_online,
+            profile_picture: info.row.original.user_details.profile.profile_picture,
+            premium: info.row.original.user_details.profile.premium,
+            check_mark: info.row.original.user_details.profile.check_mark,
+          }}
+          showPremiumAndCheckMark
+          showActive
+        />
       ),
       header: () => <span>Name</span>,
     }),
     columnHelper.accessor("user_details.profile.email", {
-      cell: (info) => (
-        <p className="text-darklink dark:text-bodytext text-sm">{info.getValue() || "-"}</p>
-      ),
-      header: () => <span>Email Address</span>,
+      cell: (info) => <DetailComp detail={info.getValue()} />,
     }),
     columnHelper.accessor("user_details.posts", {
       cell: (info) => (

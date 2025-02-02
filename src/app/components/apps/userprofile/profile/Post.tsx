@@ -12,13 +12,13 @@ const Post = () => {
         <div className="col-span-12">
           <PostBox />
         </div>
-        {/* {posts.map((posts: any) => {
+        {posts.map((posts: any) => {
           return (
             <div className="col-span-12" key={posts.id}>
               <PostIem post={posts} />
             </div>
           );
-        })} */}
+        })}
       </div>
     </>
   );

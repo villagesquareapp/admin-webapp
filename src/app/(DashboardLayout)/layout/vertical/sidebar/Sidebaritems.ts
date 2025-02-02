@@ -83,6 +83,18 @@ const SidebarContent: MenuItem[] = [
             id: uniqueId(),
             url: "/dashboards/reports",
           },
+          {
+            name: "Gift",
+            icon: "solar:gift-line-duotone",
+            id: uniqueId(),
+            url: "/dashboards/gifts",
+          },
+          {
+            name: "Settings",
+            icon: "solar:settings-line-duotone",
+            id: uniqueId(),
+            url: "/dashboards/settings",
+          },
           // @Remove from here
           // {
           //   name: "Front Pages",

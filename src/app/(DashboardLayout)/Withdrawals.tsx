@@ -1,6 +1,8 @@
 "use client";
 import { Button, Dropdown } from "flowbite-react";
 import { HiOutlineDotsVertical } from "react-icons/hi";
+import { IoMdCheckmark } from "react-icons/io";
+import { LiaTimesSolid } from "react-icons/lia";
 import CardBox from "../components/shared/CardBox";
 
 import Image from "next/image";
@@ -75,12 +77,18 @@ const Withdrawals = () => {
           {RecentTransData.map((item, index) => (
             <div className="flex gap-3 items-center" key={index}>
               <div
-                className={`h-10 w-10 rounded-full flex justify-center items-center relative bg-light${item.bgcolor} dark:bg-dark${item.bgcolor}`}
+                className={`h-10 w-10 shrink-0 rounded-full flex justify-center items-center relative bg-light${item.bgcolor} dark:bg-dark${item.bgcolor}`}
               >
                 <Image src={item.img} fill alt="icon" className="h-6 w-6 rounded-full" />
               </div>
               <h5 className="text-base">{item.name}</h5>
               <div className={`ms-auto font-medium text-ld ${item.disable}`}>{item.rank}</div>
+              <Button color={"red"} className="!size-8 w-fit text-xs">
+                <LiaTimesSolid size={16} />
+              </Button>
+              <Button color={"success"} className=" !size-8 w-fit text-xs">
+                <IoMdCheckmark size={16} />
+              </Button>
             </div>
           ))}
         </div>

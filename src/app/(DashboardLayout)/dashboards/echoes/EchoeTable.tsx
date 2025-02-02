@@ -4,9 +4,13 @@ import ReusableTable from "@/app/components/shared/ReusableTable";
 import { Icon } from "@iconify/react";
 import { IconDotsVertical } from "@tabler/icons-react";
 import { createColumnHelper } from "@tanstack/react-table";
-import { Dropdown } from "flowbite-react";
+import { Button, Dropdown } from "flowbite-react";
 import Image from "next/image";
 import { formatDate } from "@/utils/dateUtils";
+import { DetailComp } from "@/app/components/shared/TableSnippets";
+import { FaPlus } from "react-icons/fa";
+import CategoryDialog from "@/app/components/shared/CategoryDialog";
+import { useState } from "react";
 
 const EchoeTable = ({
   echoes,
@@ -19,6 +23,8 @@ const EchoeTable = ({
   currentPage: number;
   pageSize: number;
 }) => {
+  const [isOpen, setIsOpen] = useState(false);
+
   if (!echoes) return <div>No echoes found</div>;
   const columnHelper = createColumnHelper<IEchoes>();
 
@@ -46,14 +52,7 @@ const EchoeTable = ({
       header: () => <span>Host</span>,
     }),
     columnHelper.accessor("title", {
-      cell: (info) => (
-        <div className="max-w-80">
-          <p className="text-darklink dark:text-bodytext text-sm truncate">
-            {info.getValue() || "-"}
-          </p>
-        </div>
-      ),
-      header: () => <span>Title</span>,
+      cell: (info) => <DetailComp detail={info.getValue()} />,
     }),
     columnHelper.accessor("category.name", {
       cell: (info) => (
@@ -155,7 +154,13 @@ const EchoeTable = ({
         totalPages={totalPages}
         currentPage={currentPage}
         pageSize={pageSize}
+        extraButtons={
+          <Button onClick={() => setIsOpen(true)} className="justify-self-end">
+            <FaPlus /> Add Category
+          </Button>
+        }
       />
+      <CategoryDialog isOpen={isOpen} setIsOpen={setIsOpen} />
     </div>
   );
 };

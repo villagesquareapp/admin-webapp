@@ -2,11 +2,9 @@
 
 import LoadingComponent from "@/app/components/shared/LoadingComponent";
 import ReusableTable from "@/app/components/shared/ReusableTable";
+import { UserDetailsComp } from "@/app/components/shared/TableSnippets";
 import { formatDate } from "@/utils/dateUtils";
-import { Icon } from "@iconify/react";
-import { IconDotsVertical } from "@tabler/icons-react";
 import { createColumnHelper } from "@tanstack/react-table";
-import { Dropdown } from "flowbite-react";
 import Image from "next/image";
 
 const ReportTable = ({
@@ -48,23 +46,15 @@ const ReportTable = ({
     }),
     columnHelper.accessor("reported_user.uuid", {
       cell: (info) => (
-        <div className="flex gap-3 items-center">
-          <div className="relative size-12 rounded-full">
-            <Image
-              src={info.row.original.reported_user.profile_picture}
-              alt="icon"
-              fill
-              className="rounded-full object-cover"
-            />
-          </div>
-
-          <div className="truncat line-clamp-2 sm:max-w-56 flex flex-col">
-            <p className="font-medium">{info.row.original.reported_user.name}</p>
-            <p className="text-sm text-darklink dark:text-bodytext">
-              @{info.row.original.reported_user.username}
-            </p>
-          </div>
-        </div>
+        <UserDetailsComp
+          user={{
+            name: info.row.original.reported_user.name,
+            username: info.row.original.reported_user.username,
+            email: info.row.original.reported_user.email,
+            last_online: info.row.original.reported_user.last_online,
+            profile_picture: info.row.original.reported_user.profile_picture,
+          }}
+        />
       ),
       header: () => <span>Reported User</span>,
     }),

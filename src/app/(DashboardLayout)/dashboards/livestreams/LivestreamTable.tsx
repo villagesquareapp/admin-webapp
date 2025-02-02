@@ -7,6 +7,7 @@ import { createColumnHelper } from "@tanstack/react-table";
 import { Dropdown } from "flowbite-react";
 import Image from "next/image";
 import { formatDate } from "@/utils/dateUtils";
+import { UserDetailsComp } from "@/app/components/shared/TableSnippets";
 
 const LivestreamTable = ({
   livestreams,
@@ -25,23 +26,15 @@ const LivestreamTable = ({
   const columns = [
     columnHelper.accessor("host.profile_picture", {
       cell: (info) => (
-        <div className="flex gap-3 items-center">
-          <div className="relative size-12 rounded-full">
-            <Image
-              src={info.getValue()}
-              alt="icon"
-              fill
-              className="rounded-full object-cover"
-            />
-          </div>
-
-          <div className="truncat line-clamp-2 sm:max-w-56 flex flex-col">
-            <h6 className="text-base">{info.row.original.host.name}</h6>
-            <p className="text-sm text-darklink dark:text-bodytext">
-              @{info.row.original.host.username}
-            </p>
-          </div>
-        </div>
+        <UserDetailsComp
+          user={{
+            name: info.row.original.host.name,
+            username: info.row.original.host.username,
+            email: info.row.original.host.email,
+            last_online: info.row.original.host.last_online,
+            profile_picture: info.row.original.host.profile_picture,
+          }}
+        />
       ),
       header: () => <span>Host</span>,
     }),
@@ -59,9 +52,22 @@ const LivestreamTable = ({
     }),
     columnHelper.accessor("users", {
       cell: (info) => (
-        <p className="text-darklink dark:text-bodytext text-sm">{info.getValue() || 0}</p>
+        <div className="flex flex-col gap-1">
+          <div className="flex items-center gap-2">
+            <Icon icon="heroicons:user-group" className="text-gray-500" width={16} />
+            <p className="text-darklink dark:text-bodytext text-sm">
+              <span className="font-medium">20</span> Speakers
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <Icon icon="heroicons:users" className="text-gray-500" width={16} />
+            <p className="text-darklink dark:text-bodytext text-sm">
+              <span className="font-medium">100</span> Listeners
+            </p>
+          </div>
+        </div>
       ),
-      header: () => <span>Streamers</span>,
+      header: () => <span>Participants</span>,
     }),
     columnHelper.accessor("gifts", {
       cell: (info) => (

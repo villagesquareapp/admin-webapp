@@ -37,6 +37,7 @@ function ReusableTable({
   tableTitle,
   onRowClick,
   filterDropdowns,
+  extraButtons,
 }: {
   tableData: any[];
   columns: any[];
@@ -45,6 +46,7 @@ function ReusableTable({
   pageSize?: number;
   dropdownItems?: string[];
   tableTitle?: string;
+  extraButtons?: React.ReactNode;
   onRowClick?: (row: any) => void;
   filterDropdowns?: FilterDropdown[];
 }) {
@@ -121,17 +123,13 @@ function ReusableTable({
     });
   };
 
-  console.log("PAGE I GOT", currentPage);
-  console.log("PAGE SIZE I GOT", pageSize);
-  console.log("SEARCH PARAMS I GOT", searchParams);
-
   return (
     <>
       <CardBox className="border rounded-md md:rounded-3xl  shadow-md border-ld overflow-hidden">
         <div className="flex md:items-center md:justify-between mb-4">
           <div className="flex items-center gap-4 w-full justify-between flex-col md:flex-row">
             {tableTitle && <h5 className="card-title">{tableTitle}</h5>}
-            <div className="flex items-center gap-3 flex-col md:flex-row">
+            <div className="flex items-center gap-3 flex-col md:flex-row ml-auto justify-end">
               {/* Add the filter dropdowns */}
               {filterDropdowns && (
                 <div className="flex items-center gap-3 flex-col md:flex-row">
@@ -162,6 +160,7 @@ function ReusableTable({
                   ))}
                 </div>
               )}
+              {extraButtons}
             </div>
 
             {/* Move the existing dropdown to the right */}

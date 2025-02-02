@@ -15,6 +15,16 @@ interface IUser {
     email: string
 }
 
+interface IUserTableDetails {
+    profile_picture: string
+    name: string
+    username: string
+    email: string
+    last_online?: string | null
+    premium?: boolean
+    check_mark?: boolean
+}
+
 interface IAuthResponse {
     accessToken: string
     user: IUser

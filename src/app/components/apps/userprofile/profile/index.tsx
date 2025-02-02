@@ -34,9 +34,9 @@ const UserProfileApp = ({ user }: UserProfileAppProps) => {
               </div> */}
             </div>
           </div>
-          {/* <div className="lg:col-span-8 col-span-12">
+          <div className="lg:col-span-8 col-span-12">
             <Post />
-          </div> */}
+          </div>
         </div>
       </UserDataProvider>
     </>

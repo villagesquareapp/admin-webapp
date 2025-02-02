@@ -20,7 +20,7 @@ const Page = async ({
       label: "Service Type",
       key: "service",
       options: [
-        { value: "", label: "All" },
+        { value: "", label: "All Services" },
         { value: "post", label: "Post" },
         { value: "echo", label: "Echo" },
         { value: "livestream", label: "Live Stream" },
@@ -32,7 +32,7 @@ const Page = async ({
       label: "Report Type",
       key: "type",
       options: [
-        { value: "", label: "All" },
+        { value: "", label: "All Report Types" },
         { value: "spam", label: "Spam" },
         { value: "nudity", label: "Nudity" },
         { value: "parody", label: "Parody" },
@@ -104,6 +104,8 @@ const Page = async ({
       link: "",
     },
   ];
+
+  console.log("reports?.data:", reports?.data);
 
   return (
     <>

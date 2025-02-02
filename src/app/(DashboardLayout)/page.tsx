@@ -100,7 +100,7 @@ const Page = async ({
           <AnnualProfit />
         </div> */}
         {/* @Remove to here */}
-        {/* <div className="lg:col-span-8 col-span-12">
+        <div className="lg:col-span-8 col-span-12">
           <PendingVerifications
             users={users?.data || null}
             totalPages={users?.data?.last_page || 1}
@@ -110,7 +110,7 @@ const Page = async ({
         </div>
         <div className="lg:col-span-4 col-span-12">
           <Withdrawals />
-        </div> */}
+        </div>
       </div>
     </>
   );
