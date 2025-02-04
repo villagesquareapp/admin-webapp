@@ -114,7 +114,7 @@ const PendingVerifications = ({
         currentPage={currentPage}
         pageSize={pageSize}
         tableTitle="Pending Verifications"
-        dropdownItems={["Action", "Another action", "Something else"]}
+        // dropdownItems={["Action", "Another action", "Something else"]}
         onRowClick={handleRowClick}
       />
       <PendingVerificationDialog isOpen={isDialogOpen} setIsOpen={setIsDialogOpen} />

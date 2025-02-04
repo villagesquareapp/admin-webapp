@@ -13,8 +13,7 @@ export const getTicketStats = async () => {
 
 export const getTickets = async (page: number = 1, limit: number = 20) => {
     const token = await getToken()
-    // return await apiGet<ITicketsResponse>(
-    return await apiGet<any>(
+    return await apiGet<ITicketResponse>(
         `tickets?page=${page}&limit=${limit}`,
         token
     );

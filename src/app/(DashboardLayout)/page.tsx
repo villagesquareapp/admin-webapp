@@ -3,6 +3,7 @@ import { getLivestreamStats } from "../api/livestream";
 import { getMarketSquareStats } from "../api/market-square";
 import { getPostStats } from "../api/post";
 import { getUsers, getUserStats } from "../api/user";
+import { getPendingWithdrawals } from "../api/wallet";
 import SmallCards from "../components/dashboards/ecommerce/smallCards";
 import PendingVerifications from "./PendingVerifications";
 import Withdrawals from "./Withdrawals";
@@ -17,18 +18,29 @@ const Page = async ({
 }: {
   searchParams: { [key: string]: string | string[] | undefined };
 }) => {
+  const selectedWithdrawalID = searchParams.withdrawal as string;
   const page = Number(searchParams.page) || 1;
   const limit = Number(searchParams.limit) || 20;
+  const pWLimit = Number(searchParams.pWLimit) || 5;
+  const pWPage = Number(searchParams.pWPage) || 1;
 
-  const [userStats, postStats, marketSquareStats, liveStreamStats, echoStats, users] =
-    await Promise.all([
-      getUserStats(),
-      getPostStats(),
-      getMarketSquareStats(),
-      getLivestreamStats(),
-      getEchoStats(),
-      getUsers(page, limit),
-    ]);
+  const [
+    userStats,
+    postStats,
+    marketSquareStats,
+    liveStreamStats,
+    echoStats,
+    users,
+    pendingWithdrawals,
+  ] = await Promise.all([
+    getUserStats(),
+    getPostStats(),
+    getMarketSquareStats(),
+    getLivestreamStats(),
+    getEchoStats(),
+    getUsers(page, limit),
+    getPendingWithdrawals(pWPage, pWLimit),
+  ]);
 
   const overviewData: IOverviewData[] = [
     {
@@ -109,7 +121,13 @@ const Page = async ({
           />
         </div>
         <div className="lg:col-span-4 col-span-12">
-          <Withdrawals />
+          <Withdrawals
+            selectedWithdrawalID={selectedWithdrawalID}
+            withdrawals={pendingWithdrawals?.data || null}
+            totalPages={pendingWithdrawals?.data?.last_page || 1}
+            currentPage={pWPage}
+            pageSize={pWLimit}
+          />
         </div>
       </div>
     </>

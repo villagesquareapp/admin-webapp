@@ -460,3 +460,61 @@ interface IReport {
 }
 
 interface IReportResponse extends IPaginatedResponse<IReport[]> { }
+
+interface IWithdrawalUser {
+    uuid: string,
+    name: string,
+    username: string,
+    email: string,
+    registration_type: string,
+    account_type: string,
+    phone_number: string | null,
+    profile_picture: string,
+    cover_photo: string | null,
+    gender: string | null,
+    dob: string | null,
+    country: string | null,
+    city: string | null,
+    profession: string | null,
+    bio: string | null,
+    timezone: string,
+    verified_status: number,
+    online: boolean,
+    last_online: string | null,
+    is_private: boolean,
+    has_two_factor_auth: boolean,
+    status: string,
+    address: string | null,
+    latitude: string | null,
+    longitude: string | null,
+    referrer: string | null,
+    referral_code: string,
+    referral_count: number,
+    can_reset_password: boolean,
+    checkmark_verification_status: boolean,
+    premium_verification_status: boolean,
+    created_at: string,
+    updated_at: string,
+    deleted_at: string | null
+}
+
+interface IPendingWithdrawals {
+    uuid: string,
+    amount: string,
+    currency_id: string,
+    user_id: string,
+    wallet_id: string,
+    transaction_type: string,
+    transaction_category: string,
+    transaction_status: string,
+    transaction_fee: 'pending' | 'success' | 'declined',
+    description: string,
+    transaction_id: string,
+    payment_method: string,
+    created_at: string,
+    updated_at: string,
+    deleted_at: string | null,
+    user: IWithdrawalUser
+}
+
+interface IPendingWithdrawalsResponse extends IPaginatedResponse<IPendingWithdrawals[]> { }

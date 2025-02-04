@@ -16,7 +16,7 @@ export async function apiPost<T>(route: string, body: any, token?: string, optio
         body: JSON.stringify(body),
     })
 
-    // await revalidatePathClient(route)
+    await revalidatePathClient(route)
     return response
 }
 
