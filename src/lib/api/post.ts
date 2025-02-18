@@ -1,5 +1,4 @@
-import { baseApiCall, ApiResponse } from './base'
-import { revalidatePathClient } from '../revalidate'
+import { ApiResponse, baseApiCall } from './base'
 
 export async function apiPost<T>(route: string, body: any, token?: string, options?: RequestInit): Promise<ApiResponse<T>> {
     let headers: HeadersInit = {}
@@ -16,7 +15,7 @@ export async function apiPost<T>(route: string, body: any, token?: string, optio
         body: JSON.stringify(body),
     })
 
-    await revalidatePathClient(route)
+    // await revalidatePathClient(route)
     return response
 }
 

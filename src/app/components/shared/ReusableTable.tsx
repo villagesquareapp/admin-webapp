@@ -263,10 +263,10 @@ function ReusableTable({
               onChange={(e) => {
                 handlePageSizeChange(Number(e.target.value));
               }}
-              className="border w-20"
+              className="border w-24 h-10 rounded-md bg-gray-100 dark:bg-gray-800"
             >
               {[10, 15, 20, 25].map((size) => (
-                <option key={size} value={size}>
+                <option key={size} value={size} className="bg-gray-100 dark:bg-gray-800">
                   {size}
                 </option>
               ))}

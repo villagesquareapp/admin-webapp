@@ -50,6 +50,7 @@ const UserTable = ({
     }),
     columnHelper.accessor("user_details.profile.email", {
       cell: (info) => <DetailComp detail={info.getValue()} />,
+      header: () => <span>Email</span>,
     }),
     columnHelper.accessor("user_details.posts", {
       cell: (info) => (

@@ -85,9 +85,8 @@ const AuthLogin = () => {
               type={showPassword ? "text" : "password"}
               sizing="md"
               {...form.register("password")}
-              className={`form-control ${
-                form.formState.errors.password ? "border-red-500" : ""
-              }`}
+              className={`form-control ${form.formState.errors.password ? "border-red-500" : ""
+                }`}
             />
             <button
               type="button"

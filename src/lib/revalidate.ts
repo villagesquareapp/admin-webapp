@@ -1,4 +1,7 @@
+'use server'
+
 import { revalidatePath } from 'next/cache'
+import { headers } from 'next/headers'
 
 export async function revalidatePathClient(path: string) {
     try {
@@ -15,5 +18,15 @@ export async function revalidatePathClient(path: string) {
 
 export async function revalidatePathServer(path: string) {
     revalidatePath(path)
+}
+
+export async function revalidateCurrentPath() {
+    const headersList = headers()
+    const pathname = headersList.get('x-pathname') || '/'
+    revalidatePath(pathname)
+    // Also revalidate the root path if we're not on it
+    if (pathname !== '/') {
+        revalidatePath('/')
+    }
 }
 

@@ -21,8 +21,8 @@ const Page = async ({
   const selectedWithdrawalID = searchParams.withdrawal as string;
   const page = Number(searchParams.page) || 1;
   const limit = Number(searchParams.limit) || 20;
-  const pWLimit = Number(searchParams.pWLimit) || 5;
-  const pWPage = Number(searchParams.pWPage) || 1;
+  const pWLimit = Number(searchParams.pwLimit) || 10;
+  const pWPage = Number(searchParams.pwPage) || 1;
 
   const [
     userStats,
@@ -112,7 +112,7 @@ const Page = async ({
           <AnnualProfit />
         </div> */}
         {/* @Remove to here */}
-        <div className="lg:col-span-8 col-span-12">
+        <div className="lg:col-span-7 col-span-12">
           <PendingVerifications
             users={users?.data || null}
             totalPages={users?.data?.last_page || 1}
@@ -120,7 +120,7 @@ const Page = async ({
             pageSize={limit}
           />
         </div>
-        <div className="lg:col-span-4 col-span-12">
+        <div className="lg:col-span-5 col-span-12">
           <Withdrawals
             selectedWithdrawalID={selectedWithdrawalID}
             withdrawals={pendingWithdrawals?.data || null}
