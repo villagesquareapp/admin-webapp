@@ -161,24 +161,19 @@ const Withdrawals = ({
   };
 
   const handleApproveWithdrawal = async () => {
-    if (!selectedWithdrawal?.transaction_id) return;
+    if (!selectedWithdrawal?.uuid) return;
 
     try {
       setIsApproving(true);
-      const response = await approveWithdrawal(selectedWithdrawal.transaction_id);
+      const response = await approveWithdrawal(selectedWithdrawal.uuid);
       if (response?.status) {
-        // Update the local state to reflect the change
+        // Remove the approved withdrawal from the list
         setLocalWithdrawals((prevWithdrawals) =>
-          prevWithdrawals.map((withdrawal) =>
-            withdrawal.transaction_id === selectedWithdrawal.transaction_id
-              ? { ...withdrawal, transaction_status: "success" }
-              : withdrawal
-          )
+          prevWithdrawals.filter((withdrawal) => withdrawal.uuid !== selectedWithdrawal.uuid)
         );
         setIsOpenApproval(false);
         toast.success("Withdrawal request approved successfully");
       } else {
-        // Handle error case
         toast.error(response?.message || "Failed to approve withdrawal");
         console.error("Failed to approve withdrawal:", response?.message);
       }
@@ -191,24 +186,19 @@ const Withdrawals = ({
   };
 
   const handleDeclineWithdrawal = async () => {
-    if (!selectedWithdrawal?.transaction_id) return;
+    if (!selectedWithdrawal?.uuid) return;
 
     try {
       setIsDeclining(true);
-      const response = await declineWithdrawal(selectedWithdrawal.transaction_id);
+      const response = await declineWithdrawal(selectedWithdrawal.uuid);
       if (response?.status) {
-        // Update the local state to reflect the change
+        // Remove the declined withdrawal from the list
         setLocalWithdrawals((prevWithdrawals) =>
-          prevWithdrawals.map((withdrawal) =>
-            withdrawal.transaction_id === selectedWithdrawal.transaction_id
-              ? { ...withdrawal, transaction_status: "declined" }
-              : withdrawal
-          )
+          prevWithdrawals.filter((withdrawal) => withdrawal.uuid !== selectedWithdrawal.uuid)
         );
         setIsOpenDecline(false);
         toast.success("Withdrawal request declined successfully");
       } else {
-        // Handle error case
         toast.error(response?.message || "Failed to decline withdrawal");
         console.error("Failed to decline withdrawal:", response?.message);
       }
@@ -422,9 +412,13 @@ const Withdrawals = ({
           isOpen={openUserPendingWithdrawalInfo ? true : false}
           setIsOpen={(isOpen) => setOpenUserPendingWithdrawalInfo(isOpen ? openUserPendingWithdrawalInfo : null)}
           withdrawal={localWithdrawals?.find(w => w.uuid === openUserPendingWithdrawalInfo) || null}
+          onWithdrawalAction={(uuid) => {
+            setLocalWithdrawals((prevWithdrawals) =>
+              prevWithdrawals.filter((withdrawal) => withdrawal.uuid !== uuid)
+            );
+          }}
         />
-      )
-      }
+      )}
 
       {
         isOpenApproval && (

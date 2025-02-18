@@ -12,20 +12,20 @@ export const getPendingWithdrawals = async (page: number = 1, limit: number = 20
     );
 };
 
-export const approveWithdrawal = async (transactionId: string) => {
+export const approveWithdrawal = async (uuid: string) => {
     const token = await getToken()
-    const response = await apiPost(`wallet/withdraw/approve/${transactionId}`, {}, token)
-    if (response.status) {
-        await revalidateCurrentPath()
-    }
+    const response = await apiPost(`wallet/withdraw/approve/${uuid}`, {}, token)
+    // if (response.status) {
+    //     await revalidateCurrentPath()
+    // }
     return response
 }
 
-export const declineWithdrawal = async (transactionId: string) => {
+export const declineWithdrawal = async (uuid: string) => {
     const token = await getToken()
-    const response = await apiPost(`wallet/withdraw/reject/${transactionId}`, {}, token)
-    if (response.status) {
-        await revalidateCurrentPath()
-    }
+    const response = await apiPost(`wallet/withdraw/reject/${uuid}`, {}, token)
+    // if (response.status) {
+    //     await revalidateCurrentPath()
+    // }
     return response
 }

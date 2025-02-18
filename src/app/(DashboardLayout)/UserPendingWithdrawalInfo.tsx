@@ -14,11 +14,13 @@ import { toast } from "sonner";
 const UserPendingWithdrawalInfo = ({
     isOpen,
     setIsOpen,
-    withdrawal
+    withdrawal,
+    onWithdrawalAction
 }: {
     isOpen: boolean;
     setIsOpen: (isOpen: boolean) => void;
     withdrawal: IPendingWithdrawals | null;
+    onWithdrawalAction?: (uuid: string, action: 'approved' | 'declined') => void;
 }) => {
     const [isDeclineDialogOpen, setIsDeclineDialogOpen] = useState(false);
     const [isApproveDialogOpen, setIsApproveDialogOpen] = useState(false);
@@ -29,14 +31,15 @@ const UserPendingWithdrawalInfo = ({
     if (!withdrawal) return null;
 
     const handleDeclineWithdrawal = async () => {
-        if (!withdrawal?.transaction_id) return;
+        if (!withdrawal?.uuid) return;
 
         try {
             setIsDeclining(true);
-            const response = await declineWithdrawal(withdrawal.transaction_id);
+            const response = await declineWithdrawal(withdrawal.uuid);
             if (response?.status) {
                 setIsDeclineDialogOpen(false);
                 setIsOpen(false);
+                onWithdrawalAction?.(withdrawal.uuid, 'declined');
                 toast.success("Withdrawal request declined successfully");
             } else {
                 toast.error(response?.message || "Failed to decline withdrawal");
@@ -51,14 +54,15 @@ const UserPendingWithdrawalInfo = ({
     };
 
     const handleApproveWithdrawal = async () => {
-        if (!withdrawal?.transaction_id) return;
+        if (!withdrawal?.uuid) return;
 
         try {
             setIsApproving(true);
-            const response = await approveWithdrawal(withdrawal.transaction_id);
+            const response = await approveWithdrawal(withdrawal.uuid);
             if (response?.status) {
                 setIsApproveDialogOpen(false);
                 setIsOpen(false);
+                onWithdrawalAction?.(withdrawal.uuid, 'approved');
                 toast.success("Withdrawal request approved successfully");
             } else {
                 toast.error(response?.message || "Failed to approve withdrawal");
