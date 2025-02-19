@@ -31,11 +31,11 @@ const UserPendingWithdrawalInfo = ({
     if (!withdrawal) return null;
 
     const handleDeclineWithdrawal = async () => {
-        if (!withdrawal?.uuid) return;
+        if (!withdrawal?.uuid || !declineReason.trim()) return;
 
         try {
             setIsDeclining(true);
-            const response = await declineWithdrawal(withdrawal.uuid);
+            const response = await declineWithdrawal([withdrawal.uuid], declineReason);
             if (response?.status) {
                 setIsDeclineDialogOpen(false);
                 setIsOpen(false);
@@ -58,7 +58,7 @@ const UserPendingWithdrawalInfo = ({
 
         try {
             setIsApproving(true);
-            const response = await approveWithdrawal(withdrawal.uuid);
+            const response = await approveWithdrawal([withdrawal.uuid]);
             if (response?.status) {
                 setIsApproveDialogOpen(false);
                 setIsOpen(false);

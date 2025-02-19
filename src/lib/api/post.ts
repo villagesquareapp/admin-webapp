@@ -1,7 +1,12 @@
+import { revalidatePathClient } from '../revalidate';
 import { ApiResponse, baseApiCall } from './base'
 
 export async function apiPost<T>(route: string, body: any, token?: string, options?: RequestInit): Promise<ApiResponse<T>> {
-    let headers: HeadersInit = {}
+    let headers: HeadersInit = {
+        'Cache-Control': 'no-cache',
+        'Pragma': 'no-cache'
+    }
+
     if (token) {
         headers['Authorization'] = `Bearer ${token}`
     }
@@ -13,9 +18,14 @@ export async function apiPost<T>(route: string, body: any, token?: string, optio
     const response = await baseApiCall<T>('POST', route, {
         headers,
         body: JSON.stringify(body),
+        cache: 'no-store'
     })
 
-    // await revalidatePathClient(route)
+    // Revalidate the path after successful mutation
+    if (response.status) {
+        await revalidatePathClient(route)
+    }
+
     return response
 }
 

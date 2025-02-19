@@ -33,6 +33,7 @@ const Withdrawals = ({
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [localWithdrawals, setLocalWithdrawals] = useState<IPendingWithdrawals[]>([]);
+  const [totalWithdrawals, setTotalWithdrawals] = useState(0);
   const [currentLocalPage, setCurrentLocalPage] = useState(1);
   const [hasReachedEnd, setHasReachedEnd] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
@@ -57,6 +58,7 @@ const Withdrawals = ({
     if (withdrawals?.data && !isInitialized) {
       const newData = withdrawals.data as unknown as IPendingWithdrawals[];
       setLocalWithdrawals(newData);
+      setTotalWithdrawals(withdrawals.total || 0);
       setCurrentLocalPage(currentPage);
       setHasReachedEnd(currentPage >= totalPages);
       setIsInitialized(true);
@@ -73,6 +75,7 @@ const Withdrawals = ({
       if (newWithdrawals?.data?.data) {
         const newData = newWithdrawals.data.data as unknown as IPendingWithdrawals[];
         setLocalWithdrawals(newData);
+        setTotalWithdrawals(newWithdrawals.data.total || 0);
         setCurrentLocalPage(page);
         setHasReachedEnd(page >= (newWithdrawals.data.last_page || totalPages));
       }
@@ -165,12 +168,16 @@ const Withdrawals = ({
 
     try {
       setIsApproving(true);
-      const response = await approveWithdrawal(selectedWithdrawal.uuid);
+      const response = await approveWithdrawal([selectedWithdrawal.uuid]);
       if (response?.status) {
-        // Remove the approved withdrawal from the list
-        setLocalWithdrawals((prevWithdrawals) =>
-          prevWithdrawals.filter((withdrawal) => withdrawal.uuid !== selectedWithdrawal.uuid)
-        );
+        // Refetch the current page data
+        const newWithdrawals = await getPendingWithdrawals(currentLocalPage, pageSize);
+        if (newWithdrawals?.data?.data) {
+          const newData = newWithdrawals.data.data as unknown as IPendingWithdrawals[];
+          setLocalWithdrawals(newData);
+          setTotalWithdrawals(newWithdrawals.data.total || 0);
+          setHasReachedEnd(currentLocalPage >= (newWithdrawals.data.last_page || totalPages));
+        }
         setIsOpenApproval(false);
         toast.success("Withdrawal request approved successfully");
       } else {
@@ -185,17 +192,50 @@ const Withdrawals = ({
     }
   };
 
+  const handleBulkApproveWithdrawals = async () => {
+    if (!selectedPendingWithdrawals.length) return;
+
+    try {
+      setIsApproving(true);
+      const response = await approveWithdrawal(selectedPendingWithdrawals);
+      if (response?.status) {
+        // Refetch the current page data
+        const newWithdrawals = await getPendingWithdrawals(currentLocalPage, pageSize);
+        if (newWithdrawals?.data?.data) {
+          const newData = newWithdrawals.data.data as unknown as IPendingWithdrawals[];
+          setLocalWithdrawals(newData);
+          setTotalWithdrawals(newWithdrawals.data.total || 0);
+          setHasReachedEnd(currentLocalPage >= (newWithdrawals.data.last_page || totalPages));
+        }
+        setSelectedPendingWithdrawals([]);
+        toast.success("Withdrawal requests approved successfully");
+      } else {
+        toast.error(response?.message || "Failed to approve withdrawals");
+        console.error("Failed to approve withdrawals:", response?.message);
+      }
+    } catch (error) {
+      console.error("Error approving withdrawals:", error);
+      toast.error("An error occurred while approving withdrawals");
+    } finally {
+      setIsApproving(false);
+    }
+  };
+
   const handleDeclineWithdrawal = async () => {
-    if (!selectedWithdrawal?.uuid) return;
+    if (!selectedWithdrawal?.uuid || !declineReason.trim()) return;
 
     try {
       setIsDeclining(true);
-      const response = await declineWithdrawal(selectedWithdrawal.uuid);
+      const response = await declineWithdrawal([selectedWithdrawal.uuid], declineReason);
       if (response?.status) {
-        // Remove the declined withdrawal from the list
-        setLocalWithdrawals((prevWithdrawals) =>
-          prevWithdrawals.filter((withdrawal) => withdrawal.uuid !== selectedWithdrawal.uuid)
-        );
+        // Refetch the current page data
+        const newWithdrawals = await getPendingWithdrawals(currentLocalPage, pageSize);
+        if (newWithdrawals?.data?.data) {
+          const newData = newWithdrawals.data.data as unknown as IPendingWithdrawals[];
+          setLocalWithdrawals(newData);
+          setTotalWithdrawals(newWithdrawals.data.total || 0);
+          setHasReachedEnd(currentLocalPage >= (newWithdrawals.data.last_page || totalPages));
+        }
         setIsOpenDecline(false);
         toast.success("Withdrawal request declined successfully");
       } else {
@@ -254,8 +294,21 @@ const Withdrawals = ({
 
           <div className="flex items-center gap-4 flex-nowrap">
             {selectedPendingWithdrawals.length > 0 && (
-              <Button size="sm" color="success" className="h-8">
-                Approve ({selectedPendingWithdrawals.length})
+              <Button
+                size="sm"
+                color="success"
+                className="h-8"
+                onClick={handleBulkApproveWithdrawals}
+                disabled={isApproving}
+              >
+                {isApproving ? (
+                  <div className="flex items-center gap-2">
+                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                    <span>Approving...</span>
+                  </div>
+                ) : (
+                  <>Approve ({selectedPendingWithdrawals.length})</>
+                )}
               </Button>
             )}
             <Link href={'/dashboards/wallets'} className="text-sm text-gray-500 hover:text-primary underline">Go to wallet</Link>
@@ -398,7 +451,7 @@ const Withdrawals = ({
               </div>
 
               <p className="text-center text-gray-500 text-xs">
-                Page {currentLocalPage} of {totalPages} ({localWithdrawals.length} withdrawals)
+                Page {currentLocalPage} of {totalPages} ({localWithdrawals.length} of {totalWithdrawals} withdrawals)
               </p>
             </div>
           )}
