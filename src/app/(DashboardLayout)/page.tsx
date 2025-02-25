@@ -1,6 +1,7 @@
 import { getEchoStats } from "../api/echo";
 import { getLivestreamStats } from "../api/livestream";
 import { getMarketSquareStats } from "../api/market-square";
+import { getPendingVerification } from "../api/pending-verification";
 import { getPostStats } from "../api/post";
 import { getUsers, getUserStats } from "../api/user";
 import { getPendingWithdrawals } from "../api/wallet";
@@ -30,7 +31,7 @@ const Page = async ({
     marketSquareStats,
     liveStreamStats,
     echoStats,
-    users,
+    pendingVerification,
     pendingWithdrawals,
   ] = await Promise.all([
     getUserStats(),
@@ -38,7 +39,7 @@ const Page = async ({
     getMarketSquareStats(),
     getLivestreamStats(),
     getEchoStats(),
-    getUsers(page, limit),
+    getPendingVerification(page, limit),
     getPendingWithdrawals(pWPage, pWLimit),
   ]);
 
@@ -114,8 +115,8 @@ const Page = async ({
         {/* @Remove to here */}
         <div className="lg:col-span-7 col-span-12">
           <PendingVerifications
-            users={users?.data || null}
-            totalPages={users?.data?.last_page || 1}
+            pendingVerification={pendingVerification?.data || null}
+            totalPages={pendingVerification?.data?.last_page || 1}
             currentPage={page}
             pageSize={limit}
           />

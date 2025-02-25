@@ -154,7 +154,7 @@ interface IUser {
     actions?: any
 }
 
-interface IUsersResponse extends IPaginatedResponse<IUser[]> { }
+interface IUsersResponse extends IPaginatedResponse<IUser> { }
 
 interface IMedia {
     thumbnail: string,
@@ -209,7 +209,7 @@ interface IPosts {
     actions?: any
 }
 
-interface IPostResponse extends IPaginatedResponse<IPosts[]> { }
+interface IPostResponse extends IPaginatedResponse<IPosts> { }
 
 interface ILivestreams {
     uuid: string,
@@ -262,7 +262,7 @@ interface ILivestreams {
     actions?: any
 }
 
-interface ILivestreamResponse extends IPaginatedResponse<ILivestreams[]> { }
+interface ILivestreamResponse extends IPaginatedResponse<ILivestreams> { }
 
 interface IEchoes {
     uuid: string,
@@ -316,7 +316,7 @@ interface IEchoes {
     actions?: any
 }
 
-interface IEchosResponse extends IPaginatedResponse<IEchoes[]> { }
+interface IEchosResponse extends IPaginatedResponse<IEchoes> { }
 
 interface IMarketProduct {
     uuid: string,
@@ -341,7 +341,7 @@ interface IMarketSquareShops {
     actions?: any
 }
 
-interface IMarketSquareShopsResponse extends IPaginatedResponse<IMarketSquareShops[]> { }
+interface IMarketSquareShopsResponse extends IPaginatedResponse<IMarketSquareShops> { }
 
 interface ITickerUser {
     name: string,
@@ -366,7 +366,7 @@ interface ITicket {
     actions?: any
 }
 
-interface ITicketResponse extends IPaginatedResponse<ITicket[]> { }
+interface ITicketResponse extends IPaginatedResponse<ITicket> { }
 
 interface IComment {
     text: string,
@@ -459,7 +459,7 @@ interface IReport {
     reported_user: IReportUser
 }
 
-interface IReportResponse extends IPaginatedResponse<IReport[]> { }
+interface IReportResponse extends IPaginatedResponse<IReport> { }
 
 interface IWithdrawalUser {
     uuid: string,
@@ -495,4 +495,26 @@ interface IPendingWithdrawals {
     last_withdrawal: string | null
 }
 
-interface IPendingWithdrawalsResponse extends IPaginatedResponse<IPendingWithdrawals[]> { }
+interface IPendingWithdrawalsResponse extends IPaginatedResponse<IPendingWithdrawals> { }
+
+interface IPendingVerification {
+    user: {
+        uuid: string,
+        name: string,
+        email: string,
+        username: string,
+        profile_picture: string,
+        date_joined: string
+    },
+    verification_request: {
+        id: string,
+        status: string,
+        type: 'account_verification' | 'premium_verification' | 'withdrawal_verification',
+        current_stage: number,
+        created_at: string,
+        duration_since_joining: string
+    },
+    actions?: any
+}
+
+interface IPendingVerificationResponse extends IPaginatedResponse<IPendingVerification> { }

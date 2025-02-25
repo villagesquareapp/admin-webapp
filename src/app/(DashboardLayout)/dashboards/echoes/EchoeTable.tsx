@@ -102,9 +102,8 @@ const EchoeTable = ({
 
         return (
           <p
-            className={`rounded-full px-2 py-1 text-sm w-20 text-center capitalize ${
-              statusStyles[info.getValue() as keyof typeof statusStyles]
-            }`}
+            className={`rounded-full px-2 py-1 text-sm w-20 text-center capitalize ${statusStyles[info.getValue() as keyof typeof statusStyles]
+              }`}
           >
             {info.getValue()}
           </p>

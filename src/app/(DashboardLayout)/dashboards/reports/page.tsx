@@ -105,8 +105,6 @@ const Page = async ({
     },
   ];
 
-  console.log("reports?.data:", reports?.data);
-
   return (
     <>
       <div className="grid grid-cols-12 gap-30">
