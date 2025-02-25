@@ -11,6 +11,14 @@ export const getPendingVerification = async (page: number = 1, limit: number = 2
     );
 };
 
+export const getVerificationRequested = async (id: string) => {
+    const token = await getToken()
+    return await apiGet<IVerificationRequestedResponse>(
+        `verification/verification-request/${id}`,
+        token
+    );
+};
+
 export const approvePendingVerification = async (id: string) => {
     const token = await getToken()
     return await apiPatch<ApiResponse>(

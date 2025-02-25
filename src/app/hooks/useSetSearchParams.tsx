@@ -1,3 +1,4 @@
+
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 
 const useSetSearchParams = () => {
@@ -52,13 +53,13 @@ const useSetSearchParams = () => {
     const setParam = (key: string, value: string) => {
         const params = new URLSearchParams(searchParams.toString())
         params.set(key, value)
-        replace(`?${params.toString()}`)
+        replace(`?${params.toString()}`, { scroll: false })
     }
 
     const removeSpecificParam = (keys: string[]) => {
         const params = new URLSearchParams(searchParams.toString())
         keys.forEach(key => params.delete(key))
-        replace(`?${params.toString()}`)
+        replace(`?${params.toString()}`, { scroll: false })
     }
 
     function removeAndAddParams(removeActions: SearchParamsAction[], addParamsObj: Record<string, string>) {

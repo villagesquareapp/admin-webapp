@@ -1,9 +1,9 @@
 import { getEchoStats } from "../api/echo";
 import { getLivestreamStats } from "../api/livestream";
 import { getMarketSquareStats } from "../api/market-square";
-import { getPendingVerification } from "../api/pending-verification";
+import { getPendingVerification, getVerificationRequested } from "../api/pending-verification";
 import { getPostStats } from "../api/post";
-import { getUsers, getUserStats } from "../api/user";
+import { getUserDetails, getUsers, getUserStats } from "../api/user";
 import { getPendingWithdrawals } from "../api/wallet";
 import SmallCards from "../components/dashboards/ecommerce/smallCards";
 import PendingVerifications from "./PendingVerifications";
@@ -20,6 +20,7 @@ const Page = async ({
   searchParams: { [key: string]: string | string[] | undefined };
 }) => {
   const selectedWithdrawalID = searchParams.withdrawal as string;
+  const selectedPendingVerificationID = searchParams.pending_verification as string;
   const page = Number(searchParams.page) || 1;
   const limit = Number(searchParams.limit) || 20;
   const pWLimit = Number(searchParams.pwLimit) || 10;
@@ -42,6 +43,31 @@ const Page = async ({
     getPendingVerification(page, limit),
     getPendingWithdrawals(pWPage, pWLimit),
   ]);
+
+
+  let selectedPendingVerification: IPendingVerification | null = null;
+  let selectedVerificationRequested: IVerificationRequested | null = null;
+  let selectedUser: IUser | null = null;
+
+  if (selectedPendingVerificationID) {
+    selectedPendingVerification = pendingVerification?.data?.data.find(
+      (item) => item?.verification_request?.id === selectedPendingVerificationID
+    ) || null;
+
+    if (selectedPendingVerification) {
+      const [user, verificationRequested] = await Promise.all([
+        getUserDetails(selectedPendingVerification?.user?.uuid || ""),
+        getVerificationRequested(selectedPendingVerification?.verification_request?.id || "")
+      ])
+
+      selectedVerificationRequested = !!verificationRequested?.data ? verificationRequested?.data : null;
+
+      selectedUser = !!user?.data ? user?.data : null;
+
+    }
+
+
+  }
 
   const overviewData: IOverviewData[] = [
     {
@@ -119,6 +145,9 @@ const Page = async ({
             totalPages={pendingVerification?.data?.last_page || 1}
             currentPage={page}
             pageSize={limit}
+            currentSelectedPendingVerification={selectedPendingVerification}
+            currentSelectedVerificationRequested={selectedVerificationRequested}
+            currentSelectedUser={selectedUser}
           />
         </div>
         <div className="lg:col-span-5 col-span-12">

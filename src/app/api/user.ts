@@ -19,3 +19,12 @@ export const getUsers = async (page: number = 1, limit: number = 20) => {
     );
 };
 
+
+export const getUserDetails = async (id: string) => {
+    const token = await getToken()
+    return await apiGet<IUsersResponse>(
+        `users/${id}`,
+        token
+    );
+};
+

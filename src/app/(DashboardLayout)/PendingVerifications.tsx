@@ -14,20 +14,27 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { UserDetailsComp } from "../components/shared/TableSnippets";
 import PendingVerificationDialog from "./PendingVerificationDialog";
+import useSetSearchParams from "../hooks/useSetSearchParams";
 
 const PendingVerifications = ({
   pendingVerification,
   totalPages,
   currentPage,
   pageSize,
+  currentSelectedPendingVerification,
+  currentSelectedVerificationRequested,
+  currentSelectedUser,
 }: {
   pendingVerification: IPendingVerificationResponse | null;
   totalPages: number;
   currentPage: number;
   pageSize: number;
+  currentSelectedPendingVerification: IPendingVerification | null;
+  currentSelectedVerificationRequested: IVerificationRequested | null;
+  currentSelectedUser: IUser | null;
 }) => {
+  const { addParam, removeSpecificParam } = useSetSearchParams()
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<IUser | null>(null);
   const [isApproveDialogOpen, setIsApproveDialogOpen] = useState(false);
   const [isDeclineDialogOpen, setIsDeclineDialogOpen] = useState(false);
   const [selectedVerification, setSelectedVerification] = useState<IPendingVerification | null>(null);
@@ -41,7 +48,8 @@ const PendingVerifications = ({
   if (!pendingVerification) return <div>No pending verifications found</div>;
   const columnHelper = createColumnHelper<IPendingVerification>();
 
-  const handleRowClick = (user: IUser) => {
+  const handleRowClick = (pendingVerification: IPendingVerification) => {
+    addParam("pending_verification", pendingVerification.verification_request?.id)
     // setSelectedUser(user);
     setIsDialogOpen(true);
   };
@@ -114,6 +122,15 @@ const PendingVerifications = ({
     } finally {
       setIsDeclining(false);
     }
+  };
+
+  const handleVerificationUpdate = (id: string, action: 'approve' | 'decline') => {
+    // Remove the verification from the table data
+    setTableData(prevData =>
+      prevData.filter(item =>
+        item.verification_request.id !== id
+      )
+    );
   };
 
   const columns = [
@@ -192,7 +209,7 @@ const PendingVerifications = ({
               },
             ].map((item, index) => (
               <Dropdown.Item
-                key={index}
+                key={index + item.listtitle}
                 className="flex gap-3"
                 onClick={item.onClick}
               >
@@ -217,7 +234,16 @@ const PendingVerifications = ({
         tableTitle="Pending Verifications"
         onRowClick={handleRowClick}
       />
-      <PendingVerificationDialog isOpen={isDialogOpen} setIsOpen={setIsDialogOpen} />
+      <PendingVerificationDialog
+        isOpen={isDialogOpen}
+        setIsOpen={() => {
+          removeSpecificParam(["pending_verifications"])
+          setIsDialogOpen(false)
+        }}
+        currentSelectedUser={currentSelectedUser}
+        currentSelectedVerificationRequested={currentSelectedVerificationRequested}
+        onVerificationUpdate={handleVerificationUpdate}
+      />
 
       {/* Approve Dialog */}
       <Dialog

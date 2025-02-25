@@ -111,6 +111,12 @@ interface IUserPost {
     created_at: string
 }
 
+interface IUserWallet {
+    balance: string,
+    new_gifts_count: number,
+    status: string
+}
+
 interface IUser {
     user_details: {
         profile: {
@@ -150,6 +156,7 @@ interface IUser {
             number_of_orders: number
         },
         posts: IUserPost[]
+        wallet: IUserWallet[]
     }
     actions?: any
 }
@@ -518,3 +525,33 @@ interface IPendingVerification {
 }
 
 interface IPendingVerificationResponse extends IPaginatedResponse<IPendingVerification> { }
+
+
+interface IVerificationDocument {
+    uuid: string,
+    document_type: string,
+    document_url: string,
+    status: string,
+    rejection_reason: string | null,
+    created_at: string
+}
+
+interface IVerificationRequested {
+    id: string,
+    status: string,
+    type: string,
+    current_stage: number,
+    created_at: string,
+    admin_comments: string,
+    user_id: string,
+    location: string | null,
+    documents: any[],
+    social_metrics: {
+        followers_count: number,
+        following_count: number,
+        date_joined: string,
+        duration_since_joining: string
+    }
+}
+
+interface IVerificationRequestedResponse extends IPaginatedResponse<IVerificationRequested> { }
