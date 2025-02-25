@@ -60,9 +60,11 @@ const Page = async ({
         getVerificationRequested(selectedPendingVerification?.verification_request?.id || "")
       ])
 
-      selectedVerificationRequested = !!verificationRequested?.data ? verificationRequested?.data : null;
+      selectedVerificationRequested = !!verificationRequested?.data ?
+        (verificationRequested.data as unknown as IVerificationRequested) : null;
 
-      selectedUser = !!user?.data ? user?.data : null;
+      selectedUser = !!user?.data ?
+        (user.data as unknown as IUser) : null;
 
     }
 
