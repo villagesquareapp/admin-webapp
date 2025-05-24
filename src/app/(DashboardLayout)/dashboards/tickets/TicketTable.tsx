@@ -18,7 +18,6 @@ const TicketTable = ({
   currentPage: number;
   pageSize: number;
 }) => {
-  if (!tickets) return <div>No tickets found</div>;
   const columnHelper = createColumnHelper<ITicket>();
 
   const columns = [

@@ -21,8 +21,7 @@ const PostTable = ({
 }) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedPost, setSelectedPost] = useState<IPosts | null>(null);
-
-  if (!posts) return <div>No posts found</div>;
+  
   const columnHelper = createColumnHelper<IPosts>();
 
   const handleRowClick = (post: IPosts) => {

@@ -19,14 +19,13 @@ const ShopTable = ({
   currentPage: number;
   pageSize: number;
 }) => {
-  if (!shops) return <div>No shops found</div>;
   const columnHelper = createColumnHelper<IMarketSquareShops>();
 
   const columns = [
     columnHelper.accessor("logo", {
       cell: (info) => (
         <div className="flex gap-3 items-center">
-          <div className="relative size-10 rounded-full">
+          <div className="relative size-10 border dark:border/20 rounded-full">
             {!!info.getValue() && (
               <Image
                 src={info.getValue()}

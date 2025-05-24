@@ -26,7 +26,6 @@ const UserTable = ({
     router.replace(`?${params.toString()}`);
   };
 
-  if (!users) return <div>No users found</div>;
   const columnHelper = createColumnHelper<IUser>();
 
   const columns = [

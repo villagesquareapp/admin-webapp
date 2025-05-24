@@ -25,7 +25,6 @@ const EchoeTable = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
 
-  if (!echoes) return <div>No echoes found</div>;
   const columnHelper = createColumnHelper<IEchoes>();
 
   const columns = [
@@ -102,8 +101,9 @@ const EchoeTable = ({
 
         return (
           <p
-            className={`rounded-full px-2 py-1 text-sm w-20 text-center capitalize ${statusStyles[info.getValue() as keyof typeof statusStyles]
-              }`}
+            className={`rounded-full px-2 py-1 text-sm w-20 text-center capitalize ${
+              statusStyles[info.getValue() as keyof typeof statusStyles]
+            }`}
           >
             {info.getValue()}
           </p>
