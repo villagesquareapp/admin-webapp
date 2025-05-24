@@ -3,17 +3,36 @@ interface IApiMessage {
 }
 
 interface ApiResponse<T = any> {
-    success: boolean
+    success?: boolean
+    status?: boolean
     data?: T
     error?: string
     message?: string
     [key: string]: any
 }
 
+
+
 interface IUser {
     id: string
     email: string
 }
+
+interface IJsonSettingsValue {
+    [key: string]: any
+}
+
+interface ISettings {
+    uuid: string
+    name: string
+    value_type: "boolean" | "string" | "json"
+    value: boolean | string | IJsonSettingsValue
+    created_at: string
+    updated_at: string
+    deleted_at: string | null
+}
+
+interface ISettingsResponse extends ApiResponse<ISettings> { }
 
 interface IUserTableDetails {
     profile_picture: string
@@ -28,6 +47,14 @@ interface IUserTableDetails {
 interface IAuthResponse {
     accessToken: string
     user: IUser
+}
+
+interface IGifts {
+    id: string
+    name: string
+    description: string
+    price: number
+    image: string
 }
 
 interface IUserWithToken {
@@ -95,11 +122,11 @@ interface IOverviewData {
 
 
 interface IPaginatedResponse<T> {
-    current_page: string
+    current_page?: string
     data: T[]
-    per_page: number
-    total: number
-    last_page: number
+    per_page?: number
+    total?: number
+    last_page?: number
 }
 
 interface IUserPost {

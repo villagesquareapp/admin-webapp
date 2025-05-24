@@ -42,7 +42,9 @@ const Withdrawals = ({
   const [isApproving, setIsApproving] = useState(false);
   const [isHovering, setIsHovering] = useState<string | null>(null);
   const [selectedPendingWithdrawals, setSelectedPendingWithdrawals] = useState<string[]>([]);
-  const [openUserPendingWithdrawalInfo, setOpenUserPendingWithdrawalInfo] = useState<string | null>(null);
+  const [openUserPendingWithdrawalInfo, setOpenUserPendingWithdrawalInfo] = useState<
+    string | null
+  >(null);
   const [isDeclining, setIsDeclining] = useState(false);
   const [selectedWithdrawal, setSelectedWithdrawal] = useState<IPendingWithdrawals | null>(
     null
@@ -263,9 +265,9 @@ const Withdrawals = ({
 
   const handleWithdrawalSelection = (uuid: string, event?: React.MouseEvent) => {
     event?.stopPropagation(); // Stop event propagation if event exists
-    setSelectedPendingWithdrawals(prev => {
+    setSelectedPendingWithdrawals((prev) => {
       if (prev.includes(uuid)) {
-        return prev.filter(id => id !== uuid);
+        return prev.filter((id) => id !== uuid);
       }
       return [...prev, uuid];
     });
@@ -281,7 +283,7 @@ const Withdrawals = ({
                 className="!size-6"
                 onChange={(e) => {
                   if (e.target.checked) {
-                    setSelectedPendingWithdrawals(localWithdrawals.map(w => w.uuid));
+                    setSelectedPendingWithdrawals(localWithdrawals.map((w) => w.uuid));
                   } else {
                     setSelectedPendingWithdrawals([]);
                   }
@@ -311,7 +313,12 @@ const Withdrawals = ({
                 )}
               </Button>
             )}
-            <Link href={'/dashboards/wallets'} className="text-sm text-gray-500 hover:text-primary underline">Go to wallet</Link>
+            <Link
+              href={"/dashboards/wallets"}
+              className="text-sm text-gray-500 hover:text-primary underline"
+            >
+              Go to wallet
+            </Link>
           </div>
         </div>
 
@@ -335,11 +342,18 @@ const Withdrawals = ({
                 onMouseLeave={() => setIsHovering(null)}
                 onClick={() => setOpenUserPendingWithdrawalInfo(item.uuid)}
                 className={`flex cursor-pointer border-b border-gray-300 dark:border-gray-600 gap-3 items-center w-full relative transition-all duration-300 !p-2 !py-3 
-                  ${(isHovering === item.uuid || selectedPendingWithdrawals.includes(item.uuid)) ? '!pl-10 bg-gray-200 dark:bg-gray-700' : '!pl-2'}`}
+                  ${
+                    isHovering === item.uuid || selectedPendingWithdrawals.includes(item.uuid)
+                      ? "!pl-10 bg-gray-200 dark:bg-gray-700"
+                      : "!pl-2"
+                  }`}
               >
                 <div
-                  className={`absolute left-2 transition-opacity duration-300 ${isHovering === item.uuid || selectedPendingWithdrawals.includes(item.uuid) ? 'opacity-100' : 'opacity-0'
-                    }`}
+                  className={`absolute left-2 transition-opacity duration-300 ${
+                    isHovering === item.uuid || selectedPendingWithdrawals.includes(item.uuid)
+                      ? "opacity-100"
+                      : "opacity-0"
+                  }`}
                   onClick={(e) => e.stopPropagation()}
                 >
                   <Checkbox
@@ -362,7 +376,6 @@ const Withdrawals = ({
                   )}
                 </div>
                 <div className="flex flex-col min-w-0 flex-shrink">
-
                   <h5 className="text-base truncate">{item.user.name}</h5>
                   <p className="text-sm text-gray-500 truncate">@{item.user.username}</p>
                 </div>
@@ -372,8 +385,7 @@ const Withdrawals = ({
                     {item.wallet?.currency?.symbol}
                     {item.amount}
                   </div>
-                  {
-                    !selectedPendingWithdrawals?.length &&
+                  {!selectedPendingWithdrawals?.length && (
                     <div className="flex gap-2 shrink-0">
                       <Button
                         onClick={(e) => {
@@ -399,7 +411,7 @@ const Withdrawals = ({
                         <IoMdCheckmark size={16} />
                       </Button>
                     </div>
-                  }
+                  )}
                 </div>
               </div>
             ))
@@ -419,9 +431,7 @@ const Withdrawals = ({
                   Previous
                 </Button>
 
-                <div className="flex items-center gap-x-2">
-                  {renderPaginationNumbers()}
-                </div>
+                <div className="flex items-center gap-x-2">{renderPaginationNumbers()}</div>
 
                 <Button
                   color="gray"
@@ -451,20 +461,23 @@ const Withdrawals = ({
               </div>
 
               <p className="text-center text-gray-500 text-xs">
-                Page {currentLocalPage} of {totalPages} ({localWithdrawals.length} of {totalWithdrawals} withdrawals)
+                Page {currentLocalPage} of {totalPages} ({localWithdrawals.length} of{" "}
+                {totalWithdrawals} withdrawals)
               </p>
             </div>
           )}
         </div>
-
-
-      </CardBox >
+      </CardBox>
 
       {openUserPendingWithdrawalInfo && (
         <UserPendingWithdrawalInfo
           isOpen={openUserPendingWithdrawalInfo ? true : false}
-          setIsOpen={(isOpen) => setOpenUserPendingWithdrawalInfo(isOpen ? openUserPendingWithdrawalInfo : null)}
-          withdrawal={localWithdrawals?.find(w => w.uuid === openUserPendingWithdrawalInfo) || null}
+          setIsOpen={(isOpen) =>
+            setOpenUserPendingWithdrawalInfo(isOpen ? openUserPendingWithdrawalInfo : null)
+          }
+          withdrawal={
+            localWithdrawals?.find((w) => w.uuid === openUserPendingWithdrawalInfo) || null
+          }
           onWithdrawalAction={(uuid) => {
             setLocalWithdrawals((prevWithdrawals) =>
               prevWithdrawals.filter((withdrawal) => withdrawal.uuid !== uuid)
@@ -473,121 +486,119 @@ const Withdrawals = ({
         />
       )}
 
-      {
-        isOpenApproval && (
-          <WithdrawalDialog
-            isOpen={isOpenApproval}
-            setIsOpen={setIsOpenApproval}
-            selectedWithdrawal={selectedWithdrawal || null}
-            content={
-              <>
-                <div className="flex flex-col gap-4">
-                  <h3 className="text-xl font-semibold">Approve Withdrawal</h3>
-                  <p className="text-gray-600 dark:text-gray-300">
-                    Are you sure you want to approve withdrawal request of{" "}
-                    <span className="font-medium">
-                      {selectedWithdrawal?.wallet?.currency?.symbol}
-                      {formatNumber(selectedWithdrawal?.amount || 0)}
-                    </span>{" "}
-                    for <span className="font-medium">{selectedWithdrawal?.user.name}</span>?
-                  </p>
-                </div>
+      {isOpenApproval && (
+        <WithdrawalDialog
+          isOpen={isOpenApproval}
+          setIsOpen={setIsOpenApproval}
+          selectedWithdrawal={selectedWithdrawal || null}
+          content={
+            <>
+              <div className="flex flex-col gap-4">
+                <h3 className="text-xl font-semibold">Approve Withdrawal</h3>
+                <p className="text-gray-600 dark:text-gray-300">
+                  Are you sure you want to approve withdrawal request of{" "}
+                  <span className="font-medium">
+                    {selectedWithdrawal?.wallet?.currency?.symbol}
+                    {formatNumber(selectedWithdrawal?.amount || 0)}
+                  </span>{" "}
+                  for <span className="font-medium">{selectedWithdrawal?.user.name}</span>?
+                </p>
+              </div>
 
-                <div className="flex justify-end gap-3">
-                  <Button
-                    onClick={() => setIsOpenApproval(false)}
-                    color="gray"
-                    className="w-fit"
-                    disabled={isApproving}
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    color="success"
-                    className="w-fit min-w-[100px]"
-                    onClick={handleApproveWithdrawal}
-                    disabled={isApproving}
-                  >
-                    {isApproving ? (
-                      <div className="flex items-center gap-2">
-                        <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                        Approving...
-                      </div>
-                    ) : (
-                      "Approve"
-                    )}
-                  </Button>
-                </div>
-              </>
-            }
-          />
-        )
-      }
+              <div className="flex justify-end gap-3">
+                <Button
+                  onClick={() => setIsOpenApproval(false)}
+                  color="gray"
+                  className="w-fit"
+                  disabled={isApproving}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  color="success"
+                  className="w-fit min-w-[100px]"
+                  onClick={handleApproveWithdrawal}
+                  disabled={isApproving}
+                >
+                  {isApproving ? (
+                    <div className="flex items-center gap-2">
+                      <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                      Approving...
+                    </div>
+                  ) : (
+                    "Approve"
+                  )}
+                </Button>
+              </div>
+            </>
+          }
+        />
+      )}
 
-      {
-        isOpenDecline && (
-          <WithdrawalDialog
-            isOpen={isOpenDecline}
-            setIsOpen={setIsOpenDecline}
-            selectedWithdrawal={selectedWithdrawal || null}
-            content={
-              <>
-                <div className="flex flex-col gap-4">
-                  <h3 className="text-xl font-semibold">Decline Withdrawal</h3>
-                  <p className="text-gray-600 dark:text-gray-300">
-                    Are you sure you want to decline withdrawal request of{" "}
-                    <span className="font-medium">{selectedWithdrawal?.wallet?.currency?.symbol}
-                      {selectedWithdrawal?.amount}</span> for{" "}
-                    <span className="font-medium">{selectedWithdrawal?.user.name}</span>?
-                  </p>
-                </div>
+      {isOpenDecline && (
+        <WithdrawalDialog
+          isOpen={isOpenDecline}
+          setIsOpen={setIsOpenDecline}
+          selectedWithdrawal={selectedWithdrawal || null}
+          content={
+            <>
+              <div className="flex flex-col gap-4">
+                <h3 className="text-xl font-semibold">Decline Withdrawal</h3>
+                <p className="text-gray-600 dark:text-gray-300">
+                  Are you sure you want to decline withdrawal request of{" "}
+                  <span className="font-medium">
+                    {selectedWithdrawal?.wallet?.currency?.symbol}
+                    {selectedWithdrawal?.amount}
+                  </span>{" "}
+                  for <span className="font-medium">{selectedWithdrawal?.user.name}</span>?
+                </p>
+              </div>
 
-                <div className="flex flex-col gap-4">
-                  <Label htmlFor="reason">Reason</Label>
-                  <Textarea
-                    rows={4}
-                    value={declineReason}
-                    onChange={(e) => setDeclineReason(e.target.value)}
-                    id="reason"
-                    className="w-full form-control-textarea"
-                    placeholder="Enter reason for declining..."
-                  />
-                </div>
+              <div className="flex flex-col gap-4">
+                <Label htmlFor="reason">Reason</Label>
+                <Textarea
+                  rows={4}
+                  value={declineReason}
+                  onChange={(e) => setDeclineReason(e.target.value)}
+                  id="reason"
+                  className="w-full form-control-textarea"
+                  placeholder="Enter reason for declining..."
+                />
+              </div>
 
-                <div className="flex justify-end ml-auto gap-3">
-                  <Button
-                    onClick={() => {
-                      setIsOpenDecline(false);
-                      setDeclineReason("");
-                    }}
-                    color="gray"
-                    className="w-fit"
-                    disabled={isDeclining || !declineReason.trim()}
-                  >
-                    Cancel
-                  </Button>
+              <div className="flex justify-end ml-auto gap-3">
+                <Button
+                  onClick={() => {
+                    setIsOpenDecline(false);
+                    setDeclineReason("");
+                  }}
+                  color="gray"
+                  className="w-fit"
+                  disabled={isDeclining || !declineReason.trim()}
+                >
+                  Cancel
+                </Button>
 
-                  <Button
-                    color="failure"
-                    className="w-fit min-w-[100px]"
-                    onClick={handleDeclineWithdrawal}
-                    disabled={isDeclining || !declineReason.trim()}
-                  >
-                    {isDeclining ? (
-                      <div className="flex items-center gap-2">
-                        <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                        Declining...
-                      </div>
-                    ) : (
-                      "Decline"
-                    )}
-                  </Button>
-                </div>
-              </>
-            }
-          />
-        )
-      }
+                <Button
+                  color="failure"
+                  className="w-fit min-w-[100px]"
+                  onClick={handleDeclineWithdrawal}
+                  disabled={isDeclining || !declineReason.trim()}
+                >
+                  {isDeclining ? (
+                    <div className="flex items-center gap-2">
+                      <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                      Declining...
+                    </div>
+                  ) : (
+                    "Decline"
+                  )}
+                </Button>
+              </div>
+            </>
+          }
+        />
+      )}
     </>
   );
 };

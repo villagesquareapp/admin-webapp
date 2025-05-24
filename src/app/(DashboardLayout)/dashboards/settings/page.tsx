@@ -1,11 +1,10 @@
-import CreateTicketForm from "@/app/components/apps/tickets/CreateTicketForm";
-import type { Metadata } from "next";
 import BreadcrumbComp from "@/app/(DashboardLayout)/layout/shared/breadcrumb/BreadcrumbComp";
-import { TicketProvider } from "@/app/context/TicketContext/index";
+import { getSettings } from "@/app/api/setting";
+import type { Metadata } from "next";
 import SettingsComp from "./SettingsComp";
 
 export const metadata: Metadata = {
-  title: "Ticket App",
+  title: "Settings",
 };
 
 const BCrumb = [
@@ -17,11 +16,15 @@ const BCrumb = [
     title: "Settings",
   },
 ];
-const CreateTickets = () => {
+const CreateTickets = async () => {
+  const settings: ISettingsResponse | null = await getSettings();
+
   return (
     <>
       <BreadcrumbComp title="Settings" items={BCrumb} />
-      <SettingsComp />
+      <SettingsComp
+        settings={settings && Array.isArray(settings?.data) ? settings?.data : null}
+      />
     </>
   );
 };
