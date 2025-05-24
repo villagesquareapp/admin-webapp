@@ -27,12 +27,14 @@ const ShopTable = ({
       cell: (info) => (
         <div className="flex gap-3 items-center">
           <div className="relative size-10 rounded-full">
-            <Image
-              src={info.getValue()}
-              alt="icon"
-              fill
-              className="rounded-full object-cover"
-            />
+            {!!info.getValue() && (
+              <Image
+                src={info.getValue()}
+                alt="icon"
+                fill
+                className="rounded-full object-cover"
+              />
+            )}
           </div>
 
           <div className="truncat line-clamp-2 sm:max-w-56">
