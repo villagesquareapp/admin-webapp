@@ -25,7 +25,7 @@ const ShopTable = ({
     columnHelper.accessor("logo", {
       cell: (info) => (
         <div className="flex gap-3 items-center">
-          <div className="relative size-10 border dark:border/20 rounded-full">
+          <div className="relative size-10 border dark:border-white/20 rounded-full">
             {!!info.getValue() && (
               <Image
                 src={info.getValue()}
