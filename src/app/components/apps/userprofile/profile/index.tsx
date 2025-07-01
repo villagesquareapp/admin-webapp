@@ -12,7 +12,7 @@ interface UserProfileAppProps {
 }
 
 const UserProfileApp = ({ user }: UserProfileAppProps) => {
-  if (!user) return <p>User didnot exist</p>;
+  if (!user) return <p>User doesn&apos;t exist</p>;
 
   return (
     <>

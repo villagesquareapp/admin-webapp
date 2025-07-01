@@ -44,7 +44,7 @@ const FriendsCard = () => {
           icon={() => <Icon icon="solar:magnifer-line-duotone" height={18} />}
           type="text"
           sizing="md"
-          className="form-control "
+          className="form-control"
           placeholder="Search Friends"
           onChange={(e) => setSearch(e.target.value)}
         />

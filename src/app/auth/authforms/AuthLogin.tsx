@@ -26,7 +26,6 @@ const AuthLogin = () => {
 
   async function onSubmit(values: LoginFormValues) {
     setIsLoading(true);
-
     try {
       const result = await signIn("credentials", {
         email: values.email,

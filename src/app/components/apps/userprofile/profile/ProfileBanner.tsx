@@ -40,7 +40,7 @@ const ProfileBanner = ({ user }: { user: IUser | null }) => {
             </div>
             <div className="lg:col-span-4 col-span-12 lg:order-2 order-1">
               <div className="text-center -mt-20">
-                <div className="relative h-[100px] w-[100px] mx-auto">
+                {/* <div className="relative h-[100px] w-[100px] mx-auto">
                   <Image
                     src={
                       user?.user_details?.profile?.profile_picture ||
@@ -50,7 +50,7 @@ const ProfileBanner = ({ user }: { user: IUser | null }) => {
                     fill
                     className="rounded-full object-cover z-10 border-4 border-white dark:border-darkborder"
                   />
-                </div>
+                </div> */}
                 <div>
                   <div className="flex items-center justify-center gap-1">
                     <h5 className="text-base ">{user?.user_details?.profile?.name}</h5>
