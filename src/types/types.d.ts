@@ -197,7 +197,7 @@ interface IMedia {
 }
 
 
-interface IPosts {
+interface ss {
     uuid: string,
     caption: string,
     views_count: number,
@@ -401,6 +401,19 @@ interface ITicket {
 }
 
 interface ITicketResponse extends IPaginatedResponse<ITicket> { }
+
+interface IGifting {
+    uuid: string,
+    name: string,
+    icon: string | 'fewfee',
+    value: number,
+    status: boolean,
+    created_at: string,
+    updated_at: string,
+    deleted_at: string | null
+}
+
+interface IGiftingResponse extends IPaginatedResponse<IGifting> {}
 
 interface IComment {
     text: string,

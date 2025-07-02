@@ -7,7 +7,7 @@ import { getToken } from '@/lib/getToken';
 export const getEchoStats = async () => {
     const token = await getToken()
     return await apiGet<IEchoStats>(
-        `echos/stats`,
+        `echos/stats`, 
         token
     );
 };

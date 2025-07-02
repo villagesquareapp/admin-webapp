@@ -53,7 +53,7 @@ const Page = async ({
             echoes={echoes?.data || null}
             totalPages={echoes?.data?.last_page || 1}
             currentPage={page}
-            pageSize={limit}
+            pageSize={limit} 
           />
         </div>
       </div>
