@@ -197,7 +197,7 @@ interface IMedia {
 }
 
 
-interface ss {
+interface IPosts {
     uuid: string,
     caption: string,
     views_count: number,

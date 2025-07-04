@@ -1,9 +1,9 @@
 import { formatNumber } from "@/utils/formatNumber";
 import { formatDate } from "@/utils/dateUtils";
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
+import { AnimatePresence, motion } from "framer-motion";
 import { Icon } from "@iconify/react";
 import { Button, Label, Textarea } from "flowbite-react";
-import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
 import { IoMdCheckmark } from "react-icons/io";
 import { LiaTimesSolid } from "react-icons/lia";

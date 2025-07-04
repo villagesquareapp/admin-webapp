@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import {
   TbBrandFacebook,
   TbBrandGithub,
@@ -17,6 +17,7 @@ import { StaticImport } from "next/dist/shared/lib/get-img-props";
 import { LiaTimesSolid } from "react-icons/lia";
 import { IoMdCheckmark } from "react-icons/io";
 import { FaPlus } from "react-icons/fa";
+import AdminAddGift from "./AdminAddGift";
 
 interface IGiftProp {
   giftsData: IGifting[] | null;
@@ -24,6 +25,8 @@ interface IGiftProp {
 
 const GiftCard: React.FC<IGiftProp> = ({ giftsData }) => {
   // const { followers, setSearch }: any = useContext(UserDataContext);
+
+  const [isOpen, setIsOpen] = useState<boolean>(false);
 
   return (
     <>
@@ -44,7 +47,7 @@ const GiftCard: React.FC<IGiftProp> = ({ giftsData }) => {
             color="success"
             size="sm"
             className="w-32 lg:w-36 lg:h-10 lg:text-base"
-            // onClick={() => setIsApproveDialogOpen(true)}
+            onClick={() => setIsOpen(true)}
           >
             <FaPlus size={16} className="mr-2" />
             Add Gift
@@ -103,6 +106,10 @@ const GiftCard: React.FC<IGiftProp> = ({ giftsData }) => {
           );
         })}
       </div>
+
+      {isOpen && (
+        <AdminAddGift isOpen={isOpen} onClose={() => setIsOpen(false)} />
+      )}
     </>
   );
 };
