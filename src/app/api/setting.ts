@@ -14,7 +14,7 @@ export const getSettings = async () => {
 };
 
 export const addNewSettings = async (newSetting: Omit<ISettings, "uuid" | "created_at" | "updated_at" | "deleted_at">) => {
-    const token = await getToken()
+    const token = await getToken();
     const response = await apiPost(`app-settings/add`, newSetting, token)
 
     if (response.status) {
@@ -22,8 +22,3 @@ export const addNewSettings = async (newSetting: Omit<ISettings, "uuid" | "creat
     }
     return response
 };
-
-
-
-
-
