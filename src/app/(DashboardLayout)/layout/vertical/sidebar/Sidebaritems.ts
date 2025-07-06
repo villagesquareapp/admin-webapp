@@ -84,10 +84,16 @@ const SidebarContent: MenuItem[] = [
             url: "/dashboards/reports",
           },
           {
-            name: "Gift",
+            name: "Gifts",
             icon: "solar:gift-line-duotone",
             id: uniqueId(),
             url: "/dashboards/gifts",
+          },
+          {
+            name: "Wallets",
+            icon: "solar:wallet-money-line-duotone",
+            id: uniqueId(),
+            url: "/dashboards/wallets",
           },
           {
             name: "Settings",
