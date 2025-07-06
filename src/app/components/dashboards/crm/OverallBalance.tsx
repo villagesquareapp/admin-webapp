@@ -275,7 +275,7 @@ const OverallBalance = () => {
                         : "dark:text-white opacity-60"
                     }`}
                   >
-                    Orders
+                    USD Value
                   </div>
                   <div
                     onClick={() => handleTabClick("Expenses")}
@@ -285,7 +285,7 @@ const OverallBalance = () => {
                         : "dark:text-white opacity-60 "
                     }`}
                   >
-                    Expenses
+                    Cowry Value
                   </div>
                 </div>
               </div>

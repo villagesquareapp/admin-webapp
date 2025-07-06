@@ -73,7 +73,7 @@ const GiftCard: React.FC<IGiftProp> = ({ giftsData, token }) => {
             >
               <CardBox className="relative px-0 pb-0 text-center overflow-hidden">
                 <div className="absolute top-4 right-4 z-10">
-                  <Dropdown label={<HiOutlineDotsVertical size={20} />} inline>
+                  {/* <Dropdown label={<HiOutlineDotsVertical size={20} />} inline>
                     <Dropdown.Item
                       onClick={() => {
                         setEditingGift(gift);
@@ -82,7 +82,7 @@ const GiftCard: React.FC<IGiftProp> = ({ giftsData, token }) => {
                     >
                       Edit
                     </Dropdown.Item>
-                  </Dropdown>
+                  </Dropdown> */}
                 </div>
                 <Image
                   src={
@@ -97,29 +97,33 @@ const GiftCard: React.FC<IGiftProp> = ({ giftsData, token }) => {
                 />
                 <div>
                   <h5 className="text-lg mt-3">{gift.name}</h5>
-                  <p className="text-xs text-darklink">{gift.value}</p>
+                  <p className="text-[16px] text-darklink font-bold">{gift.value}</p>
                 </div>
                 <div className="flex justify-center gap-4 items-center mt-4 pt-4 bg-muted pb-4 dark:bg-darkmuted">
                   <div className="flex justify-end gap-2 mt-4">
                     <Button
-                      color="failure"
+                      color={gift.status === true ? "failure" : "success"}
                       size="sm"
                       className="px-4 text-sm lg:text-base"
-                      disabled={gift.status === true}
+                      // disabled={gift.status === true}
                       // onClick={() => setIsDeclineDialogOpen(true)}
                     >
                       <LiaTimesSolid size={16} />
-                      Disable
+                      {gift.status === true ? "Disable" : "Enable"}
                     </Button>
                     <Button
                       color="success"
                       size="sm"
                       className="px-4 text-sm lg:text-base"
                       disabled={gift.status === false}
+                      onClick={() => {
+                        setEditingGift(gift);
+                        setEditModalOpen(true);
+                      }}
                       // onClick={() => setIsApproveDialogOpen(true)}
                     >
                       <IoMdCheckmark size={16} />
-                      Enable
+                      Update
                     </Button>
                   </div>
                 </div>
