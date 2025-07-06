@@ -1,6 +1,6 @@
 "use server";
 
-import { apiGet, apiPost } from "@/lib/api";
+import { apiGet, apiPatch, apiPost } from "@/lib/api";
 import { getToken } from "@/lib/getToken";
 import { revalidateCurrentPath } from "@/lib/revalidate";
 
@@ -28,4 +28,16 @@ export const addGifts = async (
   }
 
   return response;
+};
+
+export const editGift = async (
+  giftId: string,
+  data: { name: string, value: number }
+) => {
+  const token = await getToken();
+  return await apiPatch<ApiResponse>(
+    `gifting/${giftId}/update`,
+    data,
+    token
+  );
 };

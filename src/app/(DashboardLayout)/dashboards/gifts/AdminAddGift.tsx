@@ -11,9 +11,12 @@ import { addGiftClient } from "@/app/api/addGiftClient";
 interface AddGiftModalProps {
   isOpen: boolean;
   onClose: () => void;
+  token: string;
+  onGiftAdded: (gift: IGifting) => void;
+
 }
 
-const AdminAddGift: React.FC<AddGiftModalProps> = ({ isOpen, onClose }) => {
+const AdminAddGift: React.FC<AddGiftModalProps> = ({ isOpen, onClose, token, onGiftAdded }) => {
   const [name, setName] = useState<string>("");
   const [value, setValue] = useState<string>("");
   const [icon, setIcon] = useState<File | null>(null);
@@ -30,10 +33,12 @@ const AdminAddGift: React.FC<AddGiftModalProps> = ({ isOpen, onClose }) => {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
+    console.log(name, value, icon);
+
     // Submit logic here (e.g., API call)
+    setLoading(true);
     try {
-      setLoading(true);
-      const response = await addGiftClient(name, value, icon as File);
+      const response = await addGiftClient(name, value, icon as File, token);
 
       console.log("API response", response);
 
@@ -43,6 +48,7 @@ const AdminAddGift: React.FC<AddGiftModalProps> = ({ isOpen, onClose }) => {
         setName("");
         setValue("");
         setIcon(null);
+        onGiftAdded(response.data);
         onClose();
       } else {
         toast(response.message || "Something went wrong");
@@ -131,7 +137,7 @@ const AdminAddGift: React.FC<AddGiftModalProps> = ({ isOpen, onClose }) => {
                     id="value"
                     type="text"
                     sizing="md"
-                    placeholder="w.g. 100"
+                    placeholder="e.g. 100"
                     value={value}
                     onChange={(e) => setValue(e.target.value)}
                     required

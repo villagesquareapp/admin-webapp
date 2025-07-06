@@ -1,28 +1,42 @@
 // lib/clientApi.ts or app/api/gift/client.ts
+
 import axios from "axios";
 import { getToken } from "@/lib/getToken";
 
 export const addGiftClient = async (
   name: string,
   value: string,
-  icon: File
+  icon: File,
+  token: string
 ) => {
-  const token = await getToken(); // Optional – you may need to pass this in if it's a browser-only helper
 
+  // const token = getToken();
   const formData = new FormData();
   formData.append("name", name);
   formData.append("value", value);
   formData.append("icon", icon);
 
-  const response = await axios.post(
-    `${process.env.NEXT_PUBLIC_API_URL}/gifting/add-gift`,
-    formData,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
+  // const response = await axios.post(
+  //   `${process.env.NEXT_PUBLIC_API_URL}/gifting/add-gift`,
+  //   formData,
+  //   {
+  //     headers: {
+  //       Authorization: `Bearer ${token}`,
+  //     },
+  //   }
+  // );
 
-  return response.data;
+  const response = await fetch(`${process.env.NEXT_PUBLIC_CLIENT_API_URL}/gifting/add`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    body: formData,
+  });
+
+  return await response.json();
+
+  
 };
+
+console.log("Requesting:", `${process.env.NEXT_PUBLIC_CLIENT_API_URL}/gifting/add`);
