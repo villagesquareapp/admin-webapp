@@ -87,7 +87,7 @@ const EditGiftModal: React.FC<Props> = ({ isOpen, onClose, gift, onGiftUpdated }
             >
               <div className="flex justify-between items-center mb-4">
                 <DialogTitle className="text-xl font-semibold">
-                  Edit Gift
+                  Update Gift
                 </DialogTitle>
                 <button onClick={onClose} className="text-gray-500 hover:text-gray-800">
                   ✕

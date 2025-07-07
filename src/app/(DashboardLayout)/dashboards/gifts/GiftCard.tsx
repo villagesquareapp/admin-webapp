@@ -22,6 +22,7 @@ import { HiOutlineDotsVertical } from "react-icons/hi";
 import { Dropdown } from "flowbite-react";
 import EditGiftModal from "./EditGiftModal";
 import { getGifts } from "@/app/api/gift";
+import ChangeGiftStatus from "./ChangeGiftStatus";
 
 interface IGiftProp {
   giftsData: IGifting[] | null;
@@ -37,6 +38,17 @@ const GiftCard: React.FC<IGiftProp> = ({ giftsData, token }) => {
 
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [editingGift, setEditingGift] = useState<IGifting | null>(null);
+
+  const [changeStatusModalOpen, setChangeStatusModalOpen] = useState<boolean>(false);
+
+  const fetchGifts = async () => {
+  const res = await getGifts();
+  if (Array.isArray(res?.data)) {
+    setGifts(res.data);
+  }
+};
+
+
 
   return (
     <>
@@ -105,10 +117,14 @@ const GiftCard: React.FC<IGiftProp> = ({ giftsData, token }) => {
                       color={gift.status === true ? "failure" : "success"}
                       size="sm"
                       className="px-4 text-sm lg:text-base"
+                      onClick={() => {
+                        setEditingGift(gift);
+                        setChangeStatusModalOpen(true);
+                      }}
                       // disabled={gift.status === true}
                       // onClick={() => setIsDeclineDialogOpen(true)}
                     >
-                      <LiaTimesSolid size={16} />
+                      {gift.status === true ? <LiaTimesSolid size={16} /> : <IoMdCheckmark size={16} />}
                       {gift.status === true ? "Disable" : "Enable"}
                     </Button>
                     <Button
@@ -150,13 +166,6 @@ const GiftCard: React.FC<IGiftProp> = ({ giftsData, token }) => {
             setEditingGift(null);
           }}
           gift={editingGift}
-          // onGiftUpdated={(updatedGift) => {
-          //   setGifts((prevGifts) =>
-          //     prevGifts.map((gift) =>
-          //       gift.uuid === updatedGift.uuid ? updatedGift : gift
-          //     )
-          //   );
-          // }}
           onGiftUpdated={async () => {
             const fresh = await getGifts();
             if (fresh?.data) {
@@ -165,8 +174,20 @@ const GiftCard: React.FC<IGiftProp> = ({ giftsData, token }) => {
           }}
         />
       )}
+
+      {changeStatusModalOpen && (
+        <ChangeGiftStatus
+          isOpen={changeStatusModalOpen}
+          onClose={() => {
+            setChangeStatusModalOpen(false)
+          }}
+          gift={editingGift}
+          refreshGifts={fetchGifts}
+        />
+      )}
     </>
   );
 };
 
 export default GiftCard;
+
