@@ -50,7 +50,7 @@ const SidebarLayout = () => {
           <SideProfile />
         </div> */}
         <Sidebar
-          className="fixed xl:block hidden h-screen w-[260px] bg-white dark:bg-darkgray pt-6 ps-4 rtl:pe-4 rtl:ps-0 z-30"
+          className="fixed menu-sidebar pt-6 bg-white dark:bg-darkgray ps-4 rtl:pe-4 rtl:ps-0"
           aria-label="Sidebar with multi-level dropdown example"
         >
           <SimpleBar className="h-[calc(100vh_-_85px)]">

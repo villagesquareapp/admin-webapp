@@ -21,24 +21,24 @@ const crm = () => {
         <div className="lg:col-span-8 col-span-12">
           <OverallBalance />
         </div>
-        // <div className="lg:col-span-4 col-span-12">
-        //   <ReturnOnInvest />
-        // </div>
-        // <div className="lg:col-span-4 col-span-12">
-        //   <TotalFollowers />
-        // </div>
-        // <div className="lg:col-span-4 col-span-12">
-        //   <TotalIncome />
-        // </div>
-        // <div className="lg:col-span-4 col-span-12">
-        //   <CurrentBalance />
-        // </div>
-        // <div className="lg:col-span-5 col-span-12">
-        //   <CrmMarketingReport />
-        // </div>
-        // <div className="lg:col-span-7 col-span-12">
-        //   <PaymentMethods />
-        // </div>
+        {/* <div className="lg:col-span-4 col-span-12">
+          <ReturnOnInvest />
+        </div>
+        <div className="lg:col-span-4 col-span-12">
+          <TotalFollowers />
+        </div>
+        <div className="lg:col-span-4 col-span-12">
+          <TotalIncome />
+        </div>
+        <div className="lg:col-span-4 col-span-12">
+          <CurrentBalance />
+        </div>
+        <div className="lg:col-span-5 col-span-12">
+          <CrmMarketingReport />
+        </div>
+        <div className="lg:col-span-7 col-span-12">
+          <PaymentMethods />
+        </div> */}
         <div className="col-span-12">
           <RecentProjects />
         </div>

@@ -1,6 +1,6 @@
 "use server";
 
-import { apiGet, apiPatch, apiPost } from "@/lib/api";
+import { apiDelete, apiGet, apiPatch, apiPost } from "@/lib/api";
 import { getToken } from "@/lib/getToken";
 import { revalidateCurrentPath } from "@/lib/revalidate";
 
@@ -41,3 +41,23 @@ export const editGift = async (
     token
   );
 };
+
+export const disableGift = async (
+  giftId: string
+) => {
+  const token = await getToken();
+    if (!token) throw new Error("No token found");
+  return await apiDelete(
+    `gifting/${giftId}/disable`, token
+  )
+}
+
+export const enableGift = async (
+  giftId: string
+) => {
+  const token = await getToken();
+    if (!token) throw new Error("No token found");
+  return await apiDelete(
+    `gifting/${giftId}/enable`, token
+  )
+}
