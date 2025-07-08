@@ -8,7 +8,7 @@ const Page = async () => {
     const token = await getToken();
 
       if (!token) throw new Error("No token found");
-  console.log("Gift Result:", gifts);
+  // console.log("Gift Result:", gifts);
 
   return (
     <>

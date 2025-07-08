@@ -5,18 +5,22 @@ import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Button, Label, TextInput, FileInput } from "flowbite-react";
 import { toast } from "sonner";
-import { addGifts } from "@/app/api/gift";
-import { addGiftClient } from "@/app/api/addGiftClient";
+import { addGifts } from "@/app/api/addGiftClient";
+// import { addGiftClient } from "@/app/api/addGiftClient";
 
 interface AddGiftModalProps {
   isOpen: boolean;
   onClose: () => void;
   token: string;
   onGiftAdded: (gift: IGifting) => void;
-
 }
 
-const AdminAddGift: React.FC<AddGiftModalProps> = ({ isOpen, onClose, token, onGiftAdded }) => {
+const AdminAddGift: React.FC<AddGiftModalProps> = ({
+  isOpen,
+  onClose,
+  token,
+  onGiftAdded,
+}) => {
   const [name, setName] = useState<string>("");
   const [value, setValue] = useState<string>("");
   const [icon, setIcon] = useState<File | null>(null);
@@ -33,36 +37,40 @@ const AdminAddGift: React.FC<AddGiftModalProps> = ({ isOpen, onClose, token, onG
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
+    if (!icon) {
+      toast.error("Please select an icon image");
+      return;
+    }
+
     console.log(name, value, icon);
 
     // Submit logic here (e.g., API call)
     setLoading(true);
     try {
-      const response = await addGiftClient(name, value, icon as File, token);
+      const response = await addGifts(name, value, icon as File, token);
 
-      console.log("API response", response);
+      console.log(response);
 
       if (response.status) {
-        toast("Gift added successfully");
-        // Optionally reset form:
+        toast.success("Gift added successfully");
+
+        // Reset form
         setName("");
         setValue("");
         setIcon(null);
-        onGiftAdded(response.data);
+
+        // Optional callbacks
+        // onGiftAdded?.(response.data);
         onClose();
       } else {
-        toast(response.message || "Something went wrong");
+        toast.error(response.message || "Something went wrong");
       }
     } catch (error) {
       console.error("Error adding gift:", error);
-      toast("Failed to add gift.");
+      toast.error("Failed to add gift.");
     } finally {
       setLoading(false);
     }
-
-    // console.log({ name, value, icon });
-
-    onClose(); // Close modal
   };
 
   return (

@@ -1,6 +1,6 @@
 "use server";
 
-import { apiDelete, apiGet, apiPatch, apiPost } from "@/lib/api";
+import { apiDelete, apiGet, apiPatch, apiPost, apiUploadFile } from "@/lib/api";
 import { getToken } from "@/lib/getToken";
 import { revalidateCurrentPath } from "@/lib/revalidate";
 
@@ -13,51 +13,34 @@ export const addGifts = async (
   name: string,
   value: string | number,
   icon: File
-) => {
+): Promise<ApiResponse<IGifting>> => {
   const token = await getToken();
+  if (!token) throw new Error("Token not found");
 
-  const formData = new FormData();
-  formData.append("name", name);
-  formData.append("value", value.toString());
-  formData.append("icon", icon);
-
-  const response = await apiPost(`gifting/add-gift`, formData, token);
-
-  if (response.status) {
-    await revalidateCurrentPath();
-  }
+  const response = await apiUploadFile<IGifting>("gifting/add", icon, token, {
+    name,
+    value,
+  });
 
   return response;
 };
 
 export const editGift = async (
   giftId: string,
-  data: { name: string, value: number }
+  data: { name: string; value: number }
 ) => {
   const token = await getToken();
-  return await apiPatch<ApiResponse>(
-    `gifting/${giftId}/update`,
-    data,
-    token
-  );
+  return await apiPatch<ApiResponse>(`gifting/${giftId}/update`, data, token);
 };
 
-export const disableGift = async (
-  giftId: string
-) => {
+export const disableGift = async (giftId: string) => {
   const token = await getToken();
-    if (!token) throw new Error("No token found");
-  return await apiDelete(
-    `gifting/${giftId}/disable`, token
-  )
-}
+  if (!token) throw new Error("No token found");
+  return await apiDelete(`gifting/${giftId}/disable`, token);
+};
 
-export const enableGift = async (
-  giftId: string
-) => {
+export const enableGift = async (giftId: string) => {
   const token = await getToken();
-    if (!token) throw new Error("No token found");
-  return await apiDelete(
-    `gifting/${giftId}/enable`, token
-  )
-}
+  if (!token) throw new Error("No token found");
+  return await apiDelete(`gifting/${giftId}/enable`, token);
+};
