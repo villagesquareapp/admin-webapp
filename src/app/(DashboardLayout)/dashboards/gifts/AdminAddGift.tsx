@@ -12,7 +12,7 @@ interface AddGiftModalProps {
   isOpen: boolean;
   onClose: () => void;
   token: string;
-  onGiftAdded: (gift: IGifting) => void;
+  onGiftAdded: () => void;
 }
 
 const AdminAddGift: React.FC<AddGiftModalProps> = ({
@@ -60,7 +60,7 @@ const AdminAddGift: React.FC<AddGiftModalProps> = ({
         setIcon(null);
 
         // Optional callbacks
-        // onGiftAdded?.(response.data);
+        onGiftAdded()
         onClose();
       } else {
         toast.error(response.message || "Something went wrong");
