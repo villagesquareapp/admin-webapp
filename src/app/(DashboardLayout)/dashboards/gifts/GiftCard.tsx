@@ -7,7 +7,7 @@ import {
   TbBrandInstagram,
   TbBrandTwitter,
 } from "react-icons/tb";
-import { Badge, Button, TextInput } from "flowbite-react";
+import { Badge, Button, Spinner, TextInput } from "flowbite-react";
 import { Icon } from "@iconify/react";
 import CardBox from "@/app/components/shared/CardBox";
 import Image from "next/image";
@@ -34,27 +34,32 @@ const GiftCard: React.FC<IGiftProp> = ({ giftsData, token }) => {
 
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
-  const [gifts, setGifts] = useState<IGifting[]>(giftsData || []);
+  // const [gifts, setGifts] = useState<IGiftingResponse>();
+
+  const [gifts, setGifts] = useState<IGifting[]>(giftsData ?? []);
 
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [editingGift, setEditingGift] = useState<IGifting | null>(null);
 
-  const [changeStatusModalOpen, setChangeStatusModalOpen] = useState<boolean>(false);
+  const [changeStatusModalOpen, setChangeStatusModalOpen] =
+    useState<boolean>(false);
+
+  const [loadingGifts, setLoadingGifts] = useState<boolean>(false);
 
   const fetchGifts = async () => {
-  const res = await getGifts();
-  if (Array.isArray(res?.data)) {
-    setGifts(res.data);
-  }
-};
-
-
+    setLoadingGifts(true);
+    const res = await getGifts();
+    if (Array.isArray(res?.data)) {
+      setGifts(res?.data);
+    }
+    setLoadingGifts(false);
+  };
 
   return (
     <>
       <div className="flex justify-between mb-6">
         <h5 className="text-2xl flex gap-3 items-center sm:my-0 my-4">
-          Gifts <Badge color={"secondary"}>{giftsData?.length}</Badge>
+          Gifts <Badge color={"secondary"}>{gifts?.length}</Badge>
         </h5>
         <div>
           {/* <TextInput
@@ -76,85 +81,85 @@ const GiftCard: React.FC<IGiftProp> = ({ giftsData, token }) => {
           </Button>
         </div>
       </div>
-      <div className="grid grid-cols-12 gap-30">
-        {giftsData?.map((gift) => {
-          return (
-            <div
-              className="lg:col-span-3 md:col-span-4 sm:col-span-6 col-span-12"
-              key={gift.uuid}
-            >
-              <CardBox className="relative px-0 pb-0 text-center overflow-hidden">
-                <div className="absolute top-4 right-4 z-10">
-                  {/* <Dropdown label={<HiOutlineDotsVertical size={20} />} inline>
-                    <Dropdown.Item
-                      onClick={() => {
-                        setEditingGift(gift);
-                        setEditModalOpen(true);
-                      }}
-                    >
-                      Edit
-                    </Dropdown.Item>
-                  </Dropdown> */}
-                </div>
-                <Image
-                  src={
-                    gift.icon?.startsWith("http")
-                      ? gift.icon
-                      : "https://d1fmlfdhv85k5v.cloudfront.net/assets/gifts/diamond_gift.png"
-                  }
-                  alt="materialm"
-                  className="rounded-full mx-auto"
-                  height={80}
-                  width={80}
-                />
-                <div>
-                  <h5 className="text-lg mt-3">{gift.name}</h5>
-                  <p className="text-[16px] text-darklink font-bold">{gift.value}</p>
-                </div>
-                <div className="flex justify-center gap-4 items-center mt-4 pt-4 bg-muted pb-4 dark:bg-darkmuted">
-                  <div className="flex justify-end gap-2 mt-4">
-                    <Button
-                      color={gift.status === true ? "failure" : "success"}
-                      size="sm"
-                      className="px-4 text-sm lg:text-base"
-                      onClick={() => {
-                        setEditingGift(gift);
-                        setChangeStatusModalOpen(true);
-                      }}
-                      // disabled={gift.status === true}
-                      // onClick={() => setIsDeclineDialogOpen(true)}
-                    >
-                      {gift.status === true ? <LiaTimesSolid size={16} /> : <IoMdCheckmark size={16} />}
-                      {gift.status === true ? "Disable" : "Enable"}
-                    </Button>
-                    <Button
-                      color="success"
-                      size="sm"
-                      className="px-4 text-sm lg:text-base"
-                      disabled={gift.status === false}
-                      onClick={() => {
-                        setEditingGift(gift);
-                        setEditModalOpen(true);
-                      }}
-                      // onClick={() => setIsApproveDialogOpen(true)}
-                    >
-                      <IoMdCheckmark size={16} />
-                      Update
-                    </Button>
+      {loadingGifts ? (
+        <div className="flex justify-center py-10">
+          <Spinner size="lg" color="success" />
+        </div>
+      ) : (
+        <div className="grid grid-cols-12 gap-30">
+          {gifts?.map((gift) => {
+            return (
+              <div
+                className="lg:col-span-3 md:col-span-4 sm:col-span-6 col-span-12"
+                key={gift.uuid}
+              >
+                <CardBox className="relative px-0 pb-0 text-center overflow-hidden">
+                  <Image
+                    src={
+                      gift.icon?.startsWith("http")
+                        ? gift.icon
+                        : "https://d1fmlfdhv85k5v.cloudfront.net/assets/gifts/diamond_gift.png"
+                    }
+                    alt="materialm"
+                    className="w-20 h-20 object-cover rounded-full mx-auto"
+                    width={80}
+                    height={80}
+                  />
+                  <div>
+                    <h5 className="text-lg mt-3">{gift.name}</h5>
+                    <p className="text-[16px] text-darklink font-bold">
+                      {gift.value}
+                    </p>
                   </div>
-                </div>
-              </CardBox>
-            </div>
-          );
-        })}
-      </div>
+                  <div className="flex justify-center gap-4 items-center mt-4 pt-4 bg-muted pb-4 dark:bg-darkmuted">
+                    <div className="flex justify-end gap-2 mt-4">
+                      <Button
+                        color={gift.status === true ? "failure" : "success"}
+                        size="sm"
+                        className="px-4 text-sm lg:text-base"
+                        onClick={() => {
+                          setEditingGift(gift);
+                          setChangeStatusModalOpen(true);
+                        }}
+                        // disabled={gift.status === true}
+                        // onClick={() => setIsDeclineDialogOpen(true)}
+                      >
+                        {gift.status === true ? (
+                          <LiaTimesSolid size={16} />
+                        ) : (
+                          <IoMdCheckmark size={16} />
+                        )}
+                        {gift.status === true ? "Disable" : "Enable"}
+                      </Button>
+                      <Button
+                        color="success"
+                        size="sm"
+                        className="px-4 text-sm lg:text-base"
+                        disabled={gift.status === false}
+                        onClick={() => {
+                          setEditingGift(gift);
+                          setEditModalOpen(true);
+                        }}
+                        // onClick={() => setIsApproveDialogOpen(true)}
+                      >
+                        <IoMdCheckmark size={16} />
+                        Update
+                      </Button>
+                    </div>
+                  </div>
+                </CardBox>
+              </div>
+            );
+          })}
+        </div>
+      )}
 
       {isOpen && (
         <AdminAddGift
           isOpen={isOpen}
           onClose={() => setIsOpen(false)}
           token={token}
-          onGiftAdded={(newGift) => setGifts((prev) => [newGift, ...prev])}
+          onGiftAdded={fetchGifts}
         />
       )}
 
@@ -166,12 +171,7 @@ const GiftCard: React.FC<IGiftProp> = ({ giftsData, token }) => {
             setEditingGift(null);
           }}
           gift={editingGift}
-          onGiftUpdated={async () => {
-            const fresh = await getGifts();
-            if (fresh?.data) {
-              setGifts(fresh.data.data);
-            }
-          }}
+          onGiftUpdated={fetchGifts}
         />
       )}
 
@@ -179,7 +179,7 @@ const GiftCard: React.FC<IGiftProp> = ({ giftsData, token }) => {
         <ChangeGiftStatus
           isOpen={changeStatusModalOpen}
           onClose={() => {
-            setChangeStatusModalOpen(false)
+            setChangeStatusModalOpen(false);
           }}
           gift={editingGift}
           refreshGifts={fetchGifts}
@@ -190,4 +190,3 @@ const GiftCard: React.FC<IGiftProp> = ({ giftsData, token }) => {
 };
 
 export default GiftCard;
-

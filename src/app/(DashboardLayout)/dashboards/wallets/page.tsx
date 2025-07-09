@@ -42,12 +42,12 @@ const crm = () => {
         <div className="col-span-12">
           <RecentProjects />
         </div>
-        <div className="lg:col-span-8 col-span-12">
+        {/* <div className="lg:col-span-8 col-span-12">
           <DeliveryAnalytics />
         </div>
         <div className="lg:col-span-4 col-span-12">
           <EarningReports />
-        </div>
+        </div> */}
       </div>
     </>
   );
