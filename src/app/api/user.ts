@@ -28,3 +28,10 @@ export const getUserDetails = async (id: string) => {
     );
 };
 
+export const getRandomUsers = async (page: number = 1, limit: number = 10) => {
+    const token = await getToken()
+    return await apiGet<IUsersResponse>(
+        `users?page=${page}&limit=${limit}`,
+        token
+    );
+}

@@ -153,9 +153,6 @@ const Page = async ({
             currentSelectedVerificationRequested={selectedVerificationRequested}
             currentSelectedUser={selectedUser}
           />
-          <Link href={'/dashboards/random-users'} className='mt-12'>
-            <Button>Random users to be paid</Button>
-          </Link>
         </div>
         <div className="lg:col-span-5 col-span-12">
           <Withdrawals
