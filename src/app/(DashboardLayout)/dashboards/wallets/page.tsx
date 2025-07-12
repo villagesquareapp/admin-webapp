@@ -11,6 +11,8 @@ import TotalIncome from "@/app/components/dashboards/crm/TotalIncome";
 import React from "react";
 import type { Metadata } from "next";
 import CowryOverallBalance from "./CowryOverallBalance";
+import RecentCowryTransfer from "./RecentCowryTransfer";
+import PaystackOverallBalance from "./PaystackOverallBalance";
 export const metadata: Metadata = {
   title: "Village Square Admin Dashboard",
   description: "",
@@ -21,7 +23,7 @@ const crm = () => {
       <div className="grid grid-cols-12 gap-30">
         <div className='col-span-12'>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <OverallBalance />
+            <PaystackOverallBalance />
             <CowryOverallBalance />
           </div>
         </div>
@@ -44,7 +46,7 @@ const crm = () => {
           <PaymentMethods />
         </div> */}
         <div className="col-span-12">
-          <RecentProjects />
+          <RecentCowryTransfer />
         </div>
         {/* <div className="lg:col-span-8 col-span-12">
           <DeliveryAnalytics />

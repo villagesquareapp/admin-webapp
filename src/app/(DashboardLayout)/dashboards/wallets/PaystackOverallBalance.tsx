@@ -6,10 +6,16 @@ const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 import { Badge, Button } from "flowbite-react";
 import { Icon } from "@iconify/react";
 import CardBox from "@/app/components/shared/CardBox";
-import Link from "next/link";
+import { FaPlus } from "react-icons/fa";
 
-const CowryOverallBalance = () => {
+const OverallBalance = () => {
   const IconData = [
+    // {
+    //   icon: "solar:course-up-line-duotone",
+    //   title: "$14,673",
+    //   subtitle: "Total Sales",
+    //   color: "warning",
+    // },
     {
       icon: "solar:dollar-minimalistic-line-duotone",
       title: "$9,281",
@@ -22,6 +28,12 @@ const CowryOverallBalance = () => {
       subtitle: "Total Users",
       color: "success",
     },
+    // {
+    //   icon: "solar:pie-chart-line-duotone",
+    //   title: "$4,673",
+    //   subtitle: "Total Expense",
+    //   color: "primary",
+    // },
   ];
 
   const ChartData1: any = {
@@ -223,7 +235,7 @@ const CowryOverallBalance = () => {
   };
 
   // Custom Tab
-  const [activeTab, setActiveTab] = useState("Orders");
+  const [activeTab, setActiveTab] = useState("USD");
   const handleTabClick = (tab: React.SetStateAction<string>) => {
     setActiveTab(tab);
   };
@@ -237,7 +249,7 @@ const CowryOverallBalance = () => {
             {/* Left: Balance Info */}
             <div>
               <span className="text-sm font-light text-ld">
-                VS Cowry Overall Balance
+                Paystack Overall Balance
               </span>
               <h3 className="text-3xl my-1">$2,538,942</h3>
               <div className="flex gap-1 items-center">
@@ -260,14 +272,16 @@ const CowryOverallBalance = () => {
             {/* Right: Tab Buttons */}
             <div className="sm:ml-auto mb-4 sm:mt-0 mt-6">
               <div className="flex flex-wrap bg-muted dark:bg-dark p-1 rounded-full">
-                {["Cowry Value", "USD Value", "NGN Value"].map((label, i) => (
+                {["USD Value", "NGN Value"].map((label, i) => (
                   <div
                     key={label}
                     onClick={() =>
-                      handleTabClick(i === 2 ? "Expenses" : "Orders")
+                      handleTabClick(
+                        label === "USD Value" ? "USD" : "NGN"
+                      )
                     }
                     className={`py-2 px-4 rounded-full min-w-[100px] cursor-pointer text-dark text-xs font-semibold text-center ${
-                      activeTab === (i === 2 ? "Expenses" : "Orders")
+                      activeTab === (label === "USD Value" ? "USD" : "NGN")
                         ? "text-dark bg-white dark:bg-darkgray dark:text-white"
                         : "dark:text-white opacity-60"
                     }`}
@@ -281,7 +295,7 @@ const CowryOverallBalance = () => {
 
           {/* Middle Section - Chart (left side) */}
           <div className="md:col-span-8 col-span-12">
-            {activeTab === "Orders" && (
+            {activeTab === "USD" && (
               <Chart
                 options={ChartData1}
                 series={ChartData1.series}
@@ -292,7 +306,7 @@ const CowryOverallBalance = () => {
               />
             )}
 
-            {activeTab === "Expenses" && (
+            {activeTab === "NGN" && (
               <div className="mt-4 -ms-3 -me-4">
                 <Chart
                   options={AreaChartData}
@@ -326,11 +340,14 @@ const CowryOverallBalance = () => {
                   </div>
                 </div>
               ))}
-              <Link href={"/dashboards/random-users"} className="mt-3">
-                <Button size={"sm"} className="text-xs">
-                  Random users to be paid
-                </Button>
-              </Link>
+              <Button
+                color="success"
+                size="sm"
+                className="w-32 lg:w-36 lg:h-10 lg:text-base"
+              >
+                <FaPlus size={16} className="mr-1" />
+                Fund wallet
+              </Button>
             </div>
           </div>
         </div>
@@ -339,4 +356,4 @@ const CowryOverallBalance = () => {
   );
 };
 
-export default CowryOverallBalance;
+export default OverallBalance;

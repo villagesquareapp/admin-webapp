@@ -54,13 +54,13 @@ const SidebarContent: MenuItem[] = [
             url: "/dashboards/echoes",
           },
           {
-            name: "Live Streams",
+            name: "Livestreams",
             icon: "solar:play-stream-line-duotone",
             id: uniqueId(),
             url: "/dashboards/livestreams",
           },
           {
-            name: "Market Squares",
+            name: "Marketsquare",
             icon: "solar:shop-2-line-duotone",
             id: uniqueId(),
             url: "/dashboards/markets",
