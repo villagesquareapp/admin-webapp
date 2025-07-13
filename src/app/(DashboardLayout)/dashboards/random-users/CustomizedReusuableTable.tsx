@@ -14,10 +14,11 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { Button, Checkbox, Dropdown, Select } from "flowbite-react";
+import { Button, Checkbox, Dropdown, Select, TextInput } from "flowbite-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import React from "react";
 import { HiOutlineDotsVertical } from "react-icons/hi";
+import { FaSearch } from "react-icons/fa";
 
 interface FilterDropdown {
   label: string;
@@ -186,6 +187,24 @@ function CustomizedReusableTable({
             )}
           </div>
         </div>
+
+        <div className="flex w-full max-w-md items-center gap-2">
+      {/* Input with Icon */}
+      <TextInput
+        id="search"
+        type="text"
+        placeholder="Search..."
+        icon={FaSearch}
+        // value={query}
+        // onChange={(e) => setQuery(e.target.value)}
+        className="flex-grow"
+      />
+
+      {/* Search Button */}
+      <Button color="primary">
+        Search
+      </Button>
+    </div>
 
         {selectedRows.length > 0 && (
           <div className="flex items-center justify-between px-4 pb-2">

@@ -216,7 +216,7 @@ const RecentCowryTransfer = () => {
     <>
       <CardBox>
         <div className="sm:flex items-center justify-between">
-          <h5 className="card-title">Recent Cowry Transfer</h5>
+          <h5 className="card-title">Recent Cowry Transfers</h5>
           <div className="flex items-center gap-3 sm:mt-0 mt-4 justify-between">
             {/* <div className="flex flex-wrap bg-muted dark:bg-dark p-1 rounded-full">
               <div
