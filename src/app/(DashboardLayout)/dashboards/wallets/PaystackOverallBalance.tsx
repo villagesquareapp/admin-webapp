@@ -321,7 +321,7 @@ const OverallBalance = () => {
 
           {/* Bottom Right - Cards & Button */}
           <div className="md:col-span-4 col-span-12 pb-5">
-            <div className="flex flex-col gap-2 mt-6 sm:mt-0">
+            <div className="flex flex-col gap-2 mt-6 sm:mt-0 w-full">
               {IconData.map((item, index) => (
                 <div
                   key={index}
@@ -343,7 +343,7 @@ const OverallBalance = () => {
               <Button
                 color="success"
                 size="sm"
-                className="w-32 lg:w-36 lg:h-10 lg:text-base"
+                className="lg:h-10 lg:text-base w-full"
               >
                 <FaPlus size={16} className="mr-1" />
                 Fund wallet

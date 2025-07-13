@@ -223,7 +223,14 @@ const CowryOverallBalance = () => {
   };
 
   // Custom Tab
-  const [activeTab, setActiveTab] = useState("Orders");
+
+  const tabs = [
+    { label: "Cowry Value", key: "Cowry" },
+    { label: "USD Value", key: "USD" },
+    { label: "NGN Value", key: "NGN" },
+  ];
+
+  const [activeTab, setActiveTab] = useState("Cowry");
   const handleTabClick = (tab: React.SetStateAction<string>) => {
     setActiveTab(tab);
   };
@@ -260,7 +267,20 @@ const CowryOverallBalance = () => {
             {/* Right: Tab Buttons */}
             <div className="sm:ml-auto mb-4 sm:mt-0 mt-6">
               <div className="flex flex-wrap bg-muted dark:bg-dark p-1 rounded-full">
-                {["Cowry Value", "USD Value", "NGN Value"].map((label, i) => (
+                {tabs.map((tab) => (
+                  <div
+                    key={tab.key}
+                    onClick={() => handleTabClick(tab.key)}
+                    className={`py-2 px-4 rounded-full min-w-[100px] cursor-pointer text-xs font-semibold text-center transition-colors ${
+                      activeTab === tab.key
+                        ? "bg-white text-dark dark:bg-darkgray dark:text-white"
+                        : "opacity-60 text-dark dark:text-white"
+                    }`}
+                  >
+                    {tab.label}
+                  </div>
+                ))}
+                {/* {["Cowry Value", "USD Value", "NGN Value"].map((label, i) => (
                   <div
                     key={label}
                     onClick={() =>
@@ -274,14 +294,14 @@ const CowryOverallBalance = () => {
                   >
                     {label}
                   </div>
-                ))}
+                ))} */}
               </div>
             </div>
           </div>
 
           {/* Middle Section - Chart (left side) */}
           <div className="md:col-span-8 col-span-12">
-            {activeTab === "Orders" && (
+            {activeTab === "Cowry" && (
               <Chart
                 options={ChartData1}
                 series={ChartData1.series}
@@ -292,7 +312,18 @@ const CowryOverallBalance = () => {
               />
             )}
 
-            {activeTab === "Expenses" && (
+            {activeTab === "USD" && (
+              <Chart
+                options={ChartData1}
+                series={ChartData1.series}
+                type="line"
+                height="210px"
+                width="100%"
+                className="mt-4"
+              />
+            )}
+
+            {activeTab === "NGN" && (
               <div className="mt-4 -ms-3 -me-4">
                 <Chart
                   options={AreaChartData}
@@ -307,7 +338,7 @@ const CowryOverallBalance = () => {
 
           {/* Bottom Right - Cards & Button */}
           <div className="md:col-span-4 col-span-12 pb-5">
-            <div className="flex flex-col gap-2 mt-6 sm:mt-0">
+            <div className="flex flex-col gap-2 mt-6 sm:mt-0 w-full">
               {IconData.map((item, index) => (
                 <div
                   key={index}
@@ -326,9 +357,9 @@ const CowryOverallBalance = () => {
                   </div>
                 </div>
               ))}
-              <Link href={"/dashboards/random-users"} className="mt-3">
-                <Button size={"sm"} className="text-xs">
-                  Random users to be paid
+              <Link href={"/dashboards/random-users"} className="mt-3 w-full block">
+                <Button size={"sm"} className="text-xs w-full">
+                  Transfer Cowry
                 </Button>
               </Link>
             </div>
