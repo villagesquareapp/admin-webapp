@@ -41,6 +41,7 @@ const RecentCowryTransfer = () => {
       logoimg: "",
       name: "Photoshop",
       email: "olakunletester@gmail.com",
+      username: "olatester",
       amount: "#84,000",
       date: "Jun 30, 2025",
       budgets: "$29,374.60",
@@ -75,6 +76,7 @@ const RecentCowryTransfer = () => {
       logoimg: logo1,
       name: "Website SEO",
       email: "otunolatester01@gmail.com",
+      username: "otunola234",
       amount: "#45,820",
       date: "Jun 20, 2025",
       budgets: "$1,843.73",
@@ -109,6 +111,7 @@ const RecentCowryTransfer = () => {
       logoimg: "",
       name: "iOS Mobile App Design",
       email: "pelumitester@gmail.com",
+      username: "oluwapelumi",
       amount: "#35,500",
       date: "Jun 16, 2025",
       budgets: "$0.9989",
@@ -143,6 +146,7 @@ const RecentCowryTransfer = () => {
       logoimg: logo2,
       name: "Figma Components",
       email: "abdullahitester@gmail.com",
+      username: "abdullahi_guy",
       amount: "#20,530",
       date: "Jun 10, 2025",
       budgets: "$238.61",
@@ -177,6 +181,7 @@ const RecentCowryTransfer = () => {
       logoimg: logo3,
       name: "Web App Design",
       email: "omoyeletester@gmail.com",
+      username: "he_is_omoyele",
       amount: "#32,000",
       date: "Jun 06, 2025",
       budgets: "$0.629",
@@ -297,7 +302,7 @@ const RecentCowryTransfer = () => {
                       <Checkbox className="checkbox" />
                     </Table.Cell> */}
                     <Table.Cell className="whitespace-nowrap">
-                      <div className="flex gap-5 items-center">
+                      <div className="flex flex-col items-start">
                         {/* <span
                           className={`w-14 h-10 rounded-full flex items-center justify-center  bg-light${item.logotextcolor} dark:bg-dark${item.logotextcolor} text-${item.logotextcolor}`}
                         >
@@ -312,13 +317,14 @@ const RecentCowryTransfer = () => {
                           )}
                         </span> */}
                         <h6 className="text-base">{item.name}</h6>
+                        <span className="text-sm">@{item.username}</span>
                       </div>
                     </Table.Cell>
                     <Table.Cell className="text-start">
-                      <h5 className="text-sm">{item.email}</h5>
+                      <span className="text-sm">{item.email}</span>
                     </Table.Cell>
                     <Table.Cell className="text-start">
-                      <h5 className="text-sm">{item.amount}</h5>
+                      <span className="text-sm">{item.amount}</span>
                     </Table.Cell>
                     {/* <Table.Cell
                       className="

@@ -4,6 +4,16 @@ import { apiGet, apiPost } from '@/lib/api';
 import { getToken } from '@/lib/getToken';
 import { revalidateCurrentPath } from '@/lib/revalidate';
 
+export const getPaystackBalance = async () => {
+    const token = await getToken();
+    return await apiGet<IPaystackBalance>(`wallet/balance/paystack`, token)
+}
+
+export const getCowryBalance = async () => {
+    const token = await getToken();
+    return await apiGet<ICowryBalance>(`wallet/balance/villagesquare`, token)
+}
+
 export const getPendingWithdrawals = async (page: number = 1, limit: number = 20) => {
     const token = await getToken()
     return await apiGet<IPendingWithdrawalsResponse>(

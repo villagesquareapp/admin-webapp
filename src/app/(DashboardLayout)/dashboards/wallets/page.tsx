@@ -13,18 +13,21 @@ import type { Metadata } from "next";
 import CowryOverallBalance from "./CowryOverallBalance";
 import RecentCowryTransfer from "./RecentCowryTransfer";
 import PaystackOverallBalance from "./PaystackOverallBalance";
+import { getCowryBalance, getPaystackBalance } from "@/app/api/wallet";
 export const metadata: Metadata = {
   title: "Village Square Admin Dashboard",
   description: "",
 };
-const crm = () => {
+const Page = async () => {
+  const [paystackStat] = await Promise.all([getPaystackBalance()]);
+  const [cowryStat] = await Promise.all([getCowryBalance()]);
   return (
     <>
       <div className="grid grid-cols-12 gap-30">
         <div className='col-span-12'>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <PaystackOverallBalance />
-            <CowryOverallBalance />
+            <PaystackOverallBalance paystackValue={paystackStat?.data ?? null} />
+            <CowryOverallBalance cowryValue={cowryStat?.data ?? null} />
           </div>
         </div>
         {/* <div className="lg:col-span-4 col-span-12">
@@ -58,4 +61,4 @@ const crm = () => {
     </>
   );
 };
-export default crm;
+export default Page;

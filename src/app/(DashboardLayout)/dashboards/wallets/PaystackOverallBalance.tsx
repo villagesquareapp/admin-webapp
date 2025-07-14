@@ -8,7 +8,12 @@ import { Icon } from "@iconify/react";
 import CardBox from "@/app/components/shared/CardBox";
 import { FaPlus } from "react-icons/fa";
 
-const OverallBalance = () => {
+interface PaystackProp {
+  paystackValue: IPaystackBalance | null;
+}
+
+const OverallBalance: React.FC<PaystackProp> = ({paystackValue}) => {
+
   const IconData = [
     // {
     //   icon: "solar:course-up-line-duotone",
@@ -18,13 +23,13 @@ const OverallBalance = () => {
     // },
     {
       icon: "solar:dollar-minimalistic-line-duotone",
-      title: "$9,281",
+      title: "0",
       subtitle: "Total Profit",
       color: "error",
     },
     {
       icon: "solar:flag-2-line-duotone",
-      title: "45.1k",
+      title: "0",
       subtitle: "Total Users",
       color: "success",
     },
@@ -251,7 +256,7 @@ const OverallBalance = () => {
               <span className="text-sm font-light text-ld">
                 Paystack Overall Balance
               </span>
-              <h3 className="text-3xl my-1">$2,538,942</h3>
+              {activeTab === "USD" ? <h3 className="text-3xl my-1">{paystackValue?.usd_value.balance}</h3> : <h3 className="text-3xl my-1">{paystackValue?.ngn_value.balance}</h3>}
               <div className="flex gap-1 items-center">
                 <Badge
                   color={"lightsuccess"}
