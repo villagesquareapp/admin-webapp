@@ -19,6 +19,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import React from "react";
 import { HiOutlineDotsVertical } from "react-icons/hi";
 import { FaSearch } from "react-icons/fa";
+import { getSearchUser } from "@/app/api/user";
 
 interface FilterDropdown {
   label: string;
@@ -59,6 +60,19 @@ function CustomizedReusableTable({
   }>({});
   const [hoveredRowId, setHoveredRowId] = React.useState<string | null>(null);
   const [selectedRows, setSelectedRows] = React.useState<string[]>([]);
+  const [query, setQuery] = React.useState<string>("");
+
+  const [tableDataState, setTableDataState] = React.useState<any[]>(tableData); // local state
+
+  React.useEffect(() => {
+    setTableDataState(tableData);
+  }, [tableData]);
+
+  React.useEffect(() => {
+    if (query.trim() === "") {
+      setTableDataState(tableData);
+    }
+  }, [query, tableData]);
 
   React.useEffect(() => {
     if (filterDropdowns) {
@@ -83,8 +97,25 @@ function CustomizedReusableTable({
     });
   };
 
+  const handleSearch = async () => {
+    if (!query.trim()) return;
+
+    try {
+      const response = await getSearchUser(query.trim());
+
+      if (Array.isArray(response?.data)) {
+        setTableDataState(response.data);
+      } else {
+        setTableDataState([]);
+      }
+    } catch (error) {
+      console.error("Search error:", error);
+      setTableDataState([]);
+    }
+  };
+
   const table = useReactTable({
-    data: tableData,
+    data: tableDataState,
     columns,
     filterFns: {},
     state: {
@@ -195,13 +226,15 @@ function CustomizedReusableTable({
             type="text"
             placeholder="Search..."
             icon={FaSearch}
-            // value={query}
-            // onChange={(e) => setQuery(e.target.value)}
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
             className="flex-grow"
           />
 
           {/* Search Button */}
-          <Button color="primary">Search</Button>
+          <Button color="primary" onClick={handleSearch}>
+            Search
+          </Button>
         </div>
 
         {selectedRows.length > 0 && (

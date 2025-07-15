@@ -35,3 +35,8 @@ export const getRandomUsers = async (page: number = 1, limit: number = 10) => {
         token
     );
 }
+
+export const getSearchUser = async (search: string) => {
+    const token = await getToken();
+    return await apiGet(`users/search?q=${search}`)
+}

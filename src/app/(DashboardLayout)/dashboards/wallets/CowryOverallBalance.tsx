@@ -20,12 +20,6 @@ const CowryOverallBalance: React.FC<CowryProp> = ({cowryValue}) => {
       subtitle: "Total Profit",
       color: "error",
     },
-    {
-      icon: "solar:flag-2-line-duotone",
-      title: "0",
-      subtitle: "Total Users",
-      color: "success",
-    },
   ];
 
   const ChartData1: any = {
@@ -363,6 +357,9 @@ const CowryOverallBalance: React.FC<CowryProp> = ({cowryValue}) => {
                   </div>
                 </div>
               ))}
+              <Button size={"sm"} className="text-xs w-full">
+                Top Up Cowry
+              </Button>
               <Link href={"/dashboards/random-users"} className="mt-3 w-full block">
                 <Button size={"sm"} className="text-xs w-full">
                   Transfer Cowry
