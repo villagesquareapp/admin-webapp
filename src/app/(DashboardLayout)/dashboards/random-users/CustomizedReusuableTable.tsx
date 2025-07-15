@@ -189,30 +189,31 @@ function CustomizedReusableTable({
         </div>
 
         <div className="flex w-full max-w-md items-center gap-2">
-      {/* Input with Icon */}
-      <TextInput
-        id="search"
-        type="text"
-        placeholder="Search..."
-        icon={FaSearch}
-        // value={query}
-        // onChange={(e) => setQuery(e.target.value)}
-        className="flex-grow"
-      />
+          {/* Input with Icon */}
+          <TextInput
+            id="search"
+            type="text"
+            placeholder="Search..."
+            icon={FaSearch}
+            // value={query}
+            // onChange={(e) => setQuery(e.target.value)}
+            className="flex-grow"
+          />
 
-      {/* Search Button */}
-      <Button color="primary">
-        Search
-      </Button>
-    </div>
+          {/* Search Button */}
+          <Button color="primary">Search</Button>
+        </div>
 
         {selectedRows.length > 0 && (
           <div className="flex items-center justify-between px-4 pb-2">
-            <Checkbox
-              checked={selectedRows.length === tableData.length}
-              onChange={toggleAllRows}
-              className="!size-6"
-            />
+            <div className="flex gap-1 items-center justify-center pl-6">
+              <Checkbox
+                checked={selectedRows.length === tableData.length}
+                onChange={toggleAllRows}
+                className="!size-6"
+              />
+              <p className="text-base">Select All</p>
+            </div>
             <Button color="success">
               Transfer Cowry to Selected Users ({selectedRows.length})
             </Button>
@@ -256,9 +257,9 @@ function CustomizedReusableTable({
                     onMouseLeave={() => setHoveredRowId(null)}
                     onClick={() => onRowClick?.(row.original)}
                   >
-                    <td className="px-2">
+                    <td className="">
                       <div
-                        className={`absolute left-2 transition-opacity duration-300 ${
+                        className={`absolute left-8 transition-opacity duration-300 ${
                           hoveredRowId === row.id ||
                           selectedRows.includes(String(idx))
                             ? "opacity-100"
@@ -274,7 +275,7 @@ function CustomizedReusableTable({
                       </div>
                     </td>
                     {row.getVisibleCells().map((cell) => (
-                      <td key={cell.id} className="whitespace-nowrap py-3 px-4">
+                      <td key={cell.id} className="whitespace-nowrap py-3">
                         {flexRender(
                           cell.column.columnDef.cell,
                           cell.getContext()

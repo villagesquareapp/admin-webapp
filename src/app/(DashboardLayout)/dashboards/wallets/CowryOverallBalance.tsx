@@ -8,17 +8,21 @@ import { Icon } from "@iconify/react";
 import CardBox from "@/app/components/shared/CardBox";
 import Link from "next/link";
 
-const CowryOverallBalance = () => {
+interface CowryProp {
+  cowryValue: ICowryBalance | null
+}
+
+const CowryOverallBalance: React.FC<CowryProp> = ({cowryValue}) => {
   const IconData = [
     {
       icon: "solar:dollar-minimalistic-line-duotone",
-      title: "$9,281",
+      title: "0",
       subtitle: "Total Profit",
       color: "error",
     },
     {
       icon: "solar:flag-2-line-duotone",
-      title: "45.1k",
+      title: "0",
       subtitle: "Total Users",
       color: "success",
     },
@@ -246,7 +250,9 @@ const CowryOverallBalance = () => {
               <span className="text-sm font-light text-ld">
                 VS Cowry Overall Balance
               </span>
-              <h3 className="text-3xl my-1">$2,538,942</h3>
+              {activeTab === "Cowry" && <h3 className="text-3xl my-1">{cowryValue?.cowry_value.balance}</h3>}
+              {activeTab === "USD" && <h3 className="text-3xl my-1">{cowryValue?.usd_value.balance}</h3>}
+              {activeTab === "NGN" && <h3 className="text-3xl my-1">{cowryValue?.ngn_value.balance}</h3>}
               <div className="flex gap-1 items-center">
                 <Badge
                   color={"lightsuccess"}
