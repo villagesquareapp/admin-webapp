@@ -7,6 +7,7 @@ import { Badge, Button } from "flowbite-react";
 import { Icon } from "@iconify/react";
 import CardBox from "@/app/components/shared/CardBox";
 import { FaPlus } from "react-icons/fa";
+import FundPaystackComp from "./FundPaystackComp";
 
 interface PaystackProp {
   paystackValue: IPaystackBalance | null;
@@ -245,6 +246,9 @@ const OverallBalance: React.FC<PaystackProp> = ({paystackValue}) => {
     setActiveTab(tab);
   };
 
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+
+
   return (
     <>
       <CardBox>
@@ -349,14 +353,22 @@ const OverallBalance: React.FC<PaystackProp> = ({paystackValue}) => {
                 color="success"
                 size="sm"
                 className="lg:h-10 lg:text-base w-full"
+                onClick={() => setIsOpen(true)}
               >
                 <FaPlus size={16} className="mr-1" />
-                Fund wallet
+                Fund Paystack
               </Button>
             </div>
           </div>
         </div>
       </CardBox>
+
+      {isOpen && (
+        <FundPaystackComp
+          isOpen={isOpen}
+          onClose={() => setIsOpen(false)}
+        />
+      )}
     </>
   );
 };

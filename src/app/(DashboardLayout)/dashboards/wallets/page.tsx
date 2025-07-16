@@ -13,14 +13,19 @@ import type { Metadata } from "next";
 import CowryOverallBalance from "./CowryOverallBalance";
 import RecentCowryTransfer from "./RecentCowryTransfer";
 import PaystackOverallBalance from "./PaystackOverallBalance";
-import { getCowryBalance, getPaystackBalance } from "@/app/api/wallet";
+import { getCowryBalance, getPaystackBalance, getRecentTransfers } from "@/app/api/wallet";
 export const metadata: Metadata = {
   title: "Village Square Admin Dashboard",
   description: "",
 };
-const Page = async () => {
-  const [paystackStat] = await Promise.all([getPaystackBalance()]);
-  const [cowryStat] = await Promise.all([getCowryBalance()]);
+const Page = async ({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string | string[] | undefined };
+}) => {
+  const page = Number(searchParams.page) || 1;
+  const limit = Number(searchParams.limit) || 10;
+  const [paystackStat, cowryStat, recentTransfer] = await Promise.all([getPaystackBalance(), getCowryBalance(), getRecentTransfers(page, limit)]);
   return (
     <>
       <div className="grid grid-cols-12 gap-30">
@@ -49,7 +54,9 @@ const Page = async () => {
           <PaymentMethods />
         </div> */}
         <div className="col-span-12">
-          <RecentCowryTransfer />
+          <RecentCowryTransfer recentTransferData={recentTransfer?.data || null} totalPages={recentTransfer?.data?.last_page || 1}
+              currentPage={page}
+              pageSize={limit} />
         </div>
         {/* <div className="lg:col-span-8 col-span-12">
           <DeliveryAnalytics />

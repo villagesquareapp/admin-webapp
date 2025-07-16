@@ -534,6 +534,16 @@ interface ICowryBalance {
   };
 }
 
+interface IRecentTransfer {
+  fullname: string;
+  username: string;
+  email: string;
+  amount: string;
+  date_transferred: string;
+}
+
+interface IRecentTransferResponse extends IPaginatedResponse<IRecentTransfer>{}
+
 interface IPendingWithdrawals {
   uuid: string;
   amount: string;

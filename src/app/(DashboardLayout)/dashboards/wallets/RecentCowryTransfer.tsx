@@ -6,6 +6,7 @@ import React, { useState } from "react";
 import dynamic from "next/dynamic";
 const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
+import { formatDate } from "@/utils/dateUtils";
 import user1 from "/public/images/profile/user-2.jpg";
 import user2 from "/public/images/profile/user-3.jpg";
 import user3 from "/public/images/profile/user-4.jpg";
@@ -23,6 +24,8 @@ import {
   AreaChartData4,
 } from "@/app/components/dashboards/crm/ChartData";
 import CardBox from "@/app/components/shared/CardBox";
+import { createColumnHelper } from "@tanstack/react-table";
+import ReusableTable from "@/app/components/shared/ReusableTable";
 
 // import {
 //   AreaChartData1,
@@ -31,7 +34,17 @@ import CardBox from "@/app/components/shared/CardBox";
 //   AreaChartData4,
 // } from "../../../components/dashboards/crm/";
 
-const RecentCowryTransfer = () => {
+const RecentCowryTransfer = ({
+  recentTransferData,
+  totalPages,
+  currentPage,
+  pageSize,
+}: {
+  recentTransferData: IRecentTransferResponse | null;
+  totalPages: number;
+  currentPage: number;
+  pageSize: number;
+}) => {
   const dropdownItems = ["Action", "Another action", "Something else"];
 
   const RecentProjectsData = [
@@ -217,13 +230,54 @@ const RecentCowryTransfer = () => {
   const handleTabClick = (tab: React.SetStateAction<string>) => {
     setActiveTab(tab);
   };
+
+  const columnHelper = createColumnHelper<IRecentTransfer>();
+  const columns = [
+    columnHelper.accessor("fullname", {
+      cell: (info) => (
+        <div className="flex flex-col items-start">
+          <h4 className="text-darklink dark:text-bodytext text-lg">
+            {info.getValue()}
+          </h4>
+          <p className="text-darklink dark:text-bodytext text-sm">
+            @{info.row.original.username}
+          </p>
+        </div>
+      ),
+      header: () => <span>Fullname</span>,
+    }),
+    columnHelper.accessor("email", {
+      cell: (info) => (
+        <p className="text-darklink dark:text-bodytext text-[16px]">
+          {info.getValue()}
+        </p>
+      ),
+      header: () => <span>Email</span>,
+    }),
+    columnHelper.accessor("amount", {
+      cell: (info) => (
+        <p className="text-darklink dark:text-bodytext text-[16px]">
+          {info.row.original.amount || 0}
+        </p>
+      ),
+      header: () => <span>Amount</span>,
+    }),
+    columnHelper.accessor("date_transferred", {
+      cell: (info) => (
+        <p className="text-darklink dark:text-bodytext text-[16px]">
+          {formatDate(info.getValue())}
+        </p>
+      ),
+      header: () => <span>Date Transferred</span>,
+    }),
+  ];
   return (
     <>
       <CardBox>
         <div className="sm:flex items-center justify-between">
           <h5 className="card-title">Recent Cowry Transfers</h5>
-          <div className="flex items-center gap-3 sm:mt-0 mt-4 justify-between">
-            {/* <div className="flex flex-wrap bg-muted dark:bg-dark p-1 rounded-full">
+          {/* <div className="flex items-center gap-3 sm:mt-0 mt-4 justify-between">
+            <div className="flex flex-wrap bg-muted dark:bg-dark p-1 rounded-full">
               <div
                 onClick={() => handleTabClick("All")}
                 className={`py-2 px-4 rounded-full min-w-[100px] cursor-pointer text-dark  text-xs font-semibold text-center  ${
@@ -254,7 +308,7 @@ const RecentCowryTransfer = () => {
               >
                 Others
               </div>
-            </div> */}
+            </div>
 
             <Dropdown
               label=""
@@ -269,143 +323,28 @@ const RecentCowryTransfer = () => {
                 return <Dropdown.Item key={index}>{items}</Dropdown.Item>;
               })}
             </Dropdown>
-          </div>
+          </div> */}
         </div>
 
-        {activeTab === "All" && (
-          <div className="overflow-x-auto overflow-y-hidden">
-            <Table className="mt-2">
-              <Table.Head>
-                {/* <Table.HeadCell className="ps-0 text-base font-semibold pb-4">
-                  #
-                </Table.HeadCell> */}
-                <Table.HeadCell className="text-base font-semibold">
-                  Name
-                </Table.HeadCell>
-                <Table.HeadCell className="text-base font-semibold text-start">
-                  Email
-                </Table.HeadCell>
-                <Table.HeadCell className="text-base font-semibold text-start">
-                  Amount Transferred
-                </Table.HeadCell>
-                <Table.HeadCell className="text-base font-semibold text-start">
-                  Date Transferred
-                </Table.HeadCell>
-                {/* <Table.HeadCell className="text-base font-semibold text-end">
-                  Activity Log
-                </Table.HeadCell> */}
-              </Table.Head>
-              <Table.Body className="divide-y divide-border dark:divide-darkborder ">
-                {RecentProjectsData.map((item, index) => (
-                  <Table.Row key={index}>
-                    {/* <Table.Cell className="whitespace-nowrap ps-0">
-                      <Checkbox className="checkbox" />
-                    </Table.Cell> */}
-                    <Table.Cell className="whitespace-nowrap">
-                      <div className="flex flex-col items-start">
-                        {/* <span
-                          className={`w-14 h-10 rounded-full flex items-center justify-center  bg-light${item.logotextcolor} dark:bg-dark${item.logotextcolor} text-${item.logotextcolor}`}
-                        >
-                          {item.logoimg ? (
-                            <Image src={item.logoimg} alt="logo" />
-                          ) : (
-                            <p
-                              className={`text-sm font-semibold text-${item.logotextcolor}`}
-                            >
-                              {item.logotext}
-                            </p>
-                          )}
-                        </span> */}
-                        <h6 className="text-base">{item.name}</h6>
-                        <span className="text-sm">@{item.username}</span>
-                      </div>
-                    </Table.Cell>
-                    <Table.Cell className="text-start">
-                      <span className="text-sm">{item.email}</span>
-                    </Table.Cell>
-                    <Table.Cell className="text-start">
-                      <span className="text-sm">{item.amount}</span>
-                    </Table.Cell>
-                    {/* <Table.Cell
-                      className="
-                 text-end"
-                    >
-                      <div className="flex justify-end">
-                        {item.teams.map((team, index) => (
-                          <div className="-ms-2" key={index}>
-                            {team.user ? (
-                              <Image
-                                src={team.user}
-                                className="border-2 border-white dark:border-darkborder rounded-full"
-                                alt="icon"
-                                height={30}
-                                width={30}
-                              />
-                            ) : (
-                              <div className="bg-lightprimary border-2 border-white dark:border-darkborder  h-[30px] w-[30px] flex justify-center items-center text-sm font-semibold text-ld rounded-full dark:bg-lightprimary">
-                                {team.count}
-                              </div>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    </Table.Cell> */}
-                    <Table.Cell className="text-start">
-                      <p className="text-darklink text-sm font-semibold">
-                        {item.date}
-                      </p>
-                    </Table.Cell>
-                    {/* <Table.Cell className="text-end">
-                      <div className="flex justify-end">
-                        {item.chart == "success" ? (
-                          <Chart
-                            options={AreaChartData1}
-                            series={AreaChartData1.series}
-                            type="area"
-                            height="14px"
-                            width="143px"
-                          />
-                        ) : item.chart == "error" ? (
-                          <Chart
-                            options={AreaChartData2}
-                            series={AreaChartData2.series}
-                            type="area"
-                            height="14px"
-                            width="143px"
-                          />
-                        ) : item.chart == "warning" ? (
-                          <Chart
-                            options={AreaChartData3}
-                            series={AreaChartData3.series}
-                            type="area"
-                            height="14px"
-                            width="143px"
-                          />
-                        ) : (
-                          <Chart
-                            options={AreaChartData4}
-                            series={AreaChartData4.series}
-                            type="area"
-                            height="14px"
-                            width="143px"
-                          />
-                        )}
-                      </div>
-                    </Table.Cell> */}
-                  </Table.Row>
-                ))}
-              </Table.Body>
-            </Table>
-          </div>
-        )}
+        <div className="col-span-12">
+          <ReusableTable
+            tableData={
+              recentTransferData?.data &&
+              Array.isArray(recentTransferData?.data)
+                ? recentTransferData?.data
+                : []
+            }
+            columns={columns}
+            totalPages={totalPages}
+            currentPage={currentPage}
+            pageSize={pageSize}
+          />
+        </div>
 
-        {activeTab === "Credit" && (
+        {/* {activeTab === "Credit" && (
           <div className="overflow-x-auto overflow-y-hidden">
             <Table className="mt-2">
               <Table.Head>
-                {/* <Table.HeadCell className="ps-0 text-base font-semibold pb-4">
-                  #
-                </Table.HeadCell> */}
                 <Table.HeadCell className="text-base font-semibold">
                   Name
                 </Table.HeadCell>
@@ -517,9 +456,9 @@ const RecentCowryTransfer = () => {
               </Table.Body>
             </Table>
           </div>
-        )}
+        )} */}
 
-        {activeTab === "Debit" && (
+        {/* {activeTab === "Debit" && (
           <div className="overflow-x-auto overflow-y-hidden">
             <Table className="mt-2">
               <Table.Head>
@@ -640,10 +579,135 @@ const RecentCowryTransfer = () => {
               </Table.Body>
             </Table>
           </div>
-        )}
+        )} */}
       </CardBox>
     </>
   );
 };
 
 export default RecentCowryTransfer;
+
+// {/* <div className="overflow-x-auto overflow-y-hidden">
+//           <Table className="mt-2">
+//             <Table.Head>
+//               {/* <Table.HeadCell className="ps-0 text-base font-semibold pb-4">
+//                   #
+//                 </Table.HeadCell> */}
+//               <Table.HeadCell className="text-base font-semibold">
+//                 Name
+//               </Table.HeadCell>
+//               <Table.HeadCell className="text-base font-semibold text-start">
+//                 Email
+//               </Table.HeadCell>
+//               <Table.HeadCell className="text-base font-semibold text-start">
+//                 Amount Transferred
+//               </Table.HeadCell>
+//               <Table.HeadCell className="text-base font-semibold text-start">
+//                 Date Transferred
+//               </Table.HeadCell>
+//               {/* <Table.HeadCell className="text-base font-semibold text-end">
+//                   Activity Log
+//                 </Table.HeadCell> */}
+//             </Table.Head>
+//             <Table.Body className="divide-y divide-border dark:divide-darkborder ">
+//               {RecentProjectsData.map((item, index) => (
+//                 <Table.Row key={index}>
+//                   {/* <Table.Cell className="whitespace-nowrap ps-0">
+//                       <Checkbox className="checkbox" />
+//                     </Table.Cell> */}
+//                   <Table.Cell className="whitespace-nowrap">
+//                     <div className="flex flex-col items-start">
+//                       {/* <span
+//                           className={`w-14 h-10 rounded-full flex items-center justify-center  bg-light${item.logotextcolor} dark:bg-dark${item.logotextcolor} text-${item.logotextcolor}`}
+//                         >
+//                           {item.logoimg ? (
+//                             <Image src={item.logoimg} alt="logo" />
+//                           ) : (
+//                             <p
+//                               className={`text-sm font-semibold text-${item.logotextcolor}`}
+//                             >
+//                               {item.logotext}
+//                             </p>
+//                           )}
+//                         </span> */}
+//                       <h6 className="text-base">{item.name}</h6>
+//                       <span className="text-sm">@{item.username}</span>
+//                     </div>
+//                   </Table.Cell>
+//                   <Table.Cell className="text-start">
+//                     <span className="text-sm">{item.email}</span>
+//                   </Table.Cell>
+//                   <Table.Cell className="text-start">
+//                     <span className="text-sm">{item.amount}</span>
+//                   </Table.Cell>
+//                   {/* <Table.Cell
+//                       className="
+//                  text-end"
+//                     >
+//                       <div className="flex justify-end">
+//                         {item.teams.map((team, index) => (
+//                           <div className="-ms-2" key={index}>
+//                             {team.user ? (
+//                               <Image
+//                                 src={team.user}
+//                                 className="border-2 border-white dark:border-darkborder rounded-full"
+//                                 alt="icon"
+//                                 height={30}
+//                                 width={30}
+//                               />
+//                             ) : (
+//                               <div className="bg-lightprimary border-2 border-white dark:border-darkborder  h-[30px] w-[30px] flex justify-center items-center text-sm font-semibold text-ld rounded-full dark:bg-lightprimary">
+//                                 {team.count}
+//                               </div>
+//                             )}
+//                           </div>
+//                         ))}
+//                       </div>
+//                     </Table.Cell> */}
+//                   <Table.Cell className="text-start">
+//                     <p className="text-darklink text-sm font-semibold">
+//                       {item.date}
+//                     </p>
+//                   </Table.Cell>
+//                   {/* <Table.Cell className="text-end">
+//                       <div className="flex justify-end">
+//                         {item.chart == "success" ? (
+//                           <Chart
+//                             options={AreaChartData1}
+//                             series={AreaChartData1.series}
+//                             type="area"
+//                             height="14px"
+//                             width="143px"
+//                           />
+//                         ) : item.chart == "error" ? (
+//                           <Chart
+//                             options={AreaChartData2}
+//                             series={AreaChartData2.series}
+//                             type="area"
+//                             height="14px"
+//                             width="143px"
+//                           />
+//                         ) : item.chart == "warning" ? (
+//                           <Chart
+//                             options={AreaChartData3}
+//                             series={AreaChartData3.series}
+//                             type="area"
+//                             height="14px"
+//                             width="143px"
+//                           />
+//                         ) : (
+//                           <Chart
+//                             options={AreaChartData4}
+//                             series={AreaChartData4.series}
+//                             type="area"
+//                             height="14px"
+//                             width="143px"
+//                           />
+//                         )}
+//                       </div>
+//                     </Table.Cell> */}
+//                 </Table.Row>
+//               ))}
+//             </Table.Body>
+//           </Table>
+//         </div> */}
