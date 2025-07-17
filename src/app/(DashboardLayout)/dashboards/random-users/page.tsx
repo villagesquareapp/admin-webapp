@@ -10,15 +10,16 @@ const Page = async ({
   const page = Number(searchParams.page) || 1;
   const limit = Number(searchParams.limit) || 10;
 
-  const [users] = await Promise.all([getRandomUsers(page, limit)]);
+  const [randomUsers] = await Promise.all([getRandomUsers(page, limit)]);
+    // const randomUsers = await getRandomUsers(page, limit); 
   
   return (
     <div className="col-span-12">
       <RandomUserTable
-        users={users?.data || null}
-        totalPages={users?.data?.last_page || 1}
-        currentPage={page}
-        pageSize={limit}
+        users={randomUsers?.data ?? []}
+        // totalPages={randomUsers?.data || 1}
+        // currentPage={page}
+        // pageSize={limit}
       />
     </div>
   );

@@ -141,6 +141,11 @@ interface IUserWallet {
   status: string;
 }
 
+interface IGetExchangeRate {
+  usd_value: string;
+  cowry_value: string;
+}
+
 interface IUser {
   user_details: {
     profile: {
@@ -186,6 +191,46 @@ interface IUser {
 }
 
 interface IUsersResponse extends IPaginatedResponse<IUser> {}
+
+interface IRandomUsers {
+  uuid: string;
+  name: string;
+  username: string;
+  email: string;
+  registration_type: string;
+  account_type: string;
+  phone_number: string | null;
+  profile_picture: string;
+  cover_photo: string | null;
+  gender: string | null;
+  dob: string | null;
+  country: string | null;
+  city: string | null;
+  profession: string | null;
+  bio: string | null;
+  timezone: string;
+  verified_status: 0;
+  checkmark_verification_status: boolean;
+  premium_verification_status: boolean;
+  online: boolean;
+  last_online: string | null;
+  is_private: boolean;
+  has_two_factor_auth: boolean;
+  status: string;
+  address: string | null;
+  latitude: string | null;
+  longitude: string | null;
+  referrer: string | null;
+  websocket_url: string;
+  referral_code: string;
+  referral_count: number;
+  can_reset_password: boolean;
+  created_at: string;
+  updated_at: string;
+  deleted_at: string | null;
+}
+
+interface IRandomUsersResponse extends IPaginatedResponse<IRandomUsers> {}
 
 interface IMedia {
   thumbnail: string;
@@ -542,7 +587,7 @@ interface IRecentTransfer {
   date_transferred: string;
 }
 
-interface IRecentTransferResponse extends IPaginatedResponse<IRecentTransfer>{}
+interface IRecentTransferResponse extends IPaginatedResponse<IRecentTransfer> {}
 
 interface IPendingWithdrawals {
   uuid: string;

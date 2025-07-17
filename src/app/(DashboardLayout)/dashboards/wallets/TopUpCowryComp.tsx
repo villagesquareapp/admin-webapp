@@ -7,7 +7,7 @@ import { Button, Label, TextInput, FileInput } from "flowbite-react";
 import { toast } from "sonner";
 import { addGifts } from "@/app/api/addGiftClient";
 import { getExchangeRate } from "@/app/api/wallet";
-import { PaystackButton } from "react-paystack";
+import { usePaystackPayment } from "react-paystack";
 import Paystack from "@paystack/inline-js";
 // import { addGiftClient } from "@/app/api/addGiftClient";
 
@@ -26,27 +26,20 @@ interface PaystackSuccessResponse {
   message?: string;
 }
 
-const FundPaystackComp: React.FC<AddGiftModalProps> = ({
+const TopUpCowryComp: React.FC<AddGiftModalProps> = ({
   isOpen,
   onClose,
   token,
   onGiftAdded,
 }) => {
-  const [isClient, setIsClient] = useState(false);
-
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
   const [amountInNaira, setAmountInNaira] = useState<number>(0);
   const [dollarValue, setDollarValue] = useState<string>("");
   const [cowryValue, setCowryValue] = useState<string>("");
   const [loading, setLoading] = useState(false);
 
-  const rawKey = process.env.NEXT_PUBLIC_PAYSTACK_KEY
-  const publicKey: string =  rawKey ?? '';
+  const rawKey = process.env.NEXT_PUBLIC_PAYSTACK_KEY;
+  const publicKey: string = rawKey ?? "";
   const userEmail = "admin@admin.com";
-
-
 
   useEffect(() => {
     const fetchExchangeRate = async () => {
@@ -71,33 +64,18 @@ const FundPaystackComp: React.FC<AddGiftModalProps> = ({
     fetchExchangeRate();
   }, [amountInNaira]);
 
-  // const paystackProps = typeof window !== "undefined" ? {
-  //   reference: new Date().getTime().toString(),
-  //   email: userEmail,
-  //   amount: amountInNaira * 100,
-  //   publicKey,
-  //   text: loading ? "Processing..." : "Fund",
-  //   className: "px-4 py-2 text-sm font-medium bg-green-600 text-white hover:bg-green-700 rounded",
-  //   onSuccess: (reference: any) => {
-  //     toast.success("Payment successful");
-  //     console.log("✅ Paystack success:", reference);
-  //     setLoading(false);
-  //     onClose();
-  //   },
-  //   onClose: () => {
-  //     toast.warning("Payment closed");
-  //     setLoading(false);
-  //   },
-  // } : {};
-
   const handlePayment = () => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       const paystack = new Paystack();
-  
+
       paystack.newTransaction({
         key: publicKey,
         email: userEmail,
-        amount: amountInNaira * 100, // Amount in kobo (₦5000 = 500000)
+        amount: amountInNaira * 100,
+        metadata: {
+          paymentEvent: "cowry-topup",
+          // paymentUserId: AdminUUID,
+        },
         onSuccess: (transaction) => {
           toast.success("Payment successful");
           console.log("Payment Success:", transaction);
@@ -147,7 +125,7 @@ const FundPaystackComp: React.FC<AddGiftModalProps> = ({
               {/* Modal Header */}
               <div className="flex items-center justify-between">
                 <DialogTitle className="text-xl lg:text-2xl font-semibold">
-                  Fund Paystack Directly
+                  Top Up Cowry
                 </DialogTitle>
                 <button
                   onClick={onClose}
@@ -221,22 +199,14 @@ const FundPaystackComp: React.FC<AddGiftModalProps> = ({
                   {amountInNaira >= 1 && (
                     // <PaystackButton {...paystackProps} />
                     <Button
-                    color="success"
-                    type="button"
-                    onClick={handlePayment}
-                    disabled={loading}
-                  >
-                    Fund
-                  </Button>
+                      color="success"
+                      type="button"
+                      onClick={handlePayment}
+                      disabled={loading}
+                    >
+                      Top Up
+                    </Button>
                   )}
-                  {/* <Button
-                    color="success"
-                    type="submit"
-                    isProcessing={loading}
-                    disabled={loading || !amountInNaira}
-                  >
-                    {loading ? "Funding..." : "Fund"}
-                  </Button> */}
                 </div>
               </form>
 
@@ -266,4 +236,4 @@ const FundPaystackComp: React.FC<AddGiftModalProps> = ({
   );
 };
 
-export default FundPaystackComp;
+export default TopUpCowryComp;

@@ -7,6 +7,7 @@ import { Badge, Button } from "flowbite-react";
 import { Icon } from "@iconify/react";
 import CardBox from "@/app/components/shared/CardBox";
 import Link from "next/link";
+import TopUpCowryComp from "./TopUpCowryComp";
 
 interface CowryProp {
   cowryValue: ICowryBalance | null
@@ -233,6 +234,9 @@ const CowryOverallBalance: React.FC<CowryProp> = ({cowryValue}) => {
     setActiveTab(tab);
   };
 
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  
+
   return (
     <>
       <CardBox>
@@ -357,7 +361,7 @@ const CowryOverallBalance: React.FC<CowryProp> = ({cowryValue}) => {
                   </div>
                 </div>
               ))}
-              <Button size={"sm"} className="text-xs w-full">
+              <Button size={"sm"} className="text-xs w-full" onClick={() => setIsOpen(true)}>
                 Top Up Cowry
               </Button>
               <Link href={"/dashboards/random-users"} className="mt-3 w-full block">
@@ -369,6 +373,10 @@ const CowryOverallBalance: React.FC<CowryProp> = ({cowryValue}) => {
           </div>
         </div>
       </CardBox>
+
+      {isOpen && (
+        <TopUpCowryComp isOpen={isOpen} onClose={() => setIsOpen(false)} />
+      )}
     </>
   );
 };
