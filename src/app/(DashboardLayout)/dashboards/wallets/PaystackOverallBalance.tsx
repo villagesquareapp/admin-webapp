@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 // import CardBox from "../../shared/CardBox";
 import dynamic from "next/dynamic";
 const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
@@ -8,12 +8,11 @@ import { Icon } from "@iconify/react";
 import CardBox from "@/app/components/shared/CardBox";
 import { FaPlus } from "react-icons/fa";
 import FundPaystackComp from "./FundPaystackComp";
+import { getPaystackBalance } from "@/app/api/wallet";
 
-interface PaystackProp {
-  paystackValue: IPaystackBalance | null;
-}
 
-const OverallBalance: React.FC<PaystackProp> = ({paystackValue}) => {
+
+const OverallBalance: React.FC = () => {
 
   const IconData = [
     // {
@@ -246,8 +245,27 @@ const OverallBalance: React.FC<PaystackProp> = ({paystackValue}) => {
     setActiveTab(tab);
   };
 
+  const [paystackValue, setPaystackValue] = useState<IPaystackBalance | null>(null);
+
+  const [refreshing, setRefreshing] = useState<boolean>(false);
+
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
+  const fetchBalance = async () => {
+    try {
+      setRefreshing(true);
+      const res = await getPaystackBalance();
+      setPaystackValue(res?.data ?? null);
+    } catch (err) {
+      console.error("Failed to fetch Paystack balance", err);
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchBalance();
+  }, []);
 
   return (
     <>
@@ -367,6 +385,7 @@ const OverallBalance: React.FC<PaystackProp> = ({paystackValue}) => {
         <FundPaystackComp
           isOpen={isOpen}
           onClose={() => setIsOpen(false)}
+          onSuccess={fetchBalance}
         />
       )}
     </>

@@ -146,6 +146,11 @@ interface IGetExchangeRate {
   cowry_value: string;
 }
 
+interface IGetCowryTopupMetadata {
+  payment_event: string;
+  payment_user_id: string;
+}
+
 interface IUser {
   user_details: {
     profile: {

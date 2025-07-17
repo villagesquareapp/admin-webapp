@@ -31,8 +31,7 @@ const Page = async ({
   const page = Number(searchParams.page) || 1;
   const limit = Number(searchParams.limit) || 10;
 
-  const [paystackStat, cowryStat, recentTransfer] = await Promise.all([
-    getPaystackBalance(),
+  const [cowryStat, recentTransfer] = await Promise.all([
     getCowryBalance(),
     getRecentTransfers(page, limit),
   ]);
@@ -42,7 +41,7 @@ const Page = async ({
         <div className="col-span-12">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <PaystackOverallBalance
-              paystackValue={paystackStat?.data ?? null}
+              
             />
             <CowryOverallBalance cowryValue={cowryStat?.data ?? null} />
           </div>
