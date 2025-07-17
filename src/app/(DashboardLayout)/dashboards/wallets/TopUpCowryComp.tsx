@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { addGifts } from "@/app/api/addGiftClient";
 import { getExchangeRate } from "@/app/api/wallet";
 import { usePaystackPayment } from "react-paystack";
+import Paystack from "@paystack/inline-js";
 // import { addGiftClient } from "@/app/api/addGiftClient";
 
 interface AddGiftModalProps {
@@ -36,7 +37,8 @@ const TopUpCowryComp: React.FC<AddGiftModalProps> = ({
   const [cowryValue, setCowryValue] = useState<string>("");
   const [loading, setLoading] = useState(false);
 
-  const publicKey = process.env.NEXT_PUBLIC_PAYSTACK_KEY!;
+  const rawKey = process.env.NEXT_PUBLIC_PAYSTACK_KEY;
+  const publicKey: string = rawKey ?? "";
   const userEmail = "admin@admin.com";
 
   useEffect(() => {
@@ -61,6 +63,38 @@ const TopUpCowryComp: React.FC<AddGiftModalProps> = ({
 
     fetchExchangeRate();
   }, [amountInNaira]);
+
+  const handlePayment = () => {
+    if (typeof window !== "undefined") {
+      const paystack = new Paystack();
+
+      paystack.newTransaction({
+        key: publicKey,
+        email: userEmail,
+        amount: amountInNaira * 100,
+        metadata: {
+          paymentEvent: "cowry-topup",
+          // paymentUserId: AdminUUID,
+        },
+        onSuccess: (transaction) => {
+          toast.success("Payment successful");
+          console.log("Payment Success:", transaction);
+          // You can call a backend API here to verify the payment
+        },
+        onCancel: () => {
+          console.log("Payment cancelled");
+          toast.success("Payment Cancelled");
+        },
+        onLoad: () => {
+          console.log("Payment modal loaded");
+        },
+        onError: (error) => {
+          console.error("Payment error:", error.message);
+          toast.error(error.message);
+        },
+      });
+    }
+  };
 
   return (
     <AnimatePresence>
@@ -162,12 +196,17 @@ const TopUpCowryComp: React.FC<AddGiftModalProps> = ({
                   >
                     Cancel
                   </Button>
-                  <Button
-                    color="success"
-                    type="submit"                    
-                  >
-                    Top Up
-                  </Button>
+                  {amountInNaira >= 1 && (
+                    // <PaystackButton {...paystackProps} />
+                    <Button
+                      color="success"
+                      type="button"
+                      onClick={handlePayment}
+                      disabled={loading}
+                    >
+                      Top Up
+                    </Button>
+                  )}
                 </div>
               </form>
 

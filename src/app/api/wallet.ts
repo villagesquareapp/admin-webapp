@@ -80,7 +80,7 @@ export const getExchangeRate = async (amount: number) => {
   );
 }
 
-export const transferCowry = async (userIds: string[], amount: number) => {
+export const transferCowry = async (userIds: string[], amount: number = 5000) => {
   const token = await getToken();
   const response = await apiPost(
     `wallet/cowry/transfer`,

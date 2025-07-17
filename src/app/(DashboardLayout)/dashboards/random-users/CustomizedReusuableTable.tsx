@@ -20,6 +20,9 @@ import React from "react";
 import { HiOutlineDotsVertical } from "react-icons/hi";
 import { FaSearch } from "react-icons/fa";
 import { getSearchUser } from "@/app/api/user";
+import TransferCowryModal from "./TransferCowryModal";
+import { transferCowry } from "@/app/api/wallet";
+import { toast } from "sonner";
 
 interface FilterDropdown {
   label: string;
@@ -61,8 +64,14 @@ function CustomizedReusableTable({
   const [hoveredRowId, setHoveredRowId] = React.useState<string | null>(null);
   const [selectedRows, setSelectedRows] = React.useState<string[]>([]);
   const [query, setQuery] = React.useState<string>("");
+  // const [isOpen, setIsOpen] = React.useState<boolean>(false);
 
-  const [tableDataState, setTableDataState] = React.useState<any[]>(tableData); // local state
+  const [showConfirmModal, setShowConfirmModal] = React.useState(false);
+  const [isLoadingTransfer, setIsLoadingTransfer] = React.useState(false);
+
+  const [tableDataState, setTableDataState] = React.useState<any[]>(tableData);
+
+  const amount: number = 5000;
 
   React.useEffect(() => {
     setTableDataState(tableData);
@@ -95,6 +104,30 @@ function CustomizedReusableTable({
     router.replace(`?${params.toString()}`, {
       scroll: false,
     });
+  };
+
+  const handleConfirmTransfer = async () => {
+    setIsLoadingTransfer(true);
+
+    try {
+      const userIds = selectedRows.map((rowIndex) => {
+        const user = tableDataState[parseInt(rowIndex)];
+        return user.uuid; // or user.user_id or whatever unique identifier
+      });
+
+      const res = await transferCowry(userIds, amount);
+
+      if (res?.status) {
+        setShowConfirmModal(false);
+        // Re-fetch data
+        router.refresh(); // if using App Router
+        toast.success(res.message)
+      }
+    } catch (error) {
+      console.error("Transfer error:", error);
+    } finally {
+      setIsLoadingTransfer(false);
+    }
   };
 
   const handleSearch = async () => {
@@ -251,7 +284,10 @@ function CustomizedReusableTable({
               <p className="text-base">Select All</p>
             </div>
             <div className="flex gap-1 items-center justify-center">
-              <Button color="success">
+              {/* <Button color="success" onClick={() => setIsOpen(true)}>
+                Transfer Cowry to Selected Users ({selectedRows.length})
+              </Button> */}
+              <Button color="success" onClick={() => setShowConfirmModal(true)}>
                 Transfer Cowry to Selected Users ({selectedRows.length})
               </Button>
             </div>
@@ -296,7 +332,7 @@ function CustomizedReusableTable({
                   >
                     <td className="">
                       <div
-                        className={`absolute left-2 bottom-1 transition-opacity duration-300 ${
+                        className={`absolute left-2 -mt-2 transition-opacity duration-300 ${
                           hoveredRowId === row.id ||
                           selectedRows.includes(String(idx))
                             ? "opacity-100"
@@ -411,6 +447,16 @@ function CustomizedReusableTable({
           </div>
         </div>
       </CardBox>
+
+      {showConfirmModal && (
+        <TransferCowryModal
+          isOpen={showConfirmModal}
+          setIsOpen={setShowConfirmModal}
+          onConfirm={handleConfirmTransfer}
+          selectedCount={selectedRows.length}
+          isLoading={isLoadingTransfer}
+        />
+      )}
     </>
   );
 }

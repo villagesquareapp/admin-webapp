@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { addGifts } from "@/app/api/addGiftClient";
 import { getExchangeRate } from "@/app/api/wallet";
 import { PaystackButton } from "react-paystack";
+import Paystack from "@paystack/inline-js";
 // import { addGiftClient } from "@/app/api/addGiftClient";
 
 interface AddGiftModalProps {
@@ -70,24 +71,52 @@ const FundPaystackComp: React.FC<AddGiftModalProps> = ({
     fetchExchangeRate();
   }, [amountInNaira]);
 
-  const paystackProps = typeof window !== "undefined" ? {
-    reference: new Date().getTime().toString(),
-    email: userEmail,
-    amount: amountInNaira * 100,
-    publicKey,
-    text: loading ? "Processing..." : "Fund",
-    className: "px-4 py-2 text-sm font-medium bg-green-600 text-white hover:bg-green-700 rounded",
-    onSuccess: (reference: any) => {
-      toast.success("Payment successful");
-      console.log("✅ Paystack success:", reference);
-      setLoading(false);
-      onClose();
-    },
-    onClose: () => {
-      toast.warning("Payment closed");
-      setLoading(false);
-    },
-  } : {};
+  // const paystackProps = typeof window !== "undefined" ? {
+  //   reference: new Date().getTime().toString(),
+  //   email: userEmail,
+  //   amount: amountInNaira * 100,
+  //   publicKey,
+  //   text: loading ? "Processing..." : "Fund",
+  //   className: "px-4 py-2 text-sm font-medium bg-green-600 text-white hover:bg-green-700 rounded",
+  //   onSuccess: (reference: any) => {
+  //     toast.success("Payment successful");
+  //     console.log("✅ Paystack success:", reference);
+  //     setLoading(false);
+  //     onClose();
+  //   },
+  //   onClose: () => {
+  //     toast.warning("Payment closed");
+  //     setLoading(false);
+  //   },
+  // } : {};
+
+  const handlePayment = () => {
+    if (typeof window !== 'undefined') {
+      const paystack = new Paystack();
+  
+      paystack.newTransaction({
+        key: publicKey,
+        email: userEmail,
+        amount: amountInNaira * 100, // Amount in kobo (₦5000 = 500000)
+        onSuccess: (transaction) => {
+          toast.success("Payment successful");
+          console.log("Payment Success:", transaction);
+          // You can call a backend API here to verify the payment
+        },
+        onCancel: () => {
+          console.log("Payment cancelled");
+          toast.success("Payment Cancelled");
+        },
+        onLoad: () => {
+          console.log("Payment modal loaded");
+        },
+        onError: (error) => {
+          console.error("Payment error:", error.message);
+          toast.error(error.message);
+        },
+      });
+    }
+  };
 
   return (
     <AnimatePresence>
@@ -190,7 +219,15 @@ const FundPaystackComp: React.FC<AddGiftModalProps> = ({
                     Cancel
                   </Button>
                   {amountInNaira >= 1 && (
-                    <PaystackButton {...paystackProps} />
+                    // <PaystackButton {...paystackProps} />
+                    <Button
+                    color="success"
+                    type="button"
+                    onClick={handlePayment}
+                    disabled={loading}
+                  >
+                    Fund
+                  </Button>
                   )}
                   {/* <Button
                     color="success"
