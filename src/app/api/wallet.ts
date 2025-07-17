@@ -71,3 +71,28 @@ export const declineWithdrawal = async (
   }
   return response;
 };
+
+export const getExchangeRate = async (amount: number) => {
+  const token = await getToken();
+  return await apiGet<IGetExchangeRate>(
+    `wallet/exchange-rate-equivalent?amount=${amount}`,
+    token
+  );
+}
+
+export const transferCowry = async (userIds: string[], amount: number) => {
+  const token = await getToken();
+  const response = await apiPost(
+    `wallet/cowry/transfer`,
+    {
+      user_ids: userIds,
+      amount
+    },
+    token
+  );
+
+  if (response.status) {
+    await revalidateCurrentPath();
+  }
+  return response;
+};

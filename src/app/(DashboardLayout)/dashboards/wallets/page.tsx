@@ -8,12 +8,17 @@ import RecentProjects from "@/app/components/dashboards/crm/RecentProjects";
 import ReturnOnInvest from "@/app/components/dashboards/crm/ReturnOnInvest";
 import TotalFollowers from "@/app/components/dashboards/crm/TotalFollowers";
 import TotalIncome from "@/app/components/dashboards/crm/TotalIncome";
-import React from "react";
+import React, { useState } from "react";
 import type { Metadata } from "next";
 import CowryOverallBalance from "./CowryOverallBalance";
 import RecentCowryTransfer from "./RecentCowryTransfer";
 import PaystackOverallBalance from "./PaystackOverallBalance";
-import { getCowryBalance, getPaystackBalance, getRecentTransfers } from "@/app/api/wallet";
+import {
+  getCowryBalance,
+  getExchangeRate,
+  getPaystackBalance,
+  getRecentTransfers,
+} from "@/app/api/wallet";
 export const metadata: Metadata = {
   title: "Village Square Admin Dashboard",
   description: "",
@@ -25,13 +30,20 @@ const Page = async ({
 }) => {
   const page = Number(searchParams.page) || 1;
   const limit = Number(searchParams.limit) || 10;
-  const [paystackStat, cowryStat, recentTransfer] = await Promise.all([getPaystackBalance(), getCowryBalance(), getRecentTransfers(page, limit)]);
+
+  const [paystackStat, cowryStat, recentTransfer] = await Promise.all([
+    getPaystackBalance(),
+    getCowryBalance(),
+    getRecentTransfers(page, limit),
+  ]);
   return (
     <>
       <div className="grid grid-cols-12 gap-30">
-        <div className='col-span-12'>
+        <div className="col-span-12">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <PaystackOverallBalance paystackValue={paystackStat?.data ?? null} />
+            <PaystackOverallBalance
+              paystackValue={paystackStat?.data ?? null}
+            />
             <CowryOverallBalance cowryValue={cowryStat?.data ?? null} />
           </div>
         </div>
@@ -54,9 +66,12 @@ const Page = async ({
           <PaymentMethods />
         </div> */}
         <div className="col-span-12">
-          <RecentCowryTransfer recentTransferData={recentTransfer?.data || null} totalPages={recentTransfer?.data?.last_page || 1}
-              currentPage={page}
-              pageSize={limit} />
+          <RecentCowryTransfer
+            recentTransferData={recentTransfer?.data || null}
+            totalPages={recentTransfer?.data?.last_page || 1}
+            currentPage={page}
+            pageSize={limit}
+          />
         </div>
         {/* <div className="lg:col-span-8 col-span-12">
           <DeliveryAnalytics />

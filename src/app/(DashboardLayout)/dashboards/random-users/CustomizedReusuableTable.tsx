@@ -104,7 +104,8 @@ function CustomizedReusableTable({
       const response = await getSearchUser(query.trim());
 
       if (Array.isArray(response?.data)) {
-        setTableDataState(response.data);
+        console.log("Search response raw:", response?.data);
+        setTableDataState(response?.data);
       } else {
         setTableDataState([]);
       }
@@ -218,23 +219,25 @@ function CustomizedReusableTable({
             )}
           </div>
         </div>
+        <div className="flex items-center justify-between">
+          <div className="flex w-full max-w-md items-center gap-2">
+            {/* Input with Icon */}
+            <TextInput
+              id="search"
+              type="text"
+              placeholder="Search..."
+              icon={FaSearch}
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              className="flex-grow"
+            />
 
-        <div className="flex w-full max-w-md items-center gap-2">
-          {/* Input with Icon */}
-          <TextInput
-            id="search"
-            type="text"
-            placeholder="Search..."
-            icon={FaSearch}
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            className="flex-grow"
-          />
-
-          {/* Search Button */}
-          <Button color="primary" onClick={handleSearch}>
-            Search
-          </Button>
+            {/* Search Button */}
+            <Button color="primary" onClick={handleSearch}>
+              Search
+            </Button>
+          </div>
+          <Button size={"sm"}>Refresh</Button>
         </div>
 
         {selectedRows.length > 0 && (
@@ -247,12 +250,13 @@ function CustomizedReusableTable({
               />
               <p className="text-base">Select All</p>
             </div>
-            <Button color="success">
-              Transfer Cowry to Selected Users ({selectedRows.length})
-            </Button>
+            <div className="flex gap-1 items-center justify-center">
+              <Button color="success">
+                Transfer Cowry to Selected Users ({selectedRows.length})
+              </Button>
+            </div>
           </div>
         )}
-
         <div className="overflow-x-auto">
           <table className="min-w-full">
             <thead>
@@ -292,7 +296,7 @@ function CustomizedReusableTable({
                   >
                     <td className="">
                       <div
-                        className={`absolute left-8 transition-opacity duration-300 ${
+                        className={`absolute left-2 bottom-1 transition-opacity duration-300 ${
                           hoveredRowId === row.id ||
                           selectedRows.includes(String(idx))
                             ? "opacity-100"

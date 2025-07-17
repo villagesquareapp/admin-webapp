@@ -13,10 +13,10 @@ const RandomUserTable = ({
   currentPage,
   pageSize,
 }: {
-  users: IUsersResponse | null;
-  totalPages: number;
-  currentPage: number;
-  pageSize: number;
+  users: IRandomUsers[];
+  totalPages?: number;
+  currentPage?: number;
+  pageSize?: number;
 }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -27,88 +27,75 @@ const RandomUserTable = ({
     // router.replace(`?${params.toString()}`);
   };
 
-  const columnHelper = createColumnHelper<IUser>();
+  const columnHelper = createColumnHelper<IRandomUsers>();
 
   const columns = [
-    columnHelper.accessor("actions", {
-      cell: (info) => (
-        <p className="text-darklink dark:text-bodytext text-sm">
-          {/* {info.row.original.user_details.posts.length || 0} */}
-        </p>
-      ),
-      header: () => <span></span>,
-    }),
-    columnHelper.accessor("user_details.profile.id", {
-      cell: (info) => (
-        <UserDetailsComp
-          user={{
-            name: info.row.original.user_details.profile.name,
-            username: info.row.original.user_details.profile.username,
-            email: info.row.original.user_details.profile.email,
-            last_online: info.row.original.user_details.profile.last_online,
-            profile_picture: info.row.original.user_details.profile.profile_picture,
-            premium: info.row.original.user_details.profile.premium,
-            check_mark: info.row.original.user_details.profile.check_mark,
-          }}
-          showPremiumAndCheckMark
-          showActive
-        />
-      ),
-      header: () => <span>Name</span>,
-    }),
-    columnHelper.accessor("user_details.profile.email", {
-      cell: (info) => <DetailComp detail={info.getValue()} />,
-      header: () => <span>Email</span>,
-    }),
-    columnHelper.accessor("user_details.posts", {
-      cell: (info) => (
-        <p className="text-darklink dark:text-bodytext text-sm">
-          {info.row.original.user_details.posts.length || 0}
-        </p>
-      ),
-      header: () => <span>Posts</span>,
-    }),
-    columnHelper.accessor("user_details.profile.followers", {
-      cell: (info) => (
-        <p className="text-darklink dark:text-bodytext text-sm">{info.getValue() || 0}</p>
-      ),
-      header: () => <span>Followers</span>,
-    }),
-    columnHelper.accessor("user_details.profile.status", {
-      cell: (info) => {
-        const status = info.getValue();
-        const statusStyles = {
-          active: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300",
-          suspended: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300",
-          inactive: "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300",
-        };
+  columnHelper.accessor("name", {
+    cell: (info) => (
+      <UserDetailsComp
+        user={{
+          name: info.row.original.name,
+          username: info.row.original.username,
+          email: info.row.original.email,
+          last_online: info.row.original.last_online,
+          profile_picture: info.row.original.profile_picture,
+          premium: info.row.original.premium_verification_status,
+          check_mark: info.row.original.checkmark_verification_status,
+        }}
+        showPremiumAndCheckMark
+        showActive
+      />
+    ),
+    header: () => <span>Name</span>,
+  }),
 
-        return (
-          <span
-            className={`text-sm px-3 py-1 capitalize rounded-full w-fit ${statusStyles[status]}`}
-          >
-            {status}
-          </span>
-        );
-      },
-      header: () => <span>Status</span>,
-    }),
+  columnHelper.accessor("email", {
+    cell: (info) => <DetailComp detail={info.getValue()} />,
+    header: () => <span>Email</span>,
+  }),
 
-    columnHelper.accessor("user_details.profile.created_at", {
-      cell: (info) => {
-        return (
-          <p className="text-darklink dark:text-bodytext text-sm">
-            {formatDate(info.getValue())}
-          </p>
-        );
-      },
-      header: () => <span>Date Joined</span>,
-    }),
-  ];
+  columnHelper.accessor("referral_count", {
+    cell: (info) => (
+      <p className="text-darklink dark:text-bodytext text-sm">
+        {info.getValue() || 0}
+      </p>
+    ),
+    header: () => <span>Followers</span>,
+  }),
+
+  columnHelper.accessor("status", {
+    cell: (info) => {
+      type UserStatus = "active" | "suspended" | "inactive";
+      const status: UserStatus = info.getValue() as UserStatus
+      const statusStyles = {
+        active: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300",
+        suspended: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300",
+        inactive: "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300",
+      };
+      return (
+        <span
+          className={`text-sm px-3 py-1 capitalize rounded-full w-fit ${statusStyles[status] || ""}`}
+        >
+          {status}
+        </span>
+      );
+    },
+    header: () => <span>Status</span>,
+  }),
+
+  columnHelper.accessor("created_at", {
+    cell: (info) => (
+      <p className="text-darklink dark:text-bodytext text-sm">
+        {formatDate(info.getValue())}
+      </p>
+    ),
+    header: () => <span>Date Joined</span>,
+  }),
+];
   return (
     <div className="col-span-12">
       <CustomizedReusableTable
-        tableData={users?.data && Array.isArray(users?.data) ? users?.data : []}
+        tableData={Array.isArray(users) ? users : []}
         columns={columns}
         totalPages={totalPages}
         currentPage={currentPage}
