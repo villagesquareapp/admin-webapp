@@ -85,6 +85,11 @@ export const getCowryTopupMetadata = async () => {
   return await apiGet<IGetCowryTopupMetadata>(`wallet/cowry/topup/metadata`, token)
 }
 
+export const verifyCowryTransaction = async (reference: string) => {
+  const token = await getToken();
+  return await apiGet<any>(`wallet/cowry/topup/verify-transaction/${reference}`, token);
+};
+
 export const transferCowry = async (userIds: string[], amount: number = 5000) => {
   const token = await getToken();
   const response = await apiPost(

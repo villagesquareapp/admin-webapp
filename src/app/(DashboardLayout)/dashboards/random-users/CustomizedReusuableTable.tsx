@@ -125,8 +125,9 @@ function CustomizedReusableTable({
       if (res?.status) {
         setShowConfirmModal(false);
         // Re-fetch data
-        router.refresh(); // if using App Router
+        router.refresh(); 
         toast.success(res.message);
+        setSelectedRows([]);
       }
     } catch (error) {
       console.error("Transfer error:", error);

@@ -6,7 +6,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Button, Label, TextInput, FileInput } from "flowbite-react";
 import { toast } from "sonner";
 import { addGifts } from "@/app/api/addGiftClient";
-import { getCowryTopupMetadata, getExchangeRate } from "@/app/api/wallet";
+import { getCowryTopupMetadata, getExchangeRate, verifyCowryTransaction } from "@/app/api/wallet";
 import { usePaystackPayment } from "react-paystack";
 import Paystack from "@paystack/inline-js";
 // import { addGiftClient } from "@/app/api/addGiftClient";
@@ -16,14 +16,7 @@ interface AddGiftModalProps {
   onClose: () => void;
   token?: string;
   onGiftAdded?: () => void;
-}
-
-interface PaystackSuccessResponse {
-  reference: string;
-  status: string;
-  trans?: string;
-  transaction?: string;
-  message?: string;
+  onSuccess?: () => void;
 }
 
 const TopUpCowryComp: React.FC<AddGiftModalProps> = ({
@@ -31,12 +24,13 @@ const TopUpCowryComp: React.FC<AddGiftModalProps> = ({
   onClose,
   token,
   onGiftAdded,
+  onSuccess,
 }) => {
   const [amountInNaira, setAmountInNaira] = useState<number>(0);
   const [dollarValue, setDollarValue] = useState<string>("");
   const [cowryValue, setCowryValue] = useState<string>("");
-  const [cowryTopup, setCowryTopup] = useState<string>('');
-  const [userId, setUserId] = useState<string>('');
+  const [cowryTopup, setCowryTopup] = useState<string>("");
+  const [userId, setUserId] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [loadingMetadata, setLoadingMetadata] = useState<boolean>(false);
 
@@ -51,43 +45,43 @@ const TopUpCowryComp: React.FC<AddGiftModalProps> = ({
         setCowryValue("");
         return;
       }
-      setLoading(true)
+      setLoading(true);
       try {
         const res = await getExchangeRate(amountInNaira);
         if (res?.data?.usd_value && res?.data.cowry_value) {
           setDollarValue(res.data.usd_value);
           setCowryValue(res.data.cowry_value);
         }
-        setLoading(false)
+        setLoading(false);
       } catch (error) {
         console.error("Failed to fetch exchange rate", error);
         toast.error("Could not fetch exchange rate");
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
     };
 
     fetchExchangeRate();
   }, [amountInNaira]);
-  
+
   useEffect(() => {
     const fetchMetadata = async () => {
-      setLoadingMetadata(true)
+      setLoadingMetadata(true);
       try {
-        const response = await getCowryTopupMetadata()
-        if(response?.data?.payment_event && response.data.payment_user_id) {
-          setCowryTopup(response.data.payment_event)
-          setUserId(response.data.payment_user_id)
+        const response = await getCowryTopupMetadata();
+        if (response?.data?.payment_event && response.data.payment_user_id) {
+          setCowryTopup(response.data.payment_event);
+          setUserId(response.data.payment_user_id);
         }
-        setLoadingMetadata(false)
+        setLoadingMetadata(false);
       } catch (error) {
-        toast.error("Error"); 
+        toast.error("Error");
       } finally {
-        setLoadingMetadata(false)
+        setLoadingMetadata(false);
       }
-    }
+    };
     fetchMetadata();
-  }, [])
+  }, []);
 
   const handlePayment = () => {
     if (typeof window !== "undefined") {
@@ -101,11 +95,21 @@ const TopUpCowryComp: React.FC<AddGiftModalProps> = ({
           paymentEvent: cowryTopup,
           paymentUserId: userId,
         },
-        onSuccess: (transaction) => {
-          toast.success("Payment successful");
-          console.log("Payment Success:", transaction);
-          // You can call a backend API here to verify the payment
-        },
+        onSuccess: async (transaction) => {
+        toast.success("Payment Successful");
+
+        try {
+          const result = await verifyCowryTransaction(transaction.reference);
+          console.log("Transaction Verified:", result);
+          toast.success("Cowry updated!");
+
+          onSuccess?.();
+          onClose();
+        } catch (error: any) {
+          console.error("Verification error:", error);
+          toast.error("Transaction verification failed");
+        }
+      },
         onCancel: () => {
           console.log("Payment cancelled");
           toast.success("Payment Cancelled");
@@ -227,7 +231,7 @@ const TopUpCowryComp: React.FC<AddGiftModalProps> = ({
                       color="success"
                       type="button"
                       onClick={handlePayment}
-                      disabled={loading && loadingMetadata}
+                      disabled={loading}
                     >
                       Top Up
                     </Button>
