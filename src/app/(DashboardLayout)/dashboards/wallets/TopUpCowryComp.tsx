@@ -7,7 +7,6 @@ import { Button, Label, TextInput, FileInput } from "flowbite-react";
 import { toast } from "sonner";
 import { addGifts } from "@/app/api/addGiftClient";
 import { getCowryTopupMetadata, getExchangeRate, verifyCowryTransaction } from "@/app/api/wallet";
-import { usePaystackPayment } from "react-paystack";
 import Paystack from "@paystack/inline-js";
 // import { addGiftClient } from "@/app/api/addGiftClient";
 
