@@ -37,8 +37,8 @@ const TopUpCowryComp: React.FC<AddGiftModalProps> = ({
   const [cowryValue, setCowryValue] = useState<string>("");
   const [cowryTopup, setCowryTopup] = useState<string>('');
   const [userId, setUserId] = useState<string>('');
-  const [loading, setLoading] = useState(false);
-  const [loadingMetadata, setLoadingMetadata] = useState(false);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [loadingMetadata, setLoadingMetadata] = useState<boolean>(false);
 
   const rawKey = process.env.NEXT_PUBLIC_PAYSTACK_KEY;
   const publicKey: string = rawKey ?? "";

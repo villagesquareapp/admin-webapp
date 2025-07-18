@@ -9,7 +9,7 @@ import { formatDate } from "@/utils/dateUtils";
 import { createColumnHelper } from "@tanstack/react-table";
 import { useRouter, useSearchParams } from "next/navigation";
 import CustomizedReusableTable from "./CustomizedReusuableTable";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { getRandomUsers } from "@/app/api/user";
 
 const RandomUserTable = ({
@@ -124,16 +124,18 @@ const RandomUserTable = ({
   ];
   return (
     <div className="col-span-12">
-      <CustomizedReusableTable
-        tableData={Array.isArray(users) ? users : []}
-        columns={columns}
-        totalPages={totalPages}
-        currentPage={page}
-        pageSize={limit}
-        onRowClick={handleRowClick}
-        onRefresh={fetchRandomUsers}
-        isRefreshing={isLoading}
-      />
+      <Suspense fallback={<div>Loading users...</div>}>
+        <CustomizedReusableTable
+          tableData={Array.isArray(users) ? users : []}
+          columns={columns}
+          totalPages={totalPages}
+          currentPage={page}
+          pageSize={limit}
+          onRowClick={handleRowClick}
+          onRefresh={fetchRandomUsers}
+          isRefreshing={isLoading}
+        />
+      </Suspense>
     </div>
   );
 };

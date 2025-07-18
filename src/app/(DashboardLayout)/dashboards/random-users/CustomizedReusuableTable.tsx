@@ -117,7 +117,7 @@ function CustomizedReusableTable({
     try {
       const userIds = selectedRows.map((rowIndex) => {
         const user = tableDataState[parseInt(rowIndex)];
-        return user.uuid; // or user.user_id or whatever unique identifier
+        return user.uuid;
       });
 
       const res = await transferCowry(userIds, amount);
