@@ -6,7 +6,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Button, Label, TextInput, FileInput } from "flowbite-react";
 import { toast } from "sonner";
 import { addGifts } from "@/app/api/addGiftClient";
-import { getExchangeRate } from "@/app/api/wallet";
+import { getCowryTopupMetadata, getExchangeRate } from "@/app/api/wallet";
 import { usePaystackPayment } from "react-paystack";
 import Paystack from "@paystack/inline-js";
 // import { addGiftClient } from "@/app/api/addGiftClient";
@@ -35,7 +35,10 @@ const TopUpCowryComp: React.FC<AddGiftModalProps> = ({
   const [amountInNaira, setAmountInNaira] = useState<number>(0);
   const [dollarValue, setDollarValue] = useState<string>("");
   const [cowryValue, setCowryValue] = useState<string>("");
+  const [cowryTopup, setCowryTopup] = useState<string>('');
+  const [userId, setUserId] = useState<string>('');
   const [loading, setLoading] = useState(false);
+  const [loadingMetadata, setLoadingMetadata] = useState(false);
 
   const rawKey = process.env.NEXT_PUBLIC_PAYSTACK_KEY;
   const publicKey: string = rawKey ?? "";
@@ -48,21 +51,43 @@ const TopUpCowryComp: React.FC<AddGiftModalProps> = ({
         setCowryValue("");
         return;
       }
-
+      setLoading(true)
       try {
         const res = await getExchangeRate(amountInNaira);
         if (res?.data?.usd_value && res?.data.cowry_value) {
           setDollarValue(res.data.usd_value);
           setCowryValue(res.data.cowry_value);
         }
+        setLoading(false)
       } catch (error) {
         console.error("Failed to fetch exchange rate", error);
         toast.error("Could not fetch exchange rate");
+      } finally {
+        setLoading(false)
       }
     };
 
     fetchExchangeRate();
   }, [amountInNaira]);
+  
+  useEffect(() => {
+    const fetchMetadata = async () => {
+      setLoadingMetadata(true)
+      try {
+        const response = await getCowryTopupMetadata()
+        if(response?.data?.payment_event && response.data.payment_user_id) {
+          setCowryTopup(response.data.payment_event)
+          setUserId(response.data.payment_user_id)
+        }
+        setLoadingMetadata(false)
+      } catch (error) {
+        toast.error("Error"); 
+      } finally {
+        setLoadingMetadata(false)
+      }
+    }
+    fetchMetadata();
+  }, [])
 
   const handlePayment = () => {
     if (typeof window !== "undefined") {
@@ -73,8 +98,8 @@ const TopUpCowryComp: React.FC<AddGiftModalProps> = ({
         email: userEmail,
         amount: amountInNaira * 100,
         metadata: {
-          paymentEvent: "cowry-topup",
-          // paymentUserId: AdminUUID,
+          paymentEvent: cowryTopup,
+          paymentUserId: userId,
         },
         onSuccess: (transaction) => {
           toast.success("Payment successful");
@@ -202,7 +227,7 @@ const TopUpCowryComp: React.FC<AddGiftModalProps> = ({
                       color="success"
                       type="button"
                       onClick={handlePayment}
-                      disabled={loading}
+                      disabled={loading && loadingMetadata}
                     >
                       Top Up
                     </Button>

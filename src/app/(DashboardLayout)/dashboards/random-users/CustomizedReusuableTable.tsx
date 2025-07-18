@@ -42,6 +42,8 @@ function CustomizedReusableTable({
   onRowClick,
   filterDropdowns,
   extraButtons,
+  onRefresh,
+  isRefreshing,
 }: {
   tableData: any[];
   columns: any[];
@@ -53,6 +55,8 @@ function CustomizedReusableTable({
   extraButtons?: React.ReactNode;
   onRowClick?: (row: any) => void;
   filterDropdowns?: FilterDropdown[];
+  onRefresh: () => void;
+  isRefreshing: boolean;
 }) {
   const [hasMounted, setHasMounted] = React.useState(false);
 
@@ -68,6 +72,7 @@ function CustomizedReusableTable({
 
   const [showConfirmModal, setShowConfirmModal] = React.useState(false);
   const [isLoadingTransfer, setIsLoadingTransfer] = React.useState(false);
+  const [isSearching, setIsSearching] = React.useState<boolean>(false);
 
   const [tableDataState, setTableDataState] = React.useState<any[]>(tableData);
 
@@ -121,7 +126,7 @@ function CustomizedReusableTable({
         setShowConfirmModal(false);
         // Re-fetch data
         router.refresh(); // if using App Router
-        toast.success(res.message)
+        toast.success(res.message);
       }
     } catch (error) {
       console.error("Transfer error:", error);
@@ -132,7 +137,7 @@ function CustomizedReusableTable({
 
   const handleSearch = async () => {
     if (!query.trim()) return;
-
+    setIsSearching(true);
     try {
       const response = await getSearchUser(query.trim());
 
@@ -142,9 +147,12 @@ function CustomizedReusableTable({
       } else {
         setTableDataState([]);
       }
+      setIsSearching(false);
     } catch (error) {
       console.error("Search error:", error);
       setTableDataState([]);
+    } finally {
+      setIsSearching(false);
     }
   };
 
@@ -266,15 +274,20 @@ function CustomizedReusableTable({
             />
 
             {/* Search Button */}
-            <Button color="primary" onClick={handleSearch}>
-              Search
+            <Button
+              color="primary"
+              onClick={handleSearch}
+              disabled={isSearching}
+            >
+              {isSearching ? "Searching..." : "Search"}
             </Button>
           </div>
-          <Button size={"sm"}>Refresh</Button>
+          <Button size="sm" onClick={onRefresh} disabled={isRefreshing}>
+            {isRefreshing ? "Refreshing..." : "Refresh"}
+          </Button>
         </div>
-
         {selectedRows.length > 0 && (
-          <div className="flex items-center justify-between px-4 pb-2">
+          <div className="flex items-center justify-between pb-2">
             <div className="flex gap-1 items-center justify-center pl-6">
               <Checkbox
                 checked={selectedRows.length === tableData.length}
@@ -284,12 +297,12 @@ function CustomizedReusableTable({
               <p className="text-base">Select All</p>
             </div>
             <div className="flex gap-1 items-center justify-center">
-              {/* <Button color="success" onClick={() => setIsOpen(true)}>
-                Transfer Cowry to Selected Users ({selectedRows.length})
-              </Button> */}
               <Button color="success" onClick={() => setShowConfirmModal(true)}>
                 Transfer Cowry to Selected Users ({selectedRows.length})
               </Button>
+              {/* <Button color="success" onClick={() => setIsOpen(true)}>
+                Transfer Cowry to Selected Users ({selectedRows.length})
+              </Button> */}
             </div>
           </div>
         )}

@@ -16,14 +16,7 @@ interface AddGiftModalProps {
   onClose: () => void;
   token?: string;
   onGiftAdded?: () => void;
-}
-
-interface PaystackSuccessResponse {
-  reference: string;
-  status: string;
-  trans?: string;
-  transaction?: string;
-  message?: string;
+  onSuccess?: () => void;
 }
 
 const FundPaystackComp: React.FC<AddGiftModalProps> = ({
@@ -31,6 +24,7 @@ const FundPaystackComp: React.FC<AddGiftModalProps> = ({
   onClose,
   token,
   onGiftAdded,
+  onSuccess
 }) => {
   const [isClient, setIsClient] = useState(false);
 
@@ -42,11 +36,9 @@ const FundPaystackComp: React.FC<AddGiftModalProps> = ({
   const [cowryValue, setCowryValue] = useState<string>("");
   const [loading, setLoading] = useState(false);
 
-  const rawKey = process.env.NEXT_PUBLIC_PAYSTACK_KEY
+  const rawKey = process.env.PAYSTACK_PUBLIC_KEY
   const publicKey: string =  rawKey ?? '';
   const userEmail = "admin@admin.com";
-
-
 
   useEffect(() => {
     const fetchExchangeRate = async () => {
@@ -56,15 +48,19 @@ const FundPaystackComp: React.FC<AddGiftModalProps> = ({
         return;
       }
 
+      setLoading(true)
       try {
         const res = await getExchangeRate(amountInNaira);
         if (res?.data?.usd_value && res?.data.cowry_value) {
           setDollarValue(res.data.usd_value);
           setCowryValue(res.data.cowry_value);
         }
+        setLoading(false);
       } catch (error) {
         console.error("Failed to fetch exchange rate", error);
         toast.error("Could not fetch exchange rate");
+      } finally {
+        setLoading(false)
       }
     };
 
@@ -97,9 +93,11 @@ const FundPaystackComp: React.FC<AddGiftModalProps> = ({
       paystack.newTransaction({
         key: publicKey,
         email: userEmail,
-        amount: amountInNaira * 100, // Amount in kobo (₦5000 = 500000)
+        amount: amountInNaira * 100,
         onSuccess: (transaction) => {
-          toast.success("Payment successful");
+          toast.success("Payment Successful");
+          onSuccess?.();
+          onClose()
           console.log("Payment Success:", transaction);
           // You can call a backend API here to verify the payment
         },
