@@ -10,6 +10,7 @@ import { getExchangeRate } from "@/app/api/wallet";
 import Paystack from "@paystack/inline-js";
 // import { addGiftClient } from "@/app/api/addGiftClient";
 
+
 interface AddGiftModalProps {
   isOpen: boolean;
   onClose: () => void;
