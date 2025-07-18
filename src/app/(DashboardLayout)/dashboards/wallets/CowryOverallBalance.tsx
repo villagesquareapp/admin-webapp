@@ -1,19 +1,16 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 // import CardBox from "../../shared/CardBox";
 import dynamic from "next/dynamic";
 const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
-import { Badge, Button } from "flowbite-react";
+import { Badge, Button, Spinner } from "flowbite-react";
 import { Icon } from "@iconify/react";
 import CardBox from "@/app/components/shared/CardBox";
 import Link from "next/link";
 import TopUpCowryComp from "./TopUpCowryComp";
+import { getCowryBalance } from "@/app/api/wallet";
 
-interface CowryProp {
-  cowryValue: ICowryBalance | null
-}
-
-const CowryOverallBalance: React.FC<CowryProp> = ({cowryValue}) => {
+const CowryOverallBalance: React.FC = () => {
   const IconData = [
     {
       icon: "solar:dollar-minimalistic-line-duotone",
@@ -234,9 +231,27 @@ const CowryOverallBalance: React.FC<CowryProp> = ({cowryValue}) => {
     setActiveTab(tab);
   };
 
-  const [isOpen, setIsOpen] = useState<boolean>(false);
-  
+  const [cowryValue, setCowryValue] = useState<ICowryBalance | null>(null);
+  const [refreshing, setRefreshing] = useState<boolean>(false);
 
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+
+  const fetchCowryBalance = async () => {
+    try {
+      setRefreshing(true);
+      const res = await getCowryBalance();
+      setCowryValue(res?.data ?? null);
+      setRefreshing(false)
+    } catch (err) {
+      console.error("Failed to fetch Paystack balance", err);
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchCowryBalance();
+  }, []);
   return (
     <>
       <CardBox>
@@ -248,9 +263,21 @@ const CowryOverallBalance: React.FC<CowryProp> = ({cowryValue}) => {
               <span className="text-sm font-light text-ld">
                 VS Cowry Overall Balance
               </span>
-              {activeTab === "Cowry" && <h3 className="text-3xl my-1">{cowryValue?.cowry_value.balance}</h3>}
-              {activeTab === "USD" && <h3 className="text-3xl my-1">{cowryValue?.usd_value.balance}</h3>}
-              {activeTab === "NGN" && <h3 className="text-3xl my-1">{cowryValue?.ngn_value.balance}</h3>}
+              {activeTab === "Cowry" && (
+                <h3 className="text-3xl my-1">
+                  {refreshing ? <Spinner size={'sm'} /> : cowryValue?.cowry_value.balance}
+                </h3>
+              )}
+              {activeTab === "USD" && (
+                <h3 className="text-3xl my-1">
+                  {cowryValue?.usd_value.balance}
+                </h3>
+              )}
+              {activeTab === "NGN" && (
+                <h3 className="text-3xl my-1">
+                  {cowryValue?.ngn_value.balance}
+                </h3>
+              )}
               <div className="flex gap-1 items-center">
                 <Badge
                   color={"lightsuccess"}
@@ -361,10 +388,17 @@ const CowryOverallBalance: React.FC<CowryProp> = ({cowryValue}) => {
                   </div>
                 </div>
               ))}
-              <Button size={"sm"} className="text-xs w-full" onClick={() => setIsOpen(true)}>
+              <Button
+                size={"sm"}
+                className="text-xs w-full"
+                onClick={() => setIsOpen(true)}
+              >
                 Top Up Cowry
               </Button>
-              <Link href={"/dashboards/random-users"} className="mt-3 w-full block">
+              <Link
+                href={"/dashboards/random-users"}
+                className="mt-3 w-full block"
+              >
                 <Button size={"sm"} className="text-xs w-full">
                   Transfer Cowry
                 </Button>
@@ -375,7 +409,11 @@ const CowryOverallBalance: React.FC<CowryProp> = ({cowryValue}) => {
       </CardBox>
 
       {isOpen && (
-        <TopUpCowryComp isOpen={isOpen} onClose={() => setIsOpen(false)} />
+        <TopUpCowryComp
+          isOpen={isOpen}
+          onClose={() => setIsOpen(false)}
+          onSuccess={fetchCowryBalance}
+        />
       )}
     </>
   );

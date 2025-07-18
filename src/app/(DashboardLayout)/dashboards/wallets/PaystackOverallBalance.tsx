@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 // import CardBox from "../../shared/CardBox";
 import dynamic from "next/dynamic";
 const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
-import { Badge, Button } from "flowbite-react";
+import { Badge, Button, Spinner } from "flowbite-react";
 import { Icon } from "@iconify/react";
 import CardBox from "@/app/components/shared/CardBox";
 import { FaPlus } from "react-icons/fa";
@@ -256,6 +256,7 @@ const OverallBalance: React.FC = () => {
       setRefreshing(true);
       const res = await getPaystackBalance();
       setPaystackValue(res?.data ?? null);
+      setRefreshing(false);
     } catch (err) {
       console.error("Failed to fetch Paystack balance", err);
     } finally {
@@ -278,7 +279,7 @@ const OverallBalance: React.FC = () => {
               <span className="text-sm font-light text-ld">
                 Paystack Overall Balance
               </span>
-              {activeTab === "USD" ? <h3 className="text-3xl my-1">{paystackValue?.usd_value.balance}</h3> : <h3 className="text-3xl my-1">{paystackValue?.ngn_value.balance}</h3>}
+              {activeTab === "USD" ? <h3 className="text-3xl my-1">{refreshing ? <Spinner size={'sm'} /> : paystackValue?.usd_value.balance}</h3> : <h3 className="text-3xl my-1">{paystackValue?.ngn_value.balance}</h3>}
               <div className="flex gap-1 items-center">
                 <Badge
                   color={"lightsuccess"}

@@ -36,7 +36,7 @@ const FundPaystackComp: React.FC<AddGiftModalProps> = ({
   const [cowryValue, setCowryValue] = useState<string>("");
   const [loading, setLoading] = useState(false);
 
-  const rawKey = process.env.PAYSTACK_PUBLIC_KEY
+  const rawKey = process.env.NEXT_PUBLIC_PAYSTACK_KEY
   const publicKey: string =  rawKey ?? '';
   const userEmail = "admin@admin.com";
 
@@ -99,7 +99,6 @@ const FundPaystackComp: React.FC<AddGiftModalProps> = ({
           onSuccess?.();
           onClose()
           console.log("Payment Success:", transaction);
-          // You can call a backend API here to verify the payment
         },
         onCancel: () => {
           console.log("Payment cancelled");
