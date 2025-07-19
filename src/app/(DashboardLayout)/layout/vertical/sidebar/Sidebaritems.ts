@@ -65,12 +65,6 @@ const SidebarContent: MenuItem[] = [
             id: uniqueId(),
             url: "/dashboards/markets",
           },
-          // {
-          //   name: "Wallets",
-          //   icon: "solar:wallet-money-line-duotone",
-          //   id: uniqueId(),
-          //   url: "/dashboards/wallets",
-          // },
           {
             name: "Tickets",
             icon: "solar:ticket-line-duotone",
@@ -88,6 +82,12 @@ const SidebarContent: MenuItem[] = [
             icon: "solar:gift-line-duotone",
             id: uniqueId(),
             url: "/dashboards/gifts",
+          },
+          {
+            name: "VS Coins",
+            icon: "solar:coins-line-duotone",
+            id: uniqueId(),
+            url: "/dashboards/coins",
           },
           {
             name: "Wallets",

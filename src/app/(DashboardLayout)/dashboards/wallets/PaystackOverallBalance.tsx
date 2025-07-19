@@ -9,11 +9,9 @@ import CardBox from "@/app/components/shared/CardBox";
 import { FaPlus } from "react-icons/fa";
 import FundPaystackComp from "./FundPaystackComp";
 import { getPaystackBalance } from "@/app/api/wallet";
-
-
+import { IoMdRefresh } from "react-icons/io";
 
 const OverallBalance: React.FC = () => {
-
   const IconData = [
     // {
     //   icon: "solar:course-up-line-duotone",
@@ -245,7 +243,9 @@ const OverallBalance: React.FC = () => {
     setActiveTab(tab);
   };
 
-  const [paystackValue, setPaystackValue] = useState<IPaystackBalance | null>(null);
+  const [paystackValue, setPaystackValue] = useState<IPaystackBalance | null>(
+    null
+  );
 
   const [refreshing, setRefreshing] = useState<boolean>(false);
 
@@ -278,8 +278,26 @@ const OverallBalance: React.FC = () => {
             <div>
               <span className="text-sm font-light text-ld">
                 Paystack Overall Balance
+                <button
+                  onClick={fetchBalance}
+                  className="ml-2 text-lg text-primary hover:rotate-90 transition-transform"
+                >
+                  <IoMdRefresh />
+                </button>
               </span>
-              {activeTab === "USD" ? <h3 className="text-3xl my-1">{refreshing ? <Spinner size={'sm'} /> : paystackValue?.usd_value.balance}</h3> : <h3 className="text-3xl my-1">{paystackValue?.ngn_value.balance}</h3>}
+              {activeTab === "USD" ? (
+                <h3 className="text-3xl my-1">
+                  {refreshing ? (
+                    <Spinner size={"sm"} />
+                  ) : (
+                    paystackValue?.usd_value.balance
+                  )}
+                </h3>
+              ) : (
+                <h3 className="text-3xl my-1">
+                  {refreshing ? (<Spinner size={'sm'} /> ) : (paystackValue?.ngn_value.balance)}
+                </h3>
+              )}
               <div className="flex gap-1 items-center">
                 <Badge
                   color={"lightsuccess"}
@@ -304,9 +322,7 @@ const OverallBalance: React.FC = () => {
                   <div
                     key={label}
                     onClick={() =>
-                      handleTabClick(
-                        label === "USD Value" ? "USD" : "NGN"
-                      )
+                      handleTabClick(label === "USD Value" ? "USD" : "NGN")
                     }
                     className={`py-2 px-4 rounded-full min-w-[100px] cursor-pointer text-dark text-xs font-semibold text-center ${
                       activeTab === (label === "USD Value" ? "USD" : "NGN")
