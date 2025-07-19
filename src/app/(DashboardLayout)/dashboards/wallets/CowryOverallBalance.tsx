@@ -9,6 +9,7 @@ import CardBox from "@/app/components/shared/CardBox";
 import Link from "next/link";
 import TopUpCowryComp from "./TopUpCowryComp";
 import { getCowryBalance } from "@/app/api/wallet";
+import { IoMdRefresh } from "react-icons/io";
 
 const CowryOverallBalance: React.FC = () => {
   const IconData = [
@@ -241,7 +242,7 @@ const CowryOverallBalance: React.FC = () => {
       setRefreshing(true);
       const res = await getCowryBalance();
       setCowryValue(res?.data ?? null);
-      setRefreshing(false)
+      setRefreshing(false);
     } catch (err) {
       console.error("Failed to fetch Paystack balance", err);
     } finally {
@@ -261,21 +262,39 @@ const CowryOverallBalance: React.FC = () => {
             {/* Left: Balance Info */}
             <div>
               <span className="text-sm font-light text-ld">
-                VS Cowry Overall Balance
+                VS Cowry Overall Balance{" "}
+                <button
+                  onClick={fetchCowryBalance}
+                  className="ml-2 text-lg text-primary hover:rotate-90 transition-transform"
+                >
+                  <IoMdRefresh />
+                </button>
               </span>
               {activeTab === "Cowry" && (
                 <h3 className="text-3xl my-1">
-                  {refreshing ? <Spinner size={'sm'} /> : cowryValue?.cowry_value.balance}
+                  {refreshing ? (
+                    <Spinner size={"sm"} />
+                  ) : (
+                    cowryValue?.cowry_value.balance
+                  )}
                 </h3>
               )}
               {activeTab === "USD" && (
                 <h3 className="text-3xl my-1">
-                  {cowryValue?.usd_value.balance}
+                  {refreshing ? (
+                    <Spinner size={"sm"} />
+                  ) : (
+                    cowryValue?.usd_value.balance
+                  )}
                 </h3>
               )}
               {activeTab === "NGN" && (
                 <h3 className="text-3xl my-1">
-                  {cowryValue?.ngn_value.balance}
+                  {refreshing ? (
+                    <Spinner size={"sm"} />
+                  ) : (
+                    cowryValue?.ngn_value.balance
+                  )}
                 </h3>
               )}
               <div className="flex gap-1 items-center">
