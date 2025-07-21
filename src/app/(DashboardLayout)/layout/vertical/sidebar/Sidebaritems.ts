@@ -85,7 +85,7 @@ const SidebarContent: MenuItem[] = [
           },
           {
             name: "VS Coins",
-            icon: "solar:coins-line-duotone",
+            icon: "solar:dollar-minimalistic-line-duotone",
             id: uniqueId(),
             url: "/dashboards/coins",
           },
