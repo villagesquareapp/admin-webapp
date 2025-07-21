@@ -462,6 +462,22 @@ interface IGifting {
 
 interface IGiftingResponse extends IPaginatedResponse<IGifting> {}
 
+interface ICoins {
+  uuid: string;
+  name: string;
+  amount: string;
+  price: string;
+  in_app_purchase_id: string;
+  tag: string | null;
+  description: string | null;
+  status: boolean;
+  created_at: string;
+  updated_at: string;
+  deleted_at: string | null;
+}
+
+interface ICoinsResponse extends IPaginatedResponse<ICoins> {}
+
 interface IComment {
   text: string;
   user: {
