@@ -128,6 +128,7 @@ function CustomizedReusableTable({
         router.refresh(); 
         toast.success(res.message);
         setSelectedRows([]);
+        onRefresh();
       }
     } catch (error) {
       console.error("Transfer error:", error);
