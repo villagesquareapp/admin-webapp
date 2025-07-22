@@ -1,9 +1,22 @@
-import React from 'react'
+import CoinCard from "./CoinCard";
+import { getToken } from "@/lib/getToken";
+import { getCoins } from "@/app/api/coin";
 
-const page = () => {
+const Page = async () => {
+  const coins = await getCoins();
+  const token = await getToken();
+
+  if (!token) throw new Error("No token found");
+  // console.log("Gift Result:", gifts)
+
   return (
-    <div>Enter</div>
-  )
-}
+    <>
+      <CoinCard
+        coinsData={Array.isArray(coins?.data) ? coins.data : []}
+        token={token}
+      />
+    </>
+  );
+};
 
-export default page;
+export default Page;
