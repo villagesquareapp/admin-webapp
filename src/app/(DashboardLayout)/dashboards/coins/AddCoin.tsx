@@ -28,9 +28,6 @@ const AddCoin: React.FC<AddCoinModalProps> = ({
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
-    // console.log(name, value, icon);
-
-    // Submit logic here (e.g., API call)
     setLoading(true);
     try {
       const response = await addCoin(Number(amountValue), Number(priceValue));
