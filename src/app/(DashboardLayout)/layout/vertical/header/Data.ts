@@ -138,10 +138,10 @@ const SearchLinks: SearchType[] = [
     title: "Reports",
     href: "/dashboards/reports",
   },
-  // {
-  //   title: "Wallets",
-  //   href: "/dashboards/wallets",
-  // },
+  {
+    title: "Wallets",
+    href: "/dashboards/wallets",
+  },
 ];
 
 //   Message Data

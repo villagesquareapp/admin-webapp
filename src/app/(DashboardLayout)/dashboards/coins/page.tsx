@@ -1,9 +1,9 @@
-import { getGifts } from "@/app/api/gift";
-import GiftCard from "./GiftCard";
+import CoinCard from "./CoinCard";
 import { getToken } from "@/lib/getToken";
+import { getCoins } from "@/app/api/coin";
 
 const Page = async () => {
-  const gifts = await getGifts();
+  const coins = await getCoins();
   const token = await getToken();
 
   if (!token) throw new Error("No token found");
@@ -11,8 +11,8 @@ const Page = async () => {
 
   return (
     <>
-      <GiftCard
-        giftsData={Array.isArray(gifts?.data) ? gifts.data : []}
+      <CoinCard
+        coinsData={Array.isArray(coins?.data) ? coins.data : []}
         token={token}
       />
     </>

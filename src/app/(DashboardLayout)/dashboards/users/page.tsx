@@ -33,6 +33,7 @@ const Page = async ({
       shape: shape1,
       link: "",
     },
+
     {
       total: userStats?.data?.today_new_users || 0,
       icon: "mdi:account-plus",

@@ -186,7 +186,7 @@ const RecentProjects = () => {
   ];
 
   // Custom Tab
-  const [activeTab, setActiveTab] = useState("Sass");
+  const [activeTab, setActiveTab] = useState("All");
   const handleTabClick = (tab: React.SetStateAction<string>) => {
     setActiveTab(tab);
   };
@@ -194,13 +194,13 @@ const RecentProjects = () => {
     <>
       <CardBox>
         <div className="sm:flex items-center justify-between">
-          <h5 className="card-title">Recent Projects</h5>
+          <h5 className="card-title">Recent Cowry Transfer</h5>
           <div className="flex items-center gap-3 sm:mt-0 mt-4 justify-between">
             <div className="flex flex-wrap bg-muted dark:bg-dark p-1 rounded-full">
               <div
-                onClick={() => handleTabClick("Sass")}
+                onClick={() => handleTabClick("All")}
                 className={`py-2 px-4 rounded-full min-w-[100px] cursor-pointer text-dark  text-xs font-semibold text-center  ${
-                  activeTab == "Sass"
+                  activeTab == "All"
                     ? "text-dark bg-white dark:bg-darkgray dark:text-white "
                     : "dark:text-white opacity-60"
                 }`}
@@ -208,9 +208,9 @@ const RecentProjects = () => {
                 Sass
               </div>
               <div
-                onClick={() => handleTabClick("Mobile")}
+                onClick={() => handleTabClick("Credit")}
                 className={`py-2 px-4 rounded-full min-w-[100px] cursor-pointer text-dark text-xs font-semibold text-center  ${
-                  activeTab == "Mobile"
+                  activeTab == "Credit"
                     ? "text-dark bg-white dark:bg-darkgray dark:text-white"
                     : "dark:text-white opacity-60 "
                 }`}
@@ -218,9 +218,9 @@ const RecentProjects = () => {
                 Mobile
               </div>
               <div
-                onClick={() => handleTabClick("Others")}
+                onClick={() => handleTabClick("Debit")}
                 className={`py-2 px-4 rounded-full min-w-[100px] cursor-pointer text-dark text-xs font-semibold text-center  ${
-                  activeTab == "Others"
+                  activeTab == "Debit"
                     ? "text-dark bg-white dark:bg-darkgray dark:text-white"
                     : "dark:text-white opacity-60 "
                 }`}
@@ -245,13 +245,13 @@ const RecentProjects = () => {
           </div>
         </div>
 
-        {activeTab === "Sass" && (
+        {activeTab === "All" && (
           <div className="overflow-x-auto overflow-y-hidden">
             <Table className="mt-2">
               <Table.Head>
-                <Table.HeadCell className="ps-0 text-base font-semibold pb-4">
+                {/* <Table.HeadCell className="ps-0 text-base font-semibold pb-4">
                   #
-                </Table.HeadCell>
+                </Table.HeadCell> */}
                 <Table.HeadCell className="text-base font-semibold">
                   Name
                 </Table.HeadCell>
@@ -271,9 +271,9 @@ const RecentProjects = () => {
               <Table.Body className="divide-y divide-border dark:divide-darkborder ">
                 {RecentProjectsData.map((item, index) => (
                   <Table.Row key={index}>
-                    <Table.Cell className="whitespace-nowrap ps-0">
+                    {/* <Table.Cell className="whitespace-nowrap ps-0">
                       <Checkbox className="checkbox" />
-                    </Table.Cell>
+                    </Table.Cell> */}
                     <Table.Cell className="whitespace-nowrap">
                       <div className="flex gap-5 items-center">
                         <span
@@ -368,7 +368,7 @@ const RecentProjects = () => {
           </div>
         )}
 
-        {activeTab === "Mobile" && (
+        {activeTab === "Credit" && (
           <div className="overflow-x-auto overflow-y-hidden">
             <Table className="mt-2">
               <Table.Head>
@@ -491,7 +491,7 @@ const RecentProjects = () => {
           </div>
         )}
 
-        {activeTab === "Others" && (
+        {activeTab === "Debit" && (
           <div className="overflow-x-auto overflow-y-hidden">
             <Table className="mt-2">
               <Table.Head>

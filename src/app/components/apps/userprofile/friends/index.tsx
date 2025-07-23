@@ -10,9 +10,9 @@ const FriendsApp = () => {
       <UserDataProvider>
         <div className="grid grid-cols-12 gap-6">
           {/* Banner */}
-          <div className="col-span-12">
+          {/* <div className="col-span-12">
             <ProfileBanner user={null} />
-          </div>
+          </div> */}
           {/* FriendsCard */}
           <div className="col-span-12">
             <FriendsCard />

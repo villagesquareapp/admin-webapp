@@ -1,9 +1,9 @@
-import { NextAuthOptions } from 'next-auth'
-import CredentialsProvider from 'next-auth/providers/credentials'
+import { NextAuthOptions } from 'next-auth';
+import CredentialsProvider from 'next-auth/providers/credentials';
 import { messageHandler } from '@/lib/messageHandler';
 
 export const authOptions: NextAuthOptions = {
-    secret: process.env.NEXTAUTH_SECRET || 'zSLADSxHudaAtzEkWbPfbVaXa3D3Ls1Ey6f/Kn5YNVs=',
+    secret: process.env.NEXTAUTH_SECRET,
     providers: [
         CredentialsProvider({
             name: 'Credentials',
@@ -26,15 +26,19 @@ export const authOptions: NextAuthOptions = {
                     });
                     const data = await response.json();
 
+                    console.log("API STATUS:", response.status);
+                    console.log("API RESPONSE:", data);
+
                     if (!response.ok) {
                         throw new Error(messageHandler(data.message) || "Authentication failed");
                     }
-
+                    
                     return {
                         id: data?.data?.user?.id,
                         email: data?.data?.user?.email,
                         token: data?.data?.access_token,
                     };
+                    
                 } catch (error: any) {
                     throw new Error(messageHandler(error.message) || "Authentication failed");
                 }

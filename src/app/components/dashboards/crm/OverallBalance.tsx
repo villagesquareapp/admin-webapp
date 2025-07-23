@@ -246,7 +246,7 @@ const OverallBalance = () => {
             <div className="sm:flex items-start  justify-between">
               <div>
                 <span className="text-sm font-light text-ld">
-                  Overall Balance
+                  Paystack Overall Balance
                 </span>
                 <h3 className="text-3xl my-1">$2,538,942</h3>
                 <div className="flex gap-1 items-center">
@@ -275,7 +275,7 @@ const OverallBalance = () => {
                         : "dark:text-white opacity-60"
                     }`}
                   >
-                    Orders
+                    USD Value
                   </div>
                   <div
                     onClick={() => handleTabClick("Expenses")}
@@ -285,7 +285,7 @@ const OverallBalance = () => {
                         : "dark:text-white opacity-60 "
                     }`}
                   >
-                    Expenses
+                    NGN Value
                   </div>
                 </div>
               </div>

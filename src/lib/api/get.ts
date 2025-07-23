@@ -9,6 +9,6 @@ export async function apiGet<T>(route: string, token?: string): Promise<ApiRespo
     if (response?.status) {
         return response
     }
-    return null
+    return null;
 }
 

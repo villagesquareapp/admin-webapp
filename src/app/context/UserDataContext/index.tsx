@@ -2,6 +2,7 @@
 import React, { createContext, useState, useEffect } from 'react';
 import axios from '@/utils/axios';
 import { PostType, profiledataType } from '@/app/(DashboardLayout)/types/apps/userProfile';
+import { getGifts } from '@/app/api/gift';
 
 // Define context type
 export type UserDataContextType = {
@@ -57,6 +58,7 @@ export const UserDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
                 const postsResponse = await axios.get('/api/data/postData');
                 const usersResponse = await axios.get('/api/data/users');
                 const galleryResponse = await axios.get('/api/data/gallery');
+                // const gifts = await getGifts();
                 setPosts(postsResponse.data);
                 setUsers(usersResponse.data);
                 setGallery(galleryResponse.data);

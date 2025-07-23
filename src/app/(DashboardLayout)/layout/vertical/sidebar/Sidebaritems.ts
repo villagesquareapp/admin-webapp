@@ -54,23 +54,17 @@ const SidebarContent: MenuItem[] = [
             url: "/dashboards/echoes",
           },
           {
-            name: "Live Streams",
+            name: "Livestreams",
             icon: "solar:play-stream-line-duotone",
             id: uniqueId(),
             url: "/dashboards/livestreams",
           },
           {
-            name: "Market Squares",
+            name: "Marketsquare",
             icon: "solar:shop-2-line-duotone",
             id: uniqueId(),
             url: "/dashboards/markets",
           },
-          // {
-          //   name: "Wallets",
-          //   icon: "solar:wallet-money-line-duotone",
-          //   id: uniqueId(),
-          //   url: "/dashboards/wallets",
-          // },
           {
             name: "Tickets",
             icon: "solar:ticket-line-duotone",
@@ -84,10 +78,22 @@ const SidebarContent: MenuItem[] = [
             url: "/dashboards/reports",
           },
           {
-            name: "Gift",
+            name: "Gifts",
             icon: "solar:gift-line-duotone",
             id: uniqueId(),
             url: "/dashboards/gifts",
+          },
+          {
+            name: "VS Coins",
+            icon: "solar:dollar-minimalistic-line-duotone",
+            id: uniqueId(),
+            url: "/dashboards/coins",
+          },
+          {
+            name: "Wallets",
+            icon: "solar:wallet-money-line-duotone",
+            id: uniqueId(),
+            url: "/dashboards/wallets",
           },
           {
             name: "Settings",
