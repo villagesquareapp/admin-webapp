@@ -44,7 +44,6 @@ const PostActions = ({ post }: { post: IPosts }) => {
       if (res?.status) {
         toast.success("Post status updated");
         setShowModal(false);
-        // refreshUsers()
       } else {
         toast.error(res?.message || "Failed to update post status");
       }
