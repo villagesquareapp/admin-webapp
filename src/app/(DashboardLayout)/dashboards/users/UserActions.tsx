@@ -44,7 +44,6 @@ const UserActions = ({ user }: { user: IUser }) => {
       if (res?.status) {
         toast.success("User status updated");
         setShowModal(false);
-        // refreshUsers()
       } else {
         toast.error(res?.message || "Failed to update user");
       }
