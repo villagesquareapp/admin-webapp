@@ -170,7 +170,7 @@ interface IUser {
       profession: string;
       bio: string;
       last_online: string | null;
-      status: "active" | "suspended" | "inactive";
+      status: "active" | "suspended" | "disabled" | "reported" | "flagged" | "banned" | "shadow_hidden" | "archived";
       verified: number;
       profile_picture: string;
       profile_banner: string;
@@ -237,6 +237,17 @@ interface IRandomUsers {
 
 interface IRandomUsersResponse extends IPaginatedResponse<IRandomUsers> {}
 
+interface IUserStatusList {
+  name: string;
+  value: string;
+}
+interface IPostStatusList {
+  name: string;
+  value: string;
+}
+
+interface IUserStatusListResponse extends IPaginatedResponse<IUserStatusList>{}
+
 interface IMedia {
   thumbnail: string;
   url: string;
@@ -249,7 +260,7 @@ interface IPosts {
   views_count: number;
   shares_count: number;
   likes_count: number;
-  comments_count: number;
+  replies_count: number;
   created_at: string;
   user: {
     uuid: string;
