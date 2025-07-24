@@ -1,7 +1,8 @@
 'use server'
 
-import { apiGet } from '@/lib/api';
+import { apiGet, apiPost } from '@/lib/api';
 import { getToken } from '@/lib/getToken';
+import { revalidateCurrentPath } from '@/lib/revalidate';
 
 
 export const getPostStats = async () => {
@@ -28,4 +29,24 @@ export const getSinglePost = async (uuid: string) => {
         `posts/${uuid}`,
         token
     );
+};
+
+export const getPostStatus = async () => {
+    const token = await getToken();
+    return await apiGet<IPostStatusList[]>(`posts/post-status-list`, token);
+}
+
+export const updatePostStatus = async (userId: string, status: string) => {
+  const token = await getToken();
+  const response = await apiPost(
+    `posts/${userId}/update-status`,
+    { status },
+    token
+  );
+
+  if (response.status) {
+    await revalidateCurrentPath();
+  }
+
+  return response;
 };

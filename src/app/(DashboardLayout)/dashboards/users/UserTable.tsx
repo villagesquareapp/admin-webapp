@@ -1,10 +1,14 @@
 "use client";
 
 import ReusableTable from "@/app/components/shared/ReusableTable";
-import { DetailComp, UserDetailsComp } from "@/app/components/shared/TableSnippets";
+import {
+  DetailComp,
+  UserDetailsComp,
+} from "@/app/components/shared/TableSnippets";
 import { formatDate } from "@/utils/dateUtils";
 import { createColumnHelper } from "@tanstack/react-table";
 import { useRouter, useSearchParams } from "next/navigation";
+import UserActions from "./UserActions";
 
 const UserTable = ({
   users,
@@ -61,7 +65,9 @@ const UserTable = ({
     }),
     columnHelper.accessor("user_details.profile.followers", {
       cell: (info) => (
-        <p className="text-darklink dark:text-bodytext text-sm">{info.getValue() || 0}</p>
+        <p className="text-darklink dark:text-bodytext text-sm">
+          {info.getValue() || 0}
+        </p>
       ),
       header: () => <span>Followers</span>,
     }),
@@ -69,9 +75,22 @@ const UserTable = ({
       cell: (info) => {
         const status = info.getValue();
         const statusStyles = {
-          active: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300",
-          suspended: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300",
-          inactive: "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300",
+          active:
+            "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300",
+          suspended:
+            "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300",
+          disabled:
+            "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300",
+          reported:
+            "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300",
+          flagged:
+            "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300",
+          banned:
+            "bg-rose-100 text-rose-800 dark:bg-rose-900 dark:text-rose-300",
+          shadow_hidden:
+            "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300",
+          archived:
+            "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300",
         };
 
         return (
@@ -94,6 +113,15 @@ const UserTable = ({
         );
       },
       header: () => <span>Date Joined</span>,
+    }),
+
+    columnHelper.display({
+      id: "actions",
+      header: () => <span>Actions</span>,
+      cell: (info) => {
+        const user = info.row.original;
+        return <UserActions user={user} />;
+      },
     }),
   ];
   return (
