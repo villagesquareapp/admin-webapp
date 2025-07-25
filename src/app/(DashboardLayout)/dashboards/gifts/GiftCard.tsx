@@ -30,7 +30,7 @@ interface IGiftProp {
 }
 
 const GiftCard: React.FC<IGiftProp> = ({ giftsData, token }) => {
-  // const { followers, setSearch }: any = useContext(UserDataContext);
+  // const { followers, setSearch }: any = useContext(UserDataContext)
 
   const [isOpen, setIsOpen] = useState<boolean>(false);
 

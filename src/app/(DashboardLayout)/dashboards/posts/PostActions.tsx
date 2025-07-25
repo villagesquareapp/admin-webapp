@@ -8,32 +8,24 @@ import { Button, Label, TextInput, FileInput } from "flowbite-react";
 import { getPostStatus, updatePostStatus } from "@/app/api/post";
 import { toast } from "sonner";
 
-const PostActions = ({ post }: { post: IPosts }) => {
+const PostActions = ({
+  post,
+  statuses,
+  statusLoading,
+  onStatusRefresh,
+}: {
+  post: IPosts;
+  statuses: IPostStatusList[];
+  statusLoading: boolean;
+  onStatusRefresh: () => Promise<void>;
+}) => {
   const [showModal, setShowModal] = useState<boolean>(false);
-  const [statuses, setStatuses] = useState<IPostStatusList[]>([]);
   const [selected, setSelected] = useState("");
   const [loading, setLoading] = useState<boolean>(false);
-  const [statusLoading, setStatusLoading] = useState<boolean>(false);
 
   const handleClick = (e: React.MouseEvent) => {
-    e.stopPropagation(); 
+    e.stopPropagation();
   };
-
-  useEffect(() => {
-    const fetchStatuses = async () => {
-      setStatusLoading(true);
-      try {
-        const res = await getPostStatus();
-        setStatuses(res?.data || []);
-        setStatusLoading(false);
-      } catch (error) {
-        console.error("Failed to load post statuses:", error);
-      } finally {
-        setStatusLoading(false);
-      }
-    };
-    fetchStatuses();
-  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,10 +36,11 @@ const PostActions = ({ post }: { post: IPosts }) => {
       if (res?.status) {
         toast.success("Post status updated");
         setShowModal(false);
+        onStatusRefresh?.();
       } else {
         toast.error(res?.message || "Failed to update post status");
       }
-      setLoading(false)
+      setLoading(false);
     } catch (error) {
       console.error(error);
       toast.error("Error updating post status");
@@ -110,7 +103,7 @@ const PostActions = ({ post }: { post: IPosts }) => {
                       value={selected}
                       onChange={(e) => setSelected(e.target.value)}
                       required
-                      sizing={'md'}
+                      sizing={"md"}
                       className="w-full"
                     >
                       <option value="">Select a post status</option>
@@ -129,8 +122,13 @@ const PostActions = ({ post }: { post: IPosts }) => {
                     >
                       Cancel
                     </Button>
-                    <Button color="success" type="submit" disabled={loading || statusLoading} isProcessing={loading}>
-                      {loading ? "Updating...": "Update"}
+                    <Button
+                      color="success"
+                      type="submit"
+                      disabled={loading || statusLoading}
+                      isProcessing={loading}
+                    >
+                      {loading ? "Updating..." : "Update"}
                     </Button>
                   </div>
                 </form>

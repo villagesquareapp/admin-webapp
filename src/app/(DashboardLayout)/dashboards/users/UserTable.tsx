@@ -9,6 +9,8 @@ import { formatDate } from "@/utils/dateUtils";
 import { createColumnHelper } from "@tanstack/react-table";
 import { useRouter, useSearchParams } from "next/navigation";
 import UserActions from "./UserActions";
+import { getUserStatus } from "@/app/api/user";
+import { useEffect, useState } from "react";
 
 const UserTable = ({
   users,
@@ -29,6 +31,25 @@ const UserTable = ({
     params.set("userId", user.user_details.profile.id);
     router.replace(`?${params.toString()}`);
   };
+
+  const [statuses, setStatuses] = useState<IUserStatusList[]>([]);
+    const [statusLoading, setStatusLoading] = useState<boolean>(false);
+  
+    useEffect(() => {
+      const fetchStatuses = async () => {
+        setStatusLoading(true)
+        try {
+          const res = await getUserStatus();
+          setStatuses(res?.data || []);
+          setStatusLoading(false)
+        } catch (error) {
+          console.error("Failed to load user statuses:", error);
+        } finally {
+          setStatusLoading(false)
+        }
+      };
+      fetchStatuses();
+    }, []);
 
   const columnHelper = createColumnHelper<IUser>();
 
@@ -120,7 +141,7 @@ const UserTable = ({
       header: () => <span>Actions</span>,
       cell: (info) => {
         const user = info.row.original;
-        return <UserActions user={user} />;
+        return <UserActions user={user} statuses={statuses} statusLoading={statusLoading} />;
       },
     }),
   ];
