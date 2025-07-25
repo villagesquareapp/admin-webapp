@@ -5,23 +5,47 @@ import ReusableTable from "@/app/components/shared/ReusableTable";
 import { formatDate } from "@/utils/dateUtils";
 import { createColumnHelper } from "@tanstack/react-table";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PostDialog from "./PostDialog";
 import PostActions from "./PostActions";
+import { getPostStatus } from "@/app/api/post";
 
 const PostTable = ({
   posts,
   totalPages,
   currentPage,
   pageSize,
+  onRefresh,
+  onPageChange,
 }: {
   posts: IPostResponse | null;
   totalPages: number;
   currentPage: number;
   pageSize: number;
+  onRefresh?: () => Promise<void>;
+  onPageChange?: (page: number) => void;
 }) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedPost, setSelectedPost] = useState<IPosts | null>(null);
+
+  const [statuses, setStatuses] = useState<IPostStatusList[]>([]);
+  const [statusLoading, setStatusLoading] = useState<boolean>(false);
+
+  useEffect(() => {
+    const fetchStatuses = async () => {
+      setStatusLoading(true);
+      try {
+        const res = await getPostStatus();
+        setStatuses(res?.data || []);
+        setStatusLoading(false);
+      } catch (error) {
+        console.error("Failed to load post statuses:", error);
+      } finally {
+        setStatusLoading(false);
+      }
+    };
+    fetchStatuses();
+  }, []);
 
   const columnHelper = createColumnHelper<IPosts>();
 
@@ -104,7 +128,15 @@ const PostTable = ({
     }),
     columnHelper.accessor("user.status", {
       cell: (info) => {
-        type UserStatus = "active" | "suspended" | "disabled" | "reported" | "flagged" | "banned" | "shadow_hidden" | "archived";
+        type UserStatus =
+          | "active"
+          | "suspended"
+          | "disabled"
+          | "reported"
+          | "flagged"
+          | "banned"
+          | "shadow_hidden"
+          | "archived";
         const status: UserStatus = info.getValue() as UserStatus;
         const statusStyles = {
           active:
@@ -140,7 +172,14 @@ const PostTable = ({
       header: () => <span>Actions</span>,
       cell: (info) => {
         const post = info.row.original;
-        return <PostActions post={post} />;
+        return (
+          <PostActions
+            post={post}
+            statuses={statuses}
+            statusLoading={statusLoading}
+            onStatusRefresh={onRefresh ?? (async () => {})}
+          />
+        );
       },
     }),
     // columnHelper.accessor("actions", {

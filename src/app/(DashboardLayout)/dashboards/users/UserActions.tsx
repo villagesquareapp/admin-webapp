@@ -8,32 +8,15 @@ import { Button, Label, TextInput, FileInput, Select } from "flowbite-react";
 import { toast } from "sonner";
 import { getUsers, getUserStatus, updateUserStatus } from "@/app/api/user";
 
-const UserActions = ({ user }: { user: IUser }) => {
+const UserActions = ({ user, statuses, statusLoading }: { user: IUser, statuses: IUserStatusList[], statusLoading: boolean }) => {
   const [showModal, setShowModal] = useState<boolean>(false);
-  const [statuses, setStatuses] = useState<IUserStatusList[]>([]);
   const [selected, setSelected] = useState("");
   const [loading, setLoading] = useState<boolean>(false);
-  const [statusLoading, setStatusLoading] = useState<boolean>(false);
-
+  
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation(); 
   };
 
-  useEffect(() => {
-    const fetchStatuses = async () => {
-      setStatusLoading(true)
-      try {
-        const res = await getUserStatus();
-        setStatuses(res?.data || []);
-        setStatusLoading(false)
-      } catch (error) {
-        console.error("Failed to load user statuses:", error);
-      } finally {
-        setStatusLoading(false)
-      }
-    };
-    fetchStatuses();
-  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
