@@ -15,15 +15,15 @@ const PostTable = ({
   totalPages,
   currentPage,
   pageSize,
-  onRefresh,
-  onPageChange,
+  // onRefresh,
+  // onPageChange,
 }: {
   posts: IPostResponse | null;
   totalPages: number;
   currentPage: number;
   pageSize: number;
-  onRefresh?: () => Promise<void>;
-  onPageChange?: (page: number) => void;
+  // onRefresh?: () => Promise<void>;
+  // onPageChange?: (page: number) => void;
 }) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedPost, setSelectedPost] = useState<IPosts | null>(null);
@@ -126,18 +126,9 @@ const PostTable = ({
       },
       header: () => <span>Date Posted</span>,
     }),
-    columnHelper.accessor("user.status", {
+    columnHelper.accessor("status", {
       cell: (info) => {
-        type UserStatus =
-          | "active"
-          | "suspended"
-          | "disabled"
-          | "reported"
-          | "flagged"
-          | "banned"
-          | "shadow_hidden"
-          | "archived";
-        const status: UserStatus = info.getValue() as UserStatus;
+        const status = info.getValue();
         const statusStyles = {
           active:
             "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300",
@@ -177,7 +168,7 @@ const PostTable = ({
             post={post}
             statuses={statuses}
             statusLoading={statusLoading}
-            onStatusRefresh={onRefresh ?? (async () => {})}
+            // onStatusRefresh={onRefresh ?? (async () => {})}
           />
         );
       },

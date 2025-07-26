@@ -33,23 +33,23 @@ const UserTable = ({
   };
 
   const [statuses, setStatuses] = useState<IUserStatusList[]>([]);
-    const [statusLoading, setStatusLoading] = useState<boolean>(false);
-  
-    useEffect(() => {
-      const fetchStatuses = async () => {
-        setStatusLoading(true)
-        try {
-          const res = await getUserStatus();
-          setStatuses(res?.data || []);
-          setStatusLoading(false)
-        } catch (error) {
-          console.error("Failed to load user statuses:", error);
-        } finally {
-          setStatusLoading(false)
-        }
-      };
-      fetchStatuses();
-    }, []);
+  const [statusLoading, setStatusLoading] = useState<boolean>(false);
+
+  useEffect(() => {
+    const fetchStatuses = async () => {
+      setStatusLoading(true);
+      try {
+        const res = await getUserStatus();
+        setStatuses(res?.data || []);
+        setStatusLoading(false);
+      } catch (error) {
+        console.error("Failed to load user statuses:", error);
+      } finally {
+        setStatusLoading(false);
+      }
+    };
+    fetchStatuses();
+  }, []);
 
   const columnHelper = createColumnHelper<IUser>();
 
@@ -62,7 +62,8 @@ const UserTable = ({
             username: info.row.original.user_details.profile.username,
             email: info.row.original.user_details.profile.email,
             last_online: info.row.original.user_details.profile.last_online,
-            profile_picture: info.row.original.user_details.profile.profile_picture,
+            profile_picture:
+              info.row.original.user_details.profile.profile_picture,
             premium: info.row.original.user_details.profile.premium,
             check_mark: info.row.original.user_details.profile.check_mark,
           }}
@@ -141,7 +142,13 @@ const UserTable = ({
       header: () => <span>Actions</span>,
       cell: (info) => {
         const user = info.row.original;
-        return <UserActions user={user} statuses={statuses} statusLoading={statusLoading} />;
+        return (
+          <UserActions
+            user={user}
+            statuses={statuses}
+            statusLoading={statusLoading}
+          />
+        );
       },
     }),
   ];
