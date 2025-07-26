@@ -12,12 +12,12 @@ const PostActions = ({
   post,
   statuses,
   statusLoading,
-  onStatusRefresh,
+  // onStatusRefresh,
 }: {
   post: IPosts;
   statuses: IPostStatusList[];
   statusLoading: boolean;
-  onStatusRefresh: () => Promise<void>;
+  // onStatusRefresh: () => Promise<void>;
 }) => {
   const [showModal, setShowModal] = useState<boolean>(false);
   const [selected, setSelected] = useState("");
@@ -36,7 +36,7 @@ const PostActions = ({
       if (res?.status) {
         toast.success("Post status updated");
         setShowModal(false);
-        onStatusRefresh?.();
+        // onStatusRefresh?.();
       } else {
         toast.error(res?.message || "Failed to update post status");
       }

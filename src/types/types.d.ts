@@ -257,6 +257,11 @@ interface IMedia {
 interface IPosts {
   uuid: string;
   caption: string;
+  parent_post_id: string | number;
+  root_post_id: string;
+  quote_post_id: string | null
+  thread_id: string;
+  status: "active" | "suspended" | "disabled" | "reported" | "flagged" | "banned" | "shadow_hidden" | "archived";
   views_count: number;
   shares_count: number;
   likes_count: number;
