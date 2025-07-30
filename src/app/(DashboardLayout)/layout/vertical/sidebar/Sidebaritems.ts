@@ -96,6 +96,12 @@ const SidebarContent: MenuItem[] = [
             url: "/dashboards/wallets",
           },
           {
+            name: "Admin Users",
+            icon: "solar:users-group-rounded-line-duotone",
+            id: uniqueId(),
+            url: "/dashboards/admin-users",
+          },
+          {
             name: "Settings",
             icon: "solar:settings-line-duotone",
             id: uniqueId(),
