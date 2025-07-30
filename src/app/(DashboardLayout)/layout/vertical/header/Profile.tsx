@@ -2,6 +2,7 @@ import { Icon } from "@iconify/react";
 import { Button, Dropdown } from "flowbite-react";
 import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
+import Link from "next/link";
 const Profile = () => {
   const { data: session } = useSession();
   const user = session?.user;
@@ -70,6 +71,10 @@ const Profile = () => {
             </Dropdown.Item>
           ))}
         </SimpleBar> */}
+
+        <div className='mx-6'>
+          <Link href='/update-password' className='no-underline'>Update Password</Link>
+        </div>
 
         <div className="pt-6 px-6">
           <Button onClick={() => signOut()} color={"primary"} className="w-full">

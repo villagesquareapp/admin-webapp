@@ -15,7 +15,10 @@ const Page = async ({
   const limit = Number(searchParams.limit) || 20;
   const userId = searchParams.userId as string;
 
-  const [userStats, users] = await Promise.all([getUserStats(), getUsers(page, limit)]);
+  const [userStats, users] = await Promise.all([
+    getUserStats(),
+    getUsers(page, limit),
+  ]);
 
   const selectedUser =
     userId && users?.data?.data

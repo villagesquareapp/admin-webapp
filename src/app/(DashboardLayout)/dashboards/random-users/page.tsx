@@ -9,7 +9,6 @@ const Page = async () => {
       <div className="col-span-12">
         <Suspense fallback={<div>Loading users...</div>}>
           <RandomUserTable
-
           // totalPages={randomUsers?.data || 1}
           // currentPage={page}
           // pageSize={limit}
