@@ -1,6 +1,6 @@
 'use server'
 
-import { apiGet, apiPost } from '@/lib/api';
+import { apiGet, apiPost, apiPut } from '@/lib/api';
 import { getToken } from '@/lib/getToken';
 import { revalidateCurrentPath } from '@/lib/revalidate';
 
@@ -22,3 +22,15 @@ export const addNewSettings = async (newSetting: Omit<ISettings, "uuid" | "creat
     }
     return response
 };
+
+export const updatePassword = async (old_password: string, new_password: string) => {
+    const token = await getToken();
+    if(!token) return null
+    const response = await apiPut(`admin-users/settings/change-password`, {old_password, new_password}, token)
+
+    if(response.status) {
+        await revalidateCurrentPath();
+    }
+
+    return response;
+}

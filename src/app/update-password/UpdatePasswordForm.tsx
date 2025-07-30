@@ -10,10 +10,16 @@ import { toast } from "sonner";
 import { Button, Label, TextInput } from "flowbite-react";
 import React from "react";
 import { HiEye, HiEyeOff } from "react-icons/hi";
+import { signOut } from "next-auth/react";
+import { apiPost } from "@/lib/api";
+import { updatePassword } from "../api/setting";
+import { useSession } from "next-auth/react";
 
 const UpdatePasswordForm = () => {
   const [showPassword, setShowPassword] = React.useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = React.useState<boolean>(false);
+
+  const { data: session } = useSession();
 
   const form = useForm<UpdatePasswordFormValues>({
     resolver: zodResolver(updatePasswordSchema),
@@ -27,11 +33,24 @@ const UpdatePasswordForm = () => {
   const onSubmit = async (data: UpdatePasswordFormValues) => {
     setIsSubmitting(true);
     try {
-      // 🔐 Replace with your update password API call
-      console.log("Updating password with:", data);
+      const token = session?.user
 
-      toast.success("Password updated successfully");
-      form.reset();
+      if (!token) {
+        toast.error("Authorization token missing. Please log in again.");
+        return;
+      }
+      const response = await updatePassword(
+        data.currentPassword,
+        data.newPassword
+      );
+
+      if (response?.status) {
+        toast.success("Password updated successfully");
+
+        await signOut({ callbackUrl: "/auth/auth2/login" });
+      } else {
+        toast.error(response?.message || "Something went wrong");
+      }
     } catch (error) {
       toast.error("Failed to update password");
     } finally {
@@ -40,7 +59,7 @@ const UpdatePasswordForm = () => {
   };
 
   return (
-    <form className="mt-6">
+    <form className="mt-6" onSubmit={form.handleSubmit(onSubmit)}>
       <center className="mb-4">
         <p className="text-2xl font-bold">Update Password</p>
       </center>
@@ -101,7 +120,9 @@ const UpdatePasswordForm = () => {
           </button>
         </div>
         {form.formState.errors.newPassword && (
-          <p className="text-red-500 text-sm mt-1">{form.formState.errors.newPassword.message}</p>
+          <p className="text-red-500 text-sm mt-1">
+            {form.formState.errors.newPassword.message}
+          </p>
         )}
       </div>
       <div className="mb-4">
@@ -130,11 +151,18 @@ const UpdatePasswordForm = () => {
           </button>
         </div>
         {form.formState.errors.confirmPassword && (
-          <p className="text-red-500 text-sm mt-1">{form.formState.errors.confirmPassword.message}</p>
+          <p className="text-red-500 text-sm mt-1">
+            {form.formState.errors.confirmPassword.message}
+          </p>
         )}
       </div>
-      <Button type="submit" color="primary" className="w-full">
-        Update Password
+      <Button
+        type="submit"
+        color="primary"
+        className="w-full"
+        disabled={isSubmitting}
+      >
+        {isSubmitting ? "Updating..." : "Update Password"}
       </Button>
     </form>
   );
