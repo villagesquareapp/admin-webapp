@@ -73,7 +73,7 @@ const Profile = () => {
         </SimpleBar> */}
 
         <div className='mx-6'>
-          <Link href='/update-password' className='no-underline'>Update Password</Link>
+          <Link href='/dashboards/update-password' className='no-underline'>Update Password</Link>
         </div>
 
         <div className="pt-6 px-6">

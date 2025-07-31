@@ -106,18 +106,6 @@ const AdminUserTable = ({
       },
       header: () => <span>Status</span>,
     }),
-
-    // columnHelper.accessor("user_details.profile.created_at", {
-    //   cell: (info) => {
-    //     return (
-    //       <p className="text-darklink dark:text-bodytext text-sm">
-    //         {formatDate(info.getValue())}
-    //       </p>
-    //     );
-    //   },
-    //   header: () => <span>Date Joined</span>,
-    // }),
-
     columnHelper.display({
       id: "actions",
       header: () => <span>Actions</span>,
