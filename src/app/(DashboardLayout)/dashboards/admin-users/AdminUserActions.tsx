@@ -8,7 +8,7 @@ import { Button, Label, TextInput, FileInput, Select } from "flowbite-react";
 import { toast } from "sonner";
 import { getUsers, getUserStatus, updateUserStatus } from "@/app/api/user";
 
-const AdminUserActions = ({ user, statuses, statusLoading }: { user: IUser, statuses: IUserStatusList[], statusLoading: boolean }) => {
+const AdminUserActions = ({ user, statuses, statusLoading }: { user: IAdminUsers, statuses: IUserStatusList[], statusLoading: boolean }) => {
   const [showModal, setShowModal] = useState<boolean>(false);
   const [selected, setSelected] = useState("");
   const [loading, setLoading] = useState<boolean>(false);
@@ -23,7 +23,7 @@ const AdminUserActions = ({ user, statuses, statusLoading }: { user: IUser, stat
     if (!selected) return toast.error("Please select a status");
     setLoading(true);
     try {
-      const res = await updateUserStatus(user.user_details.profile.id, selected);
+      const res = await updateUserStatus(user.uuid, selected);
       if (res?.status) {
         toast.success("User status updated");
         setShowModal(false);
@@ -99,7 +99,7 @@ const AdminUserActions = ({ user, statuses, statusLoading }: { user: IUser, stat
               >
                 <div className="flex justify-between items-center mb-4">
                   <DialogTitle className="text-xl font-semibold">
-                    Update User Status
+                    Update Admin User Status
                   </DialogTitle>
                   <button
                     onClick={() => setShowModal(false)}

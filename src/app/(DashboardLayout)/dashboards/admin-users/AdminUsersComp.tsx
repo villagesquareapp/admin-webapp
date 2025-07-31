@@ -1,13 +1,14 @@
 'use client';
 
 import { Button } from "flowbite-react";
-import React, { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { FaPlus } from "react-icons/fa";
 import UserTable from "../users/UserTable";
 import { useSearchParams } from "next/navigation";
 import AdminUserTable from "./AdminUserTable";
 import AdminAddAdminModal from "./AdminAddAdminModal";
 import { getRandomUsers, getUsers } from "@/app/api/user";
+import { getAdminUsers } from "@/app/api/admin-user";
 
 const AdminUsersComp = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -20,13 +21,14 @@ const AdminUsersComp = () => {
   const userId = searchParams.get("userId") || "";
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [users, setUsers] = useState<IUsersResponse | null>();
+  const [users, setUsers] = useState<IAdminUsers[]>([]);
+  const [totalPages, setTotalPages] = useState(1);
 
   const fetchAdminUsers = async () => {
     try {
       setIsLoading(true);
-      const response = await getUsers(page, limit);
-      setUsers(response?.data || undefined);
+      const response = await getAdminUsers(page, limit);
+      setUsers(response?.data || []);
     } catch (error) {
       console.error("Error fetching users:", error);
     } finally {
@@ -55,16 +57,18 @@ const AdminUsersComp = () => {
 
       {/* Table section */}
       <div className="col-span-12">
+        <Suspense fallback={<div>Loading...</div>}>
         <AdminUserTable
-          users={users?.data || []}
-          totalPages={users?.last_page || 1}
+          users={users || []}
+          // totalPages={users || 1}
           currentPage={page}
           pageSize={limit}
         />
+        </Suspense>
       </div>
 
       {/* Modal */}
-      {isOpen && <AdminAddAdminModal onClose={() => setIsOpen(false)} />}
+      {isOpen && <AdminAddAdminModal isOpen={isOpen} onClose={() => setIsOpen(false)} onRefresh={fetchAdminUsers} />}
     </div>
   );
 };
