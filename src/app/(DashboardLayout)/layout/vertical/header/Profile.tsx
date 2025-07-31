@@ -13,7 +13,7 @@ const Profile = () => {
       <Dropdown
         label=""
         className="w-screen sm:w-[360px] py-6  rounded-sm"
-        dismissOnClick={false}
+        dismissOnClick={true}
         renderTrigger={() => (
           <span className="h-10 w-10 hover:text-primary hover:bg-lightprimary rounded-full flex justify-center items-center cursor-pointer group-hover/menu:bg-lightprimary group-hover/menu:text-primary">
             <Image
