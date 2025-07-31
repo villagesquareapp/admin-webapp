@@ -18,7 +18,7 @@ const AdminUserTable = ({
   currentPage,
   pageSize,
 }: {
-  users?: IAdminUsers[] ;
+  users?: IAdminUsers[];
   totalPages?: number;
   currentPage: number;
   pageSize: number;
@@ -136,14 +136,14 @@ const AdminUserTable = ({
   return (
     <div className="col-span-12">
       <Suspense fallback={<div>Loading...</div>}>
-      <ReusableTable
-        tableData={users && Array.isArray(users) ? users: []}
-        columns={columns}
-        totalPages={totalPages}
-        currentPage={currentPage}
-        pageSize={pageSize}
-        onRowClick={handleRowClick}
-      />
+        <ReusableTable
+          tableData={users && Array.isArray(users) ? users : []}
+          columns={columns}
+          totalPages={totalPages}
+          currentPage={currentPage}
+          pageSize={pageSize}
+          onRowClick={handleRowClick}
+        />
       </Suspense>
     </div>
   );
