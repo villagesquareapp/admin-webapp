@@ -11,7 +11,7 @@ interface Props {
   isOpen: boolean;
   onClose: () => void;
   coin: ICoins | null;
-refreshCoins: () => void;
+  refreshCoins: () => void;
 }
 
 const ChangeCoinStatus: React.FC<Props> = ({ isOpen, onClose, coin, refreshCoins}) => {

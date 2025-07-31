@@ -1,3 +1,13 @@
+// page.tsx
+// import ClientPostPage from "./ClientPostPage";
+
+// const Page = () => {
+//   return <ClientPostPage />;
+// };
+
+// export default Page;
+
+
 import { getPosts, getPostStats } from "@/app/api/post";
 import SmallCards from "@/app/components/dashboards/ecommerce/smallCards";
 import PostTable from "./PostTable";

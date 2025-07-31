@@ -2,6 +2,7 @@ import { Icon } from "@iconify/react";
 import { Button, Dropdown } from "flowbite-react";
 import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
+import Link from "next/link";
 const Profile = () => {
   const { data: session } = useSession();
   const user = session?.user;
@@ -12,7 +13,7 @@ const Profile = () => {
       <Dropdown
         label=""
         className="w-screen sm:w-[360px] py-6  rounded-sm"
-        dismissOnClick={false}
+        dismissOnClick={true}
         renderTrigger={() => (
           <span className="h-10 w-10 hover:text-primary hover:bg-lightprimary rounded-full flex justify-center items-center cursor-pointer group-hover/menu:bg-lightprimary group-hover/menu:text-primary">
             <Image
@@ -70,6 +71,10 @@ const Profile = () => {
             </Dropdown.Item>
           ))}
         </SimpleBar> */}
+
+        <div className='mx-6'>
+          <Link href='/dashboards/update-password' className='no-underline'>Update Password</Link>
+        </div>
 
         <div className="pt-6 px-6">
           <Button onClick={() => signOut()} color={"primary"} className="w-full">

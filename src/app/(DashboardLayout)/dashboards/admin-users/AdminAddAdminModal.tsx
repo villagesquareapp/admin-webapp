@@ -3,53 +3,70 @@
 import React, { ChangeEvent, FormEvent, useState } from "react";
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Button, Label, TextInput, FileInput } from "flowbite-react";
+import { Button, Label, TextInput, FileInput, Select } from "flowbite-react";
 import { toast } from "sonner";
-import { addCoin } from "@/app/api/coin";
+import { addGifts } from "@/app/api/addGiftClient";
+import { createAdminUser } from "@/app/api/admin-user";
+// import { addGiftClient } from "@/app/api/addGiftClient";
 
-interface AddCoinModalProps {
+interface AddGiftModalProps {
   isOpen: boolean;
   onClose: () => void;
-  token: string;
-  onCoinAdded: () => void;
+  token?: string;
+  onRefresh?: (() => void) | undefined;
 }
 
-const AddCoin: React.FC<AddCoinModalProps> = ({
+const AdminAddAdminModal: React.FC<AddGiftModalProps> = ({
   isOpen,
   onClose,
   token,
-  onCoinAdded,
+  onRefresh,
 }) => {
-  const [amountValue, setAmountValue] = useState<number>();
-  const [priceValue, setPriceValue] = useState<number>();
+  const [name, setName] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
   //   const [icon, setIcon] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
+  const [selected, setSelected] = useState("");
+
+  // const handleIconChange = (e: ChangeEvent<HTMLInputElement>) => {
+  //   if (e.target.files && e.target.files[0]) {
+  //     setIcon(e.target.files[0]);
+  //   }
+
+  //   console.log("Selected Icon", icon)
+  // };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
+    if (!name || !email || !selected) {
+      toast.error("Please fill the form");
+      return;
+    }
+    // Submit logic here (e.g., API call)
     setLoading(true);
     try {
-      const response = await addCoin(Number(amountValue), Number(priceValue));
+      const response = await createAdminUser(name, email, selected);
 
       console.log(response);
 
       if (response.status) {
-        toast.success("Coin added successfully");
+        toast.success(response?.message);
 
         // Reset form
-        setAmountValue(0);
-        setPriceValue(0);
+        setName("");
+        setEmail("");
+        setSelected("");
+        // setIcon(null)
 
-        // Optional callbacks
-        onCoinAdded();
         onClose();
+        onRefresh?.();
       } else {
         toast.error(response.message || "Something went wrong");
       }
     } catch (error) {
-      console.error("Error adding coin:", error);
-      toast.error("Failed to add coin.");
+      console.error("Error adding admin:", error);
+      toast.error("Failed to add admin.");
     } finally {
       setLoading(false);
     }
@@ -84,7 +101,7 @@ const AddCoin: React.FC<AddCoinModalProps> = ({
               {/* Modal Header */}
               <div className="flex items-center justify-between">
                 <DialogTitle className="text-xl lg:text-2xl font-semibold">
-                  Add New Coin
+                  Add New Admin
                 </DialogTitle>
                 <button
                   onClick={onClose}
@@ -98,15 +115,15 @@ const AddCoin: React.FC<AddCoinModalProps> = ({
               <form className="mt-6" onSubmit={handleSubmit}>
                 <div className="mb-4">
                   <div className="mb-2 block">
-                    <Label htmlFor="amount" value="Amount" />
+                    <Label htmlFor="name" value="Name" />
                   </div>
                   <TextInput
-                    id="amount"
-                    type="number"
+                    id="name"
+                    type="text"
                     sizing="md"
                     placeholder=""
-                    value={amountValue}
-                    onChange={(e) => setAmountValue(Number(e.target.value))}
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
                     required
                     // {...form.register("email")}
                     // className={`form-control ${
@@ -121,19 +138,57 @@ const AddCoin: React.FC<AddCoinModalProps> = ({
                 </div>
                 <div className="mb-4">
                   <div className="mb-2 block">
-                    <Label htmlFor="price" value="Price" />
+                    <Label htmlFor="email" value="Email" />
                   </div>
                   <TextInput
-                    id="price"
-                    type="number"
+                    id="email"
+                    type="email"
                     sizing="md"
                     placeholder=""
-                    value={priceValue}
-                    onChange={(e) => setPriceValue(Number(e.target.value))}
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     required
                   />
                 </div>
-
+                {/* <div className="mb-4">
+                  <div className="mb-2 block">
+                    <Label htmlFor="icon" value="Icon" />
+                  </div>
+                  <FileInput
+                    id="gift-icon"
+                    // onChange={handleIconChange}
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      console.log("Selected File:", file);
+                      setIcon(file ?? null);
+                    }}
+                    accept="image/*"
+                    required
+                  />
+                </div> */}
+                <div className="mb-4">
+                  <div className="mb-2 block">
+                    <Label htmlFor="role" value="Role" />
+                  </div>
+                  <div className="w-full">
+                    <Select
+                      value={selected}
+                      onChange={(e) => setSelected(e.target.value)}
+                      required
+                      sizing={"md"}
+                      className="w-full"
+                    >
+                      <option value="">Select a user status</option>
+                      <option value="super_admin">Super Admin</option>
+                      <option value="admin">Admin</option>
+                      {/* {statuses.map((status) => (
+                      <option key={status.value} value={status.value}>
+                        {status.name}
+                      </option>
+                    ))} */}
+                    </Select>
+                  </div>
+                </div>
                 <div className="flex justify-end gap-4">
                   <Button
                     color="gray"
@@ -153,25 +208,6 @@ const AddCoin: React.FC<AddCoinModalProps> = ({
                   </Button>
                 </div>
               </form>
-
-              {/* Modal Footer */}
-              {/* <div className="flex justify-end gap-4">
-                <button
-                  className="px-4 py-2 text-sm font-medium bg-gray-300 hover:bg-gray-400 rounded"
-                  onClick={onClose}
-                >
-                  Cancel
-                </button>
-                <button
-                  className="px-4 py-2 text-sm font-medium bg-green-600 text-white hover:bg-green-700 rounded"
-                  //   onClick={() => {
-                  //     // You can replace this with real form logic
-                  //     onClose();
-                  //   }}
-                >
-                  Submit
-                </button>
-              </div> */}
             </DialogPanel>
           </div>
         </Dialog>
@@ -180,4 +216,4 @@ const AddCoin: React.FC<AddCoinModalProps> = ({
   );
 };
 
-export default AddCoin;
+export default AdminAddAdminModal;

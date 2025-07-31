@@ -170,7 +170,15 @@ interface IUser {
       profession: string;
       bio: string;
       last_online: string | null;
-      status: "active" | "suspended" | "inactive";
+      status:
+        | "active"
+        | "suspended"
+        | "disabled"
+        | "reported"
+        | "flagged"
+        | "banned"
+        | "shadow_hidden"
+        | "archived";
       verified: number;
       profile_picture: string;
       profile_banner: string;
@@ -196,6 +204,26 @@ interface IUser {
 }
 
 interface IUsersResponse extends IPaginatedResponse<IUser> {}
+
+interface IAdminUsers {
+  uuid: string;
+  email: string;
+  name: string;
+  is_active: boolean;
+  is_super_admin: boolean;
+  role: string;
+  status:
+    | "active"
+    | "suspended"
+    | "disabled"
+    | "reported"
+    | "flagged"
+    | "banned"
+    | "shadow_hidden"
+    | "archived";
+  created_at: string;
+  updated_at: string;
+}
 
 interface IRandomUsers {
   uuid: string;
@@ -237,6 +265,17 @@ interface IRandomUsers {
 
 interface IRandomUsersResponse extends IPaginatedResponse<IRandomUsers> {}
 
+interface IUserStatusList {
+  name: string;
+  value: string;
+}
+interface IPostStatusList {
+  name: string;
+  value: string;
+}
+
+interface IUserStatusListResponse extends IPaginatedResponse<IUserStatusList> {}
+
 interface IMedia {
   thumbnail: string;
   url: string;
@@ -246,10 +285,23 @@ interface IMedia {
 interface IPosts {
   uuid: string;
   caption: string;
+  parent_post_id: string | number;
+  root_post_id: string;
+  quote_post_id: string | null;
+  thread_id: string;
+  status:
+    | "active"
+    | "suspended"
+    | "disabled"
+    | "reported"
+    | "flagged"
+    | "banned"
+    | "shadow_hidden"
+    | "archived";
   views_count: number;
   shares_count: number;
   likes_count: number;
-  comments_count: number;
+  replies_count: number;
   created_at: string;
   user: {
     uuid: string;

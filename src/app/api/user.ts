@@ -1,7 +1,8 @@
 'use server'
 
-import { apiGet } from '@/lib/api';
+import { apiGet, apiPost } from '@/lib/api';
 import { getToken } from '@/lib/getToken';
+import { revalidateCurrentPath } from '@/lib/revalidate';
 
 export const getUserStats = async () => {
     const token = await getToken()
@@ -40,3 +41,23 @@ export const getSearchUser = async (search: string) => {
     const token = await getToken();
     return await apiGet<IRandomUsers[]>(`users/search?q=${search}`, token)
 }
+
+export const getUserStatus = async () => {
+    const token = await getToken();
+    return await apiGet<IUserStatusList[]>(`users/user-status-list`, token);
+}
+
+export const updateUserStatus = async (userId: string, status: string) => {
+  const token = await getToken();
+  const response = await apiPost(
+    `users/${userId}/update-status`,
+    { status },
+    token
+  );
+
+  if (response.status) {
+    await revalidateCurrentPath();
+  }
+
+  return response;
+};

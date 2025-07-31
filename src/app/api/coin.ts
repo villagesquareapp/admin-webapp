@@ -38,11 +38,11 @@ export const editCoin = async (
 export const disableCoin = async (rechargeOptionID: string) => {
   const token = await getToken();
   if (!token) throw new Error("No token found");
-  return await apiPost(`coin/recharge-options/${rechargeOptionID}/disable`, token);
+  return await apiPost(`coin/recharge-options/${rechargeOptionID}/disable`, null, token);
 };
 
 export const enableCoin = async (rechargeOptionID: string) => {
   const token = await getToken();
   if (!token) throw new Error("No token found");
-  return await apiPost(`coin/recharge-options/${rechargeOptionID}/enable`, token);
+  return await apiPost(`coin/recharge-options/${rechargeOptionID}/enable`, null, token);
 };

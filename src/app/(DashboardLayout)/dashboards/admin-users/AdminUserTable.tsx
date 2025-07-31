@@ -8,18 +8,18 @@ import {
 import { formatDate } from "@/utils/dateUtils";
 import { createColumnHelper } from "@tanstack/react-table";
 import { useRouter, useSearchParams } from "next/navigation";
-import UserActions from "./UserActions";
 import { getUserStatus } from "@/app/api/user";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
+import AdminUserActions from "./AdminUserActions";
 
-const UserTable = ({
+const AdminUserTable = ({
   users,
   totalPages,
   currentPage,
   pageSize,
 }: {
-  users: IUsersResponse | null;
-  totalPages: number;
+  users?: IAdminUsers[];
+  totalPages?: number;
   currentPage: number;
   pageSize: number;
 }) => {
@@ -51,49 +51,30 @@ const UserTable = ({
     fetchStatuses();
   }, []);
 
-  const columnHelper = createColumnHelper<IUser>();
+  const columnHelper = createColumnHelper<IAdminUsers>();
 
   const columns = [
-    columnHelper.accessor("user_details.profile.id", {
+    columnHelper.accessor("name", {
       cell: (info) => (
-        <UserDetailsComp
-          user={{
-            name: info.row.original.user_details.profile.name,
-            username: info.row.original.user_details.profile.username,
-            email: info.row.original.user_details.profile.email,
-            last_online: info.row.original.user_details.profile.last_online,
-            profile_picture:
-              info.row.original.user_details.profile.profile_picture,
-            premium: info.row.original.user_details.profile.premium,
-            check_mark: info.row.original.user_details.profile.check_mark,
-          }}
-          showPremiumAndCheckMark
-          showActive
-        />
+        <p className="text-darklink dark:text-bodytext text-sm">
+          {info.getValue()}
+        </p>
       ),
       header: () => <span>Name</span>,
     }),
-    columnHelper.accessor("user_details.profile.email", {
+    columnHelper.accessor("email", {
       cell: (info) => <DetailComp detail={info.getValue()} />,
       header: () => <span>Email</span>,
     }),
-    columnHelper.accessor("user_details.posts", {
+    columnHelper.accessor("role", {
       cell: (info) => (
         <p className="text-darklink dark:text-bodytext text-sm">
-          {info.row.original.user_details.posts.length || 0}
+          {info.getValue()}
         </p>
       ),
-      header: () => <span>Posts</span>,
+      header: () => <span>Role</span>,
     }),
-    columnHelper.accessor("user_details.profile.followers", {
-      cell: (info) => (
-        <p className="text-darklink dark:text-bodytext text-sm">
-          {info.getValue() || 0}
-        </p>
-      ),
-      header: () => <span>Followers</span>,
-    }),
-    columnHelper.accessor("user_details.profile.status", {
+    columnHelper.accessor("status", {
       cell: (info) => {
         const status = info.getValue();
         const statusStyles = {
@@ -125,25 +106,13 @@ const UserTable = ({
       },
       header: () => <span>Status</span>,
     }),
-
-    columnHelper.accessor("user_details.profile.created_at", {
-      cell: (info) => {
-        return (
-          <p className="text-darklink dark:text-bodytext text-sm">
-            {formatDate(info.getValue())}
-          </p>
-        );
-      },
-      header: () => <span>Date Joined</span>,
-    }),
-
     columnHelper.display({
       id: "actions",
       header: () => <span>Actions</span>,
       cell: (info) => {
         const user = info.row.original;
         return (
-          <UserActions
+          <AdminUserActions
             user={user}
             statuses={statuses}
             statusLoading={statusLoading}
@@ -154,16 +123,18 @@ const UserTable = ({
   ];
   return (
     <div className="col-span-12">
-      <ReusableTable
-        tableData={users?.data && Array.isArray(users?.data) ? users?.data : []}
-        columns={columns}
-        totalPages={totalPages}
-        currentPage={currentPage}
-        pageSize={pageSize}
-        onRowClick={handleRowClick}
-      />
+      <Suspense fallback={<div>Loading...</div>}>
+        <ReusableTable
+          tableData={users && Array.isArray(users) ? users : []}
+          columns={columns}
+          totalPages={totalPages}
+          currentPage={currentPage}
+          pageSize={pageSize}
+          onRowClick={handleRowClick}
+        />
+      </Suspense>
     </div>
   );
 };
 
-export default UserTable;
+export default AdminUserTable;
