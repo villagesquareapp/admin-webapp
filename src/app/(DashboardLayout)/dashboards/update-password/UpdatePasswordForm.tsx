@@ -17,6 +17,8 @@ import { useSession } from "next-auth/react";
 
 const UpdatePasswordForm = () => {
   const [showPassword, setShowPassword] = React.useState<boolean>(false);
+  const [showNewPassword, setShowNewPassword] = React.useState<boolean>(false);
+  const [showConfirmPassword, setShowConfirmPassword] = React.useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = React.useState<boolean>(false);
 
   const { data: session } = useSession();
@@ -60,9 +62,9 @@ const UpdatePasswordForm = () => {
 
   return (
     <form className="mt-6" onSubmit={form.handleSubmit(onSubmit)}>
-      <center className="mb-4">
-        <p className="text-2xl font-bold">Update Password</p>
-      </center>
+      {/* <center className="mb-4">
+            <p className="text-2xl font-bold">Update Password</p>
+          </center> */}
       <div className="mb-4">
         <div className="mb-2 block">
           <Label htmlFor="currentPassword" value="Current Password" />
@@ -101,7 +103,7 @@ const UpdatePasswordForm = () => {
         <div className="relative">
           <TextInput
             id="password"
-            type={showPassword ? "text" : "password"}
+            type={showNewPassword ? "text" : "password"}
             sizing="md"
             className={`form-control`}
             {...form.register("newPassword")}
@@ -110,9 +112,9 @@ const UpdatePasswordForm = () => {
           <button
             type="button"
             className="absolute inset-y-0 right-0 flex items-center pr-3"
-            onClick={() => setShowPassword(!showPassword)}
+            onClick={() => setShowNewPassword(!showNewPassword)}
           >
-            {showPassword ? (
+            {showNewPassword ? (
               <HiEyeOff className="h-5 w-5 text-gray-500" />
             ) : (
               <HiEye className="h-5 w-5 text-gray-500" />
@@ -132,7 +134,7 @@ const UpdatePasswordForm = () => {
         <div className="relative">
           <TextInput
             id="password"
-            type={showPassword ? "text" : "password"}
+            type={showConfirmPassword ? "text" : "password"}
             sizing="md"
             className={`form-control`}
             {...form.register("confirmPassword")}
@@ -141,9 +143,9 @@ const UpdatePasswordForm = () => {
           <button
             type="button"
             className="absolute inset-y-0 right-0 flex items-center pr-3"
-            onClick={() => setShowPassword(!showPassword)}
+            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
           >
-            {showPassword ? (
+            {showConfirmPassword ? (
               <HiEyeOff className="h-5 w-5 text-gray-500" />
             ) : (
               <HiEye className="h-5 w-5 text-gray-500" />
