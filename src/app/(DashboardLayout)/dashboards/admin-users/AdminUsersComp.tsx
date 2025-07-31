@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { Button } from "flowbite-react";
 import React, { Suspense, useEffect, useState } from "react";
@@ -41,35 +41,41 @@ const AdminUsersComp = () => {
   }, [page, limit]);
 
   return (
-    <div>
-      {/* Top bar with button aligned to the right */}
-      <div className="flex justify-end mb-4">
-        <Button
-          color="success"
-          size="sm"
-          className="w-32 lg:w-40 lg:h-10 lg:text-base"
-          onClick={() => setIsOpen(true)}
-        >
-          <FaPlus size={16} className="mr-2" />
-          Add Admin
-        </Button>
-      </div>
+    <Suspense fallback={<div>Loading...</div>}>
+      <div>
+        {/* Top bar with button aligned to the right */}
+        <div className="flex justify-end mb-4">
+          <Button
+            color="success"
+            size="sm"
+            className="w-32 lg:w-40 lg:h-10 lg:text-base"
+            onClick={() => setIsOpen(true)}
+          >
+            <FaPlus size={16} className="mr-2" />
+            Add Admin
+          </Button>
+        </div>
 
-      {/* Table section */}
-      <div className="col-span-12">
-        <Suspense fallback={<div>Loading...</div>}>
-        <AdminUserTable
-          users={users || []}
-          // totalPages={users || 1}
-          currentPage={page}
-          pageSize={limit}
-        />
-        </Suspense>
-      </div>
+        {/* Table section */}
+        <div className="col-span-12">
+          <AdminUserTable
+            users={users || []}
+            // totalPages={users || 1}
+            currentPage={page}
+            pageSize={limit}
+          />
+        </div>
 
-      {/* Modal */}
-      {isOpen && <AdminAddAdminModal isOpen={isOpen} onClose={() => setIsOpen(false)} onRefresh={fetchAdminUsers} />}
-    </div>
+        {/* Modal */}
+        {isOpen && (
+          <AdminAddAdminModal
+            isOpen={isOpen}
+            onClose={() => setIsOpen(false)}
+            onRefresh={fetchAdminUsers}
+          />
+        )}
+      </div>
+    </Suspense>
   );
 };
 
