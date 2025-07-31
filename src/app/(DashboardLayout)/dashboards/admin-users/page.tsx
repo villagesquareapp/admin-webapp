@@ -1,10 +1,14 @@
-import React from 'react'
+'use client';
+
+import React, {Suspense} from 'react'
 import AdminUsersComp from './AdminUsersComp'
 
 const Page = () => {
   return (
     <div>
-      <AdminUsersComp />
+      <Suspense fallback={<div>Loading...</div>}>
+        <AdminUsersComp />
+      </Suspense>
     </div>
   );
 }
