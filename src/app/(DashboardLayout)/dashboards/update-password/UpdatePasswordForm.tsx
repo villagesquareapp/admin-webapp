@@ -12,7 +12,7 @@ import React from "react";
 import { HiEye, HiEyeOff } from "react-icons/hi";
 import { signOut } from "next-auth/react";
 import { apiPost } from "@/lib/api";
-import { updatePassword } from "../api/setting";
+import { updatePassword } from "../../../api/setting";
 import { useSession } from "next-auth/react";
 
 const UpdatePasswordForm = () => {
@@ -33,7 +33,7 @@ const UpdatePasswordForm = () => {
   const onSubmit = async (data: UpdatePasswordFormValues) => {
     setIsSubmitting(true);
     try {
-      const token = session?.user
+      const token = session?.user;
 
       if (!token) {
         toast.error("Authorization token missing. Please log in again.");

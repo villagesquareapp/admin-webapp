@@ -1,12 +1,12 @@
-import CardBox from '@/app/components/shared/CardBox';
-import React from 'react'
-import Logo from '../(DashboardLayout)/layout/shared/logo/Logo';
-import UpdatePasswordForm from './UpdatePasswordForm';
+import CardBox from "@/app/components/shared/CardBox";
+import React from "react";
+import Logo from "../../layout/shared/logo/Logo";
+import UpdatePasswordForm from "./UpdatePasswordForm";
 
 const BoxedUpdatePassword = () => {
   return (
     <div>
-        <div className="relative overflow-hidden h-screen bg-muted dark:bg-dark">
+      <div className="relative overflow-hidden h-screen bg-muted dark:bg-dark">
         <div className="flex h-full justify-center items-center px-4">
           <CardBox className="md:w-[450px] w-full border-none">
             <div className="mx-auto">
@@ -28,7 +28,7 @@ const BoxedUpdatePassword = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
 export default BoxedUpdatePassword;
