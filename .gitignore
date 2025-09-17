@@ -42,3 +42,4 @@ next-env.d.ts
 .pnp.* # optional: ignore Yarn PnP files if using
 
 .yarn/
+.yarn/
