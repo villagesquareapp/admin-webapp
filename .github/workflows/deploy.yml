@@ -2,8 +2,9 @@ name: CI / Build & Publish Docker
 
 on:
   push:
-    branches: [ main ]
-  workflow_dispatch:
+    branches: 
+      - admin-webapp   # only run on admin-webapp branch
+  workflow_dispatch:   # allows manual trigger
 
 env:
   IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/admin-webapp
@@ -32,10 +33,9 @@ jobs:
       - name: Run tests (if present)
         run: |
           if npm run -s test; then
-            echo "tests passed"
+            echo "Tests passed"
           else
             echo "No tests or tests failed but continuing (adjust as needed)"
-            # Remove the fallback behavior if you want to fail on test failures
           fi
 
       - name: Build
@@ -63,4 +63,5 @@ jobs:
       - name: Post-deploy notification
         run: |
           echo "Image pushed: ${{ env.IMAGE_NAME }}:${{ github.sha }}"
+
 
