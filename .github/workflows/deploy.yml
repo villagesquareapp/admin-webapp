@@ -3,7 +3,7 @@ name: CI / Build & Publish Docker
 on:
   push:
     branches: 
-      - admin-webapp   # Trigger on this branch
+      - admin-webapp   # Trigger on admin-webapp branch
       - main           # Optional: include main branch for production
   workflow_dispatch:   # Manual trigger
 
@@ -60,13 +60,12 @@ jobs:
         with:
           context: .
           push: true
-          tags: |
-            ${{ env.IMAGE_NAME }}:latest
-            ${{ env.IMAGE_NAME }}:${{ github.sha }}
+          tags:
+            - ${{ env.IMAGE_NAME }}:latest
+            - ${{ env.IMAGE_NAME }}:${{ github.sha }}
           cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:latest
           cache-to: type=inline
 
       # Post-build notification
       - name: Post-deploy notification
         run: echo "Image pushed: ${{ env.IMAGE_NAME }}:${{ github.sha }}"
-
