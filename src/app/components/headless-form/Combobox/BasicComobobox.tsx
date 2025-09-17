@@ -28,7 +28,9 @@ const people: Person[] = [
 
 const BasicCombobox = () => {
   const [query, setQuery] = useState<string>("");
-  const [selected, setSelected] = useState<Person>(people[1]);
+  
+  // Allow selected to be null
+  const [selected, setSelected] = useState<Person | null>(people[1]);
 
   const filteredPeople =
     query === ""
@@ -47,7 +49,7 @@ const BasicCombobox = () => {
         <div className="">
           <Combobox
             value={selected}
-            onChange={(value: Person) => setSelected(value)}
+            onChange={(value) => setSelected(value)} // value can now be Person | null
             onClose={() => setQuery("")}
           >
             <div className="relative">
@@ -56,7 +58,7 @@ const BasicCombobox = () => {
                   "w-full ui-form-control rounded-full",
                   "focus:outline-none focus:dark:ring-2 focus:dark:ring-white/25"
                 )}
-                displayValue={(person: Person) => person?.name}
+                displayValue={(person: Person | null) => person?.name || ""}
                 onChange={(event) => setQuery(event.target.value)}
               />
               <ComboboxButton className="group absolute inset-y-0 right-0 px-2.5">
@@ -80,10 +82,10 @@ const BasicCombobox = () => {
                 >
                   <Icon
                     icon="solar:check-read-linear"
-                    className="invisible  group-data-[selected]:visible"
+                    className="invisible group-data-[selected]:visible"
                     height={20}
                   />
-                  <div className="text-sm text-ld hover:text-primary data-[focus]:text-primary data-[focus]:text-primary">
+                  <div className="text-sm text-ld hover:text-primary data-[focus]:text-primary">
                     {person.name}
                   </div>
                 </ComboboxOption>
