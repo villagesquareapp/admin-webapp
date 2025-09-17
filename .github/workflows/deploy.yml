@@ -35,7 +35,7 @@ jobs:
             echo "tests passed"
           else
             echo "No tests or tests failed but continuing (adjust as needed)"
-            # If you want to fail on test failures, remove the above fallback behavior.
+            # Remove the fallback behavior if you want to fail on test failures
           fi
 
       - name: Build
@@ -60,9 +60,7 @@ jobs:
             ${{ env.IMAGE_NAME }}:latest
             ${{ env.IMAGE_NAME }}:${{ github.sha }}
 
-            - name: Post-deploy notification
+      - name: Post-deploy notification
         run: |
           echo "Image pushed: ${{ env.IMAGE_NAME }}:${{ github.sha }}"
-
-
 
