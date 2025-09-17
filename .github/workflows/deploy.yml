@@ -3,8 +3,8 @@ name: CI / Build & Publish Docker
 on:
   push:
     branches: 
-      - admin-webapp   # only run on admin-webapp branch
-  workflow_dispatch:   # allows manual trigger
+      - admin-webapp
+  workflow_dispatch:
 
 env:
   IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/admin-webapp
@@ -38,7 +38,7 @@ jobs:
             echo "No tests or tests failed but continuing (adjust as needed)"
           fi
 
-      - name: Build
+      - name: Build Next.js app
         run: npm run build
 
       - name: Set up Docker Buildx
@@ -56,12 +56,8 @@ jobs:
         with:
           context: .
           push: true
-          tags: |
-            ${{ env.IMAGE_NAME }}:latest
-            ${{ env.IMAGE_NAME }}:${{ github.sha }}
+          tags: ${{ env.IMAGE_NAME }}:latest,${{ env.IMAGE_NAME }}:${{ github.sha }}
 
       - name: Post-deploy notification
-        run: |
-          echo "Image pushed: ${{ env.IMAGE_NAME }}:${{ github.sha }}"
-
+        run: echo "Image pushed: ${{ env.IMAGE_NAME }}:${{ github.sha }}"
 
