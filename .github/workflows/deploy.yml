@@ -3,8 +3,8 @@ name: CI / Build & Publish Docker
 on:
   push:
     branches: 
-      - admin-webapp
-  workflow_dispatch:
+      - admin-webapp   # triggers only on admin-webapp branch
+  workflow_dispatch:   # allows manual trigger
 
 env:
   IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/admin-webapp
@@ -18,19 +18,23 @@ jobs:
       id-token: write
 
     steps:
+      # Checkout repo
       - name: Checkout repo
         uses: actions/checkout@v4
 
+      # Setup Node.js
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'
           cache: 'npm'
 
+      # Install dependencies
       - name: Install dependencies
         run: npm ci
 
-      - name: Run tests (if present)
+      # Run tests (optional)
+      - name: Run tests
         run: |
           if npm run -s test; then
             echo "Tests passed"
@@ -38,12 +42,15 @@ jobs:
             echo "No tests or tests failed but continuing (adjust as needed)"
           fi
 
+      # Build Next.js app
       - name: Build Next.js app
         run: npm run build
 
+      # Setup Docker Buildx
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
+      # Login to GitHub Container Registry
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v2
         with:
@@ -51,13 +58,18 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      # Build and push Docker image
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
           context: .
           push: true
-          tags: ${{ env.IMAGE_NAME }}:latest,${{ env.IMAGE_NAME }}:${{ github.sha }}
+          tags: |
+            ${{ env.IMAGE_NAME }}:latest
+            ${{ env.IMAGE_NAME }}:${{ github.sha }}
 
+      # Post-deploy notification
       - name: Post-deploy notification
         run: echo "Image pushed: ${{ env.IMAGE_NAME }}:${{ github.sha }}"
+
 
