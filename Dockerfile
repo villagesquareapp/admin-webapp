@@ -1,22 +1,21 @@
 # --- Stage 1: Builder ---
 FROM node:18-alpine AS builder
 
-# set working directory
 WORKDIR /app
 
-# ensure CA certs for fetching packages on alpine
+# Install CA certificates for fetching packages
 RUN apk add --no-cache ca-certificates
 
-# copy only lock + manifest for efficient layer caching
+# Copy package.json and lockfile first for caching
 COPY package*.json ./
 
-# Install all deps (dev + prod) for build using locked versions
+# Install all dependencies (dev + prod)
 RUN npm ci
 
-# copy source
+# Copy full source code
 COPY . .
 
-# build the Next.js app (produces .next)
+# Build Next.js production app
 RUN npm run build
 
 # --- Stage 2: Runner (production) ---
@@ -24,26 +23,24 @@ FROM node:18-alpine AS runner
 
 WORKDIR /app
 
-# set production env
+# Production environment
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
-# install only production deps from lockfile
+# Install only production dependencies
 COPY package*.json ./
 RUN npm ci --only=production
 
-# copy built assets and public files from builder
+# Copy built Next.js app and public assets
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
-# copy any Next config files if present
+
+# Copy Next.js config if exists
 COPY --from=builder /app/next.config.* ./
 
-# If your app imports other top-level files (e.g. server.js), copy them:
-COPY --from=builder /app/next.config.js ./next.config.js || true
-
-# expose port
+# Expose port 3000
 EXPOSE 3000
 
-# start the app in production mode
+# Start the app
 CMD ["npm", "start"]
 
