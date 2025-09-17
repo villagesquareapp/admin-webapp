@@ -1,0 +1,16 @@
+node_modules
+.git
+.gitignore
+.vscode
+.DS_Store
+.env
+.env.local
+.env.*.local
+coverage
+dist
+.next/cache
+yarn.lock
+npm-debug.log
+Dockerfile.*
+README.md
+
