@@ -67,6 +67,6 @@ jobs:
           cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:latest
           cache-to: type=inline
 
-      # 9. Notify post-build
+      # 9. Notify post-buil
       - name: Post-build notification
         run: echo "Docker image pushed: ${{ env.IMAGE_NAME }}:${{ github.sha }}"
