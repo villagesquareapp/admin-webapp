@@ -2,7 +2,7 @@ name: CI / Build & Publish Docker
 
 on:
   push:
-    branches: 
+    branches:
       - admin-webapp   # triggers only on admin-webapp branch
   workflow_dispatch:   # allows manual trigger
 
@@ -60,16 +60,17 @@ jobs:
 
       # Build and push Docker image
       - name: Build and push Docker image
-  uses: docker/build-push-action@v5
-  with:
-    context: .
-    push: true
-    tags: |
-      ${{ env.IMAGE_NAME }}:latest
-      ${{ env.IMAGE_NAME }}:${{ github.sha }}
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ env.IMAGE_NAME }}:latest
+            ${{ env.IMAGE_NAME }}:${{ github.sha }}
 
-- name: Post-deploy notification
-  run: echo "Image pushed: ${{ env.IMAGE_NAME }}:${{ github.sha }}"
+      # Post-deploy notification
+      - name: Post-deploy notification
+        run: echo "Image pushed: ${{ env.IMAGE_NAME }}:${{ github.sha }}"
 
 
 
