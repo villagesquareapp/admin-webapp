@@ -40,3 +40,5 @@ next-env.d.ts
 #SpecStory
 .specstory/.yarn/
 .pnp.* # optional: ignore Yarn PnP files if using
+
+.yarn/
