@@ -1,6 +1,6 @@
 name: CI / Build & Publish Docker
 
-# Trigger on push to admin-webapp branch or main branch, or manually
+# Trigger on push to admin-webapp or main, or manually
 on:
   push:
     branches:
@@ -20,34 +20,46 @@ jobs:
       id-token: write       # optional for OIDC
 
     steps:
-      # 1. Checkout code
-      - name: Checkout repository
+      # 1. Checkout repository
+      - name: Checkout repo
         uses: actions/checkout@v4
 
-      # 2. Setup Node.js (for Next.js build)
+      # 2. Show debug info
+      - name: Show repo files
+        run: ls -la
+      - name: Node & NPM versions
+        run: |
+          node -v
+          npm -v
+
+      # 3. Setup Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'
           cache: 'npm'
 
-      # 3. Install dependencies
+      # 4. Install dependencies
       - name: Install dependencies
         run: npm ci
 
-      # 4. Run tests (optional, continues if fails)
+      # 5. Run tests (optional)
       - name: Run tests
         run: npm test || echo "No tests or failed, continuing"
 
-      # 5. Build Next.js app
+      # 6. Build Next.js app
       - name: Build Next.js app
         run: npm run build
 
-      # 6. Setup Docker Buildx
+      # 7. Setup Docker Buildx
       - name: Setup Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      # 7. Login to GitHub Container Registry
+      # 8. Debug Dockerfile
+      - name: Check Dockerfile
+        run: cat Dockerfile
+
+      # 9. Login to GitHub Container Registry
       - name: Login to GHCR
         uses: docker/login-action@v2
         with:
@@ -55,18 +67,18 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      # 8. Build and push Docker image
+      # 10. Build and push Docker image
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
           context: .
+          file: ./Dockerfile   # Ensure this points to your Dockerfile
           push: true
           tags: |
             ${{ env.IMAGE_NAME }}:latest
             ${{ env.IMAGE_NAME }}:${{ github.sha }}
-          cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:latest
-          cache-to: type=inline
 
-      # 9. Notify post-buil
+      # 11. Notify post-build
       - name: Post-build notification
         run: echo "Docker image pushed: ${{ env.IMAGE_NAME }}:${{ github.sha }}"
+
