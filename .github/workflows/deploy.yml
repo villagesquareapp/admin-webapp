@@ -2,7 +2,9 @@ name: CI / Build & Publish Docker
 
 on:
   push:
-    branches: [ main ]
+    branches: 
+      - main
+      - admin-webapp   # also trigger on admin-webapp branch
   workflow_dispatch:
 
 env:
@@ -35,7 +37,7 @@ jobs:
             echo "tests passed"
           else
             echo "No tests or tests failed but continuing (adjust as needed)"
-            # Remove the fallback behavior if you want to fail on test failures
+            # Remove fallback if you want to fail on test failures
           fi
 
       - name: Build
@@ -63,3 +65,4 @@ jobs:
       - name: Post-deploy notification
         run: |
           echo "Image pushed: ${{ env.IMAGE_NAME }}:${{ github.sha }}"
+
