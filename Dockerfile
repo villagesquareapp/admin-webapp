@@ -1,23 +1,28 @@
-# Install dependencies only when needed
-FROM node:16-alpine AS deps
+# Use Node.js 20 Alpine as the base image
+FROM node:20-alpine AS builder
+
+# Set working directory
 WORKDIR /app
-COPY package.json package-lock.json./
+
+# Install dependencies based on the lockfile
+COPY package.json package-lock.json ./
 RUN npm ci
 
-
-FROM node:16-alpine AS builder
-WORKDIR /app
-COPY..
-COPY --from=deps /app/node_modules./node_modules
+# Copy the rest of the application code and build it
+COPY . .
 RUN npm run build
 
-
-FROM node:16-alpine AS runner
+# Production image
+FROM node:20-alpine AS runner
 WORKDIR /app
-ENV NODE_ENV production
-COPY --from=builder /app/next.config.js./
-COPY --from=builder /app/public./public
-COPY --from=builder /app/.next./.next
-COPY --from=builder /app/node_modules./node_modules
-COPY --from=builder /app/package.json./package.json
-CMD
+ENV NODE_ENV=production
+
+# Copy necessary files from the builder stage
+COPY --from=builder /app/package.json ./package.json
+COPY --from=builder /app/next.config.ts ./next.config.ts
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/node_modules ./node_modules
+
+EXPOSE 3000
+CMD ["npm", "start"]
