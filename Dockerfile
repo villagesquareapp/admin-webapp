@@ -19,7 +19,8 @@ ENV NODE_ENV=production
 
 # Copy necessary files from the builder stage
 COPY --from=builder /app/package.json ./package.json
-COPY --from=builder /app/next.config.ts ./next.config.ts
+# next.config.js is likely generated during the build process
+COPY --from=builder /app/next.config.js ./next.config.js
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/node_modules ./node_modules
