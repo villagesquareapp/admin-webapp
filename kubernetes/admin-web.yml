@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: admin-webapp-deployment
+  labels:
+    app: admin-webapp
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: admin-webapp
+  template:
+    metadata:
+      labels:
+        app: admin-webapp
+    spec:
+      containers:
+        - name: admin-webapp
+          image: 606802968668.dkr.ecr.af-south-1.amazonaws.com/admin-webapp:latest  # This will be updated by the CI/CD pipeline
+          ports:
+            - containerPort: 3000
+          env:
+            - name: NODE_ENV
+              value: "production"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: admin-webapp-service
+spec:
+  selector:
+    app: admin-webapp
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3000
+  type: LoadBalancer

@@ -74,7 +74,7 @@ jobs:
 
       - name: Update Kubernetes manifests with new image tag
         run: |
-          sed -i "s|606802968668.dkr.ecr.af-south-1.amazonaws.com/admin-webapp:.*|606802968668.dkr.ecr.af-south-1.amazonaws.com/admin-webapp:${{ env.IMAGE_TAG }}|" kubernetes/webapp.yml # Replace with your ECR registry URL, image name, and Kubernetes manifest file
+          sed -i "s|606802968668.dkr.ecr.af-south-1.amazonaws.com/admin-webapp:.*|606802968668.dkr.ecr.af-south-1.amazonaws.com/admin-webapp:${{ env.IMAGE_TAG }}|" kubernetes/admin-webapp.yml # Replace with your ECR registry URL, image name, and Kubernetes manifest file
 
       - name: Commit and Push Changes
         run: |
