@@ -87,4 +87,4 @@ jobs:
       - name: Apply Kubernetes deployment
         run: |
           aws eks update-kubeconfig --region af-south-1 --name kitops-eks # Replace with your EKS cluster name
-          kubectl apply -f kubernetes/webapp.yml --validate=false # Replace with your Kubernetes manifest file
+          kubectl apply -f kubernetes/admin-webapp.yml --validate=false # Replace with your Kubernetes manifest file
