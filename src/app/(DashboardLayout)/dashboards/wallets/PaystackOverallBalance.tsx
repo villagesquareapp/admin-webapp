@@ -390,7 +390,7 @@ const OverallBalance: React.FC = () => {
                 className="lg:h-10 lg:text-base w-full"
                 onClick={() => setIsOpen(true)}
               >
-                <FaPlus size={16} className="mr-1" />
+                <FaPlus size={14} />
                 Fund Paystack
               </Button>
             </div>
