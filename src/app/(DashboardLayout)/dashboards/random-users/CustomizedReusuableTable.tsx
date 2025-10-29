@@ -76,7 +76,7 @@ function CustomizedReusableTable({
 
   const [tableDataState, setTableDataState] = React.useState<any[]>(tableData);
 
-  const amount: number = 5000;
+  const amount: number = 25000;
 
   React.useEffect(() => {
     setTableDataState(tableData);
