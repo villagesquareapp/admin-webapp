@@ -6,9 +6,18 @@ import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
 import { formatDate } from "@/utils/dateUtils";
 import { stringCleanup } from "@/utils/stringCleanup";
-import { Badge, Button as FlowbiteButton, Label, Spinner, Textarea } from "flowbite-react";
+import {
+  Badge,
+  Button as FlowbiteButton,
+  Label,
+  Spinner,
+  Textarea,
+} from "flowbite-react";
 import { useEffect, useState } from "react";
-import { approvePendingVerification, declinePendingVerification } from "@/app/api/pending-verification";
+import {
+  approvePendingVerification,
+  declinePendingVerification,
+} from "@/app/api/pending-verification";
 import { toast } from "sonner";
 
 const PendingVerificationDialog = ({
@@ -16,13 +25,15 @@ const PendingVerificationDialog = ({
   setIsOpen,
   currentSelectedUser,
   currentSelectedVerificationRequested,
+  pendingVerification,
   onVerificationUpdate,
 }: {
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
   currentSelectedUser?: IUser | null;
   currentSelectedVerificationRequested?: IVerificationRequested | null;
-  onVerificationUpdate?: (id: string, action: 'approve' | 'decline') => void;
+  pendingVerification?: IPendingVerification | null;
+  onVerificationUpdate?: (id: string, action: "approve" | "decline") => void;
 }) => {
   const [isApproveDialogOpen, setIsApproveDialogOpen] = useState(false);
   const [isDeclineDialogOpen, setIsDeclineDialogOpen] = useState(false);
@@ -37,35 +48,40 @@ const PendingVerificationDialog = ({
       setIsLoading(true);
       // Set a short timeout to simulate loading and handle the case where data is available immediately
       const timer = setTimeout(() => {
-        if (currentSelectedUser && currentSelectedVerificationRequested) {
+        if (
+          pendingVerification?.user &&
+          pendingVerification?.subscription.plan.name
+        ) {
           setIsLoading(false);
         }
       }, 100);
 
       return () => clearTimeout(timer);
     }
-  }, [isOpen, currentSelectedUser, currentSelectedVerificationRequested]);
+  }, [isOpen, pendingVerification?.user, pendingVerification]);
 
   // Update loading state when data becomes available
   useEffect(() => {
-    if (currentSelectedUser && currentSelectedVerificationRequested) {
+    if (pendingVerification?.user && pendingVerification) {
       setIsLoading(false);
     }
-  }, [currentSelectedUser, currentSelectedVerificationRequested]);
+  }, [pendingVerification?.user, pendingVerification]);
 
   const handleApproveVerification = async () => {
-    if (!currentSelectedVerificationRequested) return;
+    if (!pendingVerification?.subscription.plan.name) return;
 
     setIsApproving(true);
     try {
-      const response = await approvePendingVerification(currentSelectedVerificationRequested?.id);
+      const response = await approvePendingVerification(
+        pendingVerification?.uuid
+      );
 
       if (response.status) {
         toast.success("Verification approved successfully");
         setIsApproveDialogOpen(false);
 
         if (onVerificationUpdate) {
-          onVerificationUpdate(currentSelectedVerificationRequested.id, 'approve');
+          onVerificationUpdate(pendingVerification?.uuid, "approve");
         }
 
         setIsOpen(false);
@@ -81,12 +97,12 @@ const PendingVerificationDialog = ({
   };
 
   const handleDeclineVerification = async () => {
-    if (!currentSelectedVerificationRequested || !declineReason.trim()) return;
+    if (!pendingVerification || !declineReason.trim()) return;
 
     setIsDeclining(true);
     try {
       const response = await declinePendingVerification(
-        currentSelectedVerificationRequested?.id,
+        pendingVerification?.uuid,
         { adminComments: declineReason }
       );
 
@@ -96,7 +112,7 @@ const PendingVerificationDialog = ({
         setDeclineReason("");
 
         if (onVerificationUpdate) {
-          onVerificationUpdate(currentSelectedVerificationRequested.id, 'decline');
+          onVerificationUpdate(pendingVerification?.uuid, "decline");
         }
 
         setIsOpen(false);
@@ -113,7 +129,9 @@ const PendingVerificationDialog = ({
 
   // Get verification type display name
   const getVerificationType = (type: string) => {
-    return stringCleanup(type).charAt(0).toUpperCase() + stringCleanup(type).slice(1);
+    return (
+      stringCleanup(type).charAt(0).toUpperCase() + stringCleanup(type).slice(1)
+    );
   };
 
   // Get badge color based on verification type
@@ -144,7 +162,7 @@ const PendingVerificationDialog = ({
 
   // Get document status badge color
   const getDocumentStatusBadgeColor = (status: string) => {
-    switch (status.toLowerCase()) {
+    switch (status) {
       case "pending":
         return "warning";
       case "approved":
@@ -155,8 +173,9 @@ const PendingVerificationDialog = ({
         return "gray";
     }
   };
+  const hasFullData = currentSelectedUser && currentSelectedVerificationRequested;
 
-  if (!currentSelectedUser || !currentSelectedVerificationRequested) {
+  if (!pendingVerification?.user || !pendingVerification) {
     return (
       <AnimatePresence mode="wait" key="empty-dialog">
         {isOpen && (
@@ -197,7 +216,9 @@ const PendingVerificationDialog = ({
                 className="w-full max-w-[1100px] flex flex-col h-[95dvh] max-h-[850px] overflow-hidden p-0 gap-0 rounded-lg bg-white dark:bg-darkgray shadow-md dark:dark-shadow-md"
               >
                 <div className="flex items-center justify-center h-full">
-                  <p className="text-gray-500 dark:text-gray-400">No verification data available</p>
+                  <p className="text-gray-500 dark:text-gray-400">
+                    No verification data available.
+                  </p>
                 </div>
               </DialogPanel>
             </div>
@@ -251,12 +272,16 @@ const PendingVerificationDialog = ({
                   <div className="flex items-center justify-center h-full">
                     <div className="text-center">
                       <Spinner size="xl" className="mb-4" />
-                      <p className="text-gray-500 dark:text-gray-400">Loading verification details...</p>
+                      <p className="text-gray-500 dark:text-gray-400">
+                        Loading verification details...
+                      </p>
                     </div>
                   </div>
-                ) : !currentSelectedUser || !currentSelectedVerificationRequested ? (
+                ) : !pendingVerification.user || !pendingVerification ? (
                   <div className="flex items-center justify-center h-full">
-                    <p className="text-gray-500 dark:text-gray-400">No verification data available</p>
+                    <p className="text-gray-500 dark:text-gray-400">
+                      No verification data available
+                    </p>
                   </div>
                 ) : (
                   <>
@@ -268,38 +293,82 @@ const PendingVerificationDialog = ({
                             <div className="relative w-36 h-36 mb-5">
                               <div className="w-36 h-36 rounded-full overflow-hidden border-4 border-white dark:border-gray-700 shadow-lg">
                                 <Image
-                                  src={currentSelectedUser?.user_details?.profile?.profile_picture || "/images/profile/user-1.jpg"}
-                                  alt={currentSelectedUser?.user_details?.profile?.name}
+                                  src={
+                                    currentSelectedUser?.user_details?.profile
+                                      ?.profile_picture ||
+                                    pendingVerification?.user
+                                      ?.profile_picture ||
+                                    "/images/profile/user-1.jpg"
+                                  }
+                                  alt={pendingVerification?.user?.name}
                                   className="object-cover w-full h-full"
                                   width={144}
                                   height={144}
                                 />
                               </div>
                             </div>
-                            <h2 className="text-xl font-bold mb-1">{currentSelectedUser?.user_details?.profile?.name}</h2>
-                            <p className="text-gray-500 dark:text-gray-400 mb-2">@{currentSelectedUser?.user_details?.profile?.username}</p>
-                            <p className="text-gray-600 dark:text-gray-300 mb-3">{currentSelectedUser?.user_details?.profile?.email}</p>
+                            <h2 className="text-xl font-bold mb-1">
+                              {currentSelectedUser?.user_details?.profile?.name || pendingVerification?.user?.name}
+                            </h2>
+                            <p className="text-gray-500 dark:text-gray-400 mb-2">
+                              @{currentSelectedUser?.user_details?.profile?.username || pendingVerification?.user?.username}
+                            </p>
+                            <p className="text-gray-600 dark:text-gray-300 mb-3">
+                              {currentSelectedUser?.user_details?.profile?.email || pendingVerification?.user?.email}
+                            </p>
 
                             <div className="w-full mt-4 space-y-3">
                               <div className="flex justify-between border-b dark:border-gray-700 pb-2">
-                                <span className="text-gray-500 dark:text-gray-400">Followers</span>
-                                <span className="font-medium">{currentSelectedUser?.user_details?.profile?.followers}</span>
+                                <span className="text-gray-500 dark:text-gray-400">
+                                  Followers
+                                </span>
+                                <span className="font-medium text-gray-500">
+                                  {
+                                    currentSelectedVerificationRequested?.social_metrics.followers_count
+                                  }
+                                </span>
                               </div>
                               <div className="flex justify-between border-b dark:border-gray-700 pb-2">
-                                <span className="text-gray-500 dark:text-gray-400">Following</span>
-                                <span className="font-medium">{currentSelectedUser?.user_details?.profile?.following}</span>
+                                <span className="text-gray-500 dark:text-gray-400">
+                                  Following
+                                </span>
+                                <span className="font-medium text-gray-500">
+                                  {
+                                    currentSelectedVerificationRequested?.social_metrics.following_count
+                                  }
+                                </span>
                               </div>
                               <div className="flex justify-between border-b dark:border-gray-700 pb-2">
-                                <span className="text-gray-500 dark:text-gray-400">Posts</span>
-                                <span className="font-medium">{currentSelectedUser?.user_details?.profile?.posts_count}</span>
+                                <span className="text-gray-500 dark:text-gray-400">
+                                  Posts
+                                </span>
+                                <span className="font-medium text-gray-500">
+                                  {
+                                    currentSelectedUser?.user_details?.profile
+                                      ?.posts_count
+                                  }
+                                </span>
                               </div>
                               <div className="flex justify-between border-b dark:border-gray-700 pb-2">
-                                <span className="text-gray-500 dark:text-gray-400">Joined</span>
-                                <span className="font-medium">{formatDate(currentSelectedUser?.user_details?.profile?.created_at)}</span>
+                                <span className="text-gray-500 dark:text-gray-400">
+                                  Joined
+                                </span>
+                                <span className="font-medium text-gray-500">
+                                  {formatDate(
+                                    currentSelectedVerificationRequested?.social_metrics.duration_since_joining ?? ""
+                                  )}
+                                </span>
                               </div>
                               <div className="flex justify-between">
-                                <span className="text-gray-500 dark:text-gray-400">Account Type</span>
-                                <span className="font-medium">{currentSelectedUser?.user_details?.profile?.account_type}</span>
+                                <span className="text-gray-500 dark:text-gray-400">
+                                  Account Type
+                                </span>
+                                <span className="font-medium text-gray-500">
+                                  {
+                                    currentSelectedUser?.user_details?.profile
+                                      ?.account_type
+                                  }
+                                </span>
                               </div>
                             </div>
                           </div>
@@ -308,123 +377,220 @@ const PendingVerificationDialog = ({
                         {/* Verification Details Section */}
                         <div className="md:col-span-2">
                           <div className="border dark:border-gray-700 p-5 rounded-lg mb-5 shadow-sm">
-                            <h3 className="text-lg font-semibold mb-4 border-b dark:border-gray-700 pb-2">Verification Request Details</h3>
+                            <h3 className="text-lg font-semibold mb-4 border-b dark:border-gray-700 pb-2">
+                              Verification Request Details
+                            </h3>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                               <div>
-                                <p className="text-gray-500 dark:text-gray-400  mb-1">Request Type</p>
-                                <Badge color={getVerificationBadgeColor(currentSelectedVerificationRequested?.type)} size="md" className="px-3 py-1">
-                                  {getVerificationType(currentSelectedVerificationRequested?.type)}
+                                <p className="text-gray-500 dark:text-gray-400  mb-1">
+                                  Request Type
+                                </p>
+                                <Badge
+                                  color={getVerificationBadgeColor(
+                                    pendingVerification?.subscription.plan.name
+                                  )}
+                                  size="md"
+                                  className="px-3 py-1"
+                                >
+                                  {getVerificationType(
+                                    pendingVerification?.subscription.plan.name
+                                  )}
                                 </Badge>
                               </div>
                               <div>
-                                <p className="text-gray-500 dark:text-gray-400  mb-1">Status</p>
-                                <Badge color={getStatusBadgeColor(currentSelectedVerificationRequested?.status)} size="md" className="px-3 py-1">
-                                  {stringCleanup(currentSelectedVerificationRequested?.status)}
+                                <p className="text-gray-500 dark:text-gray-400  mb-1">
+                                  Status
+                                </p>
+                                <Badge
+                                  color={getStatusBadgeColor(
+                                    currentSelectedVerificationRequested?.status ?? ""
+                                  )}
+                                  size="md"
+                                  className="px-3 py-1"
+                                >
+                                  {stringCleanup(
+                                    currentSelectedVerificationRequested?.status.toUpperCase() ?? "N/A"
+                                  )}
                                 </Badge>
                               </div>
                               <div>
-                                <p className="text-gray-500 dark:text-gray-400  mb-1">Current Stage</p>
-                                <p className="font-medium">{currentSelectedVerificationRequested?.current_stage}</p>
+                                <p className="text-gray-500 dark:text-gray-400  mb-1">
+                                  Current Stage
+                                </p>
+                                <p className="font-medium">
+                                  {
+                                    currentSelectedVerificationRequested?.current_stage
+                                  }
+                                </p>
                               </div>
                               <div>
-                                <p className="text-gray-500 dark:text-gray-400  mb-1">Created At</p>
-                                <p className="font-medium">{formatDate(currentSelectedVerificationRequested?.created_at)}</p>
+                                <p className="text-gray-500 dark:text-gray-400  mb-1">
+                                  Created At
+                                </p>
+                                <p className="font-medium">
+                                  {formatDate(
+                                    pendingVerification.created_at ??
+                                      ""
+                                  )}
+                                </p>
                               </div>
-                              <div>
+                              {/* <div>
                                 <p className="text-gray-500 dark:text-gray-400  mb-1">Location</p>
                                 <p className="font-medium">{currentSelectedVerificationRequested?.location || "N/A"}</p>
-                              </div>
+                              </div> */}
                             </div>
 
                             {/* Social Metrics */}
                             <div className="mb-6">
-                              <h4 className="text-base font-semibold mb-3 border-b dark:border-gray-700 pb-2">Social Metrics</h4>
+                              <h4 className="text-base font-semibold mb-3 border-b dark:border-gray-700 pb-2">
+                                Social Metrics
+                              </h4>
                               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border dark:border-gray-700 p-4 rounded-lg">
                                 <div>
-                                  <p className="text-gray-500 dark:text-gray-400  mb-1">Followers Count</p>
-                                  <p className="font-medium">{currentSelectedVerificationRequested?.social_metrics?.followers_count}</p>
+                                  <p className="text-gray-500 dark:text-gray-400  mb-1">
+                                    Followers Count
+                                  </p>
+                                  <p className="font-medium">
+                                    {
+                                      currentSelectedVerificationRequested
+                                        ?.social_metrics?.followers_count
+                                    }
+                                  </p>
                                 </div>
                                 <div>
-                                  <p className="text-gray-500 dark:text-gray-400  mb-1">Following Count</p>
-                                  <p className="font-medium">{currentSelectedVerificationRequested?.social_metrics?.following_count}</p>
+                                  <p className="text-gray-500 dark:text-gray-400  mb-1">
+                                    Following Count
+                                  </p>
+                                  <p className="font-medium">
+                                    {
+                                      currentSelectedVerificationRequested
+                                        ?.social_metrics?.following_count
+                                    }
+                                  </p>
                                 </div>
                                 <div>
-                                  <p className="text-gray-500 dark:text-gray-400  mb-1">Date Joined</p>
-                                  <p className="font-medium">{formatDate(currentSelectedVerificationRequested?.social_metrics?.date_joined)}</p>
+                                  <p className="text-gray-500 dark:text-gray-400  mb-1">
+                                    Date Joined
+                                  </p>
+                                  <p className="font-medium">
+                                    {formatDate(
+                                      currentSelectedVerificationRequested
+                                        ?.social_metrics?.date_joined ?? ""
+                                    )}
+                                  </p>
                                 </div>
                                 <div>
-                                  <p className="text-gray-500 dark:text-gray-400  mb-1">Account Age</p>
-                                  <p className="font-medium">{currentSelectedVerificationRequested?.social_metrics?.duration_since_joining}</p>
+                                  <p className="text-gray-500 dark:text-gray-400  mb-1">
+                                    Account Age
+                                  </p>
+                                  <p className="font-medium">
+                                    {
+                                      currentSelectedVerificationRequested
+                                        ?.social_metrics?.duration_since_joining
+                                    }
+                                  </p>
                                 </div>
                               </div>
                             </div>
 
                             {/* IF no document we render this */}
                             {currentSelectedVerificationRequested?.documents &&
-                              currentSelectedVerificationRequested?.documents.length === 0 && (
+                              currentSelectedVerificationRequested?.documents
+                                .length === 0 && (
                                 <div className="mb-6">
-                                  <h4 className="text-base font-semibold mb-3 border-b dark:border-gray-700 pb-2">Submitted Documents</h4>
-                                  <p className="text-gray-500 dark:text-gray-400">N/A</p>
+                                  <h4 className="text-base font-semibold mb-3 border-b dark:border-gray-700 pb-2">
+                                    Submitted Documents
+                                  </h4>
+                                  <p className="text-gray-500 dark:text-gray-400">
+                                    N/A
+                                  </p>
                                 </div>
                               )}
-
                             {/* Documents Section */}
                             {currentSelectedVerificationRequested?.documents &&
-                              currentSelectedVerificationRequested?.documents.length > 0 && (
+                              currentSelectedVerificationRequested?.documents
+                                .length > 0 && (
                                 <div className="mb-6">
-                                  <h4 className="text-base font-semibold mb-3 border-b dark:border-gray-700 pb-2">Submitted Documents</h4>
+                                  <h4 className="text-base font-semibold mb-3 border-b dark:border-gray-700 pb-2">
+                                    Submitted Documents
+                                  </h4>
                                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                                    {currentSelectedVerificationRequested?.documents?.map((doc: IVerificationDocument, index: number) => (
-                                      <div key={`doc-${doc?.uuid || index}`} className="border dark:border-gray-700 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow">
-                                        <div className="flex items-center gap-2 mb-2">
-                                          <Icon icon="mdi:file-document-outline" className="text-blue-500" height={20} />
-                                          <span className=" font-medium truncate">
-                                            {doc?.document_type || `Document ${index + 1}`}
-                                          </span>
-                                        </div>
-                                        <div className="flex justify-between items-center mb-2">
-                                          <Badge
-                                            color={getDocumentStatusBadgeColor(doc?.status)}
-                                            size="xs"
-                                            className="px-2 py-0.5"
-                                          >
-                                            {stringCleanup(doc?.status)}
-                                          </Badge>
-                                          <span className="text-xs text-gray-500">
-                                            {formatDate(doc?.created_at)}
-                                          </span>
-                                        </div>
-                                        {doc?.document_url && (
-                                          <a
-                                            href={doc?.document_url}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="text-xs text-blue-500 hover:underline flex items-center gap-1 mt-1"
-                                          >
-                                            <Icon icon="mdi:eye" height={16} />
-                                            View Document
-                                          </a>
-                                        )}
-                                        {doc?.rejection_reason && (
-                                          <div className="mt-2 text-xs text-red-500">
-                                            <p className="font-medium">Rejection reason:</p>
-                                            <p>{doc?.rejection_reason}</p>
+                                    {currentSelectedVerificationRequested?.documents?.map(
+                                      (
+                                        doc: IVerificationDocument,
+                                        index: number
+                                      ) => (
+                                        <div
+                                          key={`doc-${doc?.uuid || index}`}
+                                          className="border dark:border-gray-700 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow"
+                                        >
+                                          <div className="flex items-center gap-2 mb-2">
+                                            <Icon
+                                              icon="mdi:file-document-outline"
+                                              className="text-blue-500"
+                                              height={20}
+                                            />
+                                            <span className=" font-medium truncate">
+                                              {doc?.document_type ||
+                                                `Document ${index + 1}`}
+                                            </span>
                                           </div>
-                                        )}
-                                      </div>
-                                    ))}
+                                          <div className="flex justify-between items-center mb-2">
+                                            <Badge
+                                              color={getDocumentStatusBadgeColor(
+                                                doc?.status
+                                              )}
+                                              size="xs"
+                                              className="px-2 py-0.5"
+                                            >
+                                              {stringCleanup(doc?.status)}
+                                            </Badge>
+                                            <span className="text-xs text-gray-500">
+                                              {formatDate(doc?.created_at)}
+                                            </span>
+                                          </div>
+                                          {doc?.document_url && (
+                                            <a
+                                              href={doc?.document_url}
+                                              target="_blank"
+                                              rel="noopener noreferrer"
+                                              className="text-xs text-blue-500 hover:underline flex items-center gap-1 mt-1"
+                                            >
+                                              <Icon
+                                                icon="mdi:eye"
+                                                height={16}
+                                              />
+                                              View Document
+                                            </a>
+                                          )}
+                                          {doc?.rejection_reason && (
+                                            <div className="mt-2 text-xs text-red-500">
+                                              <p className="font-medium">
+                                                Rejection reason:
+                                              </p>
+                                              <p>{doc?.rejection_reason}</p>
+                                            </div>
+                                          )}
+                                        </div>
+                                      )
+                                    )}
                                   </div>
                                 </div>
                               )}
 
-
                             {/* User Bio Section */}
-                            {currentSelectedUser?.user_details?.profile?.bio && (
+                            {currentSelectedUser?.user_details?.profile
+                              ?.bio && (
                               <div className="border dark:border-gray-700 p-4 rounded-lg shadow-sm">
-                                <h3 className="text-base font-semibold mb-3 border-b dark:border-gray-700 pb-2">Bio</h3>
+                                <h3 className="text-base font-semibold mb-3 border-b dark:border-gray-700 pb-2">
+                                  Bio
+                                </h3>
                                 <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-                                  {currentSelectedUser?.user_details?.profile?.bio}
+                                  {
+                                    currentSelectedUser?.user_details?.profile
+                                      ?.bio
+                                  }
                                 </p>
                               </div>
                             )}
@@ -491,14 +657,22 @@ const PendingVerificationDialog = ({
                 className="w-full max-w-[500px] flex flex-col p-6 gap-6 rounded-lg bg-white dark:bg-darkgray shadow-md"
               >
                 <div className="flex flex-col gap-4">
-                  <h3 className="text-xl font-semibold">Approve Verification</h3>
+                  <h3 className="text-xl font-semibold">
+                    Approve Verification
+                  </h3>
                   <p className="text-gray-600 dark:text-gray-300">
-                    Are you sure you want to approve the {" "}
+                    Are you sure you want to approve the{" "}
                     <span className="font-medium">
-                      {currentSelectedVerificationRequested?.type &&
-                        stringCleanup(currentSelectedVerificationRequested?.type)}
+                      {currentSelectedVerificationRequested?.subscription.plan.name &&
+                        stringCleanup(
+                          currentSelectedVerificationRequested?.subscription.plan.name
+                        )}
                     </span>{" "}
-                    request for <span className="font-medium">{currentSelectedUser?.user_details?.profile?.name}</span>?
+                    request for{" "}
+                    <span className="font-medium">
+                      {currentSelectedUser?.user_details?.profile?.name || pendingVerification?.user?.name}
+                    </span>
+                    ?
                   </p>
                 </div>
 
@@ -557,14 +731,23 @@ const PendingVerificationDialog = ({
                 className="w-full max-w-[500px] flex flex-col p-6 gap-6 rounded-lg bg-white dark:bg-darkgray shadow-md"
               >
                 <div className="flex flex-col gap-4">
-                  <h3 className="text-xl font-semibold">Decline Verification</h3>
+                  <h3 className="text-xl font-semibold">
+                    Decline Verification
+                  </h3>
                   <p className="text-gray-600 dark:text-gray-300">
-                    Are you sure you want to decline the {" "}
+                    Are you sure you want to decline the{" "}
                     <span className="font-medium">
-                      {currentSelectedVerificationRequested?.type &&
-                        stringCleanup(currentSelectedVerificationRequested?.type)}
+                      {pendingVerification?.subscription.plan
+                        .name &&
+                        stringCleanup(
+                          pendingVerification?.subscription.plan.name
+                        )}
                     </span>{" "}
-                    request for <span className="font-medium">{currentSelectedUser?.user_details?.profile?.name}</span>?
+                    request for{" "}
+                    <span className="font-medium">
+                      {pendingVerification?.user?.name}
+                    </span>
+                    ?
                   </p>
                 </div>
 
