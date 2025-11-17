@@ -54,10 +54,10 @@ const ProfileBanner = ({ user }: { user: IUser | null }) => {
                 <div>
                   <div className="flex items-center justify-center gap-1">
                     <h5 className="text-base ">{user?.user_details?.profile?.name}</h5>
-                    {user?.user_details?.profile?.check_mark && (
+                    {user?.user_details?.profile?.checkmark_verification_status && (
                       <Image src={CheckBadgeIcon} alt="premium" width={28} height={28} />
                     )}
-                    {user?.user_details?.profile?.premium && (
+                    {user?.user_details?.profile?.premium_verification_status && (
                       <Image src={PremiumIcon} alt="premium" width={18} height={18} />
                     )}
                   </div>
