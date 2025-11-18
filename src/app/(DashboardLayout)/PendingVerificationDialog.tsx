@@ -41,6 +41,9 @@ const PendingVerificationDialog = ({
   const [isApproving, setIsApproving] = useState(false);
   const [isDeclining, setIsDeclining] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedDocument, setSelectedDocument] =
+    useState<IVerificationDocument | null>(null);
+  const [isDocumentDialogOpen, setIsDocumentDialogOpen] = useState(false);
 
   // Set loading state when dialog opens
   useEffect(() => {
@@ -62,10 +65,10 @@ const PendingVerificationDialog = ({
 
   // Update loading state when data becomes available
   useEffect(() => {
-    if (pendingVerification?.user && pendingVerification) {
+    if (currentSelectedUser && currentSelectedVerificationRequested) {
       setIsLoading(false);
     }
-  }, [pendingVerification?.user, pendingVerification]);
+  }, [currentSelectedUser, currentSelectedVerificationRequested]);
 
   const handleApproveVerification = async () => {
     if (!pendingVerification?.subscription.plan.name) return;
@@ -173,7 +176,8 @@ const PendingVerificationDialog = ({
         return "gray";
     }
   };
-  const hasFullData = currentSelectedUser && currentSelectedVerificationRequested;
+  const hasFullData =
+    currentSelectedUser && currentSelectedVerificationRequested;
 
   if (!pendingVerification?.user || !pendingVerification) {
     return (
@@ -308,13 +312,18 @@ const PendingVerificationDialog = ({
                               </div>
                             </div>
                             <h2 className="text-xl font-bold mb-1">
-                              {currentSelectedUser?.user_details?.profile?.name || pendingVerification?.user?.name}
+                              {currentSelectedUser?.user_details?.profile
+                                ?.name || pendingVerification?.user?.name}
                             </h2>
                             <p className="text-gray-500 dark:text-gray-400 mb-2">
-                              @{currentSelectedUser?.user_details?.profile?.username || pendingVerification?.user?.username}
+                              @
+                              {currentSelectedUser?.user_details?.profile
+                                ?.username ||
+                                pendingVerification?.user?.username}
                             </p>
                             <p className="text-gray-600 dark:text-gray-300 mb-3">
-                              {currentSelectedUser?.user_details?.profile?.email || pendingVerification?.user?.email}
+                              {currentSelectedUser?.user_details?.profile
+                                ?.email || pendingVerification?.user?.email}
                             </p>
 
                             <div className="w-full mt-4 space-y-3">
@@ -324,7 +333,8 @@ const PendingVerificationDialog = ({
                                 </span>
                                 <span className="font-medium text-gray-500">
                                   {
-                                    currentSelectedVerificationRequested?.social_metrics.followers_count
+                                    currentSelectedVerificationRequested
+                                      ?.social_metrics.followers_count
                                   }
                                 </span>
                               </div>
@@ -334,7 +344,8 @@ const PendingVerificationDialog = ({
                                 </span>
                                 <span className="font-medium text-gray-500">
                                   {
-                                    currentSelectedVerificationRequested?.social_metrics.following_count
+                                    currentSelectedVerificationRequested
+                                      ?.social_metrics.following_count
                                   }
                                 </span>
                               </div>
@@ -355,7 +366,9 @@ const PendingVerificationDialog = ({
                                 </span>
                                 <span className="font-medium text-gray-500">
                                   {formatDate(
-                                    currentSelectedVerificationRequested?.social_metrics.duration_since_joining ?? ""
+                                    currentSelectedVerificationRequested
+                                      ?.social_metrics.duration_since_joining ??
+                                      ""
                                   )}
                                 </span>
                               </div>
@@ -404,13 +417,15 @@ const PendingVerificationDialog = ({
                                 </p>
                                 <Badge
                                   color={getStatusBadgeColor(
-                                    currentSelectedVerificationRequested?.status ?? ""
+                                    currentSelectedVerificationRequested?.status ??
+                                      ""
                                   )}
                                   size="md"
                                   className="px-3 py-1"
                                 >
                                   {stringCleanup(
-                                    currentSelectedVerificationRequested?.status.toUpperCase() ?? "N/A"
+                                    currentSelectedVerificationRequested?.status.toUpperCase() ??
+                                      "N/A"
                                   )}
                                 </Badge>
                               </div>
@@ -430,8 +445,7 @@ const PendingVerificationDialog = ({
                                 </p>
                                 <p className="font-medium">
                                   {formatDate(
-                                    pendingVerification.created_at ??
-                                      ""
+                                    pendingVerification.created_at ?? ""
                                   )}
                                 </p>
                               </div>
@@ -550,7 +564,7 @@ const PendingVerificationDialog = ({
                                               {formatDate(doc?.created_at)}
                                             </span>
                                           </div>
-                                          {doc?.document_url && (
+                                          {/* {doc?.document_url && (
                                             <a
                                               href={doc?.document_url}
                                               target="_blank"
@@ -563,6 +577,22 @@ const PendingVerificationDialog = ({
                                               />
                                               View Document
                                             </a>
+                                          )} */}
+                                          {doc?.document_url && (
+                                            <button
+                                              onClick={(e) => {
+                                                e.preventDefault();
+                                                setSelectedDocument(doc);
+                                                setIsDocumentDialogOpen(true);
+                                              }}
+                                              className="text-xs text-blue-500 hover:underline flex items-center gap-1 mt-1"
+                                            >
+                                              <Icon
+                                                icon="mdi:eye"
+                                                height={16}
+                                              />
+                                              View Document
+                                            </button>
                                           )}
                                           {doc?.rejection_reason && (
                                             <div className="mt-2 text-xs text-red-500">
@@ -605,6 +635,7 @@ const PendingVerificationDialog = ({
                         color="gray"
                         onClick={() => setIsOpen(false)}
                         className="px-6"
+                        disabled={isApproving || isDeclining}
                       >
                         Close
                       </FlowbiteButton>
@@ -612,6 +643,7 @@ const PendingVerificationDialog = ({
                         <FlowbiteButton
                           color="failure"
                           onClick={() => setIsDeclineDialogOpen(true)}
+                          disabled={isApproving || isDeclining}
                         >
                           <Icon icon="mdi:close" className="mr-2" height={20} />
                           Decline
@@ -619,6 +651,7 @@ const PendingVerificationDialog = ({
                         <FlowbiteButton
                           color="success"
                           onClick={() => setIsApproveDialogOpen(true)}
+                          disabled={isApproving || isDeclining}
                         >
                           <Icon icon="mdi:check" className="mr-2" height={20} />
                           Approve
@@ -663,14 +696,17 @@ const PendingVerificationDialog = ({
                   <p className="text-gray-600 dark:text-gray-300">
                     Are you sure you want to approve the{" "}
                     <span className="font-medium">
-                      {currentSelectedVerificationRequested?.subscription.plan.name &&
+                      {currentSelectedVerificationRequested?.subscription.plan
+                        .name &&
                         stringCleanup(
-                          currentSelectedVerificationRequested?.subscription.plan.name
+                          currentSelectedVerificationRequested?.subscription
+                            .plan.name
                         )}
                     </span>{" "}
                     request for{" "}
                     <span className="font-medium">
-                      {currentSelectedUser?.user_details?.profile?.name || pendingVerification?.user?.name}
+                      {currentSelectedUser?.user_details?.profile?.name ||
+                        pendingVerification?.user?.name}
                     </span>
                     ?
                   </p>
@@ -737,8 +773,7 @@ const PendingVerificationDialog = ({
                   <p className="text-gray-600 dark:text-gray-300">
                     Are you sure you want to decline the{" "}
                     <span className="font-medium">
-                      {pendingVerification?.subscription.plan
-                        .name &&
+                      {pendingVerification?.subscription.plan.name &&
                         stringCleanup(
                           pendingVerification?.subscription.plan.name
                         )}
@@ -789,6 +824,119 @@ const PendingVerificationDialog = ({
                     ) : (
                       "Decline"
                     )}
+                  </FlowbiteButton>
+                </div>
+              </DialogPanel>
+            </div>
+          </Dialog>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence mode="wait" key="document-dialog">
+        {isDocumentDialogOpen && selectedDocument && (
+          <Dialog
+            static
+            open={isDocumentDialogOpen}
+            onClose={() => {
+              setIsDocumentDialogOpen(false);
+              setSelectedDocument(null);
+            }}
+            className="relative z-[60]"
+          >
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/50"
+            />
+            <div className="fixed inset-0 mx-auto flex items-center justify-center p-4">
+              <DialogPanel
+                as={motion.div}
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                className="w-full max-w-[90vw] max-h-[90vh] flex flex-col rounded-lg bg-white dark:bg-darkgray shadow-xl overflow-hidden"
+              >
+                {/* Header */}
+                <div className="flex items-center justify-between px-6 py-4 border-b dark:border-gray-700">
+                  <div>
+                    <h3 className="text-lg font-semibold">
+                      {selectedDocument.document_type || "Document"}
+                    </h3>
+                    <div className="flex items-center gap-2 mt-1">
+                      {/* <Badge
+                        color={getDocumentStatusBadgeColor(selectedDocument.status)}
+                        size="xs"
+                      >
+                        {stringCleanup(selectedDocument.status)}
+                      </Badge> */}
+                      <span className="text-xs text-gray-500">
+                        {formatDate(selectedDocument.created_at)}
+                      </span>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => {
+                      setIsDocumentDialogOpen(false);
+                      setSelectedDocument(null);
+                    }}
+                    className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                  >
+                    <Icon icon="solar:close-circle-bold" height={24} />
+                  </button>
+                </div>
+
+                {/* Document Content */}
+                {/* <div className="flex-1 overflow-auto p-4 bg-gray-50 dark:bg-gray-900">
+                  {selectedDocument.document_url && (
+                    <iframe
+                      src={selectedDocument.document_url}
+                      className="w-full h-full min-h-[70vh] rounded border dark:border-gray-700"
+                      title={selectedDocument.document_type || "Document"}
+                    />
+                  )}
+                </div> */}
+                <div className="flex-1 overflow-auto p-4 bg-gray-50 dark:bg-gray-900 flex justify-center items-center">
+                  {selectedDocument.document_url && (
+                    <iframe
+                      src={selectedDocument.document_url}
+                      className="w-full h-full min-h-[70vh] rounded border dark:border-gray-700"
+                      title={selectedDocument.document_type || "Document"}
+                    />
+                  )}
+                </div>
+
+                {/* Footer */}
+                {selectedDocument.rejection_reason && (
+                  <div className="px-6 py-4 border-t dark:border-gray-700 bg-red-50 dark:bg-red-900/20">
+                    <p className="text-sm font-medium text-red-600 dark:text-red-400 mb-1">
+                      Rejection Reason:
+                    </p>
+                    <p className="text-sm text-red-700 dark:text-red-300">
+                      {selectedDocument.rejection_reason}
+                    </p>
+                  </div>
+                )}
+
+                <div className="flex justify-between items-center px-6 py-4 border-t dark:border-gray-700">
+                  {/* <a
+                    href={selectedDocument.document_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm text-blue-500 hover:underline flex items-center gap-1"
+                  >
+                    <Icon icon="mdi:open-in-new" height={16} />
+                    Open in New Tab
+                  </a> */}
+                  <FlowbiteButton
+                    color="gray"
+                    size="sm"
+                    onClick={() => {
+                      setIsDocumentDialogOpen(false);
+                      setSelectedDocument(null);
+                    }}
+                  >
+                    Close
                   </FlowbiteButton>
                 </div>
               </DialogPanel>
