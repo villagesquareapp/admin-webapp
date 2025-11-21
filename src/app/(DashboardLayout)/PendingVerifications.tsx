@@ -19,6 +19,9 @@ import { UserDetailsComp } from "../components/shared/TableSnippets";
 import PendingVerificationDialog from "./PendingVerificationDialog";
 import useSetSearchParams from "../hooks/useSetSearchParams";
 import { useRouter } from "next/navigation";
+import { getVerificationRequested } from "@/app/api/pending-verification";
+import { getUserDetails } from "../api/user";
+import { set } from "lodash";
 
 const PendingVerifications = ({
   pendingVerification,
@@ -54,18 +57,44 @@ const PendingVerifications = ({
   );
   const [selectedPendingVerification, setSelectedPendingVerification] =
     useState<IPendingVerification | null>(null);
+  const [fetchedUser, setFetchedUser] = useState<IUser | null>(null);
+  const [fetchedVerification, setFetchedVerification] =
+    useState<IVerificationRequested | null>(null);
+  const [isFetchingDetails, setIsFetchingDetails] = useState(false);
 
   const columnHelper = createColumnHelper<IPendingVerification>();
 
-  const handleRowClick = (pendingVerification: IPendingVerification) => {
+  const handleRowClick = async (pendingVerification: IPendingVerification) => {
     setSelectedPendingVerification(pendingVerification);
-    addParam("pending_verification", pendingVerification.uuid);
     // setIsDialogOpen(true);
-    router.refresh(); 
-    
+    setIsFetchingDetails(true);
     setTimeout(() => {
       setIsDialogOpen(true);
     }, 300);
+
+    addParam("pending_verification", pendingVerification.uuid);
+
+    try {
+      const [userRes, verificationRes] = await Promise.all([
+        getUserDetails(pendingVerification.user.uuid),
+        getVerificationRequested(pendingVerification.uuid),
+      ]);
+      if (userRes?.data) {
+        setFetchedUser(userRes.data as unknown as IUser);
+      }
+
+      if (verificationRes?.data) {
+        setFetchedVerification(verificationRes.data as unknown as IVerificationRequested);
+    }
+    } catch (error) {
+      console.error("Error fetching details:", error);
+      toast.error("Failed to load full verification details");
+    } finally {
+      setIsFetchingDetails(false);
+    }
+
+    // router.refresh();
+
   };
 
   const handleApproveClick = (verification: IPendingVerification) => {
@@ -255,13 +284,18 @@ const PendingVerifications = ({
         setIsOpen={() => {
           removeSpecificParam(["pending_verification"]);
           setSelectedPendingVerification(null);
+          setFetchedUser(null);
+          setFetchedVerification(null);
           setIsDialogOpen(false);
         }}
         pendingVerification={selectedPendingVerification}
-        currentSelectedUser={currentSelectedUser}
-        currentSelectedVerificationRequested={currentSelectedVerificationRequested}
+        currentSelectedUser={fetchedUser || currentSelectedUser}
+        currentSelectedVerificationRequested={
+          fetchedVerification || currentSelectedVerificationRequested
+        }
         onVerificationUpdate={handleVerificationUpdate}
-     />
+        isLoadingDetails={isFetchingDetails}
+      />
 
       {/* Approve Dialog */}
       <Dialog
