@@ -770,11 +770,14 @@ interface IPendingVerificationResponse
 
 interface IVerificationDocument {
   uuid: string;
+  user_id: string;
   document_type: string;
   document_url: string;
-  status: string;
   rejection_reason: string | null;
+  verification_request_id: string;
   created_at: string;
+  updated_at: string;
+  deleted_at: string | null;
 }
 
 interface IVerificationRequested {

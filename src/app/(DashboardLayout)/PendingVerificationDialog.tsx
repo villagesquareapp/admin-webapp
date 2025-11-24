@@ -27,6 +27,7 @@ const PendingVerificationDialog = ({
   currentSelectedVerificationRequested,
   pendingVerification,
   onVerificationUpdate,
+  isLoadingDetails = false,
 }: {
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
@@ -34,6 +35,7 @@ const PendingVerificationDialog = ({
   currentSelectedVerificationRequested?: IVerificationRequested | null;
   pendingVerification?: IPendingVerification | null;
   onVerificationUpdate?: (id: string, action: "approve" | "decline") => void;
+  isLoadingDetails?: boolean;
 }) => {
   const [isApproveDialogOpen, setIsApproveDialogOpen] = useState(false);
   const [isDeclineDialogOpen, setIsDeclineDialogOpen] = useState(false);
@@ -44,6 +46,19 @@ const PendingVerificationDialog = ({
   const [selectedDocument, setSelectedDocument] =
     useState<IVerificationDocument | null>(null);
   const [isDocumentDialogOpen, setIsDocumentDialogOpen] = useState(false);
+
+  // Update loading state when data becomes available
+  useEffect(() => {
+    if (isLoadingDetails) {
+      setIsLoading(true);
+    } else if (currentSelectedUser && currentSelectedVerificationRequested) {
+      setIsLoading(false);
+    }
+  }, [
+    currentSelectedUser,
+    currentSelectedVerificationRequested,
+    isLoadingDetails,
+  ]);
 
   // Set loading state when dialog opens
   useEffect(() => {
@@ -272,7 +287,7 @@ const PendingVerificationDialog = ({
                 exit={{ opacity: 0, scale: 0.95 }}
                 className="w-full max-w-[1100px] flex flex-col h-[95dvh] max-h-[850px] overflow-hidden p-0 gap-0 rounded-lg bg-white dark:bg-darkgray shadow-md dark:dark-shadow-md"
               >
-                {isLoading ? (
+                {isLoadingDetails ? (
                   <div className="flex items-center justify-center h-full">
                     <div className="text-center">
                       <Spinner size="xl" className="mb-4" />
@@ -550,7 +565,7 @@ const PendingVerificationDialog = ({
                                                 `Document ${index + 1}`}
                                             </span>
                                           </div>
-                                          <div className="flex justify-between items-center mb-2">
+                                          {/* <div className="flex justify-between items-center mb-2">
                                             <Badge
                                               color={getDocumentStatusBadgeColor(
                                                 doc?.status
@@ -563,7 +578,7 @@ const PendingVerificationDialog = ({
                                             <span className="text-xs text-gray-500">
                                               {formatDate(doc?.created_at)}
                                             </span>
-                                          </div>
+                                          </div> */}
                                           {/* {doc?.document_url && (
                                             <a
                                               href={doc?.document_url}
@@ -855,7 +870,7 @@ const PendingVerificationDialog = ({
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95 }}
-                className="w-full max-w-[90vw] max-h-[90vh] flex flex-col rounded-lg bg-white dark:bg-darkgray shadow-xl overflow-hidden"
+                className="w-full max-w-4xl max-h-[90vh] flex flex-col rounded-lg bg-white dark:bg-darkgray shadow-xl overflow-hidden"
               >
                 {/* Header */}
                 <div className="flex items-center justify-between px-6 py-4 border-b dark:border-gray-700">
