@@ -9,13 +9,17 @@ import { formatDate } from "@/utils/dateUtils";
 import { createColumnHelper } from "@tanstack/react-table";
 import { useRouter, useSearchParams } from "next/navigation";
 // import UserActions from "./UserActions";
-import { getUserStatus } from "@/app/api/user";
+import { getUserDetails, getUserStatus } from "@/app/api/user";
 import { useEffect, useState } from "react";
 import { HiOutlineDotsVertical } from "react-icons/hi";
 import { Button } from "flowbite-react";
 import { FaPlus } from "react-icons/fa";
 import AdminAddGift from "../gifts/AdminAddGift";
 import AdminAddVerifiedUser from "./AdminAddVerifiedUser";
+import { getVerificationRequested } from "@/app/api/pending-verification";
+import { toast } from "sonner";
+import VerifiedUserDetailsModal from "./VerifiedUserDetailsModal";
+import PendingVerificationDialog from "../../PendingVerificationDialog";
 
 const VerifiedUserTable = ({
   users,
@@ -31,16 +35,75 @@ const VerifiedUserTable = ({
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const handleRowClick = (user: IUser) => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set("userId", user.user_details.profile.id);
-    router.replace(`?${params.toString()}`);
-  };
+  //   const handleRowClick = (user: IUser) => {
+  //     console.log("Row clicked:", user);
+  //     // const params = new URLSearchParams(searchParams.toString());
+  //     // params.set("userId", user.user_details.profile.id);
+  //     // router.replace(`?${params.toString()}`);
+  //   };
 
   const [statuses, setStatuses] = useState<IUserStatusList[]>([]);
   const [statusLoading, setStatusLoading] = useState<boolean>(false);
 
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [selectedRequestId, setSelectedRequestId] = useState<string | null>(
+    null
+  );
+
   const [isOpen, setIsOpen] = useState<boolean>(false);
+
+  const [selectedPendingVerification, setSelectedPendingVerification] =
+    useState<IPendingVerification | null>(null);
+  const [fetchedUser, setFetchedUser] = useState<IUser | null>(null);
+  const [fetchedVerification, setFetchedVerification] =
+    useState<IVerificationRequested | null>(null);
+  const [isFetchingDetails, setIsFetchingDetails] = useState(false);
+
+  const handleRowClick = async (pendingVerification: IPendingVerification) => {
+    setSelectedPendingVerification(pendingVerification);
+    // setIsDialogOpen(true);
+    setIsFetchingDetails(true);
+    setTimeout(() => {
+      setIsDetailModalOpen(true);
+    }, 300);
+
+    // addParam("pending_verification", pendingVerification.uuid);
+
+    try {
+      const [userRes, verificationRes] = await Promise.all([
+        getUserDetails(pendingVerification.user.uuid),
+        getVerificationRequested(pendingVerification.uuid),
+      ]);
+      if (userRes?.data) {
+        setFetchedUser(userRes.data as unknown as IUser);
+      }
+
+      if (verificationRes?.data) {
+        setFetchedVerification(
+          verificationRes.data as unknown as IVerificationRequested
+        );
+      }
+    } catch (error) {
+      console.error("Error fetching details:", error);
+      toast.error("Failed to load full verification details");
+    } finally {
+      setIsFetchingDetails(false);
+    }
+
+    // router.refresh();
+  };
+
+  const handleApprove = async (id: string) => {
+    // Call approve API endpoint
+    console.log("Approving:", id);
+    setIsDetailModalOpen(false);
+  };
+
+  const handleDecline = async (id: string) => {
+    // Call decline API endpoint
+    console.log("Declining:", id);
+    setIsDetailModalOpen(false);
+  };
 
   useEffect(() => {
     const fetchStatuses = async () => {
@@ -88,22 +151,6 @@ const VerifiedUserTable = ({
       cell: (info) => <DetailComp detail={info.getValue()} />,
       header: () => <span>Email</span>,
     }),
-    // columnHelper.accessor("user_details.posts", {
-    //   cell: (info) => (
-    //     <p className="text-darklink dark:text-bodytext text-sm">
-    //       {info.row.original.user_details.posts.length || 0}
-    //     </p>
-    //   ),
-    //   header: () => <span>Posts</span>,
-    // }),
-    // columnHelper.accessor("user_details.profile.followers", {
-    //   cell: (info) => (
-    //     <p className="text-darklink dark:text-bodytext text-sm">
-    //       {info.getValue() || 0}
-    //     </p>
-    //   ),
-    //   header: () => <span>Followers</span>,
-    // }),
     columnHelper.display({
       id: "verification_type",
       cell: (info) => (
@@ -205,6 +252,23 @@ const VerifiedUserTable = ({
         <AdminAddVerifiedUser
           isOpen={isOpen}
           onClose={() => setIsOpen(false)}
+        />
+      )}
+
+      {isDetailModalOpen && (
+        <VerifiedUserDetailsModal
+          isOpen={isDetailModalOpen}
+          setIsOpen={() => {
+            setSelectedPendingVerification(null);
+            setFetchedUser(null);
+            setFetchedVerification(null);
+            setIsDetailModalOpen(false);
+          }}
+          pendingVerification={selectedPendingVerification}
+          currentSelectedUser={fetchedUser}
+          currentSelectedVerificationRequested={fetchedVerification}
+          // onVerificationUpdate={handleVerificationUpdate}
+          isLoadingDetails={isFetchingDetails}
         />
       )}
     </>

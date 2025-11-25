@@ -23,8 +23,8 @@ const AdminAddGift: React.FC<AddGiftModalProps> = ({
 }) => {
   const [name, setName] = useState<string>("");
   const [value, setValue] = useState<string>("");
-  const [icon, setIcon] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
+  const [icon, setIcon] = useState<File | null>(null);
 
   // const handleIconChange = (e: ChangeEvent<HTMLInputElement>) => {
   //   if (e.target.files && e.target.files[0]) {
