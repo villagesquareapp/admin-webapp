@@ -102,10 +102,10 @@ const SidebarContent: MenuItem[] = [
             url: "/dashboards/admin-users",
           },
           {
-            name: "Settings",
-            icon: "solar:settings-line-duotone",
+            name: "Business Suite",
+            icon: "fa7-solid:business-time",
             id: uniqueId(),
-            url: "/dashboards/settings",
+            url: "/dashboards/business-suite",
           },
           // @Remove from here
           // {
