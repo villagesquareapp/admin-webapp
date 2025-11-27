@@ -80,7 +80,7 @@ const AdminAddPushNotification = ({
                   <Textarea
                     id="body"
                     placeholder="Write your notification here..."
-                    rows={4}
+                    rows={8}
                     value={body}
                     onChange={(e) => setBody(e.target.value)}
                     required
