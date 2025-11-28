@@ -27,7 +27,7 @@ const VerifiedUserTable = ({
   currentPage,
   pageSize,
 }: {
-  users: IUsersResponse | null;
+  users: IVerifiedUsersResponse | null;
   totalPages: number;
   currentPage: number;
   pageSize: number;
@@ -121,25 +121,20 @@ const VerifiedUserTable = ({
     fetchStatuses();
   }, []);
 
-  const columnHelper = createColumnHelper<IUser>();
+  const columnHelper = createColumnHelper<IVerifiedUsers>();
 
   const columns = [
-    columnHelper.accessor("user_details.profile.id", {
+    columnHelper.accessor("uuid", {
       cell: (info) => (
         <UserDetailsComp
           user={{
-            name: info.row.original.user_details.profile.name,
-            username: info.row.original.user_details.profile.username,
-            email: info.row.original.user_details.profile.email,
-            last_online: info.row.original.user_details.profile.last_online,
-            profile_picture:
-              info.row.original.user_details.profile.profile_picture,
-            premium:
-              info.row.original.user_details.profile
-                .premium_verification_status,
-            check_mark:
-              info.row.original.user_details.profile
-                .checkmark_verification_status,
+            name: info.row.original.name,
+            username: info.row.original.username,
+            email: info.row.original.email,
+            last_online: info.row.original.last_online,
+            profile_picture: info.row.original.profile_picture,
+            premium: info.row.original.premium_verification_status,
+            check_mark: info.row.original.checkmark_verification_status,
           }}
           showPremiumAndCheckMark
           showActive
@@ -147,20 +142,37 @@ const VerifiedUserTable = ({
       ),
       header: () => <span>Name</span>,
     }),
-    columnHelper.accessor("user_details.profile.email", {
+    columnHelper.accessor("email", {
       cell: (info) => <DetailComp detail={info.getValue()} />,
       header: () => <span>Email</span>,
     }),
-    columnHelper.display({
-      id: "verification_type",
-      cell: (info) => (
-        <p className="text-darklink dark:text-bodytext text-sm capitalize">
-          {info.getValue() ? "Premium" : "Greencheck"}
-        </p>
-      ),
+    columnHelper.accessor("verification_badge", {
+      cell: (info) => {
+        const value = info.getValue()?.toLowerCase();
+        const isPremium = value === "premium";
+
+        const baseClasses =
+          "px-2 py-1 rounded text-sm font-medium capitalize inline-block";
+
+        const premiumClasses =
+          "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300";
+
+        const greenCheckClasses =
+          "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300";
+
+        return (
+          <span
+            className={`${baseClasses} ${
+              isPremium ? premiumClasses : greenCheckClasses
+            }`}
+          >
+            {isPremium ? "Premium Verification" : "Greencheck Verification"}
+          </span>
+        );
+      },
       header: () => <span>Verification Type</span>,
     }),
-    columnHelper.accessor("user_details.profile.status", {
+    columnHelper.accessor("status", {
       cell: (info) => {
         const status = info.getValue();
         const statusStyles = {
@@ -193,7 +205,7 @@ const VerifiedUserTable = ({
       header: () => <span>Status</span>,
     }),
 
-    columnHelper.accessor("user_details.profile.created_at", {
+    columnHelper.accessor("created_at", {
       cell: (info) => {
         return (
           <p className="text-darklink dark:text-bodytext text-sm">

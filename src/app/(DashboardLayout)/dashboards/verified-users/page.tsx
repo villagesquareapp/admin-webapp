@@ -1,12 +1,10 @@
-import { getUserStats, getUsers } from "@/app/api/user";
+import { getUserStats, getUsers, getVerifiedUserStats, getVerifiedUsers } from "@/app/api/user";
 import SmallCards from "@/app/components/dashboards/ecommerce/smallCards";
 import VerifiedUserTable from "./VerifiedUserTable";
 // import UserProfileWrapper from "./UserProfileWrapper";
 import shape1 from "/public/images/shapes/danger-card-shape.png";
 import shape2 from "/public/images/shapes/secondary-card-shape.png";
 import shape3 from "/public/images/shapes/success-card-shape.png";
-import { Button } from "flowbite-react";
-import { FaPlus } from "react-icons/fa";
 
 const Page = async ({
   searchParams,
@@ -18,20 +16,20 @@ const Page = async ({
   const userId = searchParams.userId as string;
 
   const [userStats, users] = await Promise.all([
-    getUserStats(),
-    getUsers(page, limit),
+    getVerifiedUserStats(),
+    getVerifiedUsers(page, limit),
   ]);
 
   const selectedUser =
     userId && users?.data?.data
       ? users.data.data
           .flat()
-          .find((user: IUser) => user?.user_details?.profile?.id === userId)
+          .find((user: IVerifiedUsers) => user.uuid === userId)
       : null;
 
   const overviewData: IOverviewData[] = [
     {
-      total: userStats?.data?.total_users || 0,
+      total: userStats?.data?.total_verified_users || 0,
       icon: "mdi:account-group",
       bgcolor: "secondary",
       title: "Total Verified Users",
@@ -40,7 +38,7 @@ const Page = async ({
     },
 
     {
-      total: userStats?.data?.today_new_users || 0,
+      total: userStats?.data?.greencheck_verified_users || 0,
       icon: "mdi:account-plus",
       bgcolor: "primary",
       title: "Total Greencheck Users",
@@ -48,29 +46,13 @@ const Page = async ({
       link: "",
     },
     {
-      total: userStats?.data?.today_active_users || 0,
+      total: userStats?.data?.premium_verified_users || 0,
       icon: "mdi:login",
       bgcolor: "success",
       title: "Total Premium Users",
       shape: shape2,
       link: "",
     },
-    // {
-    //   total: userStats?.data?.reported_users || 0,
-    //   icon: "mdi:flag",
-    //   bgcolor: "primary",
-    //   title: "Reported Users",
-    //   shape: shape3,
-    //   link: "",
-    // },
-    // {
-    //   total: userStats?.data?.logged_in_users|| 0,
-    //   icon: "mdi:account-check",
-    //   bgcolor: "primary",
-    //   title: "Verified Users",
-    //   shape: shape3,
-    //   link: "",
-    // },
   ];
 
   const BCrumb = [
@@ -83,7 +65,7 @@ const Page = async ({
       title: "Users",
     },
     {
-      title: selectedUser?.user_details?.profile?.name || "",
+      title: selectedUser?.name || "",
     },
   ];
 

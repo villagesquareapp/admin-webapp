@@ -1,47 +1,56 @@
-import { Button, Label, Select, TextInput } from 'flowbite-react';
-import { AnimatePresence, motion } from 'framer-motion';
-import React, { useState, useEffect } from 'react';
-import { FaSearch, FaUser } from 'react-icons/fa';
-import { getSearchUser } from '@/app/api/user';
+import { Button, Label, Select, TextInput } from "flowbite-react";
+import { AnimatePresence, motion } from "framer-motion";
+import React, { useState, useEffect } from "react";
+import { FaSearch, FaUser } from "react-icons/fa";
+import { getSearchUser } from "@/app/api/user";
+import { toast } from "sonner";
+import { createSubscription, getBillingPlans } from "@/app/api/billing";
 
 interface AdminAddVerifiedUserProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-const AdminAddVerifiedUser = ({ isOpen, onClose }: AdminAddVerifiedUserProps) => {
-  const [searchQuery, setSearchQuery] = useState('');
+const AdminAddVerifiedUser = ({
+  isOpen,
+  onClose,
+}: AdminAddVerifiedUserProps) => {
+  const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<IRandomUsers[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [selectedUser, setSelectedUser] = useState<IRandomUsers | null>(null);
-  const [verificationType, setVerificationType] = useState('premium');
-  const [validityPeriod, setValidityPeriod] = useState('3');
+  const [selectedPlanId, setSelectedPlanId] = useState('');
+  const [validityPeriod, setValidityPeriod] = useState("3_months");
   const [showDetailsView, setShowDetailsView] = useState(false);
 
+  const [billingPlans, setBillingPlans] = useState<IBillingPlan[]>([]);
+  const [isLoadingPlans, setIsLoadingPlans] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   // Debounced search
-//   useEffect(() => {
-//     if (!searchQuery.trim()) {
-//       setSearchResults([]);
-//       return;
-//     }
+  useEffect(() => {
+    if (!searchQuery.trim()) {
+      setSearchResults([]);
+      return;
+    }
 
-//     const timer = setTimeout(async () => {
-//       setIsSearching(true);
-//       try {
-//         const response = await getSearchUser(searchQuery);
-//         setSearchResults(response?.data || []);
-//       } catch (error) {
-//         console.error('Search failed:', error);
-//         setSearchResults([]);
-//       } finally {
-//         setIsSearching(false);
-//       }
-//     }, 500);
+    const timer = setTimeout(async () => {
+      setIsSearching(true);
+      try {
+        const response = await getSearchUser(searchQuery);
+        setSearchResults(response?.data || []);
+      } catch (error) {
+        console.error("Search failed:", error);
+        setSearchResults([]);
+      } finally {
+        setIsSearching(false);
+      }
+    }, 300);
 
-//     return () => clearTimeout(timer);
-//   }, [searchQuery]);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
-const handleSearch = async () => {
+  const handleSearch = async () => {
     if (!searchQuery.trim()) {
       setSearchResults([]);
       return;
@@ -52,7 +61,7 @@ const handleSearch = async () => {
       const response = await getSearchUser(searchQuery);
       setSearchResults(response?.data || []);
     } catch (error) {
-      console.error('Search failed:', error);
+      console.error("Search failed:", error);
       setSearchResults([]);
     } finally {
       setIsSearching(false);
@@ -64,28 +73,69 @@ const handleSearch = async () => {
     setShowDetailsView(true);
   };
 
+    // Fetch billing plans when modal opens
+  useEffect(() => {
+    const fetchBillingPlans = async () => {
+      if (!isOpen) return;
+      
+      setIsLoadingPlans(true);
+      try {
+        const response = await getBillingPlans();
+        const plans = response?.data || [];
+        setBillingPlans(plans.filter((plan: IBillingPlan) => plan.is_active));
+        
+        // Set first plan as default if available
+        if (plans.length > 0 && plans[0].is_active) {
+          setSelectedPlanId(plans[0].uuid);
+        }
+      } catch (error) {
+        console.error('Failed to fetch billing plans:', error);
+        toast.error('Failed to load billing plans');
+      } finally {
+        setIsLoadingPlans(false);
+      }
+    };
+
+    fetchBillingPlans();
+  }, [isOpen]);
+
   const handleDone = async () => {
-    if (!selectedUser) return;
+    if (!selectedUser || !selectedPlanId) {
+      toast.error('Please select a user and verification plan');
+      return;
+    }
 
-    // TODO: Call the API endpoint with verification details
-    console.log({
-      userId: selectedUser.uuid,
-      verificationType,
-      validityPeriod,
-    });
+    setIsSubmitting(true);
+    try {
+      const response = await createSubscription(
+        selectedPlanId,
+        selectedUser.uuid,
+        validityPeriod
+      );
 
-    // Close modal after successful submission
-    onClose();
-    resetModal();
+      if (response?.status) {
+        toast.success('User verified successfully!');
+        onClose();
+        resetModal();
+      } else {
+        toast.error(response?.message || 'Failed to verify user');
+      }
+    } catch (error: any) {
+      console.error('Failed to create subscription:', error);
+      toast.error(error?.message || 'Failed to verify user. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  const resetModal = () => {
+   const resetModal = () => {
     setSearchQuery('');
     setSearchResults([]);
     setSelectedUser(null);
-    setVerificationType('premium');
-    setValidityPeriod('3');
+    setSelectedPlanId('');
+    setValidityPeriod('3_months');
     setShowDetailsView(false);
+    setBillingPlans([]);
   };
 
   const handleClose = () => {
@@ -135,8 +185,8 @@ const handleSearch = async () => {
                   <motion.div
                     key="search-view"
                     initial={{ x: 0 }}
-                    exit={{ x: '-100%' }}
-                    transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                    exit={{ x: "-100%" }}
+                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
                     className="w-full"
                   >
                     {/* Search Input */}
@@ -158,19 +208,22 @@ const handleSearch = async () => {
                           placeholder="Search users by name, username, or email..."
                           value={searchQuery}
                           onChange={(e) => setSearchQuery(e.target.value)}
-                          onKeyPress={(e) => {
-                            if (e.key === 'Enter') {
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
                               handleSearch();
                             }
                           }}
                           icon={FaSearch}
                         />
                       </div>
-                      <Button color="blue" onClick={handleSearch} disabled={isSearching}>
-                        {isSearching ? 'Searching...' : 'Search'}
+                      <Button
+                        color="blue"
+                        onClick={handleSearch}
+                        disabled={isSearching}
+                      >
+                        {isSearching ? "Searching..." : "Search"}
                       </Button>
                     </div>
-
 
                     {/* Search Results */}
                     <div className="max-h-[400px] overflow-y-auto">
@@ -224,10 +277,10 @@ const handleSearch = async () => {
                 ) : (
                   <motion.div
                     key="details-view"
-                    initial={{ x: '100%' }}
+                    initial={{ x: "100%" }}
                     animate={{ x: 0 }}
-                    exit={{ x: '100%' }}
-                    transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                    exit={{ x: "100%" }}
+                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
                     className="w-full"
                   >
                     {selectedUser && (
@@ -263,33 +316,52 @@ const handleSearch = async () => {
                         {/* Verification Options */}
                         <div className="grid grid-cols-2 gap-4">
                           <div>
-                            <Label htmlFor="verificationType" className="mb-2 block">
+                            <Label
+                              htmlFor="verificationType"
+                              className="mb-2 block"
+                            >
                               Verification Type
                             </Label>
                             <Select
                               id="verificationType"
-                              value={verificationType}
-                              onChange={(e) => setVerificationType(e.target.value)}
+                              value={selectedPlanId}
+                              onChange={(e) =>
+                                setSelectedPlanId(e.target.value)
+                              }
                             >
-                              <option value="premium">Premium Verification</option>
-                              <option value="greencheck">Greencheck Verification</option>
+                              {isLoadingPlans ? (
+                                <option value="">Loading plans...</option>
+                              ) : billingPlans.length > 0 ? (
+                                billingPlans.map((plan) => (
+                                  <option key={plan.uuid} value={plan.uuid}>
+                                    {plan.name}
+                                  </option>
+                                ))
+                              ) : (
+                                <option value="">No plans available</option>
+                              )}
                             </Select>
                           </div>
 
                           <div>
-                            <Label htmlFor="validityPeriod" className="mb-2 block">
+                            <Label
+                              htmlFor="validityPeriod"
+                              className="mb-2 block"
+                            >
                               Validity Period
                             </Label>
                             <Select
                               id="validityPeriod"
                               value={validityPeriod}
-                              onChange={(e) => setValidityPeriod(e.target.value)}
+                              onChange={(e) =>
+                                setValidityPeriod(e.target.value)
+                              }
                             >
-                              <option value="3">3 Months</option>
-                              <option value="6">6 Months</option>
-                              <option value="9">9 Months</option>
-                              <option value="12">12 Months</option>
-                              <option value="auto">Auto Renew</option>
+                              <option value="3_months">3 Months</option>
+                              <option value="6_months">6 Months</option>
+                              <option value="9_months">9 Months</option>
+                              <option value="12_months">12 Months</option>
+                              <option value="auto_renew">Auto Renew</option>
                             </Select>
                           </div>
                         </div>
@@ -300,7 +372,7 @@ const handleSearch = async () => {
                             Cancel
                           </Button>
                           <Button color="success" onClick={handleDone}>
-                            Done
+                            {isSubmitting ? "Submitting..." : "Done"}
                           </Button>
                         </div>
                       </div>

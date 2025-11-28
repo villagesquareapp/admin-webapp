@@ -89,7 +89,7 @@ const PushNotification = ({
             className="cursor-pointer"
             onClick={() => router.back()}
           />
-          Notifications <Badge color={"secondary"}>{0}</Badge>
+          Notifications <Badge color={"secondary"}>{echoes?.data.length}</Badge>
         </h5>
         <div>
           
