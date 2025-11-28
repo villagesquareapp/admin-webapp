@@ -66,6 +66,12 @@ interface IUserstat {
   today_active_users: number;
   logged_in_users: number;
   reported_users: number;
+  verified_users: number;
+}
+interface IVerifiedUserstat {
+  total_verified_users: number;
+  greencheck_verified_users: number;
+  premium_verified_users: number;
 }
 
 interface IReportStats {
@@ -222,6 +228,58 @@ interface IUser {
 
 interface IUsersResponse extends IPaginatedResponse<IUser> {}
 
+interface IVerifiedUsers {
+  uuid: string;
+  name: string;
+  username: string;
+  email: string;
+  registration_type: string;
+  account_type: string;
+  phone_number: string | null;
+  profile_picture: string;
+  cover_photo: string;
+  gender: string;
+  dob: string;
+  country: string;
+  city: string;
+  profession: string;
+  bio: string;
+  timezone: string;
+  verified_status: number;
+  checkmark_verification_status: boolean;
+  premium_verification_status: boolean;
+  verification_badge: string;
+  online: boolean;
+  last_online: string | null;
+  is_private: boolean;
+  has_two_factor_auth: boolean;
+  status:
+    | "active"
+    | "suspended"
+    | "disabled"
+    | "reported"
+    | "flagged"
+    | "banned"
+    | "shadow_hidden"
+    | "archived";
+  address: string;
+  latitude: string;
+  longitude: string;
+  referrer: string | null;
+  websocket_url: string;
+  referral_code: string;
+  referral_count: number;
+  can_reset_password: boolean;
+  has_received_reg_bonus_from_vs: boolean;
+  has_rated_ios: boolean;
+  has_rated_android: boolean;
+  created_at: string;
+  updated_at: string;
+  deleted_at: string | null;
+}
+
+interface IVerifiedUsersResponse extends IPaginatedResponse<IVerifiedUsers> {}
+
 interface IAdminUsers {
   uuid: string;
   email: string;
@@ -281,6 +339,24 @@ interface IRandomUsers {
 }
 
 interface IRandomUsersResponse extends IPaginatedResponse<IRandomUsers> {}
+
+interface IBillingPlan {
+  uuid: string;
+  code: string;
+  name: string;
+  description: string;
+  benefits: string[];
+  requirements: string[];
+  type: string;
+  price: string;
+  currency: string;
+  duration_days: number;
+  badge_type: string;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+  deleted_at: string | null;
+}
 
 interface IUserStatusList {
   name: string;

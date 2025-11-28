@@ -62,7 +62,7 @@ const Page = async ({
       link: "",
     },
     {
-      total: userStats?.data?.logged_in_users|| 0,
+      total: userStats?.data?.verified_users || 0,
       icon: "mdi:account-check",
       bgcolor: "primary",
       title: "Verified Users",
