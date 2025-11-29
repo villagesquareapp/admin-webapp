@@ -71,7 +71,6 @@ const AdminAddPushNotification = ({
           open={isOpen}
           className="relative z-50"
         >
-          {/* Background overlay */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -79,7 +78,6 @@ const AdminAddPushNotification = ({
             className="fixed inset-0 bg-black/30"
           />
 
-          {/* Centered panel */}
           <div className="fixed inset-0 mx-auto flex items-center justify-center p-4">
             <DialogPanel
               as={motion.div}
@@ -88,7 +86,6 @@ const AdminAddPushNotification = ({
               exit={{ opacity: 0, scale: 0.95 }}
               className="w-full max-w-[500px] md:max-w-[600px] lg:max-w-[700px] flex flex-col p-6 lg:p-8 gap-6 lg:gap-8 rounded-lg bg-white dark:bg-darkgray shadow-md dark:dark-shadow-md"
             >
-              {/* Modal Header */}
               <div className="flex items-center justify-between">
                 <DialogTitle className="text-xl lg:text-2xl font-semibold text-gray-900 dark:text-white">
                   Send Notification
@@ -102,9 +99,7 @@ const AdminAddPushNotification = ({
                 </button>
               </div>
 
-              {/* Modal Body */}
               <form onSubmit={handleSubmit} className="mt-6 space-y-6">
-                {/* Title */}
                 <div className="mb-4">
                   <div className="mb-2 block">
                     <Label htmlFor="title" value="Title" />
@@ -121,7 +116,6 @@ const AdminAddPushNotification = ({
                   />
                 </div>
 
-                {/* Body */}
                 <div className="mb-4">
                   <div className="mb-2 block">
                     <Label htmlFor="body" value="Body" />
@@ -137,9 +131,7 @@ const AdminAddPushNotification = ({
                   />
                 </div>
 
-                {/* Category + Submit Row */}
                 <div className="flex flex-col md:flex-row items-center justify-between gap-4 mt-6">
-                  {/* Select Category */}
                   <div className="flex-1 w-full">
                     <Label
                       htmlFor="category"
@@ -156,13 +148,9 @@ const AdminAddPushNotification = ({
                     >
                       <option value="" disabled>Select a category</option>
                       <option value="all_users">All Users</option>
-                      {/* Add more categories as needed */}
-                      {/* <option value="premium_users">Premium Users</option>
-                      <option value="verified_users">Verified Users</option> */}
                     </Select>
                   </div>
 
-                  {/* Submit Button */}
                   <Button
                     color="success"
                     type="submit"
@@ -174,7 +162,6 @@ const AdminAddPushNotification = ({
                   </Button>
                 </div>
 
-                {/* Cancel Button */}
                 <div className="flex justify-start">
                   <Button
                     color="gray"
