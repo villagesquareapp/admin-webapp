@@ -371,7 +371,7 @@ const AdminAddVerifiedUser = ({
                           <Button color="gray" onClick={handleClose}>
                             Cancel
                           </Button>
-                          <Button color="success" onClick={handleDone}>
+                          <Button color="success" onClick={handleDone} disabled={isSubmitting}>
                             {isSubmitting ? "Submitting..." : "Done"}
                           </Button>
                         </div>
