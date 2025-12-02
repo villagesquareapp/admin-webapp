@@ -1,4 +1,9 @@
-import { getUserStats, getUsers, getVerifiedUserStats, getVerifiedUsers } from "@/app/api/user";
+import {
+  getUserStats,
+  getUsers,
+  getVerifiedUserStats,
+  getVerifiedUsers,
+} from "@/app/api/user";
 import SmallCards from "@/app/components/dashboards/ecommerce/smallCards";
 import VerifiedUserTable from "./VerifiedUserTable";
 // import UserProfileWrapper from "./UserProfileWrapper";
@@ -35,6 +40,7 @@ const Page = async ({
       title: "Total Verified Users",
       shape: shape1,
       link: "",
+      activeSubscribers: 35,
     },
 
     {
@@ -44,6 +50,7 @@ const Page = async ({
       title: "Total Greencheck Users",
       shape: shape3,
       link: "",
+      activeSubscribers: 25,
     },
     {
       total: userStats?.data?.premium_verified_users || 0,
@@ -52,6 +59,7 @@ const Page = async ({
       title: "Total Premium Users",
       shape: shape2,
       link: "",
+      activeSubscribers: 10,
     },
   ];
 
@@ -79,7 +87,7 @@ const Page = async ({
           <div className="col-span-12">
             <SmallCards overviewData={overviewData} />
           </div>
-          
+
           <div className="col-span-12">
             <VerifiedUserTable
               users={users?.data || null}
