@@ -94,13 +94,11 @@ const VerifiedUserTable = ({
   };
 
   const handleApprove = async (id: string) => {
-    // Call approve API endpoint
     console.log("Approving:", id);
     setIsDetailModalOpen(false);
   };
 
   const handleDecline = async (id: string) => {
-    // Call decline API endpoint
     console.log("Declining:", id);
     setIsDetailModalOpen(false);
   };

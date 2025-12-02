@@ -122,6 +122,7 @@ interface IOverviewData {
   shape: StaticImageData;
   title: string;
   link?: string;
+  activeSubscribers?: number;
 }
 
 interface IPaginatedResponse<T> {
