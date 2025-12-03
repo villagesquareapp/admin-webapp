@@ -10,6 +10,7 @@ import VerifiedUserTable from "./VerifiedUserTable";
 import shape1 from "/public/images/shapes/danger-card-shape.png";
 import shape2 from "/public/images/shapes/secondary-card-shape.png";
 import shape3 from "/public/images/shapes/success-card-shape.png";
+import { use } from "react";
 
 const Page = async ({
   searchParams,
@@ -40,7 +41,7 @@ const Page = async ({
       title: "Total Verified Users",
       shape: shape1,
       link: "",
-      activeSubscribers: 35,
+      activeSubscribers: userStats?.data?.total_active_subscribers || 0,
     },
 
     {
@@ -50,7 +51,7 @@ const Page = async ({
       title: "Total Greencheck Users",
       shape: shape3,
       link: "",
-      activeSubscribers: 25,
+      activeSubscribers: userStats?.data?.greencheck_active_subscribers || 0,
     },
     {
       total: userStats?.data?.premium_verified_users || 0,
@@ -59,7 +60,7 @@ const Page = async ({
       title: "Total Premium Users",
       shape: shape2,
       link: "",
-      activeSubscribers: 10,
+      activeSubscribers: userStats?.data?.premium_active_subscribers || 0,
     },
   ];
 
