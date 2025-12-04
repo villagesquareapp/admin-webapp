@@ -70,8 +70,11 @@ interface IUserstat {
 }
 interface IVerifiedUserstat {
   total_verified_users: number;
+  total_active_subscribers: number;
   greencheck_verified_users: number;
+  greencheck_active_subscribers: number;
   premium_verified_users: number;
+  premium_active_subscribers: number; 
 }
 
 interface IReportStats {
