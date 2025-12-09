@@ -11,14 +11,16 @@ import { createColumnHelper } from "@tanstack/react-table";
 import Image from "next/image";
 import { formatDate } from "@/utils/dateUtils";
 import { DetailComp } from "@/app/components/shared/TableSnippets";
+import Actions from "./Actions";
+import { deletePushNotification, resendPushNotification } from "@/app/api/push-notification";
 
 const PushNotification = ({
-  echoes,
+  notifications,
   totalPages,
   currentPage,
   pageSize,
 }: {
-  echoes: IEchosResponse | null;
+  notifications: IPushNotificationResponse | null;
   totalPages: number;
   currentPage: number;
   pageSize: number;
@@ -26,58 +28,67 @@ const PushNotification = ({
   const router = useRouter();
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
-  const columnHelper = createColumnHelper<IEchoes>();
+  const columnHelper = createColumnHelper<IPushNotifications>();
 
   const columns = [
-      columnHelper.accessor("host.profile_picture", {
-        cell: (info) => (
-          <div className="flex gap-3 items-center">
-            <div className="relative size-12 rounded-full">
-              <Image
-                src={info.getValue()}
-                alt="icon"
-                fill
-                className="rounded-full object-cover"
-              />
-            </div>
-  
-            <div className="truncat line-clamp-2 sm:max-w-56 flex flex-col">
-              <h6 className="text-base">{info.row.original.host.name}</h6>
-              <p className="text-sm text-darklink dark:text-bodytext">
-                @{info.row.original.host.username}
-              </p>
-            </div>
+    columnHelper.accessor("title", {
+      cell: (info) => (
+        <div className="flex gap-3 items-center">
+          <div className="truncat line-clamp-2 sm:max-w-56 flex flex-col">
+            <h6 className="text-base">{info.row.original.title.length > 60 ? info.row.original.title.substring(0, 60) + "..." : info.row.original.title}</h6>
           </div>
-        ),
-        header: () => <span>Title</span>,
-      }),
-      columnHelper.accessor("category.name", {
-        cell: (info) => (
-          <p className="text-darklink dark:text-bodytext text-sm">{info.getValue() || 0}</p>
-        ),
-        header: () => <span>Body</span>,
-      }),
-      columnHelper.accessor("users", {
-        cell: (info) => (
-          <p className="text-darklink dark:text-bodytext text-sm">{info.getValue() || 0}</p>
-        ),
-        header: () => <span>Category Type</span>,
-      }),
-      columnHelper.accessor("gifts", {
-        cell: (info) => (
-          <p className="text-darklink dark:text-bodytext text-sm">{info.getValue() || 0}</p>
-        ),
-        header: () => <span>No Of Users</span>,
-      }),
-      columnHelper.accessor("created_at", {
-        cell: (info) => (
-          <p className="text-darklink dark:text-bodytext text-sm">
-            {formatDate(info.row.original.created_at)}
-          </p>
-        ),
-        header: () => <span>Date Created</span>,
-      }),
-    ];
+        </div>
+      ),
+      header: () => <span>Title</span>,
+    }),
+    columnHelper.accessor("body", {
+      
+      cell: (info) => (
+        <p className="text-darklink dark:text-bodytext text-sm">
+          {info.row.original.body.length > 50
+            ? info.row.original.body.substring(0, 50) + "..."
+            : info.row.original.body}
+        </p>
+      ),
+      header: () => <span>Body</span>,
+    }),
+    columnHelper.accessor("category", {
+      cell: (info) => (
+        <p className="text-darklink dark:text-bodytext text-sm">
+          {info.row.original.category}
+        </p>
+      ),
+      header: () => <span>Category Type</span>,
+    }),
+    columnHelper.accessor("uuid", {
+      cell: (info) => (
+        <p className="text-darklink dark:text-bodytext text-sm">All users</p>
+      ),
+      header: () => <span>No Of Users</span>,
+    }),
+    columnHelper.accessor("created_at", {
+      cell: (info) => (
+        <p className="text-darklink dark:text-bodytext text-sm">
+          {formatDate(info.row.original.created_at)}
+        </p>
+      ),
+      header: () => <span>Date Created</span>,
+    }),
+    columnHelper.display({
+      id: "actions",
+      header: () => <span>Actions</span>,
+      cell: (info) => {
+        const notification = info.row.original;
+        return (
+          <Actions
+            notification={notification}
+            onResend={resendPushNotification}
+            onDelete={deletePushNotification}
+          />
+        );
+      },
+    }),
+  ];
 
   return (
     <>
@@ -89,10 +100,10 @@ const PushNotification = ({
             className="cursor-pointer"
             onClick={() => router.back()}
           />
-          Notifications <Badge color={"secondary"}>{echoes?.data.length}</Badge>
+          Notifications{" "}
+          <Badge color={"secondary"}>{notifications?.data.length}</Badge>
         </h5>
         <div>
-          
           <Button
             color="success"
             size="sm"
@@ -109,7 +120,9 @@ const PushNotification = ({
       <div className="col-span-12">
         <ReusableTable
           tableData={
-            echoes?.data && Array.isArray(echoes?.data) ? echoes?.data : []
+            notifications?.data && Array.isArray(notifications?.data)
+              ? notifications?.data
+              : []
           }
           columns={columns}
           totalPages={totalPages}

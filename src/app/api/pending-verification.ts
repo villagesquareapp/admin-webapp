@@ -22,7 +22,7 @@ export const getVerificationRequested = async (id: string) => {
 export const approvePendingVerification = async (id: string) => {
     const token = await getToken()
     return await apiPatch<ApiResponse>(
-        `verification/approve-user/${id}`,
+        `verification/requests/${id}/approve`,
         {},
         token
     );
@@ -31,7 +31,7 @@ export const approvePendingVerification = async (id: string) => {
 export const declinePendingVerification = async (id: string, data: { adminComments: string }) => {
     const token = await getToken()
     return await apiPatch<ApiResponse>(
-        `verification/reject-user/${id}`,
+        `verification/requests/${id}/reject`,
         data,
         token
     );

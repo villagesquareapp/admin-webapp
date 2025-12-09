@@ -1,6 +1,6 @@
 import { getToken } from "@/lib/getToken";
 import PushNotification from "./PushNotification";
-import { getEchoes } from "@/app/api/echo";
+import { getPushNotifications } from "@/app/api/push-notification";
 
 const Page = async ({
   searchParams,
@@ -11,7 +11,7 @@ const Page = async ({
   const page = Number(searchParams.page) || 1;
   const limit = Number(searchParams.limit) || 20;
 
-  const [echoes] = await Promise.all([getEchoes(page, limit)]);
+  const [notifications] = await Promise.all([getPushNotifications(page, limit)]);
 
   if (!token) throw new Error("No token found");
 
@@ -19,8 +19,8 @@ const Page = async ({
     <>
       <div>
         <PushNotification
-          echoes={echoes?.data || null}
-          totalPages={echoes?.data?.last_page || 1}
+          notifications={notifications?.data || null}
+          totalPages={notifications?.data?.last_page || 1}
           currentPage={page}
           pageSize={limit}
         />

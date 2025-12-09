@@ -74,7 +74,7 @@ interface IVerifiedUserstat {
   greencheck_verified_users: number;
   greencheck_active_subscribers: number;
   premium_verified_users: number;
-  premium_active_subscribers: number; 
+  premium_active_subscribers: number;
 }
 
 interface IReportStats {
@@ -1043,6 +1043,21 @@ interface IVerificationRequested {
     duration_since_joining: string;
   };
 }
+
+interface IPushNotifications {
+  uuid: string;
+  title: string;
+  body: string;
+  category: string;
+  target: string[];
+  status: string;
+  created_at: string;
+  updated_at: string;
+  deleted_at: string | null;
+}
+
+interface IPushNotificationResponse
+  extends IPaginatedResponse<IPushNotifications> {}
 
 interface IVerificationRequestedResponse
   extends IPaginatedResponse<IVerificationRequested> {}
