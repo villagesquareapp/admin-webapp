@@ -64,7 +64,7 @@ const PushNotification = ({
       cell: (info) => (
         <p className="text-darklink dark:text-bodytext text-sm">All users</p>
       ),
-      header: () => <span>No Of Users</span>,
+      header: () => <span>Targeted Users</span>,
     }),
     columnHelper.accessor("created_at", {
       cell: (info) => (
@@ -101,7 +101,7 @@ const PushNotification = ({
             onClick={() => router.back()}
           />
           Notifications{" "}
-          <Badge color={"secondary"}>{notifications?.data.length}</Badge>
+          {/* <Badge color={"secondary"}>{notifications?.data.length}</Badge> */}
         </h5>
         <div>
           <Button

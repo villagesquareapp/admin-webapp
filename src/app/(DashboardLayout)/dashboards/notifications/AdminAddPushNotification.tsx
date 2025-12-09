@@ -19,7 +19,7 @@ const AdminAddPushNotification = ({
 }) => {
   const [title, setTitle] = useState<string>("");
   const [body, setBody] = useState<string>("");
-  const [category, setCategory] = useState<string>("all_users");
+  const [category, setCategory] = useState<string>("broadcast");
   const [target, setTarget] = useState<string>("all_users");
 
   const [currentView, setCurrentView] = useState<"form" | "search">("form");
@@ -271,7 +271,7 @@ const AdminAddPushNotification = ({
                             <option value="" disabled>
                               Select a category
                             </option>
-                            <option value="all_users">All Users</option>
+                            <option value="broadcast">Broadcast</option>
                           </Select>
                         </div>
 
