@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { Dropdown, Modal, Button } from "flowbite-react";
 import { HiOutlineDotsVertical, HiOutlineExclamationCircle } from "react-icons/hi";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation"; 
 
 interface ActionsProps {
   notification: IPushNotifications;
@@ -12,6 +13,7 @@ interface ActionsProps {
 }
 
 const Actions = ({ notification, onResend, onDelete }: ActionsProps) => {
+  const router = useRouter(); // Add this
   const [showResendModal, setShowResendModal] = useState<boolean>(false);
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -25,6 +27,7 @@ const Actions = ({ notification, onResend, onDelete }: ActionsProps) => {
       if (response.status) {
         toast.success("Notification resent successfully!");
         setShowResendModal(false);
+        router.refresh();
       } else {
         toast.error(response.message || "Failed to resend notification");
       }
@@ -44,6 +47,7 @@ const Actions = ({ notification, onResend, onDelete }: ActionsProps) => {
       if (response.status) {
         toast.success("Notification deleted successfully!");
         setShowDeleteModal(false);
+        router.refresh(); 
       } else {
         toast.error(response.message || "Failed to delete notification");
       }
