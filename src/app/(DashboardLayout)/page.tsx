@@ -53,13 +53,13 @@ const Page = async ({
 
   if (selectedPendingVerificationID) {
     selectedPendingVerification = pendingVerification?.data?.data.find(
-      (item) => item?.verification_request?.id === selectedPendingVerificationID
+      (item) => item.uuid === selectedPendingVerificationID
     ) || null;
 
     if (selectedPendingVerification) {
       const [user, verificationRequested] = await Promise.all([
         getUserDetails(selectedPendingVerification?.user?.uuid || ""),
-        getVerificationRequested(selectedPendingVerification?.verification_request?.id || "")
+        getVerificationRequested(selectedPendingVerification?.uuid || "")
       ])
 
       selectedVerificationRequested = !!verificationRequested?.data ?

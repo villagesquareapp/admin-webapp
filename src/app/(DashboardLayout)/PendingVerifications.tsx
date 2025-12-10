@@ -18,6 +18,10 @@ import { toast } from "sonner";
 import { UserDetailsComp } from "../components/shared/TableSnippets";
 import PendingVerificationDialog from "./PendingVerificationDialog";
 import useSetSearchParams from "../hooks/useSetSearchParams";
+import { useRouter } from "next/navigation";
+import { getVerificationRequested } from "@/app/api/pending-verification";
+import { getUserDetails } from "../api/user";
+import { set } from "lodash";
 
 const PendingVerifications = ({
   pendingVerification,
@@ -36,6 +40,7 @@ const PendingVerifications = ({
   currentSelectedVerificationRequested: IVerificationRequested | null;
   currentSelectedUser: IUser | null;
 }) => {
+  const router = useRouter();
   const { addParam, removeSpecificParam } = useSetSearchParams();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isApproveDialogOpen, setIsApproveDialogOpen] = useState(false);
@@ -50,16 +55,50 @@ const PendingVerifications = ({
       ? pendingVerification?.data
       : []
   );
+  const [selectedPendingVerification, setSelectedPendingVerification] =
+    useState<IPendingVerification | null>(null);
+  const [fetchedUser, setFetchedUser] = useState<IUser | null>(null);
+  const [fetchedVerification, setFetchedVerification] =
+    useState<IVerificationRequested | null>(null);
+  const [isFetchingDetails, setIsFetchingDetails] = useState(false);
 
   const columnHelper = createColumnHelper<IPendingVerification>();
 
-  const handleRowClick = (pendingVerification: IPendingVerification) => {
-    addParam("pending_verification", pendingVerification.verification_request?.id);
-    // setSelectedUser(user);
-    setIsDialogOpen(true);
+  const handleRowClick = async (pendingVerification: IPendingVerification) => {
+    setSelectedPendingVerification(pendingVerification);
+    // setIsDialogOpen(true);
+    setIsFetchingDetails(true);
+    setTimeout(() => {
+      setIsDialogOpen(true);
+    }, 300);
+
+    addParam("pending_verification", pendingVerification.uuid);
+
+    try {
+      const [userRes, verificationRes] = await Promise.all([
+        getUserDetails(pendingVerification.user.uuid),
+        getVerificationRequested(pendingVerification.uuid),
+      ]);
+      if (userRes?.data) {
+        setFetchedUser(userRes.data as unknown as IUser);
+      }
+
+      if (verificationRes?.data) {
+        setFetchedVerification(verificationRes.data as unknown as IVerificationRequested);
+    }
+    } catch (error) {
+      console.error("Error fetching details:", error);
+      toast.error("Failed to load full verification details");
+    } finally {
+      setIsFetchingDetails(false);
+    }
+
+    // router.refresh();
+
   };
 
   const handleApproveClick = (verification: IPendingVerification) => {
+    setSelectedPendingVerification(verification);
     setSelectedVerification(verification);
     setIsApproveDialogOpen(true);
   };
@@ -75,19 +114,15 @@ const PendingVerifications = ({
     setIsApproving(true);
     try {
       const response = await approvePendingVerification(
-        selectedVerification.verification_request.id
+        selectedVerification.uuid
       );
 
       if (response.status) {
         toast.success("Verification approved successfully");
         setIsApproveDialogOpen(false);
 
-        // Remove the approved verification from the table data
         setTableData((prevData) =>
-          prevData.filter(
-            (item) =>
-              item.verification_request.id !== selectedVerification.verification_request.id
-          )
+          prevData.filter((item) => item.uuid !== selectedVerification.uuid)
         );
       } else {
         toast.error(response.message || "Failed to approve verification");
@@ -106,7 +141,7 @@ const PendingVerifications = ({
     setIsDeclining(true);
     try {
       const response = await declinePendingVerification(
-        selectedVerification.verification_request.id,
+        selectedVerification.uuid,
         { adminComments: declineReason }
       );
 
@@ -115,12 +150,8 @@ const PendingVerifications = ({
         setIsDeclineDialogOpen(false);
         setDeclineReason("");
 
-        // Remove the declined verification from the table data
         setTableData((prevData) =>
-          prevData.filter(
-            (item) =>
-              item.verification_request.id !== selectedVerification.verification_request.id
-          )
+          prevData.filter((item) => item.uuid !== selectedVerification.uuid)
         );
       } else {
         toast.error(response.message || "Failed to decline verification");
@@ -133,9 +164,11 @@ const PendingVerifications = ({
     }
   };
 
-  const handleVerificationUpdate = (id: string, action: "approve" | "decline") => {
-    // Remove the verification from the table data
-    setTableData((prevData) => prevData.filter((item) => item.verification_request.id !== id));
+  const handleVerificationUpdate = (
+    id: string,
+    action: "approve" | "decline"
+  ) => {
+    setTableData((prevData) => prevData.filter((item) => item.uuid !== id));
   };
 
   const columns = [
@@ -152,26 +185,30 @@ const PendingVerifications = ({
       ),
       header: () => <span>Name</span>,
     }),
-    columnHelper.accessor("verification_request.type", {
+    columnHelper.accessor("subscription.plan.name", {
       cell: (info) => {
-        const type = info.row.original.verification_request.type;
+        const type = info.row.original.subscription.plan.name;
         let bgColorClass = "";
 
-        // Set background and text color based on verification type
         if (type === "account_verification") {
-          bgColorClass = "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300";
-        } else if (type === "premium_verification") {
+          bgColorClass =
+            "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300";
+        } else if (type === "Premium Verification (Monthly)") {
           bgColorClass =
             "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300";
         } else if (type === "withdrawal_verification") {
-          bgColorClass = "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300";
+          bgColorClass =
+            "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300";
         }
 
         return (
           <>
             <div className="flex items-center gap-2">
-              <span className={`px-3 py-1 rounded-full text-sm font-medium ${bgColorClass}`}>
-                {stringCleanup(type).charAt(0).toUpperCase() + stringCleanup(type).slice(1)}
+              <span
+                className={`px-3 py-1 rounded-full text-sm font-medium ${bgColorClass}`}
+              >
+                {stringCleanup(type).charAt(0).toUpperCase() +
+                  stringCleanup(type).slice(1)}
               </span>
             </div>
           </>
@@ -180,7 +217,7 @@ const PendingVerifications = ({
       header: () => <span>Types</span>,
     }),
 
-    columnHelper.accessor("user.date_joined", {
+    columnHelper.accessor("duration_since_joining", {
       cell: (info) => {
         return (
           <p className="text-darklink dark:text-bodytext text-sm">
@@ -190,7 +227,9 @@ const PendingVerifications = ({
       },
       header: () => <span>Date Joined</span>,
     }),
-    columnHelper.accessor("actions", {
+    columnHelper.display({
+      id: "actions",
+      header: () => <span>Actions</span>,
       cell: (info) => (
         <div onClick={(e) => e.stopPropagation()}>
           <Dropdown
@@ -226,9 +265,9 @@ const PendingVerifications = ({
           </Dropdown>
         </div>
       ),
-      header: () => <span></span>,
     }),
   ];
+
   return (
     <div className="col-span-12">
       <ReusableTable
@@ -243,12 +282,19 @@ const PendingVerifications = ({
       <PendingVerificationDialog
         isOpen={isDialogOpen}
         setIsOpen={() => {
-          removeSpecificParam(["pending_verifications"]);
+          removeSpecificParam(["pending_verification"]);
+          setSelectedPendingVerification(null);
+          setFetchedUser(null);
+          setFetchedVerification(null);
           setIsDialogOpen(false);
         }}
-        currentSelectedUser={currentSelectedUser}
-        currentSelectedVerificationRequested={currentSelectedVerificationRequested}
+        pendingVerification={selectedPendingVerification}
+        currentSelectedUser={fetchedUser || currentSelectedUser}
+        currentSelectedVerificationRequested={
+          fetchedVerification || currentSelectedVerificationRequested
+        }
         onVerificationUpdate={handleVerificationUpdate}
+        isLoadingDetails={isFetchingDetails}
       />
 
       {/* Approve Dialog */}
@@ -276,11 +322,14 @@ const PendingVerifications = ({
               <p className="text-gray-600 dark:text-gray-300">
                 Are you sure you want to approve the{" "}
                 <span className="font-medium">
-                  {selectedVerification?.verification_request.type &&
-                    stringCleanup(selectedVerification.verification_request.type)}
+                  {selectedVerification?.subscription.plan &&
+                    stringCleanup(selectedVerification.subscription.plan.name)}
                 </span>{" "}
                 request for{" "}
-                <span className="font-medium">{selectedVerification?.user.name}</span>?
+                <span className="font-medium">
+                  {selectedVerification?.user.name}
+                </span>
+                ?
               </p>
             </div>
 
@@ -338,11 +387,14 @@ const PendingVerifications = ({
               <p className="text-gray-600 dark:text-gray-300">
                 Are you sure you want to decline the{" "}
                 <span className="font-medium">
-                  {selectedVerification?.verification_request.type &&
-                    stringCleanup(selectedVerification.verification_request.type)}
+                  {selectedVerification?.subscription.plan.name &&
+                    stringCleanup(selectedVerification.subscription.plan.name)}
                 </span>{" "}
                 request for{" "}
-                <span className="font-medium">{selectedVerification?.user.name}</span>?
+                <span className="font-medium">
+                  {selectedVerification?.user.name}
+                </span>
+                ?
               </p>
             </div>
 

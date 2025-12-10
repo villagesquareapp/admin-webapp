@@ -1,10 +1,16 @@
-import { getUserStats, getUsers } from "@/app/api/user";
+import {
+  getUserStats,
+  getUsers,
+  getVerifiedUserStats,
+  getVerifiedUsers,
+} from "@/app/api/user";
 import SmallCards from "@/app/components/dashboards/ecommerce/smallCards";
-import UserTable from "./UserTable";
-import UserProfileWrapper from "./UserProfileWrapper";
+import VerifiedUserTable from "./VerifiedUserTable";
+// import UserProfileWrapper from "./UserProfileWrapper";
 import shape1 from "/public/images/shapes/danger-card-shape.png";
 import shape2 from "/public/images/shapes/secondary-card-shape.png";
 import shape3 from "/public/images/shapes/success-card-shape.png";
+import { use } from "react";
 
 const Page = async ({
   searchParams,
@@ -16,58 +22,45 @@ const Page = async ({
   const userId = searchParams.userId as string;
 
   const [userStats, users] = await Promise.all([
-    getUserStats(),
-    getUsers(page, limit),
+    getVerifiedUserStats(),
+    getVerifiedUsers(page, limit),
   ]);
 
   const selectedUser =
     userId && users?.data?.data
       ? users.data.data
           .flat()
-          .find((user: IUser) => user?.user_details?.profile?.id === userId)
+          .find((user: IVerifiedUsers) => user.uuid === userId)
       : null;
 
   const overviewData: IOverviewData[] = [
     {
-      total: userStats?.data?.total_users || 0,
+      total: userStats?.data?.total_verified_users || 0,
       icon: "mdi:account-group",
       bgcolor: "secondary",
-      title: "Total Users",
+      title: "Total Verified Users",
       shape: shape1,
       link: "",
+      activeSubscribers: userStats?.data?.total_active_subscribers || 0,
     },
 
     {
-      total: userStats?.data?.today_new_users || 0,
+      total: userStats?.data?.greencheck_verified_users || 0,
       icon: "mdi:account-plus",
       bgcolor: "primary",
-      title: "Today's New Users",
+      title: "Total Greencheck Users",
       shape: shape3,
       link: "",
+      activeSubscribers: userStats?.data?.greencheck_active_subscribers || 0,
     },
     {
-      total: userStats?.data?.today_active_users || 0,
+      total: userStats?.data?.premium_verified_users || 0,
       icon: "mdi:login",
       bgcolor: "success",
-      title: "Active Users",
+      title: "Total Premium Users",
       shape: shape2,
       link: "",
-    },
-    {
-      total: userStats?.data?.reported_users || 0,
-      icon: "mdi:flag",
-      bgcolor: "primary",
-      title: "Reported Users",
-      shape: shape3,
-      link: "",
-    },
-    {
-      total: userStats?.data?.verified_users || 0,
-      icon: "mdi:account-check",
-      bgcolor: "primary",
-      title: "Verified Users",
-      shape: shape3,
-      link: "/dashboards/verified-users",
+      activeSubscribers: userStats?.data?.premium_active_subscribers || 0,
     },
   ];
 
@@ -81,21 +74,23 @@ const Page = async ({
       title: "Users",
     },
     {
-      title: selectedUser?.user_details?.profile?.name || "",
+      title: selectedUser?.name || "",
     },
   ];
 
   return (
     <>
       {userId ? (
-        <UserProfileWrapper user={selectedUser || null} breadcrumbs={BCrumb} />
+        <></>
       ) : (
+        // <UserProfileWrapper user={selectedUser || null} breadcrumbs={BCrumb} />
         <div className="grid grid-cols-12 gap-30">
           <div className="col-span-12">
             <SmallCards overviewData={overviewData} />
           </div>
+
           <div className="col-span-12">
-            <UserTable
+            <VerifiedUserTable
               users={users?.data || null}
               totalPages={users?.data?.last_page || 1}
               currentPage={page}

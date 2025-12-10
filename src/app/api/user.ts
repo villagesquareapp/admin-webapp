@@ -12,6 +12,14 @@ export const getUserStats = async () => {
     );
 };
 
+export const getVerifiedUserStats = async () => {
+    const token = await getToken()
+    return await apiGet<IVerifiedUserstat>(
+        `users/verified/stats`,
+        token
+    );
+};
+
 export const getUsers = async (page: number = 1, limit: number = 20) => {
     const token = await getToken()
     return await apiGet<IUsersResponse>(
@@ -60,4 +68,17 @@ export const updateUserStatus = async (userId: string, status: string) => {
   }
 
   return response;
+<<<<<<< HEAD
 };
+=======
+};
+
+export const getVerifiedUsers = async (page: number = 1, limit: number = 20) => {
+    const token = await getToken()
+    return await apiGet<IVerifiedUsersResponse>(
+        `users/verified?page=${page}&limit=${limit}`,
+        token
+    );
+};
+
+>>>>>>> origin/dev

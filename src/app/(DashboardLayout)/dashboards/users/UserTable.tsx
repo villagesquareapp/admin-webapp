@@ -64,8 +64,8 @@ const UserTable = ({
             last_online: info.row.original.user_details.profile.last_online,
             profile_picture:
               info.row.original.user_details.profile.profile_picture,
-            premium: info.row.original.user_details.profile.premium,
-            check_mark: info.row.original.user_details.profile.check_mark,
+            premium: info.row.original.user_details.profile.premium_verification_status,
+            check_mark: info.row.original.user_details.profile.checkmark_verification_status,
           }}
           showPremiumAndCheckMark
           showActive
