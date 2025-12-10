@@ -68,9 +68,6 @@ export const updateUserStatus = async (userId: string, status: string) => {
   }
 
   return response;
-<<<<<<< HEAD
-};
-=======
 };
 
 export const getVerifiedUsers = async (page: number = 1, limit: number = 20) => {
@@ -81,4 +78,3 @@ export const getVerifiedUsers = async (page: number = 1, limit: number = 20) => 
     );
 };
 
->>>>>>> origin/dev

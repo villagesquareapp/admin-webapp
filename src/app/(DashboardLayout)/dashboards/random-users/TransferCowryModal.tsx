@@ -21,11 +21,7 @@ const TransferCowryModal = ({ isOpen, setIsOpen, onConfirm, selectedCount, isLoa
             Confirm Transfer
           </h3>
           <p className="text-sm text-gray-500 dark:text-gray-300">
-<<<<<<< HEAD
-            Are you sure you want to transfer NGN 5,000 to {selectedCount} user
-=======
             Are you sure you want to transfer NGN 25,000 to {selectedCount} user
->>>>>>> origin/dev
             {selectedCount > 1 ? "s" : ""}?
           </p>
           <div className="flex justify-center gap-4 mt-4">
