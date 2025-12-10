@@ -6,7 +6,7 @@ import { getToken } from '@/lib/getToken';
 export const getPendingVerification = async (page: number = 1, limit: number = 20) => {
     const token = await getToken()
     return await apiGet<IPendingVerificationResponse>(
-        `verification/pending-users?page=${page}&limit=${limit}`,
+        `verification/requests`,
         token
     );
 };
@@ -14,7 +14,7 @@ export const getPendingVerification = async (page: number = 1, limit: number = 2
 export const getVerificationRequested = async (id: string) => {
     const token = await getToken()
     return await apiGet<IVerificationRequestedResponse>(
-        `verification/verification-request/${id}`,
+        `verification/requests/${id}`,
         token
     );
 };
@@ -22,7 +22,7 @@ export const getVerificationRequested = async (id: string) => {
 export const approvePendingVerification = async (id: string) => {
     const token = await getToken()
     return await apiPatch<ApiResponse>(
-        `verification/approve-user/${id}`,
+        `verification/requests/${id}/approve`,
         {},
         token
     );
@@ -31,7 +31,7 @@ export const approvePendingVerification = async (id: string) => {
 export const declinePendingVerification = async (id: string, data: { adminComments: string }) => {
     const token = await getToken()
     return await apiPatch<ApiResponse>(
-        `verification/reject-user/${id}`,
+        `verification/requests/${id}/reject`,
         data,
         token
     );

@@ -11,10 +11,10 @@ interface ApiResponse<T = any> {
   [key: string]: any;
 }
 
-interface IUser {
-  id: string;
-  email: string;
-}
+// interface IUser {
+//   id: string;
+//   email: string;
+// }
 
 interface IJsonSettingsValue {
   [key: string]: any;
@@ -66,6 +66,15 @@ interface IUserstat {
   today_active_users: number;
   logged_in_users: number;
   reported_users: number;
+  verified_users: number;
+}
+interface IVerifiedUserstat {
+  total_verified_users: number;
+  total_active_subscribers: number;
+  greencheck_verified_users: number;
+  greencheck_active_subscribers: number;
+  premium_verified_users: number;
+  premium_active_subscribers: number;
 }
 
 interface IReportStats {
@@ -116,6 +125,7 @@ interface IOverviewData {
   shape: StaticImageData;
   title: string;
   link?: string;
+  activeSubscribers?: number;
 }
 
 interface IPaginatedResponse<T> {
@@ -151,6 +161,19 @@ interface IGetCowryTopupMetadata {
   payment_user_id: string;
 }
 
+interface IUserSummary {
+  uuid: string;
+  name: string;
+  username: string;
+  email: string;
+  verified_status: number;
+  checkmark_verification_status: boolean;
+  premium_verification_status: boolean;
+  profile_picture: string;
+  online: boolean;
+  verification_badge: string;
+}
+
 interface IUser {
   user_details: {
     profile: {
@@ -179,15 +202,19 @@ interface IUser {
         | "banned"
         | "shadow_hidden"
         | "archived";
-      verified: number;
+      verified_status: number;
       profile_picture: string;
       profile_banner: string;
       followers: number;
       following: number;
       posts_count: number;
       is_private: boolean;
-      check_mark: boolean;
-      premium: boolean;
+      checkmark_verification_status: boolean;
+      premium_verification_status: boolean;
+      online: boolean;
+      verification_badge: string;
+      // check_mark: boolean;
+      // premium: boolean;
       account_type: string;
       registration_type: string;
       created_at: string;
@@ -204,6 +231,58 @@ interface IUser {
 }
 
 interface IUsersResponse extends IPaginatedResponse<IUser> {}
+
+interface IVerifiedUsers {
+  uuid: string;
+  name: string;
+  username: string;
+  email: string;
+  registration_type: string;
+  account_type: string;
+  phone_number: string | null;
+  profile_picture: string;
+  cover_photo: string;
+  gender: string;
+  dob: string;
+  country: string;
+  city: string;
+  profession: string;
+  bio: string;
+  timezone: string;
+  verified_status: number;
+  checkmark_verification_status: boolean;
+  premium_verification_status: boolean;
+  verification_badge: string;
+  online: boolean;
+  last_online: string | null;
+  is_private: boolean;
+  has_two_factor_auth: boolean;
+  status:
+    | "active"
+    | "suspended"
+    | "disabled"
+    | "reported"
+    | "flagged"
+    | "banned"
+    | "shadow_hidden"
+    | "archived";
+  address: string;
+  latitude: string;
+  longitude: string;
+  referrer: string | null;
+  websocket_url: string;
+  referral_code: string;
+  referral_count: number;
+  can_reset_password: boolean;
+  has_received_reg_bonus_from_vs: boolean;
+  has_rated_ios: boolean;
+  has_rated_android: boolean;
+  created_at: string;
+  updated_at: string;
+  deleted_at: string | null;
+}
+
+interface IVerifiedUsersResponse extends IPaginatedResponse<IVerifiedUsers> {}
 
 interface IAdminUsers {
   uuid: string;
@@ -264,6 +343,24 @@ interface IRandomUsers {
 }
 
 interface IRandomUsersResponse extends IPaginatedResponse<IRandomUsers> {}
+
+interface IBillingPlan {
+  uuid: string;
+  code: string;
+  name: string;
+  description: string;
+  benefits: string[];
+  requirements: string[];
+  type: string;
+  price: string;
+  currency: string;
+  duration_days: number;
+  badge_type: string;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+  deleted_at: string | null;
+}
 
 interface IUserStatusList {
   name: string;
@@ -692,26 +789,60 @@ interface IPendingWithdrawalsResponse
   extends IPaginatedResponse<IPendingWithdrawals> {}
 
 interface IPendingVerification {
+  uuid: string;
+  user_id: string;
+  subscription_id: string;
+  status: string;
+  admin_comments: string;
+  current_stage: number;
+  reviewed_by: string | null;
+  reviewed_at: string | null;
+  created_at: string;
+  updated_at: string;
+  deleted_at: string | null;
   user: {
     uuid: string;
     name: string;
-    email: string;
     username: string;
+    email: string;
+    verified_status: number;
+    checkmark_verification_status: boolean;
+    premium_verification_status: boolean;
     profile_picture: string;
-    date_joined: string;
+    online: boolean;
+    verification_badge: string;
   };
-  verification_request: {
-    id: string;
+  subscription: {
+    uuid: string;
+    user_id: string;
+    plan_id: string;
     status: string;
-    type:
-      | "account_verification"
-      | "premium_verification"
-      | "withdrawal_verification";
-    current_stage: number;
+    current_period_start: string;
+    current_period_end: string;
+    payment_channel: string;
+    payment_id: string;
     created_at: string;
-    duration_since_joining: string;
+    updated_at: string;
+    deleted_at: string | null;
+    plan: {
+      uuid: string;
+      code: string;
+      name: string;
+      description: string;
+      benefits: string[];
+      requirements: string[];
+      type: string;
+      price: string;
+      currency: string;
+      duration_days: number;
+      badge_type: string;
+      is_active: boolean;
+      created_at: string;
+      updated_at: string;
+      deleted_at: string | null;
+    };
   };
-  actions?: any;
+  duration_since_joining: string;
 }
 
 interface IPendingVerificationResponse
@@ -719,23 +850,192 @@ interface IPendingVerificationResponse
 
 interface IVerificationDocument {
   uuid: string;
+  user_id: string;
   document_type: string;
   document_url: string;
-  status: string;
   rejection_reason: string | null;
+  verification_request_id: string;
   created_at: string;
+  updated_at: string;
+  deleted_at: string | null;
 }
 
 interface IVerificationRequested {
-  id: string;
-  status: string;
-  type: string;
-  current_stage: number;
-  created_at: string;
-  admin_comments: string;
+  uuid: string;
   user_id: string;
-  location: string | null;
-  documents: any[];
+  subscription_id: string;
+  status: string;
+  admin_comments: string;
+  current_stage: number;
+  reviewed_by: string | null;
+  reviewed_at: string | null;
+  created_at: string | null;
+  updated_at: string | null;
+  deleted_at: string | null;
+  user: {
+    uuid: string;
+    name: string;
+    username: string;
+    email: string;
+    verified_status: number;
+    checkmark_verification_status: boolean;
+    premium_verification_status: boolean;
+    profile_picture: string;
+    online: boolean;
+    verification_badge: string;
+  };
+  subscription: {
+    uuid: string;
+    user_id: string;
+    plan_id: string;
+    status: string;
+    current_period_start: string;
+    current_period_end: string;
+    payment_channel: string;
+    payment_id: string;
+    created_at: string;
+    updated_at: string;
+    deleted_at: string | null;
+    plan: {
+      uuid: string;
+      code: string;
+      name: string;
+      description: string;
+      benefits: string[];
+      requirements: string[];
+      type: string;
+      price: string;
+      currency: string;
+      duration_days: number;
+      badge_type: string;
+      is_active: boolean;
+      created_at: string;
+      updated_at: string;
+      deleted_at: string | null;
+    };
+    payment: {
+      uuid: string;
+      user_id: string;
+      amount: string;
+      status: string;
+      fee: string;
+      net_amount: string;
+      currency: string;
+      metadata: {
+        plan_id: string;
+        payment_data: {
+          fee: number;
+          total: number;
+          base_amount: number;
+          total_in_kobo: number;
+        };
+        payment_event: string;
+        payment_user_id: string;
+        subscription_id: string;
+      };
+      provider: string;
+      provider_reference: string;
+      category: string;
+      provider_response: {
+        id: number;
+        log: {
+          input: [];
+          errors: number;
+          mobile: boolean;
+          history: [
+            {
+              time: number;
+              type: string;
+              message: string;
+            },
+            {
+              time: number;
+              type: string;
+              message: string;
+            },
+            {
+              time: number;
+              type: string;
+              message: string;
+            }
+          ];
+          success: boolean;
+          attempts: number;
+          start_time: number;
+          time_spent: number;
+        };
+        fees: number;
+        plan: string | null;
+        split: {};
+        amount: number;
+        domain: string;
+        paid_at: string;
+        source: string | null;
+        status: string;
+        channel: string;
+        connect: string | null;
+        message: string | null;
+        currency: string;
+        customer: {
+          id: number;
+          email: string;
+          phone: string | null;
+          metadata: string | null;
+          last_name: string | null;
+          first_name: string | null;
+          risk_action: string;
+          customer_code: string;
+          international_format_phone: string | null;
+        };
+        metadata: {
+          plan_id: string;
+          payment_data: {
+            fee: string;
+            total: string;
+            base_amount: string;
+            total_in_kobo: string;
+          };
+          payment_event: string;
+          payment_user_id: string;
+          subscription_id: string;
+        };
+        order_id: string | null;
+        created_at: string;
+        reference: string;
+        fees_split: string | null;
+        ip_address: string;
+        subaccount: {};
+        plan_object: {};
+        authorization: {
+          bin: string;
+          bank: string;
+          brand: string;
+          last4: string;
+          channel: string;
+          exp_year: string;
+          reusable: boolean;
+          card_type: string;
+          exp_month: string;
+          signature: string;
+          account_name: string | null;
+          country_code: string;
+          receiver_bank: string | null;
+          authorization_code: string;
+          receiver_bank_account_number: string | null;
+        };
+        fees_breakdown: string | null;
+        receipt_number: string | null;
+        gateway_response: string;
+        requested_amount: number;
+        transaction_date: string;
+        pos_transaction_data: null;
+      };
+      created_at: string;
+      updated_at: string;
+      deleted_at: string | null;
+    };
+  };
+  documents: IVerificationDocument[];
   social_metrics: {
     followers_count: number;
     following_count: number;
@@ -743,6 +1043,21 @@ interface IVerificationRequested {
     duration_since_joining: string;
   };
 }
+
+interface IPushNotifications {
+  uuid: string;
+  title: string;
+  body: string;
+  category: string;
+  target: string[];
+  status: string;
+  created_at: string;
+  updated_at: string;
+  deleted_at: string | null;
+}
+
+interface IPushNotificationResponse
+  extends IPaginatedResponse<IPushNotifications> {}
 
 interface IVerificationRequestedResponse
   extends IPaginatedResponse<IVerificationRequested> {}

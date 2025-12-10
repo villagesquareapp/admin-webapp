@@ -38,9 +38,21 @@ const SidebarLayout = () => {
 
   const result = findActiveUrl(SidebarContent, pathname);
 
-  useEffect(() => {
-    setSelectedIconId(result);
-  }, []);
+  // useEffect(() => {
+  //   setSelectedIconId(result);
+  // }, []);
+
+    useEffect(() => {
+    if (result !== null) {
+      setSelectedIconId(result);
+    } else if (!selectedIconId) {
+      // Set default to first item if no match and no selection
+      setSelectedIconId(SidebarContent[0]?.id || 1);
+    }
+  }, [result, selectedIconId, setSelectedIconId]);
+
+  // Use the found content or default to first item
+  const contentToDisplay = selectedContent || SidebarContent[0];
 
   return (
     <>
@@ -62,8 +74,8 @@ const SidebarLayout = () => {
                     Village Square
                   </p>
                 </div>
-                {selectedContent &&
-                  selectedContent.items?.map((item, index) => (
+                {contentToDisplay &&
+                  contentToDisplay.items?.map((item, index) => (
                     <React.Fragment key={index}>
                       <h5 className="text-link font-semibold text-sm caption">
                         {item.heading}
