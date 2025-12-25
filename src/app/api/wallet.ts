@@ -90,7 +90,7 @@ export const verifyCowryTransaction = async (reference: string) => {
   return await apiGet<any>(`wallet/cowry/topup/verify-transaction/${reference}`, token);
 };
 
-export const transferCowry = async (userIds: string[], amount: number = 25000) => {
+export const transferCowry = async (userIds: string[], amount: number = 20000) => {
   const token = await getToken();
   const response = await apiPost(
     `wallet/cowry/transfer`,
