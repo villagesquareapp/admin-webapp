@@ -13,7 +13,7 @@ interface ActionsProps {
 }
 
 const Actions = ({ notification, onResend, onDelete }: ActionsProps) => {
-  const router = useRouter(); // Add this
+  const router = useRouter(); 
   const [showResendModal, setShowResendModal] = useState<boolean>(false);
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
