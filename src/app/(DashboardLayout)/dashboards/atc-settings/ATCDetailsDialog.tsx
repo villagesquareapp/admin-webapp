@@ -1,0 +1,127 @@
+"use client";
+import { Button, Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
+import { Icon } from "@iconify/react";
+import { AnimatePresence, motion } from "framer-motion";
+import Image from "next/image";
+import { formatDate } from "@/utils/dateUtils";
+import { UserDetailsComp } from "@/app/components/shared/TableSnippets";
+
+const ATCDetailsDialog = ({
+  isOpen,
+  setIsOpen,
+  user,
+}: {
+  isOpen: boolean;
+  setIsOpen: (value: boolean) => void;
+  user?: IUser | null;
+}) => {
+  if (!user) return null;
+
+  const userProfile = user.user_details.profile;
+
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <Dialog
+          static
+          open={isOpen}
+          onClose={() => setIsOpen(false)}
+          className="relative z-50"
+        >
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50"
+          />
+          <div className="fixed inset-0 mx-auto flex items-center justify-center p-4">
+            <DialogPanel
+              as={motion.div}
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="w-full max-w-[800px] flex flex-col max-h-[85vh] overflow-hidden p-0 gap-0 rounded-xl bg-white dark:bg-darkgray shadow-2xl dark:shadow-black/50"
+            >
+              <div className="sticky top-0 bg-white dark:bg-darkgray border-b dark:border-gray-700 z-50">
+                <div className="flex items-center justify-between px-6 py-4">
+                  <DialogTitle className="text-xl font-bold">
+                    ATC Details
+                  </DialogTitle>
+                  <Button
+                    onClick={() => setIsOpen(false)}
+                    className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                  >
+                    <Icon icon="solar:close-circle-bold" height={24} />
+                  </Button>
+                </div>
+              </div>
+
+              <div className="overflow-y-auto p-6 space-y-6">
+                <div className="flex items-start gap-4">
+                  <div className="relative w-20 h-20 rounded-full overflow-hidden shrink-0 border-2 border-gray-100 dark:border-gray-700">
+                    <Image
+                      src={userProfile.profile_picture || "/images/placeholder.png"}
+                      alt={userProfile.name}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                  <div className="flex-1 space-y-1">
+                    <h3 className="text-xl font-bold flex items-center gap-2">
+                      {userProfile.name}
+                      {userProfile.checkmark_verification_status && (
+                        <Icon icon="solar:verified-check-bold" className="text-blue-500" width={20} />
+                      )}
+                      {userProfile.premium_verification_status && (
+                        <Icon icon="solar:star-bold" className="text-yellow-500" width={20} />
+                      )}
+                    </h3>
+                    <p className="text-gray-500 dark:text-gray-400">@{userProfile.username}</p>
+                    <div className="flex gap-2 mt-2">
+                      <span className={`px-3 py-1 text-xs rounded-full font-medium capitalize
+                        ${userProfile.status === 'active' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' :
+                          userProfile.status === 'suspended' ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' :
+                            'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400'
+                        }`}>
+                        {userProfile.status}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="p-4 rounded-xl bg-gray-50 dark:bg-gray-800/50 space-y-1">
+                    <p className="text-sm text-gray-500 dark:text-gray-400">Email</p>
+                    <p className="font-medium break-all">{userProfile.email}</p>
+                  </div>
+                  <div className="p-4 rounded-xl bg-gray-50 dark:bg-gray-800/50 space-y-1">
+                    <p className="text-sm text-gray-500 dark:text-gray-400">Profession</p>
+                    <p className="font-medium">{userProfile.followers || "Singer"}</p>
+                  </div>
+                  <div className="p-4 rounded-xl bg-gray-50 dark:bg-gray-800/50 space-y-1">
+                    <p className="text-sm text-gray-500 dark:text-gray-400">Application Type</p>
+                    <p className="font-medium">{user.user_details.posts.length || "0"}</p>
+                  </div>
+                  <div className="p-4 rounded-xl bg-gray-50 dark:bg-gray-800/50 space-y-1">
+                    <p className="text-sm text-gray-500 dark:text-gray-400">Date Joined</p>
+                    <p className="font-medium">{formatDate(userProfile.created_at)}</p>
+                  </div>
+                </div>
+
+                {userProfile.bio && (
+                  <div className="p-4 rounded-xl bg-gray-50 dark:bg-gray-800/50 space-y-2">
+                    <p className="text-sm text-gray-500 dark:text-gray-400">Bio</p>
+                    <p className="text-sm leading-relaxed">{userProfile.bio}</p>
+                  </div>
+                )}
+
+              </div>
+            </DialogPanel>
+          </div>
+        </Dialog>
+      )}
+    </AnimatePresence>
+  );
+};
+
+export default ATCDetailsDialog;
