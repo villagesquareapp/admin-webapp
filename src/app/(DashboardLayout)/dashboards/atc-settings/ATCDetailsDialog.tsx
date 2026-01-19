@@ -1,5 +1,6 @@
 "use client";
-import { Button, Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
+import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
+import { Button } from "flowbite-react";
 import { Icon } from "@iconify/react";
 import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
@@ -60,7 +61,9 @@ const ATCDetailsDialog = ({
                 <div className="flex items-start gap-4">
                   <div className="relative w-20 h-20 rounded-full overflow-hidden shrink-0 border-2 border-gray-100 dark:border-gray-700">
                     <Image
-                      src={userProfile.profile_picture || "/images/placeholder.png"}
+                      src={
+                        userProfile.profile_picture || "/images/placeholder.png"
+                      }
                       alt={userProfile.name}
                       fill
                       className="object-cover"
@@ -70,19 +73,33 @@ const ATCDetailsDialog = ({
                     <h3 className="text-xl font-bold flex items-center gap-2">
                       {userProfile.name}
                       {userProfile.checkmark_verification_status && (
-                        <Icon icon="solar:verified-check-bold" className="text-blue-500" width={20} />
+                        <Icon
+                          icon="solar:verified-check-bold"
+                          className="text-blue-500"
+                          width={20}
+                        />
                       )}
                       {userProfile.premium_verification_status && (
-                        <Icon icon="solar:star-bold" className="text-yellow-500" width={20} />
+                        <Icon
+                          icon="solar:star-bold"
+                          className="text-yellow-500"
+                          width={20}
+                        />
                       )}
                     </h3>
-                    <p className="text-gray-500 dark:text-gray-400">@{userProfile.username}</p>
+                    <p className="text-gray-500 dark:text-gray-400">
+                      @{userProfile.username}
+                    </p>
                     <div className="flex gap-2 mt-2">
-                      <span className={`px-3 py-1 text-xs rounded-full font-medium capitalize
-                        ${userProfile.status === 'active' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' :
-                          userProfile.status === 'suspended' ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' :
-                            'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400'
-                        }`}>
+                      <span
+                        className={`px-3 py-1 text-xs rounded-full font-medium capitalize
+                        ${userProfile.status === "active"
+                            ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
+                            : userProfile.status === "suspended"
+                              ? "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
+                              : "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400"
+                          }`}
+                      >
                         {userProfile.status}
                       </span>
                     </div>
@@ -91,30 +108,84 @@ const ATCDetailsDialog = ({
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="p-4 rounded-xl bg-gray-50 dark:bg-gray-800/50 space-y-1">
-                    <p className="text-sm text-gray-500 dark:text-gray-400">Email</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      Email
+                    </p>
                     <p className="font-medium break-all">{userProfile.email}</p>
                   </div>
                   <div className="p-4 rounded-xl bg-gray-50 dark:bg-gray-800/50 space-y-1">
-                    <p className="text-sm text-gray-500 dark:text-gray-400">Profession</p>
-                    <p className="font-medium">{userProfile.followers || "Singer"}</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      Profession
+                    </p>
+                    <p className="font-medium">
+                      {userProfile.followers || "Singer"}
+                    </p>
                   </div>
                   <div className="p-4 rounded-xl bg-gray-50 dark:bg-gray-800/50 space-y-1">
-                    <p className="text-sm text-gray-500 dark:text-gray-400">Application Type</p>
-                    <p className="font-medium">{user.user_details.posts.length || "0"}</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      Application Type
+                    </p>
+                    <p className="font-medium">
+                      {user.user_details.posts.length || "0"}
+                    </p>
                   </div>
                   <div className="p-4 rounded-xl bg-gray-50 dark:bg-gray-800/50 space-y-1">
-                    <p className="text-sm text-gray-500 dark:text-gray-400">Date Joined</p>
-                    <p className="font-medium">{formatDate(userProfile.created_at)}</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      Date Joined
+                    </p>
+                    <p className="font-medium">
+                      {formatDate(userProfile.created_at)}
+                    </p>
                   </div>
                 </div>
 
                 {userProfile.bio && (
                   <div className="p-4 rounded-xl bg-gray-50 dark:bg-gray-800/50 space-y-2">
-                    <p className="text-sm text-gray-500 dark:text-gray-400">Bio</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      Bio
+                    </p>
                     <p className="text-sm leading-relaxed">{userProfile.bio}</p>
                   </div>
                 )}
 
+                <div className="space-y-2">
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    Application Video
+                  </p>
+                  <div className="w-full aspect-video bg-gray-50 dark:bg-gray-800/50 rounded-xl flex items-center justify-center relative overflow-hidden group cursor-pointer border-2 border-dashed border-gray-200 dark:border-gray-700">
+                    {/* Abstract placeholder */}
+                    <Icon
+                      icon="solar:play-circle-bold"
+                      className="text-gray-400 dark:text-gray-600 w-16 h-16 group-hover:scale-110 transition-transform"
+                    />
+                    <p className="absolute bottom-4 text-xs text-gray-400 font-medium">
+                      No video available
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="sticky bottom-0 bg-white dark:bg-darkgray border-t dark:border-gray-700 px-6 py-4">
+                <div className="flex justify-end gap-3">
+                  <Button
+                    color={'failure'}
+                    onClick={() => setIsOpen(false)}
+                    className="px-6 py-2.5 rounded-lg font-medium transition-colors"
+                  >
+                    Decline
+                  </Button>
+                  <Button
+                    color={'success'}
+                    onClick={() => {
+                      // Handle submit logic here
+                      console.log("Submitted user:", user);
+                      setIsOpen(false);
+                    }}
+                    className="px-6 py-2.5 rounded-lg font-medium text-white transition-colors shadow-sm"
+                  >
+                    Approve
+                  </Button>
+                </div>
               </div>
             </DialogPanel>
           </div>
