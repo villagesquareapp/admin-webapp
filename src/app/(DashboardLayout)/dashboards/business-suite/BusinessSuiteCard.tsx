@@ -19,7 +19,7 @@ const BusinessSuiteCard = ({ token }: { token: string }) => {
           icon="bxs:notification"
         />
         <StatsCard
-          label="ATC Settings"
+          label="Africa Talent Challenge"
           href="/dashboards/atc-settings"
           icon="mdi:settings-play-outline"
         />

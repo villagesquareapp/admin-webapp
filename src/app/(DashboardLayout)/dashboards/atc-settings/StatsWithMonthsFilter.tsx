@@ -1,12 +1,15 @@
 "use client";
 import { useState, useEffect } from "react";
-import SmallCards from "@/app/components/dashboards/ecommerce/smallCards";
+import ATCSmallCards from "./ATCSmallCards";
 import { getUserStats } from "@/app/api/user";
 import shape1 from "/public/images/shapes/danger-card-shape.png";
 import shape2 from "/public/images/shapes/secondary-card-shape.png";
 import shape3 from "/public/images/shapes/success-card-shape.png";
+import { Button } from "@headlessui/react";
+import { Icon } from "@iconify/react";
 
 const StatsWithMonthsFilter = ({ initialStats }: { initialStats: any }) => {
+  const [showHistory, setShowHistory] = useState(false);
   const [selectedMonth, setSelectedMonth] = useState<string>("");
   const [userStats, setUserStats] = useState(initialStats);
   const [isLoading, setIsLoading] = useState(false);
@@ -26,15 +29,13 @@ const StatsWithMonthsFilter = ({ initialStats }: { initialStats: any }) => {
     { value: "12", label: "December" },
   ];
 
-  // Set current month as default
   useEffect(() => {
-    const currentMonth = new Date().getMonth() + 1; 
+    const currentMonth = new Date().getMonth() + 1;
     setSelectedMonth(currentMonth.toString());
   }, []);
 
-  // Fetch stats when month changes
   useEffect(() => {
-    if (selectedMonth) {
+    if (selectedMonth && showHistory) {
       const fetchStats = async () => {
         setIsLoading(true);
         try {
@@ -47,58 +48,135 @@ const StatsWithMonthsFilter = ({ initialStats }: { initialStats: any }) => {
         }
       };
       fetchStats();
+    } else if (!showHistory) {
+      setUserStats(initialStats);
     }
-  }, [selectedMonth]);
+  }, [selectedMonth, showHistory, initialStats]);
 
-  const overviewData: IOverviewData[] = [
+
+  const homeData: IOverviewData[] = [
     {
       total: userStats?.data?.total_users || 0,
       icon: "eos-icons:application",
       bgcolor: "secondary",
-      title: "Total Application",
+      title: "Overall Total Applications",
       shape: shape1,
       link: "",
     },
     {
       total: userStats?.data?.today_new_users || 0,
-      icon: "streamline-flex:credit-card-approved-solid",
+      icon: "solar:calendar-date-bold-duotone",
       bgcolor: "primary",
-      title: "Total Approved",
+      title: "Current Month Total Applications",
+      shape: shape3,
+      link: "",
+    },
+    {
+      total: 0, 
+      icon: "solar:clock-circle-bold-duotone",
+      bgcolor: "warning",
+      title: "Current Month Total Pending",
+      shape: shape2,
+      link: "",
+    },
+    {
+      total: userStats?.data?.verified_users || 0, 
+      icon: "solar:check-circle-bold-duotone",
+      bgcolor: "success",
+      title: "Current Month Total Approved",
+      shape: shape3,
+      link: "",
+    },
+    {
+      total: userStats?.data?.today_active_users || 0, 
+      icon: "solar:close-circle-bold-duotone",
+      bgcolor: "error",
+      title: "Current Month Total Declined",
+      shape: shape1,
+      link: "",
+    },
+  ];
+
+  //   TODO: Update mapped fields once API provides specific monthly breakdown for Pending/Approved/Declined if different from 'today_...' fields.
+  //   Currently mapping available fields from initialStats/userStats to the requested cards.
+
+  const historyData: IOverviewData[] = [
+    {
+      total: userStats?.data?.total_users || 0, 
+      icon: "eos-icons:application",
+      bgcolor: "secondary",
+      title: "Total Applications",
+      shape: shape1,
+      link: "",
+    },
+    {
+      total: 0, 
+      icon: "solar:clock-circle-bold-duotone",
+      bgcolor: "warning",
+      title: "Pending Applications",
+      shape: shape2,
+      link: "",
+    },
+    {
+      total: userStats?.data?.verified_users || 0,
+      icon: "solar:check-circle-bold-duotone",
+      bgcolor: "success",
+      title: "Approved Applications",
       shape: shape3,
       link: "",
     },
     {
       total: userStats?.data?.today_active_users || 0,
-      icon: "fluent-mdl2:event-declined",
-      bgcolor: "success",
-      title: "Total Declined",
-      shape: shape2,
+      icon: "solar:close-circle-bold-duotone",
+      bgcolor: "error",
+      title: "Declined Applications",
+      shape: shape1,
       link: "",
     },
   ];
 
   return (
     <div className="space-y-6">
-      {/* Month Dropdown */}
-      <div className="flex justify-end">
-        <div className="w-48">
-          <select
-            value={selectedMonth}
-            onChange={(e) => setSelectedMonth(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+      {showHistory ? (
+          <Button
+            onClick={() => setShowHistory(false)}
+            className="flex items-center gap-2 text-primary hover:text-primary-dark transition-colors px-0 py-2"
           >
-            {months.map((month) => (
-              <option key={month.value} value={month.value}>
-                {month.label}
-              </option>
-            ))}
-          </select>
-        </div>
+            <Icon icon="solar:arrow-left-linear" width={20} />
+            Back to Dashboard
+          </Button>
+        ) : (
+          <div className="flex-1"></div> 
+        )}
+      <div className={isLoading ? "opacity-50 pointer-events-none transition-opacity" : "transition-opacity"}>
+        <ATCSmallCards overviewData={showHistory ? historyData : homeData} />
       </div>
-
-      {/* Stats Cards with Loading State */}
-      <div className={isLoading ? "opacity-50 pointer-events-none" : ""}>
-        <SmallCards overviewData={overviewData} />
+      <div className="flex justify-end items-center">
+        <div className="flex gap-4 items-center justify-end">
+          {showHistory ? (
+            <div className="w-48">
+              <select
+                value={selectedMonth}
+                onChange={(e) => setSelectedMonth(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                {months.map((month) => (
+                  <option key={month.value} value={month.value}>
+                    {month.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          ) : (
+            <Button
+              onClick={() => setShowHistory(true)}
+              className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors flex items-center gap-2"
+            >
+              <Icon icon="solar:history-bold-duotone" width={20} />
+              View Past Applications
+            </Button>
+          )}
+        </div>
       </div>
     </div>
   );
