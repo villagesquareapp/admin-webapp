@@ -4,7 +4,7 @@ import { apiGet, apiPost } from '@/lib/api';
 import { getToken } from '@/lib/getToken';
 import { revalidateCurrentPath } from '@/lib/revalidate';
 
-export const getUserStats = async () => {
+export const getUserStats = async (month?: string) => {
     const token = await getToken()
     return await apiGet<IUserstat>(
         `users/stats`,

@@ -18,6 +18,11 @@ const BusinessSuiteCard = ({ token }: { token: string }) => {
           href="/dashboards/notifications"
           icon="bxs:notification"
         />
+        <StatsCard
+          label="ATC Settings"
+          href="/dashboards/atc-settings"
+          icon="mdi:settings-play-outline"
+        />
       </div>
     </div>
   );
