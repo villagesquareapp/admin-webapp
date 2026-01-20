@@ -6,6 +6,8 @@ import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
 import { formatDate } from "@/utils/dateUtils";
 import { UserDetailsComp } from "@/app/components/shared/TableSnippets";
+import { IoMdCheckmark } from "react-icons/io";
+import { LiaTimesSolid } from "react-icons/lia";
 
 const ATCDetailsDialog = ({
   isOpen,
@@ -48,11 +50,8 @@ const ATCDetailsDialog = ({
                   <DialogTitle className="text-xl font-bold">
                     ATC Details
                   </DialogTitle>
-                  <Button
-                    onClick={() => setIsOpen(false)}
-                    className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-                  >
-                    <Icon icon="solar:close-circle-bold" height={24} />
+                  <Button onClick={() => setIsOpen(false)} className="p-1">
+                    <Icon icon="solar:close-circle-bold" height={14} />
                   </Button>
                 </div>
               </div>
@@ -93,12 +92,13 @@ const ATCDetailsDialog = ({
                     <div className="flex gap-2 mt-2">
                       <span
                         className={`px-3 py-1 text-xs rounded-full font-medium capitalize
-                        ${userProfile.status === "active"
+                        ${
+                          userProfile.status === "active"
                             ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
                             : userProfile.status === "suspended"
                               ? "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
                               : "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400"
-                          }`}
+                        }`}
                       >
                         {userProfile.status}
                       </span>
@@ -165,24 +165,34 @@ const ATCDetailsDialog = ({
                 </div>
               </div>
 
-              <div className="sticky bottom-0 bg-white dark:bg-darkgray border-t dark:border-gray-700 px-6 py-4">
+              <div className="sticky bottom-0 bg-white dark:bg-darkgray border-t dark:border-gray-700 px-6 py-2">
                 <div className="flex justify-end gap-3">
                   <Button
-                    color={'failure'}
+                    color={"failure"}
                     onClick={() => setIsOpen(false)}
-                    className="px-6 py-2.5 rounded-lg font-medium transition-colors"
+                    className="px-4 !py-1 rounded-lg font-medium transition-colors"
                   >
+                    <LiaTimesSolid size={16} />
                     Decline
                   </Button>
-                  <Button
+                  {/* <Button
                     color={'success'}
                     onClick={() => {
                       // Handle submit logic here
                       console.log("Submitted user:", user);
                       setIsOpen(false);
                     }}
-                    className="px-6 py-2.5 rounded-lg font-medium text-white transition-colors shadow-sm"
+                    className="px-4 text-sm lg:text-base font-medium text-white"
                   >
+                    Approve
+                  </Button> */}
+                  <Button
+                    color="success"
+                    size="sm"
+                    className="px-4 text-sm lg:text-base"
+                    // onClick={() => setIsApproveDialogOpen(true)}
+                  >
+                    <IoMdCheckmark size={16} />
                     Approve
                   </Button>
                 </div>

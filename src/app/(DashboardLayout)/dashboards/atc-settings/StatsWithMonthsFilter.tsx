@@ -137,7 +137,9 @@ const StatsWithMonthsFilter = ({ initialStats }: { initialStats: any }) => {
 
   return (
     <div className="space-y-6">
-      {showHistory ? (
+
+      <div className="flex justify-between items-center">
+        {showHistory ? (
           <Button
             onClick={() => setShowHistory(false)}
             className="flex items-center gap-2 text-primary hover:text-primary-dark transition-colors px-0 py-2"
@@ -148,11 +150,8 @@ const StatsWithMonthsFilter = ({ initialStats }: { initialStats: any }) => {
         ) : (
           <div className="flex-1"></div> 
         )}
-      <div className={isLoading ? "opacity-50 pointer-events-none transition-opacity" : "transition-opacity"}>
-        <ATCSmallCards overviewData={showHistory ? historyData : homeData} />
-      </div>
-      <div className="flex justify-end items-center">
-        <div className="flex gap-4 items-center justify-end">
+
+        <div className="flex gap-4 items-center">
           {showHistory ? (
             <div className="w-48">
               <select
@@ -177,6 +176,9 @@ const StatsWithMonthsFilter = ({ initialStats }: { initialStats: any }) => {
             </Button>
           )}
         </div>
+      </div>
+      <div className={isLoading ? "opacity-50 pointer-events-none transition-opacity" : "transition-opacity"}>
+        <ATCSmallCards overviewData={showHistory ? historyData : homeData} />
       </div>
     </div>
   );
