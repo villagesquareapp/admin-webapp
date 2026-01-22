@@ -90,7 +90,7 @@ const UserTable = ({
     }),
     columnHelper.accessor("user_details.profile.email", {
       cell: (info) => <DetailComp detail={info.getValue()} />,
-      header: () => <span>Address</span>,
+      header: () => <span>Profession</span>,
     }),
     columnHelper.accessor("user_details.posts", {
       cell: (info) => (
@@ -98,7 +98,7 @@ const UserTable = ({
           {info.row.original.user_details.posts.length || 0}
         </p>
       ),
-      header: () => <span>Application Type</span>,
+      header: () => <span>Profession Duration</span>,
     }),
     columnHelper.accessor("user_details.profile.followers", {
       cell: (info) => (
@@ -106,7 +106,7 @@ const UserTable = ({
           {info.getValue() || 0}
         </p>
       ),
-      header: () => <span>Profession</span>,
+      header: () => <span>Application Type</span>,
     }),
     columnHelper.accessor("user_details.profile.status", {
       cell: (info) => {
@@ -149,7 +149,7 @@ const UserTable = ({
           </p>
         );
       },
-      header: () => <span>Date Joined</span>,
+      header: () => <span>Date Submitted</span>,
     }),
 
     // columnHelper.display({

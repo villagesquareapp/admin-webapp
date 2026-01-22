@@ -96,6 +96,12 @@ const SidebarContent: MenuItem[] = [
             url: "/dashboards/wallets",
           },
           {
+            name: "ATC Settings",
+            icon: "mdi:settings-play-outline",
+            id: uniqueId(),
+            url: "/dashboards/atc-settings",
+          },
+          {
             name: "Admin Users",
             icon: "solar:users-group-rounded-line-duotone",
             id: uniqueId(),
