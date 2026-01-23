@@ -86,9 +86,9 @@ const ATCDetailsDialog = ({
                         />
                       )}
                     </h3>
-                    <p className="text-gray-500 dark:text-gray-400">
+                    {/* <p className="text-gray-500 dark:text-gray-400">
                       @{userProfile.username}
-                    </p>
+                    </p> */}
                     <div className="flex gap-2 mt-2">
                       <span
                         className={`px-3 py-1 text-xs rounded-full font-medium capitalize
@@ -109,12 +109,6 @@ const ATCDetailsDialog = ({
                 <div className="grid grid-cols-2 gap-4">
                   <div className="p-4 rounded-xl bg-gray-50 dark:bg-gray-800/50 space-y-1">
                     <p className="text-sm text-gray-500 dark:text-gray-400">
-                      Email
-                    </p>
-                    <p className="font-medium break-all">{userProfile.email}</p>
-                  </div>
-                  <div className="p-4 rounded-xl bg-gray-50 dark:bg-gray-800/50 space-y-1">
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
                       Profession
                     </p>
                     <p className="font-medium">
@@ -128,6 +122,12 @@ const ATCDetailsDialog = ({
                     <p className="font-medium">
                       {user.user_details.posts.length || "0"}
                     </p>
+                  </div>
+                   <div className="p-4 rounded-xl bg-gray-50 dark:bg-gray-800/50 space-y-1">
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      Profe
+                    </p>
+                    <p className="font-medium break-all">{userProfile.email}</p>
                   </div>
                   <div className="p-4 rounded-xl bg-gray-50 dark:bg-gray-800/50 space-y-1">
                     <p className="text-sm text-gray-500 dark:text-gray-400">

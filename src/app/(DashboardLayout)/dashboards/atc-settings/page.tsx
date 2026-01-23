@@ -7,6 +7,8 @@ import shape2 from "/public/images/shapes/secondary-card-shape.png";
 import shape3 from "/public/images/shapes/success-card-shape.png";
 import StatsWithMonthsFilter from "./StatsWithMonthsFilter";
 
+import SearchAndFilter from "./SearchAndFilter";
+
 const Page = async ({
   searchParams,
 }: {
@@ -15,17 +17,19 @@ const Page = async ({
   const page = Number(searchParams.page) || 1;
   const limit = Number(searchParams.limit) || 20;
   const userId = searchParams.userId as string;
+  const search = searchParams.search as string;
+  const status = searchParams.status as string;
 
   const [userStats, users] = await Promise.all([
     getUserStats(),
-    getUsers(page, limit),
+    getUsers(page, limit, search, status),
   ]);
 
   const selectedUser =
     userId && users?.data?.data
       ? users.data.data
-          .flat()
-          .find((user: IUser) => user?.user_details?.profile?.id === userId)
+        .flat()
+        .find((user: IUser) => user?.user_details?.profile?.id === userId)
       : null;
 
   const overviewData: IOverviewData[] = [
@@ -80,7 +84,9 @@ const Page = async ({
           {/* <SmallCards overviewData={overviewData} /> */}
           <StatsWithMonthsFilter initialStats={userStats} />
         </div>
+        
         <div className="col-span-12">
+          <SearchAndFilter />
           <ATCTable
             users={users?.data || null}
             totalPages={users?.data?.last_page || 1}
@@ -93,5 +99,6 @@ const Page = async ({
     </>
   );
 };
+
 
 export default Page;

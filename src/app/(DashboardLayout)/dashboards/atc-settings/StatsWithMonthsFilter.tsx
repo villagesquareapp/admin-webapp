@@ -8,11 +8,14 @@ import shape3 from "/public/images/shapes/success-card-shape.png";
 import { Button } from "@headlessui/react";
 import { Icon } from "@iconify/react";
 
+import LeaderboardModal from "./LeaderboardModal";
+
 const StatsWithMonthsFilter = ({ initialStats }: { initialStats: any }) => {
   const [showHistory, setShowHistory] = useState(false);
   const [selectedMonth, setSelectedMonth] = useState<string>("");
   const [userStats, setUserStats] = useState(initialStats);
   const [isLoading, setIsLoading] = useState(false);
+  const [isLeaderboardOpen, setIsLeaderboardOpen] = useState(false);
 
   const months = [
     { value: "1", label: "January" },
@@ -53,7 +56,6 @@ const StatsWithMonthsFilter = ({ initialStats }: { initialStats: any }) => {
     }
   }, [selectedMonth, showHistory, initialStats]);
 
-
   const homeData: IOverviewData[] = [
     {
       total: userStats?.data?.total_users || 0,
@@ -72,7 +74,7 @@ const StatsWithMonthsFilter = ({ initialStats }: { initialStats: any }) => {
       link: "",
     },
     {
-      total: 0, 
+      total: 0,
       icon: "solar:clock-circle-bold-duotone",
       bgcolor: "warning",
       title: "Current Month Total Pending",
@@ -80,7 +82,7 @@ const StatsWithMonthsFilter = ({ initialStats }: { initialStats: any }) => {
       link: "",
     },
     {
-      total: userStats?.data?.verified_users || 0, 
+      total: userStats?.data?.verified_users || 0,
       icon: "solar:check-circle-bold-duotone",
       bgcolor: "success",
       title: "Current Month Total Approved",
@@ -88,7 +90,7 @@ const StatsWithMonthsFilter = ({ initialStats }: { initialStats: any }) => {
       link: "",
     },
     {
-      total: userStats?.data?.today_active_users || 0, 
+      total: userStats?.data?.today_active_users || 0,
       icon: "solar:close-circle-bold-duotone",
       bgcolor: "error",
       title: "Current Month Total Declined",
@@ -102,7 +104,7 @@ const StatsWithMonthsFilter = ({ initialStats }: { initialStats: any }) => {
 
   const historyData: IOverviewData[] = [
     {
-      total: userStats?.data?.total_users || 0, 
+      total: userStats?.data?.total_users || 0,
       icon: "eos-icons:application",
       bgcolor: "secondary",
       title: "Total Applications",
@@ -110,7 +112,7 @@ const StatsWithMonthsFilter = ({ initialStats }: { initialStats: any }) => {
       link: "",
     },
     {
-      total: 0, 
+      total: 0,
       icon: "solar:clock-circle-bold-duotone",
       bgcolor: "warning",
       title: "Pending Applications",
@@ -137,7 +139,6 @@ const StatsWithMonthsFilter = ({ initialStats }: { initialStats: any }) => {
 
   return (
     <div className="space-y-6">
-
       <div className="flex justify-between items-center">
         {showHistory ? (
           <Button
@@ -148,23 +149,32 @@ const StatsWithMonthsFilter = ({ initialStats }: { initialStats: any }) => {
             Back to Dashboard
           </Button>
         ) : (
-          <div className="flex-1"></div> 
+          <div className="flex-1"></div>
         )}
 
         <div className="flex gap-4 items-center">
           {showHistory ? (
-            <div className="w-48">
-              <select
-                value={selectedMonth}
-                onChange={(e) => setSelectedMonth(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            <div className="flex gap-4 items-center">
+              <Button
+                onClick={() => setIsLeaderboardOpen(true)}
+                className="px-4 py-2 bg-gradient-to-r from-yellow-400 to-yellow-600 text-white rounded-lg hover:from-yellow-500 hover:to-yellow-700 transition-colors flex items-center gap-2 shadow-md"
               >
-                {months.map((month) => (
-                  <option key={month.value} value={month.value}>
-                    {month.label}
-                  </option>
-                ))}
-              </select>
+                <Icon icon="la:medal" width={20} />
+                View Leaderboard
+              </Button>
+              <div className="w-48">
+                <select
+                  value={selectedMonth}
+                  onChange={(e) => setSelectedMonth(e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  {months.map((month) => (
+                    <option key={month.value} value={month.value}>
+                      {month.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
           ) : (
             <Button
@@ -177,11 +187,21 @@ const StatsWithMonthsFilter = ({ initialStats }: { initialStats: any }) => {
           )}
         </div>
       </div>
-      <div className={isLoading ? "opacity-50 pointer-events-none transition-opacity" : "transition-opacity"}>
+      <div
+        className={
+          isLoading
+            ? "opacity-50 pointer-events-none transition-opacity"
+            : "transition-opacity"
+        }
+      >
         <ATCSmallCards overviewData={showHistory ? historyData : homeData} />
       </div>
+
+      <LeaderboardModal
+        isOpen={isLeaderboardOpen}
+        setIsOpen={setIsLeaderboardOpen}
+      />
     </div>
   );
 };
-
 export default StatsWithMonthsFilter;

@@ -20,10 +20,23 @@ export const getVerifiedUserStats = async () => {
     );
 };
 
-export const getUsers = async (page: number = 1, limit: number = 20) => {
-    const token = await getToken()
+export const getUsers = async (
+    page: number = 1,
+    limit: number = 20,
+    search?: string,
+    status?: string
+) => {
+    const token = await getToken();
+    const queryParams = new URLSearchParams({
+        page: page.toString(),
+        limit: limit.toString(),
+    });
+
+    if (search) queryParams.append("search", search);
+    if (status) queryParams.append("status", status);
+
     return await apiGet<IUsersResponse>(
-        `users?page=${page}&limit=${limit}`,
+        `users?${queryParams.toString()}`,
         token
     );
 };
@@ -56,18 +69,18 @@ export const getUserStatus = async () => {
 }
 
 export const updateUserStatus = async (userId: string, status: string) => {
-  const token = await getToken();
-  const response = await apiPost(
-    `users/${userId}/update-status`,
-    { status },
-    token
-  );
+    const token = await getToken();
+    const response = await apiPost(
+        `users/${userId}/update-status`,
+        { status },
+        token
+    );
 
-  if (response.status) {
-    await revalidateCurrentPath();
-  }
+    if (response.status) {
+        await revalidateCurrentPath();
+    }
 
-  return response;
+    return response;
 };
 
 export const getVerifiedUsers = async (page: number = 1, limit: number = 20) => {
