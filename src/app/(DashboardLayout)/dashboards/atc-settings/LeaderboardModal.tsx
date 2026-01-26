@@ -199,7 +199,7 @@ const LeaderboardModal = ({
                         }`}
                     >
                       <div
-                        className={`absolute -left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm shadow-sm
+                        className={`absolute -left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center font-semibold text-sm shadow-sm
                         ${
                           user.rank === 1
                             ? "bg-gradient-to-br from-green-400 to-green-600 text-white ring-2 ring-green-200"

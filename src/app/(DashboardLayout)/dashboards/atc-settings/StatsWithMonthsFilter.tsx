@@ -8,14 +8,14 @@ import shape3 from "/public/images/shapes/success-card-shape.png";
 import { Button } from "@headlessui/react";
 import { Icon } from "@iconify/react";
 
-import LeaderboardModal from "./LeaderboardModal";
+
 
 const StatsWithMonthsFilter = ({ initialStats }: { initialStats: any }) => {
   const [showHistory, setShowHistory] = useState(false);
   const [selectedMonth, setSelectedMonth] = useState<string>("");
   const [userStats, setUserStats] = useState(initialStats);
   const [isLoading, setIsLoading] = useState(false);
-  const [isLeaderboardOpen, setIsLeaderboardOpen] = useState(false);
+
 
   const months = [
     { value: "1", label: "January" },
@@ -99,9 +99,6 @@ const StatsWithMonthsFilter = ({ initialStats }: { initialStats: any }) => {
     },
   ];
 
-  //   TODO: Update mapped fields once API provides specific monthly breakdown for Pending/Approved/Declined if different from 'today_...' fields.
-  //   Currently mapping available fields from initialStats/userStats to the requested cards.
-
   const historyData: IOverviewData[] = [
     {
       total: userStats?.data?.total_users || 0,
@@ -155,13 +152,8 @@ const StatsWithMonthsFilter = ({ initialStats }: { initialStats: any }) => {
         <div className="flex gap-4 items-center">
           {showHistory ? (
             <div className="flex gap-4 items-center">
-              <Button
-                onClick={() => setIsLeaderboardOpen(true)}
-                className="px-4 py-2 bg-gradient-to-r from-yellow-400 to-yellow-600 text-white rounded-lg hover:from-yellow-500 hover:to-yellow-700 transition-colors flex items-center gap-2 shadow-md"
-              >
-                <Icon icon="la:medal" width={20} />
-                View Leaderboard
-              </Button>
+
+
               <div className="w-48">
                 <select
                   value={selectedMonth}
@@ -197,11 +189,8 @@ const StatsWithMonthsFilter = ({ initialStats }: { initialStats: any }) => {
         <ATCSmallCards overviewData={showHistory ? historyData : homeData} />
       </div>
 
-      <LeaderboardModal
-        isOpen={isLeaderboardOpen}
-        setIsOpen={setIsLeaderboardOpen}
-      />
-    </div>
+
+    </div >
   );
 };
 export default StatsWithMonthsFilter;
