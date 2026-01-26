@@ -7,13 +7,14 @@ import shape2 from "/public/images/shapes/secondary-card-shape.png";
 import shape3 from "/public/images/shapes/success-card-shape.png";
 import { Button } from "@headlessui/react";
 import { Icon } from "@iconify/react";
+import { getATCStats } from "@/app/api/atc";
 
 
 
 const StatsWithMonthsFilter = ({ initialStats }: { initialStats: any }) => {
   const [showHistory, setShowHistory] = useState(false);
   const [selectedMonth, setSelectedMonth] = useState<string>("");
-  const [userStats, setUserStats] = useState(initialStats);
+  const [atcStats, setAtcStats] = useState(initialStats);
   const [isLoading, setIsLoading] = useState(false);
 
 
@@ -42,8 +43,8 @@ const StatsWithMonthsFilter = ({ initialStats }: { initialStats: any }) => {
       const fetchStats = async () => {
         setIsLoading(true);
         try {
-          const stats = await getUserStats(selectedMonth);
-          setUserStats(stats);
+          const stats = await getATCStats();
+          setAtcStats(stats);
         } catch (error) {
           console.error("Error fetching stats:", error);
         } finally {
@@ -52,13 +53,13 @@ const StatsWithMonthsFilter = ({ initialStats }: { initialStats: any }) => {
       };
       fetchStats();
     } else if (!showHistory) {
-      setUserStats(initialStats);
+      setAtcStats(initialStats);
     }
   }, [selectedMonth, showHistory, initialStats]);
 
   const homeData: IOverviewData[] = [
     {
-      total: userStats?.data?.total_users || 0,
+      total: atcStats?.data?.applications?.overall?.total || 0,
       icon: "eos-icons:application",
       bgcolor: "secondary",
       title: "Overall Total Applications",
@@ -66,7 +67,7 @@ const StatsWithMonthsFilter = ({ initialStats }: { initialStats: any }) => {
       link: "",
     },
     {
-      total: userStats?.data?.today_new_users || 0,
+      total: atcStats?.data?.applications?.period?.total || 0,
       icon: "solar:calendar-date-bold-duotone",
       bgcolor: "primary",
       title: "Current Month Total Applications",
@@ -74,7 +75,7 @@ const StatsWithMonthsFilter = ({ initialStats }: { initialStats: any }) => {
       link: "",
     },
     {
-      total: 0,
+      total: atcStats?.data?.applications?.period?.pending || 0,
       icon: "solar:clock-circle-bold-duotone",
       bgcolor: "warning",
       title: "Current Month Total Pending",
@@ -82,7 +83,7 @@ const StatsWithMonthsFilter = ({ initialStats }: { initialStats: any }) => {
       link: "",
     },
     {
-      total: userStats?.data?.verified_users || 0,
+      total: atcStats?.data?.applications?.period?.approved || 0,
       icon: "solar:check-circle-bold-duotone",
       bgcolor: "success",
       title: "Current Month Total Approved",
@@ -90,7 +91,7 @@ const StatsWithMonthsFilter = ({ initialStats }: { initialStats: any }) => {
       link: "",
     },
     {
-      total: userStats?.data?.today_active_users || 0,
+      total: atcStats?.data?.applications?.period?.declined || 0,
       icon: "solar:close-circle-bold-duotone",
       bgcolor: "error",
       title: "Current Month Total Declined",
@@ -101,7 +102,7 @@ const StatsWithMonthsFilter = ({ initialStats }: { initialStats: any }) => {
 
   const historyData: IOverviewData[] = [
     {
-      total: userStats?.data?.total_users || 0,
+      total: atcStats?.data?.applications?.period?.total || 0,
       icon: "eos-icons:application",
       bgcolor: "secondary",
       title: "Total Applications",
@@ -109,7 +110,7 @@ const StatsWithMonthsFilter = ({ initialStats }: { initialStats: any }) => {
       link: "",
     },
     {
-      total: 0,
+      total: atcStats?.data?.applications?.period?.pending || 0,
       icon: "solar:clock-circle-bold-duotone",
       bgcolor: "warning",
       title: "Pending Applications",
@@ -117,7 +118,7 @@ const StatsWithMonthsFilter = ({ initialStats }: { initialStats: any }) => {
       link: "",
     },
     {
-      total: userStats?.data?.verified_users || 0,
+      total: atcStats?.data?.applications?.period?.approved || 0,
       icon: "solar:check-circle-bold-duotone",
       bgcolor: "success",
       title: "Approved Applications",
@@ -125,7 +126,7 @@ const StatsWithMonthsFilter = ({ initialStats }: { initialStats: any }) => {
       link: "",
     },
     {
-      total: userStats?.data?.today_active_users || 0,
+      total: atcStats?.data?.applications?.period?.declined || 0,
       icon: "solar:close-circle-bold-duotone",
       bgcolor: "error",
       title: "Declined Applications",
