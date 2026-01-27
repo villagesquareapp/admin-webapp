@@ -7,7 +7,7 @@ import shape2 from "/public/images/shapes/secondary-card-shape.png";
 import shape3 from "/public/images/shapes/success-card-shape.png";
 import { Button } from "@headlessui/react";
 import { Icon } from "@iconify/react";
-import { getATCStats } from "@/app/api/atc";
+import { getATCStats, getATCPeriods } from "@/app/api/atc";
 
 
 
@@ -16,26 +16,24 @@ const StatsWithMonthsFilter = ({ initialStats }: { initialStats: any }) => {
   const [selectedMonth, setSelectedMonth] = useState<string>("");
   const [atcStats, setAtcStats] = useState(initialStats);
   const [isLoading, setIsLoading] = useState(false);
+  const [periods, setPeriods] = useState<IATCPeriod[]>([]);
 
-
-  const months = [
-    { value: "1", label: "January" },
-    { value: "2", label: "February" },
-    { value: "3", label: "March" },
-    { value: "4", label: "April" },
-    { value: "5", label: "May" },
-    { value: "6", label: "June" },
-    { value: "7", label: "July" },
-    { value: "8", label: "August" },
-    { value: "9", label: "September" },
-    { value: "10", label: "October" },
-    { value: "11", label: "November" },
-    { value: "12", label: "December" },
-  ];
 
   useEffect(() => {
-    const currentMonth = new Date().getMonth() + 1;
-    setSelectedMonth(currentMonth.toString());
+    const fetchPeriods = async () => {
+      try {
+        const res = await getATCPeriods();
+        if (res?.status && res?.data?.periods) {
+          setPeriods(res.data.periods);
+          if (res.data.periods.length > 0) {
+            setSelectedMonth(res.data.periods[0].value);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching periods:", error);
+      }
+    };
+    fetchPeriods();
   }, []);
 
   useEffect(() => {
@@ -43,7 +41,7 @@ const StatsWithMonthsFilter = ({ initialStats }: { initialStats: any }) => {
       const fetchStats = async () => {
         setIsLoading(true);
         try {
-          const stats = await getATCStats();
+          const stats = await getATCStats(selectedMonth);
           setAtcStats(stats);
         } catch (error) {
           console.error("Error fetching stats:", error);
@@ -161,9 +159,9 @@ const StatsWithMonthsFilter = ({ initialStats }: { initialStats: any }) => {
                   onChange={(e) => setSelectedMonth(e.target.value)}
                   className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
-                  {months.map((month) => (
-                    <option key={month.value} value={month.value}>
-                      {month.label}
+                  {periods.map((period) => (
+                    <option key={period.value} value={period.value}>
+                      {period.label}
                     </option>
                   ))}
                 </select>
