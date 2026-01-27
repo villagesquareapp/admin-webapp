@@ -5,10 +5,23 @@ import { getToken } from '@/lib/getToken';
 import { revalidateCurrentPath } from '@/lib/revalidate';
 
 
-export const getATCStats = async () => {
-    const token = await getToken()
+export const getATCStats = async (period?: string) => {
+    const token = await getToken();
+    const queryParams = new URLSearchParams();
+    if (period) {
+        queryParams.append('period', period);
+    }
+
     return await apiGet<IAtcStats>(
-        `africa-talent-challenge/statistics`,
+        `africa-talent-challenge/statistics${period ? `?${queryParams.toString()}` : ''}`,
+        token
+    );
+};
+
+export const getATCPeriods = async () => {
+    const token = await getToken();
+    return await apiGet<IATCPeriodsResponse>(
+        `africa-talent-challenge/periods`,
         token
     );
 };

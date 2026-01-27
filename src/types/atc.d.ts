@@ -73,3 +73,12 @@ interface ILeaderboardResponse {
     active_episode: IActiveEpisode;
     leaderboard: ILeaderboardParticipant[];
 }
+
+interface IATCPeriod {
+    value: string;
+    label: string;
+}
+
+interface IATCPeriodsResponse {
+    periods: IATCPeriod[];
+}
