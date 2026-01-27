@@ -13,13 +13,13 @@ import { getUserStatus } from "@/app/api/user";
 import { useEffect, useState } from "react";
 import ATCDetailsDialog from "./ATCDetailsDialog";
 
-const UserTable = ({
-  users,
+const ApplicationTable = ({
+  applications,
   totalPages,
   currentPage,
   pageSize,
 }: {
-  users: IUsersResponse | null;
+  applications: IATCApplicationsResponse | null;
   totalPages: number;
   currentPage: number;
   pageSize: number;
@@ -27,27 +27,20 @@ const UserTable = ({
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  //   const handleRowClick = (user: IUser) => {
-  //     const params = new URLSearchParams(searchParams.toString());
-  //     params.set("userId", user.user_details.profile.id);
-  //     router.replace(`?${params.toString()}`);
-  //   };
-
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<IUser | null>(null);
+  const [selectedApplication, setSelectedApplication] = useState<IATCApplication | null>(null);
 
-  const [statuses, setStatuses] = useState<IUserStatusList[]>([]);
+  const [statuses, setStatuses] = useState<IUserStatusList[]>([]); 
   const [statusLoading, setStatusLoading] = useState<boolean>(false);
 
-  const handleRowClick = (user: IUser) => {
-    setSelectedUser(user);
+  const handleRowClick = (app: IATCApplication) => {
+    setSelectedApplication(app);
     setIsDialogOpen(true);
   };
 
   const handleDialogClose = () => {
     setIsDialogOpen(false);
-    setIsDialogOpen(false);
-    setSelectedUser(null);
+    setSelectedApplication(null);
   };
 
   useEffect(() => {
@@ -66,73 +59,61 @@ const UserTable = ({
     fetchStatuses();
   }, []);
 
-  const columnHelper = createColumnHelper<IUser>();
+  const columnHelper = createColumnHelper<IATCApplication>();
 
   const columns = [
-    columnHelper.accessor("user_details.profile.id", {
+    columnHelper.accessor("fullname", {
       cell: (info) => (
         <UserDetailsComp
           user={{
-            name: info.row.original.user_details.profile.name,
-            username: info.row.original.user_details.profile.username,
-            email: info.row.original.user_details.profile.email,
-            last_online: info.row.original.user_details.profile.last_online,
-            profile_picture:
-              info.row.original.user_details.profile.profile_picture,
-            premium: info.row.original.user_details.profile.premium_verification_status,
-            check_mark: info.row.original.user_details.profile.checkmark_verification_status,
+            name: info.row.original.fullname,
+            username: info.row.original.user.username,
+            email: info.row.original.occupation || "N/A",
+            profile_picture: info.row.original.profile_picture_url,
           }}
-          showPremiumAndCheckMark
-          showActive
+          
+          showPremiumAndCheckMark={false}
+          showActive={false}
         />
       ),
       header: () => <span>Full Name</span>,
     }),
-    columnHelper.accessor("user_details.profile.email", {
+    columnHelper.accessor("occupation", {
       cell: (info) => <DetailComp detail={info.getValue()} />,
-      header: () => <span>Profession</span>,
+      header: () => <span>Occupation</span>,
     }),
-    columnHelper.accessor("user_details.posts", {
+    columnHelper.accessor("occupation_duration", {
       cell: (info) => (
         <p className="text-darklink dark:text-bodytext text-sm">
-          {info.row.original.user_details.posts.length || 0}
+          {info.getValue() || "N/A"}
         </p>
       ),
-      header: () => <span>Profession Duration</span>,
+      header: () => <span>Duration</span>,
     }),
-    columnHelper.accessor("user_details.profile.followers", {
+    columnHelper.accessor("application_type", {
       cell: (info) => (
-        <p className="text-darklink dark:text-bodytext text-sm">
-          {info.getValue() || 0}
+        <p className="text-darklink dark:text-bodytext text-sm capitalize">
+          {info.getValue() || "N/A"}
         </p>
       ),
-      header: () => <span>Application Type</span>,
+      header: () => <span>Type</span>,
     }),
-    columnHelper.accessor("user_details.profile.status", {
+    columnHelper.accessor("status", {
       cell: (info) => {
-        const status = info.getValue();
-        const statusStyles = {
-          active:
+        const status = info.getValue()?.toLowerCase();
+        const statusStyles: { [key: string]: string } = {
+          approved:
             "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300",
-          suspended:
-            "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300",
-          disabled:
-            "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300",
-          reported:
+          pending:
             "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300",
-          flagged:
-            "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300",
-          banned:
-            "bg-rose-100 text-rose-800 dark:bg-rose-900 dark:text-rose-300",
-          shadow_hidden:
-            "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300",
-          archived:
-            "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300",
+          declined:
+            "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300",
         };
 
         return (
           <span
-            className={`text-sm px-3 py-1 capitalize rounded-full w-fit ${statusStyles[status]}`}
+            className={`text-sm px-3 py-1 capitalize rounded-full w-fit ${statusStyles[status] || "bg-gray-100 text-gray-800"
+              }`}
           >
             {status}
           </span>
@@ -141,7 +122,7 @@ const UserTable = ({
       header: () => <span>Status</span>,
     }),
 
-    columnHelper.accessor("user_details.profile.created_at", {
+    columnHelper.accessor("created_at", {
       cell: (info) => {
         return (
           <p className="text-darklink dark:text-bodytext text-sm">
@@ -151,26 +132,11 @@ const UserTable = ({
       },
       header: () => <span>Date Submitted</span>,
     }),
-
-    // columnHelper.display({
-    //   id: "actions",
-    //   header: () => <span>Actions</span>,
-    //   cell: (info) => {
-    //     const user = info.row.original;
-    //     // return (
-    //     //   <UserActions
-    //     //     user={user}
-    //     //     statuses={statuses}
-    //     //     statusLoading={statusLoading}
-    //     //   />
-    //     // );
-    //   },
-    // }),
   ];
   return (
     <div className="col-span-12">
       <ReusableTable
-        tableData={users?.data && Array.isArray(users?.data) ? users?.data : []}
+        tableData={applications?.data && Array.isArray(applications?.data) ? applications?.data : []}
         columns={columns}
         totalPages={totalPages}
         currentPage={currentPage}
@@ -179,11 +145,11 @@ const UserTable = ({
       />
       <ATCDetailsDialog
         isOpen={isDialogOpen}
-        setIsOpen={handleDialogClose}
-        user={selectedUser}
+        onClose={handleDialogClose}
+        application={selectedApplication}
       />
     </div>
   );
 };
 
-export default UserTable;
+export default ApplicationTable;

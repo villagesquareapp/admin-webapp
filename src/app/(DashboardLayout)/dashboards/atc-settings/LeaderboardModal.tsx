@@ -8,122 +8,9 @@ import {
 } from "@headlessui/react";
 import { Button } from "flowbite-react";
 import { Icon } from "@iconify/react";
-import { Fragment } from "react";
+import { Fragment, useEffect, useState } from "react";
 import Image from "next/image";
-
-interface LeaderboardUser {
-  rank: number;
-  name: string;
-  votes: number;
-  likes: number;
-  comments: number;
-  shares: number;
-  gifts: number;
-  profilePicture: string;
-}
-
-const leaderboardData: LeaderboardUser[] = [
-  {
-    rank: 1,
-    name: "Olakunle Lexy",
-    votes: 3650,
-    likes: 1200,
-    comments: 450,
-    shares: 300,
-    gifts: 150,
-    profilePicture: "/images/profile/user-1.jpg",
-  },
-  {
-    rank: 2,
-    name: "Aisha Toluwalase",
-    votes: 2217,
-    likes: 980,
-    comments: 320,
-    shares: 150,
-    gifts: 80,
-    profilePicture: "/images/profile/user-2.jpg",
-  },
-  {
-    rank: 3,
-    name: "Leila Bukola",
-    votes: 1150,
-    likes: 600,
-    comments: 200,
-    shares: 100,
-    gifts: 40,
-    profilePicture: "/images/profile/user-3.jpg",
-  },
-  {
-    rank: 4,
-    name: "Sanni Bello",
-    votes: 900,
-    likes: 450,
-    comments: 180,
-    shares: 80,
-    gifts: 30,
-    profilePicture: "/images/profile/user-4.jpg",
-  },
-  {
-    rank: 5,
-    name: "Oluwapelumi Fafiyebi",
-    votes: 812,
-    likes: 400,
-    comments: 160,
-    shares: 70,
-    gifts: 25,
-    profilePicture: "/images/profile/user-5.jpg",
-  },
-  {
-    rank: 6,
-    name: "Abdullahi Musa",
-    votes: 459,
-    likes: 250,
-    comments: 100,
-    shares: 40,
-    gifts: 15,
-    profilePicture: "/images/profile/user-6.jpg",
-  },
-  {
-    rank: 7,
-    name: "Ahmed Onibiyo",
-    votes: 420,
-    likes: 230,
-    comments: 90,
-    shares: 35,
-    gifts: 12,
-    profilePicture: "/images/profile/user-7.jpg",
-  },
-  {
-    rank: 8,
-    name: "Temilade Praise",
-    votes: 380,
-    likes: 200,
-    comments: 80,
-    shares: 30,
-    gifts: 10,
-    profilePicture: "/images/profile/user-8.jpg",
-  },
-  {
-    rank: 9,
-    name: "Grace Adebayo",
-    votes: 350,
-    likes: 180,
-    comments: 70,
-    shares: 25,
-    gifts: 8,
-    profilePicture: "/images/profile/user-9.jpg",
-  },
-  {
-    rank: 10,
-    name: "Otunola Akerele",
-    votes: 300,
-    likes: 150,
-    comments: 60,
-    shares: 20,
-    gifts: 5,
-    profilePicture: "/images/profile/user-2.jpg",
-  }, // Reuse image for example
-];
+import { getLeaderboard } from "@/app/api/atc";
 
 const LeaderboardModal = ({
   isOpen,
@@ -132,6 +19,31 @@ const LeaderboardModal = ({
   isOpen: boolean;
   setIsOpen: (value: boolean) => void;
 }) => {
+  const [loading, setLoading] = useState(false);
+  const [leaderboardData, setLeaderboardData] = useState<ILeaderboardParticipant[]>([]);
+  const [activeEpisode, setActiveEpisode] = useState<IActiveEpisode | null>(null);
+
+  useEffect(() => {
+    if (isOpen) {
+      const fetchLeaderboard = async () => {
+        setLoading(true);
+        try {
+          const res = await getLeaderboard();
+          if (res?.status && res?.data) {
+            setLeaderboardData(res.data.leaderboard);
+            setActiveEpisode(res.data.active_episode);
+          }
+        } catch (error) {
+          console.error("Failed to fetch leaderboard:", error);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      fetchLeaderboard();
+    }
+  }, [isOpen]);
+
   return (
     <Transition appear show={isOpen} as={Fragment}>
       <Dialog
@@ -174,6 +86,11 @@ const LeaderboardModal = ({
                       width={28}
                     />
                     Ranking Details
+                    {activeEpisode && (
+                      <span className="text-sm font-normal text-gray-500 dark:text-gray-400 ml-2 py-1 px-3 bg-gray-100 dark:bg-gray-800 rounded-full">
+                        {activeEpisode.name}
+                      </span>
+                    )}
                   </DialogTitle>
                   <button
                     onClick={() => setIsOpen(false)}
@@ -183,154 +100,122 @@ const LeaderboardModal = ({
                   </button>
                 </div>
 
-                <div className="mt-4 space-y-3 max-h-[70vh] overflow-y-auto custom-scrollbar">
-                  {leaderboardData.map((user) => (
-                    <div
-                      key={user.rank}
-                      className={`relative flex items-center gap-4 p-4 rounded-xl border transition-all hover:bg-gray-50 dark:hover:bg-gray-800/50 
-                        ${
-                          user.rank === 1
+                <div className="mt-4 space-y-3 max-h-[70vh] overflow-y-auto custom-scrollbar min-h-[300px]">
+                  {loading ? (
+                    <div className="flex flex-col items-center justify-center h-full py-20 gap-4">
+                      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+                      <p className="text-gray-500 dark:text-gray-400">Loading Leaderboard...</p>
+                    </div>
+                  ) : leaderboardData.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center h-full py-20 gap-4">
+                      <Icon icon="solar:clipboard-list-broken" className="text-gray-300 dark:text-gray-600 w-16 h-16" />
+                      <p className="text-gray-500 dark:text-gray-400">No participants found in the leaderboard yet.</p>
+                    </div>
+                  ) : (
+                    leaderboardData.map((user) => (
+                      <div
+                        key={user.uuid}
+                        className={`relative flex items-center gap-4 p-4 rounded-xl border transition-all hover:bg-gray-50 dark:hover:bg-gray-800/50 
+                        ${user.rank === 1
                             ? "bg-gray-900 text-white border-primary/50 shadow-lg shadow-primary/20"
                             : user.rank === 2
                               ? "bg-gray-800 text-gray-100 border-gray-600 shadow-md"
                               : user.rank === 3
                                 ? "bg-gray-800 text-gray-100 border-yellow-700 shadow-md"
                                 : "bg-white dark:bg-darkgray border-gray-100 dark:border-gray-800"
-                        }`}
-                    >
-                      <div
-                        className={`absolute -left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center font-semibold text-sm shadow-sm
-                        ${
-                          user.rank === 1
-                            ? "bg-gradient-to-br from-green-400 to-green-600 text-white ring-2 ring-green-200"
-                            : user.rank === 2
-                              ? "bg-gradient-to-br from-gray-300 to-gray-500 text-white ring-2 ring-gray-200"
-                              : user.rank === 3
-                                ? "bg-gradient-to-br from-yellow-400 to-yellow-600 text-white ring-2 ring-yellow-200"
-                                : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400"
-                        }`}
+                          }`}
                       >
-                        {user.rank}
-                      </div>
-
-                      {/* <div className="absolute right-4 top-1/2 -translate-y-1/2">
-                        {user.rank === 1 && (
-                          <Icon
-                            icon="solar:cup-first-bold"
-                            className="text-green-500 w-6 h-6"
-                          />
-                        )}
-                        {user.rank === 2 && (
-                          <Icon
-                            icon="solar:cup-star-bold"
-                            className="text-gray-400 w-6 h-6"
-                          />
-                        )}
-                        {user.rank === 3 && (
-                          <Icon
-                            icon="solar:medal-ribbon-bold"
-                            className="text-yellow-600 w-6 h-6"
-                          />
-                        )}
-                        {user.rank > 3 && user.rank <= 6 && (
-                          <Icon
-                            icon="solar:map-arrow-up-bold"
-                            className="text-green-500 w-5 h-5"
-                          />
-                        )}
-                        {user.rank > 6 && (
-                          <Icon
-                            icon="solar:map-arrow-down-bold"
-                            className="text-red-500 w-5 h-5"
-                          />
-                        )}
-                      </div> */}
-
-                      <div className="ml-6 flex items-center gap-4 flex-1">
-                        <div className="relative w-12 h-12 rounded-full overflow-hidden border-2 border-white/10 shrink-0">
-                          <Image
-                            src={user.profilePicture}
-                            alt={user.name}
-                            fill
-                            className="object-cover"
-                          />
+                        <div
+                          className={`absolute -left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center font-semibold text-sm shadow-sm
+                        ${user.rank === 1
+                              ? "bg-gradient-to-br from-green-400 to-green-600 text-white ring-2 ring-green-200"
+                              : user.rank === 2
+                                ? "bg-gradient-to-br from-gray-300 to-gray-500 text-white ring-2 ring-gray-200"
+                                : user.rank === 3
+                                  ? "bg-gradient-to-br from-yellow-400 to-yellow-600 text-white ring-2 ring-yellow-200"
+                                  : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400"
+                            }`}
+                        >
+                          {user.rank}
                         </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2">
-                            <h4
-                              className={`text-base font-bold truncate ${user.rank <= 3 ? "text-white" : "text-gray-900 dark:text-white"}`}
-                            >
-                              {user.name}
-                            </h4>
+
+                        <div className="ml-6 flex items-center gap-4 flex-1">
+                          <div className="relative w-12 h-12 rounded-full overflow-hidden border-2 border-white/10 shrink-0">
+                            <Image
+                              src={user.profile_picture || "/images/placeholder.png"}
+                              alt={user.fullname}
+                              fill
+                              className="object-cover"
+                            />
                           </div>
-                          <p
-                            className={`text-sm ${user.rank <= 3 ? "text-gray-300" : "text-gray-500 dark:text-gray-400"}`}
-                          >
-                            {user.votes.toLocaleString()} Votes
-                          </p>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2">
+                              <h4
+                                className={`text-base font-bold truncate ${user.rank <= 3 ? "text-white" : "text-gray-900 dark:text-white"}`}
+                              >
+                                {user.fullname}
+                              </h4>
+                              <span className={`text-xs px-2 py-0.5 rounded-full ${user.rank <= 3 ? "bg-white/20 text-white" : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400"
+                                }`}>
+                                {user.talent}
+                              </span>
+                            </div>
+                            <p
+                              className={`text-sm ${user.rank <= 3 ? "text-gray-300" : "text-gray-500 dark:text-gray-400"}`}
+                            >
+                              {user.votes_count.toLocaleString()} Votes
+                            </p>
+                          </div>
                         </div>
-                      </div>
 
-                      <div className="hidden sm:flex items-center gap-4 mr-2">
-                        <div
-                          className="flex flex-col items-center gap-0.5"
-                          title="Likes"
-                        >
-                          <Icon
-                            icon="solar:heart-bold"
-                            className={`w-4 h-4 ${user.rank <= 3 ? "text-red-400" : "text-red-500"}`}
-                          />
-                          <span
-                            className={`text-xs font-medium ${user.rank <= 3 ? "text-gray-300" : "text-gray-600 dark:text-gray-400"}`}
+                        <div className="hidden sm:flex items-center gap-4 mr-2">
+                          <div
+                            className="flex flex-col items-center gap-0.5"
+                            title="Likes"
                           >
-                            {user.likes}
-                          </span>
-                        </div>
-                        <div
-                          className="flex flex-col items-center gap-0.5"
-                          title="Comments"
-                        >
-                          <Icon
-                            icon="solar:chat-line-bold"
-                            className={`w-4 h-4 ${user.rank <= 3 ? "text-blue-400" : "text-blue-500"}`}
-                          />
-                          <span
-                            className={`text-xs font-medium ${user.rank <= 3 ? "text-gray-300" : "text-gray-600 dark:text-gray-400"}`}
+                            <Icon
+                              icon="solar:heart-bold"
+                              className={`w-4 h-4 ${user.rank <= 3 ? "text-red-400" : "text-red-500"}`}
+                            />
+                            <span
+                              className={`text-xs font-medium ${user.rank <= 3 ? "text-gray-300" : "text-gray-600 dark:text-gray-400"}`}
+                            >
+                              {user.likes_count}
+                            </span>
+                          </div>
+                          <div
+                            className="flex flex-col items-center gap-0.5"
+                            title="Comments"
                           >
-                            {user.comments}
-                          </span>
-                        </div>
-                        <div
-                          className="flex flex-col items-center gap-0.5"
-                          title="Shares"
-                        >
-                          <Icon
-                            icon="solar:share-bold"
-                            className={`w-4 h-4 ${user.rank <= 3 ? "text-purple-400" : "text-purple-500"}`}
-                          />
-                          <span
-                            className={`text-xs font-medium ${user.rank <= 3 ? "text-gray-300" : "text-gray-600 dark:text-gray-400"}`}
+                            <Icon
+                              icon="solar:chat-line-bold"
+                              className={`w-4 h-4 ${user.rank <= 3 ? "text-blue-400" : "text-blue-500"}`}
+                            />
+                            <span
+                              className={`text-xs font-medium ${user.rank <= 3 ? "text-gray-300" : "text-gray-600 dark:text-gray-400"}`}
+                            >
+                              {user.comments_count}
+                            </span>
+                          </div>
+                          {/* Gifts */}
+                          <div
+                            className="flex flex-col items-center gap-0.5"
+                            title="Gifts"
                           >
-                            {user.shares}
-                          </span>
-                        </div>
-                        <div
-                          className="flex flex-col items-center gap-0.5"
-                          title="Gifts"
-                        >
-                          <Icon
-                            icon="solar:gift-bold"
-                            className={`w-4 h-4 ${user.rank <= 3 ? "text-yellow-400" : "text-yellow-500"}`}
-                          />
-                          <span
-                            className={`text-xs font-medium ${user.rank <= 3 ? "text-gray-300" : "text-gray-600 dark:text-gray-400"}`}
-                          >
-                            {user.gifts}
-                          </span>
+                            <Icon
+                              icon="solar:gift-bold"
+                              className={`w-4 h-4 ${user.rank <= 3 ? "text-yellow-400" : "text-yellow-500"}`}
+                            />
+                            <span
+                              className={`text-xs font-medium ${user.rank <= 3 ? "text-gray-300" : "text-gray-600 dark:text-gray-400"}`}
+                            >
+                              {user.gifts_count}
+                            </span>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    ))
+                  )}
                 </div>
 
                 <div className="mt-6 flex justify-end">

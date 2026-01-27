@@ -97,6 +97,33 @@ interface IPostStats {
   android_posts: number;
 }
 
+interface IAtcStats {
+  episodes: {
+    total: number;
+    active: number;
+  };
+  applications: {
+    overall: {
+      total: number;
+      pending: number;
+      approved: number;
+      declined: number;
+    };
+    period: {
+      label: string;
+      total: number;
+      pending: number;
+      approved: number;
+      declined: number;
+    };
+  };
+  engagement: {
+    total_votes: number;
+    total_likes: number;
+    total_comments: number;
+  };
+}
+
 interface IMarketSquareStats {
   total_products: number;
   today_products: number;
@@ -570,8 +597,7 @@ interface IMarketSquareShops {
   actions?: any;
 }
 
-interface IMarketSquareShopsResponse
-  extends IPaginatedResponse<IMarketSquareShops> {}
+interface IMarketSquareShopsResponse extends IPaginatedResponse<IMarketSquareShops> {}
 
 interface ITickerUser {
   name: string;
@@ -785,8 +811,7 @@ interface IPendingWithdrawals {
   last_withdrawal: string | null;
 }
 
-interface IPendingWithdrawalsResponse
-  extends IPaginatedResponse<IPendingWithdrawals> {}
+interface IPendingWithdrawalsResponse extends IPaginatedResponse<IPendingWithdrawals> {}
 
 interface IPendingVerification {
   uuid: string;
@@ -845,8 +870,7 @@ interface IPendingVerification {
   duration_since_joining: string;
 }
 
-interface IPendingVerificationResponse
-  extends IPaginatedResponse<IPendingVerification> {}
+interface IPendingVerificationResponse extends IPaginatedResponse<IPendingVerification> {}
 
 interface IVerificationDocument {
   uuid: string;
@@ -957,7 +981,7 @@ interface IVerificationRequested {
               time: number;
               type: string;
               message: string;
-            }
+            },
           ];
           success: boolean;
           attempts: number;
@@ -1056,8 +1080,6 @@ interface IPushNotifications {
   deleted_at: string | null;
 }
 
-interface IPushNotificationResponse
-  extends IPaginatedResponse<IPushNotifications> {}
+interface IPushNotificationResponse extends IPaginatedResponse<IPushNotifications> {}
 
-interface IVerificationRequestedResponse
-  extends IPaginatedResponse<IVerificationRequested> {}
+interface IVerificationRequestedResponse extends IPaginatedResponse<IVerificationRequested> {}
