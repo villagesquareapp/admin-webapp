@@ -1,6 +1,6 @@
 'use server'
 
-import { apiGet, apiPost } from '@/lib/api';
+import { apiGet, apiPatch, apiPost } from '@/lib/api';
 import { getToken } from '@/lib/getToken';
 import { revalidateCurrentPath } from '@/lib/revalidate';
 
@@ -56,6 +56,33 @@ export const getLeaderboard = async (period?: string) => {
     }
     return await apiGet<ILeaderboardResponse>(
         `africa-talent-challenge/leaderboard${period ? `?${queryParams.toString()}` : ''}`,
+        token
+    );
+};
+
+export const reviewATCApplication = async (uuid: string) => {
+    const token = await getToken();
+    return await apiPatch<any>(
+        `africa-talent-challenge/applications/${uuid}/review`,
+        {},
+        token
+    );
+};
+
+export const approveATCApplication = async (uuid: string) => {
+    const token = await getToken();
+    return await apiPatch<any>(
+        `africa-talent-challenge/applications/${uuid}/approve`,
+        {},
+        token
+    );
+};
+
+export const declineATCApplication = async (uuid: string) => {
+    const token = await getToken();
+    return await apiPatch<any>(
+        `africa-talent-challenge/applications/${uuid}/decline`,
+        {},
         token
     );
 };

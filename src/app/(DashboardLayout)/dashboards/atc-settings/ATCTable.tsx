@@ -69,7 +69,7 @@ const ApplicationTable = ({
             name: info.row.original.fullname,
             username: info.row.original.user.username,
             email: info.row.original.occupation || "N/A",
-            profile_picture: info.row.original.profile_picture_url,
+            profile_picture: info.row.original.user.profile_picture,
           }}
           
           showPremiumAndCheckMark={false}

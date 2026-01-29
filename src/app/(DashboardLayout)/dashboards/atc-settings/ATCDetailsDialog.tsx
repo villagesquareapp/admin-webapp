@@ -8,7 +8,8 @@ import { formatDate } from "@/utils/dateUtils";
 import { UserDetailsComp } from "@/app/components/shared/TableSnippets";
 import { IoMdCheckmark } from "react-icons/io";
 import { LiaTimesSolid } from "react-icons/lia";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { approveATCApplication, declineATCApplication, reviewATCApplication } from "@/app/api/atc";
 
 const ATCDetailsDialog = ({
   isOpen,
@@ -21,7 +22,62 @@ const ATCDetailsDialog = ({
 }) => {
   if (!application) return null;
 
-  const [isMetricsPanelOpen, setIsMetricsPanelOpen] = useState(false);
+  const [isMetricsPanelOpen, setIsMetricsPanelOpen] = useState(application.status === "approved");
+  const [currentStatus, setCurrentStatus] = useState(application.status);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
+
+  useEffect(() => {
+    setCurrentStatus(application.status);
+    setIsMetricsPanelOpen(application.status === "approved");
+  }, [application.uuid, application.status]);
+
+  useEffect(() => {
+    const markAsInReview = async () => {
+      if (isOpen && application.status === "pending" && currentStatus === "pending") {
+        try {
+          const res = await reviewATCApplication(application.uuid);
+          console.log(res);
+          if (res.status) {
+            setCurrentStatus("in_review");
+            // Optionally: revalidate path or trigger parent refresh
+          }
+        } catch (error) {
+          console.error("Failed to move application to review:", error);
+        }
+      }
+    };
+
+    markAsInReview();
+  }, [isOpen, application.uuid, application.status, currentStatus]);
+
+  const handleApprove = async () => {
+    setIsProcessing(true);
+    try {
+      const res = await approveATCApplication(application.uuid);
+      if (res.status) {
+        setCurrentStatus("approved");
+      }
+    } catch (error) {
+      console.error("Failed to approve application:", error);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleDecline = async () => {
+    setIsProcessing(true);
+    try {
+      const res = await declineATCApplication(application.uuid);
+      if (res.status) {
+        setCurrentStatus("declined");
+      }
+    } catch (error) {
+      console.error("Failed to decline application:", error);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
 
   return (
     <AnimatePresence>
@@ -50,9 +106,9 @@ const ATCDetailsDialog = ({
                 {!isMetricsPanelOpen ? (
                   <motion.div
                     key="details"
-                    initial={{ x: -100, opacity: 0 }}
+                    initial={{ x: application.status === "approved" ? "100%" : -100, opacity: 0 }}
                     animate={{ x: 0, opacity: 1 }}
-                    exit={{ x: -100, opacity: 0 }}
+                    exit={{ x: application.status === "approved" ? "100%" : -100, opacity: 0 }}
                     transition={{ type: "spring", stiffness: 300, damping: 30 }}
                     className="flex flex-col h-full overflow-hidden"
                   >
@@ -72,7 +128,7 @@ const ATCDetailsDialog = ({
                         <div className="relative w-20 h-20 rounded-full overflow-hidden shrink-0 border-2 border-gray-100 dark:border-gray-700">
                           <Image
                             src={
-                              application.profile_picture_url ||
+                              application.user.profile_picture ||
                               "/images/placeholder.png"
                             }
                             alt={application.fullname}
@@ -88,15 +144,16 @@ const ATCDetailsDialog = ({
                           <div className="flex gap-2 mt-2">
                             <span
                               className={`px-3 py-1 text-xs rounded-full font-medium capitalize
-                        ${
-                          application.status === "approved"
-                            ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
-                            : application.status === "declined"
-                              ? "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
-                              : "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400"
-                        }`}
+                        ${currentStatus === "approved"
+                                  ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
+                                  : currentStatus === "declined"
+                                    ? "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
+                                    : currentStatus === "in_review" || currentStatus === "in-review"
+                                      ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
+                                      : "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400"
+                                }`}
                             >
-                              {application.status}
+                              {currentStatus?.replace(" ", "_")}
                             </span>
                           </div>
                         </div>
@@ -148,6 +205,51 @@ const ATCDetailsDialog = ({
                         </div>
                       )}
 
+                      {(currentStatus === "pending" || currentStatus === "in_review" || currentStatus === "in-review") && (
+                        <div className="space-y-4">
+                          <p className="text-sm text-gray-500 dark:text-gray-400">
+                            Identification & Profile Picture
+                          </p>
+                          <div className="grid grid-cols-3 gap-4">
+                            {[
+                              { label: "ID Front", url: application.id_card_front_url },
+                              { label: "ID Back", url: application.id_card_back_url },
+                              { label: "Profile Picture", url: application.profile_picture_url },
+                            ].map((img, idx) => (
+                              <div key={idx} className="space-y-2">
+                                <p className="text-xs text-center text-gray-500 dark:text-gray-400 font-medium">
+                                  {img.label}
+                                </p>
+                                <div className="relative aspect-[4/3] rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 group">
+                                  {img.url ? (
+                                    <>
+                                      <Image
+                                        src={img.url}
+                                        alt={img.label}
+                                        fill
+                                        className="object-cover"
+                                      />
+                                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                        <button
+                                          onClick={() => setPreviewImage(img.url)}
+                                          className="p-2 bg-white/20 hover:bg-white/40 rounded-full backdrop-blur-md text-white transition-transform hover:scale-110"
+                                        >
+                                          <Icon icon="solar:eye-bold" width={20} />
+                                        </button>
+                                      </div>
+                                    </>
+                                  ) : (
+                                    <div className="flex items-center justify-center h-full">
+                                      <Icon icon="solar:camera-broken" className="text-gray-400" width={24} />
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
                       <div className="space-y-2">
                         <p className="text-sm text-gray-500 dark:text-gray-400">
                           Application Video
@@ -176,7 +278,7 @@ const ATCDetailsDialog = ({
 
                     <div className="sticky bottom-0 bg-white dark:bg-darkgray border-t dark:border-gray-700 px-6 py-2 pb-4 mt-auto">
                       <div className="flex justify-end gap-3">
-                        {application.status === "approved" ? (
+                        {currentStatus === "approved" ? (
                           <Button
                             color="success"
                             size="sm"
@@ -188,25 +290,35 @@ const ATCDetailsDialog = ({
                               className="mr-2"
                               width={20}
                             />
-                            View Metrics
+                            Back to Metrics
                           </Button>
                         ) : (
                           <>
                             <Button
                               color={"failure"}
-                              onClick={onClose}
+                              onClick={handleDecline}
+                              disabled={isProcessing}
                               className="px-4 !py-1 rounded-lg font-medium transition-colors"
                             >
-                              <LiaTimesSolid size={16} />
+                              {isProcessing ? (
+                                <Icon icon="line-md:loading-twotone-loop" className="mr-2" width={16} />
+                              ) : (
+                                <LiaTimesSolid size={16} className="mr-2" />
+                              )}
                               Decline
                             </Button>
                             <Button
                               color="success"
                               size="sm"
                               className="px-4 text-sm lg:text-base"
-                              // onClick={() => setIsApproveDialogOpen(true)}
+                              disabled={isProcessing}
+                              onClick={handleApprove}
                             >
-                              <IoMdCheckmark size={16} />
+                              {isProcessing ? (
+                                <Icon icon="line-md:loading-twotone-loop" className="mr-2" width={20} />
+                              ) : (
+                                <IoMdCheckmark size={16} className="mr-2" />
+                              )}
                               Approve
                             </Button>
                           </>
@@ -217,9 +329,9 @@ const ATCDetailsDialog = ({
                 ) : (
                   <motion.div
                     key="metrics"
-                    initial={{ x: "100%" }}
+                    initial={{ x: application.status === "approved" ? "-100%" : "100%" }}
                     animate={{ x: 0 }}
-                    exit={{ x: "100%" }}
+                    exit={{ x: application.status === "approved" ? "-100%" : "100%" }}
                     transition={{ type: "spring", stiffness: 300, damping: 30 }}
                     className="flex flex-col h-full overflow-hidden"
                   >
@@ -228,7 +340,7 @@ const ATCDetailsDialog = ({
                         <DialogTitle className="text-xl font-bold">
                           Application Metrics
                         </DialogTitle>
-                        <Button
+                        {/* <Button
                           color="light"
                           size="xs"
                           onClick={() => setIsMetricsPanelOpen(false)}
@@ -239,7 +351,7 @@ const ATCDetailsDialog = ({
                             width={16}
                           />
                           Back
-                        </Button>
+                        </Button> */}
                       </div>
                     </div>
 
@@ -356,14 +468,24 @@ const ATCDetailsDialog = ({
                     <div className="sticky bottom-0 bg-white dark:bg-darkgray border-t dark:border-gray-700 px-6 py-2 pb-4 mt-auto">
                       <div className="flex justify-end gap-3">
                         <Button
-                          color="gray"
+                          color="success"
+                          size="sm"
+                          className="px-4 text-sm lg:text-base"
                           onClick={() => setIsMetricsPanelOpen(false)}
                         >
-                          Close
+                          <Icon
+                            icon="solar:user-circle-bold"
+                            className="mr-2"
+                            width={20}
+                          />
+                          View Application
                         </Button>
-                        <Button color="success">
-                          <IoMdCheckmark className="mr-2" />
-                          Download Report
+                        <Button
+                          color="gray"
+                          size="sm"
+                          onClick={onClose}
+                        >
+                          Close
                         </Button>
                       </div>
                     </div>
@@ -374,6 +496,52 @@ const ATCDetailsDialog = ({
           </div>
         </Dialog>
       )}
+
+      {/* Image Preview Modal */}
+      <AnimatePresence>
+        {previewImage && (
+          <Dialog
+            static
+            open={!!previewImage}
+            onClose={() => setPreviewImage(null)}
+            className="relative z-[60]"
+          >
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/90 backdrop-blur-sm"
+            />
+            <div className="fixed inset-0 flex items-center justify-center p-4">
+              <DialogPanel
+                as={motion.div}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                className="relative max-w-4xl w-full h-[80vh] flex flex-col items-center justify-center"
+              >
+                <div className="absolute top-0 right-0 p-4 z-10">
+                  <button
+                    onClick={() => setPreviewImage(null)}
+                    className="p-2 bg-white/10 hover:bg-white/20 rounded-full text-white transition-colors"
+                  >
+                    <Icon icon="solar:close-circle-bold" width={32} />
+                  </button>
+                </div>
+                <div className="relative w-full h-full">
+                  <Image
+                    src={previewImage}
+                    alt="Preview"
+                    fill
+                    className="object-contain"
+                    priority
+                  />
+                </div>
+              </DialogPanel>
+            </div>
+          </Dialog>
+        )}
+      </AnimatePresence>
     </AnimatePresence>
   );
 };
