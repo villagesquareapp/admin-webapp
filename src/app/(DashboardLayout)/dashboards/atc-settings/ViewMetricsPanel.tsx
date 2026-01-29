@@ -44,7 +44,8 @@ const ViewMetricsPanel = ({
                             // transition={{ type: "spring", stiffness: 300, damping: 30 }}
                             className="w-full max-w-[500px] md:max-w-[600px] lg:max-w-[700px] bg-white dark:bg-darkgray shadow-xl h-full flex flex-col"
                         >
-                            {/* <div className="flex items-center justify-between px-6 py-4 border-b dark:border-gray-700">
+                            {/* Header */}
+                            <div className="flex items-center justify-between px-6 py-4 border-b dark:border-gray-700">
                                 <DialogTitle className="text-xl font-bold dark:text-white">
                                     Application Metrics
                                 </DialogTitle>
@@ -56,10 +57,12 @@ const ViewMetricsPanel = ({
                                 </button>
                             </div>
 
+                            {/* Content */}
                             <div className="flex-1 overflow-y-auto p-6 space-y-6">
                                 {user && (
                                     <div className="flex items-center gap-4 mb-6">
                                         <div className="w-12 h-12 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden">
+                                            {/* eslint-disable-next-line @next/next/no-img-element */}
                                             <img
                                                 src={user.user_details.profile.profile_picture || "/images/placeholder.png"}
                                                 alt={user.user_details.profile.name}
@@ -73,13 +76,14 @@ const ViewMetricsPanel = ({
                                     </div>
                                 )}
 
+                                {/* Mock Metrics */}
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="p-4 rounded-xl bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-900/50">
                                         <div className="flex items-center gap-3 mb-2">
                                             <div className="p-2 bg-blue-100 dark:bg-blue-900/50 rounded-lg text-blue-600 dark:text-blue-400">
                                                 <Icon icon="solar:eye-bold" width={20} />
                                             </div>
-                                            <span className="text-sm font-medium text-gray-600 dark:text-gray-300">Total Views</span>
+                                            <span className="text-sm font-medium text-gray-600 dark:text-gray-300">Total Votes</span>
                                         </div>
                                         <p className="text-2xl font-bold text-gray-900 dark:text-white">12.5k</p>
                                         <p className="text-xs text-green-600 flex items-center gap-1 mt-1">
@@ -128,7 +132,8 @@ const ViewMetricsPanel = ({
                                     </div>
                                 </div>
 
-                                <div className="p-6 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700">
+                                {/* Placeholder Chart Area */}
+                                {/* <div className="p-6 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700">
                                     <h4 className="font-semibold mb-4 dark:text-white">Activity Overview</h4>
                                     <div className="h-64 flex items-end justify-between gap-2">
                                         {[40, 65, 30, 80, 55, 90, 45, 60, 75, 50, 85, 70].map((height, i) => (
@@ -142,10 +147,11 @@ const ViewMetricsPanel = ({
                                     <div className="flex justify-between mt-2 text-xs text-gray-400">
                                         <span>Jan</span><span>Dec</span>
                                     </div>
-                                </div>
+                                </div> */}
 
                             </div>
 
+                            {/* Footer */}
                             <div className="p-6 border-t dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 flex justify-end gap-3">
                                 <Button color="gray" onClick={onClose}>
                                     Close
@@ -154,7 +160,7 @@ const ViewMetricsPanel = ({
                                     <IoMdCheckmark className="mr-2" />
                                     Download Report
                                 </Button>
-                            </div> */}
+                            </div>
                         </DialogPanel>
                     </div>
                 </Dialog>

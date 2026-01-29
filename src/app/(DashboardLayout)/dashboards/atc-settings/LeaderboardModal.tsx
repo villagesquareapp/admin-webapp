@@ -15,9 +15,11 @@ import { getLeaderboard } from "@/app/api/atc";
 const LeaderboardModal = ({
   isOpen,
   setIsOpen,
+  period,
 }: {
   isOpen: boolean;
   setIsOpen: (value: boolean) => void;
+  period?: string;
 }) => {
   const [loading, setLoading] = useState(false);
   const [leaderboardData, setLeaderboardData] = useState<ILeaderboardParticipant[]>([]);
@@ -28,7 +30,7 @@ const LeaderboardModal = ({
       const fetchLeaderboard = async () => {
         setLoading(true);
         try {
-          const res = await getLeaderboard();
+          const res = await getLeaderboard(period);
           if (res?.status && res?.data) {
             setLeaderboardData(res.data.leaderboard);
             setActiveEpisode(res.data.active_episode);
@@ -42,7 +44,7 @@ const LeaderboardModal = ({
 
       fetchLeaderboard();
     }
-  }, [isOpen]);
+  }, [isOpen, period]);
 
   return (
     <Transition appear show={isOpen} as={Fragment}>
