@@ -7,7 +7,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useDebouncedCallback } from "use-debounce";
 import { Icon } from "@iconify/react";
 
-const SearchAndFilter = () => {
+const SearchAndFilter = ({ period }: { period?: string }) => {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const { replace } = useRouter();
@@ -36,14 +36,10 @@ const SearchAndFilter = () => {
   };
 
   const statuses = [
-    "active",
-    "suspended",
-    "disabled",
-    "reported",
-    "flagged",
-    "banned",
-    "shadow_hidden",
-    "archived",
+    "pending",
+    "in-view",
+    "approved",
+    "declined"
   ];
 
   return (
@@ -99,6 +95,7 @@ const SearchAndFilter = () => {
       <LeaderboardModal
         isOpen={isLeaderboardOpen}
         setIsOpen={setIsLeaderboardOpen}
+        period={period}
       />
     </div>
   );

@@ -96,7 +96,7 @@ const SidebarContent: MenuItem[] = [
             url: "/dashboards/wallets",
           },
           {
-            name: "ATC Settings",
+            name: "Africa Talent Challenge",
             icon: "mdi:settings-play-outline",
             id: uniqueId(),
             url: "/dashboards/atc-settings",

@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import ATCSmallCards from "./ATCSmallCards";
 import { getUserStats } from "@/app/api/user";
 import shape1 from "/public/images/shapes/danger-card-shape.png";
@@ -12,11 +13,35 @@ import { getATCStats, getATCPeriods } from "@/app/api/atc";
 
 
 const StatsWithMonthsFilter = ({ initialStats }: { initialStats: any }) => {
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const { replace } = useRouter();
+
   const [showHistory, setShowHistory] = useState(false);
-  const [selectedMonth, setSelectedMonth] = useState<string>("");
+  const periodParam = searchParams.get("period")?.toString() || "";
+  const [selectedMonth, setSelectedMonth] = useState<string>(periodParam);
   const [atcStats, setAtcStats] = useState(initialStats);
   const [isLoading, setIsLoading] = useState(false);
   const [periods, setPeriods] = useState<IATCPeriod[]>([]);
+
+
+  // Sync local state with URL param if it changes externally or on load
+  useEffect(() => {
+    if (periodParam) {
+      setSelectedMonth(periodParam);
+    }
+  }, [periodParam]);
+
+  const handlePeriodChange = (val: string) => {
+    setSelectedMonth(val);
+    const params = new URLSearchParams(searchParams);
+    if (val) {
+      params.set("period", val);
+    } else {
+      params.delete("period");
+    }
+    replace(`${pathname}?${params.toString()}`);
+  };
 
 
   useEffect(() => {
@@ -156,7 +181,7 @@ const StatsWithMonthsFilter = ({ initialStats }: { initialStats: any }) => {
               <div className="w-48">
                 <select
                   value={selectedMonth}
-                  onChange={(e) => setSelectedMonth(e.target.value)}
+                  onChange={(e) => handlePeriodChange(e.target.value)}
                   className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                   {periods.map((period) => (

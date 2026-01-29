@@ -48,10 +48,14 @@ export const getATCApplications = async (
     );
 };
 
-export const getLeaderboard = async () => {
+export const getLeaderboard = async (period?: string) => {
     const token = await getToken();
+    const queryParams = new URLSearchParams();
+    if (period) {
+        queryParams.append('period', period);
+    }
     return await apiGet<ILeaderboardResponse>(
-        `africa-talent-challenge/leaderboard`,
+        `africa-talent-challenge/leaderboard${period ? `?${queryParams.toString()}` : ''}`,
         token
     );
 };

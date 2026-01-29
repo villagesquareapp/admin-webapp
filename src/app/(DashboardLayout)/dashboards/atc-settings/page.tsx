@@ -20,10 +20,11 @@ const Page = async ({
   const applicationId = searchParams.applicationId as string;
   const search = searchParams.search as string;
   const status = searchParams.status as string;
+  const period = searchParams.period as string;
 
   const [atcStats, applications] = await Promise.all([
     getATCStats(),
-    getATCApplications(undefined, status, search, page, limit),
+    getATCApplications(period, status, search, page, limit),
   ]);
 
   const selectedApplication =
@@ -84,7 +85,7 @@ const Page = async ({
         </div>
 
         <div className="col-span-12">
-          <SearchAndFilter />
+          <SearchAndFilter period={period} />
           <ATCTable
             applications={applications?.data || null}
             totalPages={applications?.data?.last_page || 1}
