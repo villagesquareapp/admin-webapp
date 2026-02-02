@@ -42,7 +42,7 @@ const NavItems: React.FC<NavItemsProps> = ({ item }) => {
               } `}
             ></span>
           )}
-          <span className="max-w-36 overflow-hidden">{t(`${item.name}`)}</span>
+          <span className="max-w-38 overflow-hidden">{t(`${item.name}`)}</span>
         </span>
       </Sidebar.Item>
     </>

@@ -18,11 +18,11 @@ const BusinessSuiteCard = ({ token }: { token: string }) => {
           href="/dashboards/notifications"
           icon="bxs:notification"
         />
-        {/* <StatsCard
-          label="Africa Talent Challenge"
-          href="/dashboards/atc-settings"
+        <StatsCard
+          label="ATC Management"
+          href="/dashboards/atc-management"
           icon="mdi:settings-play-outline"
-        /> */}
+        />
       </div>
     </div>
   );

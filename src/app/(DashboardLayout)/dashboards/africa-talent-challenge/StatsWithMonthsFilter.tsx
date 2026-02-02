@@ -43,6 +43,18 @@ const StatsWithMonthsFilter = ({ initialStats }: { initialStats: any }) => {
     replace(`${pathname}?${params.toString()}`);
   };
 
+  const handleViewPastEpisodes = () => {
+    setShowHistory(true);
+    if (selectedMonth) {
+      handlePeriodChange(selectedMonth);
+    }
+  };
+
+  const handleBackToDashboard = () => {
+    setShowHistory(false);
+    handlePeriodChange("");
+  };
+
 
   useEffect(() => {
     const fetchPeriods = async () => {
@@ -163,7 +175,7 @@ const StatsWithMonthsFilter = ({ initialStats }: { initialStats: any }) => {
       <div className="flex justify-between items-center">
         {showHistory ? (
           <Button
-            onClick={() => setShowHistory(false)}
+            onClick={handleBackToDashboard}
             className="flex items-center gap-2 text-primary hover:text-primary-dark transition-colors px-0 py-2"
           >
             <Icon icon="solar:arrow-left-linear" width={20} />
@@ -194,11 +206,11 @@ const StatsWithMonthsFilter = ({ initialStats }: { initialStats: any }) => {
             </div>
           ) : (
             <Button
-              onClick={() => setShowHistory(true)}
+              onClick={handleViewPastEpisodes}
               className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors flex items-center gap-2"
             >
               <Icon icon="solar:history-bold-duotone" width={20} />
-              View Past Applications
+              View Past Episodes
             </Button>
           )}
         </div>

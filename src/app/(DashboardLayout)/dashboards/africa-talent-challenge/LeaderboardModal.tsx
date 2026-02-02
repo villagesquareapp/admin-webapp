@@ -88,11 +88,11 @@ const LeaderboardModal = ({
                       width={28}
                     />
                     Ranking Details
-                    {activeEpisode && (
+                    {/* {(leaderboardData.length > 0 ? leaderboardData[0].episode?.name : activeEpisode?.name) && (
                       <span className="text-sm font-normal text-gray-500 dark:text-gray-400 ml-2 py-1 px-3 bg-gray-100 dark:bg-gray-800 rounded-full">
-                        {activeEpisode.name}
+                        {leaderboardData.length > 0 ? leaderboardData[0].episode?.name : activeEpisode?.name}
                       </span>
-                    )}
+                    )} */}
                   </DialogTitle>
                   <button
                     onClick={() => setIsOpen(false)}

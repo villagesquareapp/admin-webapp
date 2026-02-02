@@ -97,9 +97,9 @@ const SidebarContent: MenuItem[] = [
           },
           {
             name: "Africa Talent Challenge",
-            icon: "mdi:settings-play-outline",
+            icon: "game-icons:africa",
             id: uniqueId(),
-            url: "/dashboards/atc-settings",
+            url: "/dashboards/africa-talent-challenge",
           },
           {
             name: "Admin Users",
