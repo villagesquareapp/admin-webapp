@@ -71,7 +71,7 @@ const SearchAndFilter = ({ period }: { period?: string }) => {
               <option value="all">All Statuses</option>
               {statuses.map((status) => (
                 <option key={status} value={status}>
-                  {status.replace("_", " ")}
+                  {status}
                 </option>
               ))}
             </select>
