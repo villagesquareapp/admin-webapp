@@ -33,6 +33,7 @@ const Page = async ({
         (app: IATCApplication) => app.uuid === applicationId
       )
       : null;
+      console.log(selectedApplication);
 
   const overviewData: IOverviewData[] = [
     {

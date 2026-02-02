@@ -8,6 +8,8 @@ interface IATCApplication {
     address: string;
     application_type: string;
     profile_picture_url: string;
+    id_card_front_url: string;
+    id_card_back_url: string;
     video_url: string;
     thumbnail_url: string | null;
     status: string;
