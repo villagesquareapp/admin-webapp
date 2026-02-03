@@ -36,10 +36,10 @@ const SearchAndFilter = ({ period }: { period?: string }) => {
   };
 
   const statuses = [
-    "pending",
-    "in-view",
-    "approved",
-    "declined"
+    { value: "pending", label: "Pending" },
+    { value: "in-view", label: "In-View" },
+    { value: "approved", label: "Approved" },
+    { value: "declined", label: "Declined" },
   ];
 
   return (
@@ -70,8 +70,8 @@ const SearchAndFilter = ({ period }: { period?: string }) => {
             >
               <option value="all">All Statuses</option>
               {statuses.map((status) => (
-                <option key={status} value={status}>
-                  {status}
+                <option key={status.value} value={status.value}>
+                  {status.label}
                 </option>
               ))}
             </select>
