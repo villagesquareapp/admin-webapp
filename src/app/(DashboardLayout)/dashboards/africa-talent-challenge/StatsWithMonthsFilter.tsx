@@ -47,6 +47,8 @@ const StatsWithMonthsFilter = ({ initialStats }: { initialStats: any }) => {
     setShowHistory(true);
     if (selectedMonth) {
       handlePeriodChange(selectedMonth);
+    } else if (periods.length > 0) {
+      handlePeriodChange(periods[0].value);
     }
   };
 
