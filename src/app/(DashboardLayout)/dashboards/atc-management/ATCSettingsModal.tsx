@@ -155,7 +155,7 @@ const ATCSettingsModal: React.FC<ATCSettingsModalProps> = ({
                 <div className="flex flex-col gap-8">
                   {/* Top Section: Options/Settings */}
                   <div className="flex flex-col bg-gray-50 dark:bg-gray-800/30 rounded-3xl p-6 border border-gray-100 dark:border-gray-700">
-                    <div className="flex flex-wrap items-center justify-between gap-6">
+                    <div className="flex flex-wrap items-end justify-between gap-6">
                       <div className="flex-1 min-w-[150px]">
                         <Label className="text-xs uppercase tracking-wider text-gray-400 font-bold mb-1 block">
                           Current Month
