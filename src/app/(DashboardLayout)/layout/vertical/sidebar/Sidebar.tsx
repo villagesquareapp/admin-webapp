@@ -36,13 +36,9 @@ const SidebarLayout = () => {
     return null; // URL not found
   }
 
-  const result = findActiveUrl(SidebarContent, pathname);
+  const result = React.useMemo(() => findActiveUrl(SidebarContent, pathname), [pathname]);
 
-  // useEffect(() => {
-  //   setSelectedIconId(result);
-  // }, []);
-
-    useEffect(() => {
+  useEffect(() => {
     if (result !== null) {
       setSelectedIconId(result);
     } else if (!selectedIconId) {

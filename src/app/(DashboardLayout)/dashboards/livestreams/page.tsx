@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { getLivestreams, getLivestreamStats } from "@/app/api/livestream";
 import SmallCards from "@/app/components/dashboards/ecommerce/smallCards";
 import LivestreamTable from "./LivestreamTable";
@@ -5,18 +6,8 @@ import shape1 from "/public/images/shapes/danger-card-shape.png";
 import shape2 from "/public/images/shapes/secondary-card-shape.png";
 import shape3 from "/public/images/shapes/success-card-shape.png";
 
-const Page = async ({
-  searchParams,
-}: {
-  searchParams: { [key: string]: string | string[] | undefined };
-}) => {
-  const page = Number(searchParams.page) || 1;
-  const limit = Number(searchParams.limit) || 20;
-
-  const [livestreamStats, livestreams] = await Promise.all([
-    getLivestreamStats(),
-    getLivestreams(page, limit),
-  ]);
+const LivestreamStatsWrapper = async () => {
+  const livestreamStats = await getLivestreamStats();
 
   const overviewData: IOverviewData[] = [
     {
@@ -45,19 +36,41 @@ const Page = async ({
     },
   ];
 
+  return <SmallCards overviewData={overviewData} />;
+};
+
+const LivestreamTableWrapper = async ({ page, limit }: { page: number; limit: number }) => {
+  const livestreams = await getLivestreams(page, limit);
+  return (
+    <LivestreamTable
+      livestreams={livestreams?.data || null}
+      totalPages={livestreams?.data?.last_page || 1}
+      currentPage={page}
+      pageSize={limit}
+    />
+  );
+};
+
+const Page = async ({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string | string[] | undefined };
+}) => {
+  const page = Number(searchParams.page) || 1;
+  const limit = Number(searchParams.limit) || 20;
+
   return (
     <>
       <div className="grid grid-cols-12 gap-30">
         <div className="col-span-12">
-          <SmallCards overviewData={overviewData} />
+          <Suspense fallback={<div className="h-[150px] w-full animate-pulse bg-gray-100 dark:bg-gray-800 rounded-3xl" />}>
+            <LivestreamStatsWrapper />
+          </Suspense>
         </div>
         <div className="col-span-12">
-          <LivestreamTable
-            livestreams={livestreams?.data || null}
-            totalPages={livestreams?.data?.last_page || 1}
-            currentPage={page}
-            pageSize={limit}
-          />
+          <Suspense key={`${page}-${limit}`} fallback={<div className="h-[500px] w-full animate-pulse bg-gray-100 dark:bg-gray-800 rounded-3xl" />}>
+            <LivestreamTableWrapper page={page} limit={limit} />
+          </Suspense>
         </div>
       </div>
     </>

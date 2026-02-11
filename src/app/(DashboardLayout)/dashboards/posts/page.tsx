@@ -8,20 +8,15 @@
 // export default Page;
 
 
+import { Suspense } from "react";
 import { getPosts, getPostStats } from "@/app/api/post";
 import SmallCards from "@/app/components/dashboards/ecommerce/smallCards";
 import PostTable from "./PostTable";
 import shape1 from "/public/images/shapes/danger-card-shape.png";
 import shape3 from "/public/images/shapes/success-card-shape.png";
 
-const Page = async ({
-  searchParams,
-}: {
-  searchParams: { [key: string]: string | string[] | undefined };
-}) => {
-  const page = Number(searchParams.page) || 1;
-  const limit = Number(searchParams.limit) || 20;
-  const [postStats, posts] = await Promise.all([getPostStats(), getPosts(page, limit)]);
+const PostStatsWrapper = async () => {
+  const postStats = await getPostStats();
 
   const overviewData: IOverviewData[] = [
     {
@@ -58,23 +53,41 @@ const Page = async ({
     },
   ];
 
+  return <SmallCards overviewData={overviewData} />;
+};
+
+const PostTableWrapper = async ({ page, limit }: { page: number; limit: number }) => {
+  const posts = await getPosts(page, limit);
+  return (
+    <PostTable
+      posts={posts?.data || null}
+      totalPages={posts?.data?.last_page || 1}
+      currentPage={page}
+      pageSize={limit}
+    />
+  );
+};
+
+const Page = async ({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string | string[] | undefined };
+}) => {
+  const page = Number(searchParams.page) || 1;
+  const limit = Number(searchParams.limit) || 20;
+
   return (
     <>
       <div className="grid grid-cols-12 gap-30">
-        {/* <div className="lg:col-span-6  col-span-12">
-          <Welcome />
-        </div> */}
-        {/* <div className="lg:col-span-6 col-span-12"> */}
         <div className="col-span-12">
-          <SmallCards overviewData={overviewData} />
+          <Suspense fallback={<div className="h-[150px] w-full animate-pulse bg-gray-100 dark:bg-gray-800 rounded-3xl" />}>
+            <PostStatsWrapper />
+          </Suspense>
         </div>
         <div className="col-span-12">
-          <PostTable
-            posts={posts?.data || null}
-            totalPages={posts?.data?.last_page || 1}
-            currentPage={page}
-            pageSize={limit}
-          />
+          <Suspense key={`${page}-${limit}`} fallback={<div className="h-[500px] w-full animate-pulse bg-gray-100 dark:bg-gray-800 rounded-3xl" />}>
+            <PostTableWrapper page={page} limit={limit} />
+          </Suspense>
         </div>
       </div>
     </>

@@ -30,6 +30,11 @@ const ATCTableWrapper = async ({
   );
 };
 
+const StatsWrapper = async () => {
+  const atcStats = await getATCStats();
+  return <StatsWithMonthsFilter initialStats={atcStats} />;
+};
+
 const Page = async ({
   searchParams,
 }: {
@@ -41,13 +46,13 @@ const Page = async ({
   const status = searchParams.status as string;
   const period = searchParams.period as string;
 
-  const atcStats = await getATCStats();
-
   return (
     <>
       <div className="grid grid-cols-12 gap-30">
         <div className="col-span-12">
-          <StatsWithMonthsFilter initialStats={atcStats} />
+          <Suspense fallback={<div className="h-[200px] w-full animate-pulse bg-gray-100 dark:bg-gray-800 rounded-3xl" />}>
+            <StatsWrapper />
+          </Suspense>
         </div>
 
         <div className="col-span-12">

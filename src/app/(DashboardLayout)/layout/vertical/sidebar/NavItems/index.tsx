@@ -16,7 +16,9 @@ const NavItems: React.FC<NavItemsProps> = ({ item }) => {
   const { t } = useTranslation();
   const { setIsMobileSidebar } = useContext(CustomizerContext);
   const handleMobileSidebar = () => {
-    setIsMobileSidebar(false);
+    if (window.innerWidth < 1140) {
+      setIsMobileSidebar(false);
+    }
   };
   return (
     <>
@@ -24,22 +26,20 @@ const NavItems: React.FC<NavItemsProps> = ({ item }) => {
         href={item.url}
         as={Link}
         prefetch={true}
-        className={`${
-          item.url == pathname
+        className={`${item.url == pathname
             ? "!text-primary bg-lightprimary "
             : "text-link bg-transparent group/link "
-        } `}
+          } `}
       >
         <span onClick={handleMobileSidebar} className="flex gap-3 align-center items-center">
           {item.icon ? (
             <Icon icon={item.icon} className={`${item.color}`} height={18} />
           ) : (
             <span
-              className={`${
-                item.url == pathname
+              className={`${item.url == pathname
                   ? "dark:bg-white rounded-full mx-1.5 group-hover/link:bg-primary !bg-primary h-[6px] w-[6px]"
                   : "h-[6px] w-[6px] bg-darklink dark:bg-white rounded-full mx-1.5 group-hover/link:bg-primary"
-              } `}
+                } `}
             ></span>
           )}
           <span className="max-w-38 overflow-hidden">{t(`${item.name}`)}</span>

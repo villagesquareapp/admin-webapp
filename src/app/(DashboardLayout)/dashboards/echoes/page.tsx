@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { getEchoes, getEchoStats } from "@/app/api/echo";
 import SmallCards from "@/app/components/dashboards/ecommerce/smallCards";
 import EchoeTable from "./EchoeTable";
@@ -5,15 +6,8 @@ import shape1 from "/public/images/shapes/danger-card-shape.png";
 import shape2 from "/public/images/shapes/secondary-card-shape.png";
 import shape3 from "/public/images/shapes/success-card-shape.png";
 
-const Page = async ({
-  searchParams,
-}: {
-  searchParams: { [key: string]: string | string[] | undefined };
-}) => {
-  const page = Number(searchParams.page) || 1;
-  const limit = Number(searchParams.limit) || 20;
-
-  const [echoStats, echoes] = await Promise.all([getEchoStats(), getEchoes(page, limit)]);
+const EchoStatsWrapper = async () => {
+  const echoStats = await getEchoStats();
 
   const overviewData: IOverviewData[] = [
     {
@@ -42,19 +36,41 @@ const Page = async ({
     },
   ];
 
+  return <SmallCards overviewData={overviewData} />;
+};
+
+const EchoTableWrapper = async ({ page, limit }: { page: number; limit: number }) => {
+  const echoes = await getEchoes(page, limit);
+  return (
+    <EchoeTable
+      echoes={echoes?.data || null}
+      totalPages={echoes?.data?.last_page || 1}
+      currentPage={page}
+      pageSize={limit}
+    />
+  );
+};
+
+const Page = async ({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string | string[] | undefined };
+}) => {
+  const page = Number(searchParams.page) || 1;
+  const limit = Number(searchParams.limit) || 20;
+
   return (
     <>
       <div className="grid grid-cols-12 gap-30">
         <div className="col-span-12">
-          <SmallCards overviewData={overviewData} />
+          <Suspense fallback={<div className="h-[150px] w-full animate-pulse bg-gray-100 dark:bg-gray-800 rounded-3xl" />}>
+            <EchoStatsWrapper />
+          </Suspense>
         </div>
         <div className="col-span-12">
-          <EchoeTable
-            echoes={echoes?.data || null}
-            totalPages={echoes?.data?.last_page || 1}
-            currentPage={page}
-            pageSize={limit} 
-          />
+          <Suspense key={`${page}-${limit}`} fallback={<div className="h-[500px] w-full animate-pulse bg-gray-100 dark:bg-gray-800 rounded-3xl" />}>
+            <EchoTableWrapper page={page} limit={limit} />
+          </Suspense>
         </div>
       </div>
     </>

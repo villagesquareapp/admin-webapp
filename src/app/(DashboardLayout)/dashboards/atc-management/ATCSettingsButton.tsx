@@ -2,8 +2,12 @@
 
 import { Button } from "flowbite-react";
 import React, { useState } from "react";
-import ATCSettingsModal from "./ATCSettingsModal";
+import dynamic from "next/dynamic";
 import { Icon } from "@iconify/react";
+
+const ATCSettingsModal = dynamic(() => import("./ATCSettingsModal"), {
+    loading: () => <div className="sr-only">Loading Modal...</div>,
+});
 
 interface ATCSettingsButtonProps {
     activePeriod: string;
@@ -23,7 +27,7 @@ const ATCSettingsButton: React.FC<ATCSettingsButtonProps> = ({ activePeriod }) =
                 ATC Settings
             </Button>
 
-            {activePeriod && (
+            {activePeriod && isSettingsOpen && (
                 <ATCSettingsModal
                     isOpen={isSettingsOpen}
                     setIsOpen={setIsSettingsOpen}
