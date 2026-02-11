@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { getTicketStats, getTickets } from "@/app/api/ticket";
 import SmallCards from "@/app/components/dashboards/ecommerce/smallCards";
 import TicketTable from "./TicketTable";
@@ -5,18 +6,8 @@ import shape1 from "/public/images/shapes/danger-card-shape.png";
 import shape2 from "/public/images/shapes/secondary-card-shape.png";
 import shape3 from "/public/images/shapes/success-card-shape.png";
 
-const Page = async ({
-  searchParams,
-}: {
-  searchParams: { [key: string]: string | string[] | undefined };
-}) => {
-  const page = Number(searchParams.page) || 1;
-  const limit = Number(searchParams.limit) || 20;
-
-  const [ticketStats, tickets] = await Promise.all([
-    getTicketStats(),
-    getTickets(page, limit),
-  ]);
+const TicketStatsWrapper = async () => {
+  const ticketStats = await getTicketStats();
 
   const overviewData: IOverviewData[] = [
     {
@@ -61,27 +52,43 @@ const Page = async ({
     },
   ];
 
+  return <SmallCards overviewData={overviewData} />;
+};
+
+const TicketTableWrapper = async ({ page, limit }: { page: number; limit: number }) => {
+  const tickets = await getTickets(page, limit);
+  return (
+    <TicketTable
+      tickets={tickets?.data || null}
+      totalPages={tickets?.data?.last_page || 1}
+      currentPage={page}
+      pageSize={limit}
+    />
+  );
+};
+
+const Page = async ({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string | string[] | undefined };
+}) => {
+  const page = Number(searchParams.page) || 1;
+  const limit = Number(searchParams.limit) || 20;
+
   return (
     <>
-      <>
-        <div className="grid grid-cols-12 gap-30">
-          {/* <div className="lg:col-span-6  col-span-12">
-          <Welcome />
-        </div> */}
-          {/* <div className="lg:col-span-6 col-span-12"> */}
-          <div className="col-span-12">
-            <SmallCards overviewData={overviewData} />
-          </div>
-          <div className="col-span-12">
-            <TicketTable
-              tickets={tickets?.data || null}
-              totalPages={tickets?.data?.last_page || 1}
-              currentPage={page}
-              pageSize={limit}
-            />
-          </div>
+      <div className="grid grid-cols-12 gap-30">
+        <div className="col-span-12">
+          <Suspense fallback={<div className="h-[150px] w-full animate-pulse bg-gray-100 dark:bg-gray-800 rounded-3xl" />}>
+            <TicketStatsWrapper />
+          </Suspense>
         </div>
-      </>
+        <div className="col-span-12">
+          <Suspense key={`${page}-${limit}`} fallback={<div className="h-[500px] w-full animate-pulse bg-gray-100 dark:bg-gray-800 rounded-3xl" />}>
+            <TicketTableWrapper page={page} limit={limit} />
+          </Suspense>
+        </div>
+      </div>
     </>
   );
 };

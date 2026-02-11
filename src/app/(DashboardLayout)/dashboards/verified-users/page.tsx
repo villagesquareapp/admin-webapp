@@ -1,37 +1,16 @@
+import { Suspense } from "react";
 import {
-  getUserStats,
-  getUsers,
   getVerifiedUserStats,
   getVerifiedUsers,
 } from "@/app/api/user";
 import SmallCards from "@/app/components/dashboards/ecommerce/smallCards";
 import VerifiedUserTable from "./VerifiedUserTable";
-// import UserProfileWrapper from "./UserProfileWrapper";
 import shape1 from "/public/images/shapes/danger-card-shape.png";
 import shape2 from "/public/images/shapes/secondary-card-shape.png";
 import shape3 from "/public/images/shapes/success-card-shape.png";
-import { use } from "react";
 
-const Page = async ({
-  searchParams,
-}: {
-  searchParams: { [key: string]: string | string[] | undefined };
-}) => {
-  const page = Number(searchParams.page) || 1;
-  const limit = Number(searchParams.limit) || 20;
-  const userId = searchParams.userId as string;
-
-  const [userStats, users] = await Promise.all([
-    getVerifiedUserStats(),
-    getVerifiedUsers(page, limit),
-  ]);
-
-  const selectedUser =
-    userId && users?.data?.data
-      ? users.data.data
-          .flat()
-          .find((user: IVerifiedUsers) => user.uuid === userId)
-      : null;
+const VerifiedUserStatsWrapper = async () => {
+  const userStats = await getVerifiedUserStats();
 
   const overviewData: IOverviewData[] = [
     {
@@ -43,7 +22,6 @@ const Page = async ({
       link: "",
       activeSubscribers: userStats?.data?.total_active_subscribers || 0,
     },
-
     {
       total: userStats?.data?.greencheck_verified_users || 0,
       icon: "mdi:account-plus",
@@ -64,41 +42,44 @@ const Page = async ({
     },
   ];
 
-  const BCrumb = [
-    {
-      to: "/",
-      title: "Home",
-    },
-    {
-      to: "/dashboards/users",
-      title: "Users",
-    },
-    {
-      title: selectedUser?.name || "",
-    },
-  ];
+  return <SmallCards overviewData={overviewData} />;
+}
+
+const VerifiedUserTableWrapper = async ({ page, limit }: { page: number; limit: number }) => {
+  const users = await getVerifiedUsers(page, limit);
+  return (
+    <VerifiedUserTable
+      users={users?.data || null}
+      totalPages={users?.data?.last_page || 1}
+      currentPage={page}
+      pageSize={limit}
+    />
+  );
+};
+
+const Page = async ({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string | string[] | undefined };
+}) => {
+  const page = Number(searchParams.page) || 1;
+  const limit = Number(searchParams.limit) || 20;
 
   return (
     <>
-      {userId ? (
-        <></>
-      ) : (
-        // <UserProfileWrapper user={selectedUser || null} breadcrumbs={BCrumb} />
-        <div className="grid grid-cols-12 gap-30">
-          <div className="col-span-12">
-            <SmallCards overviewData={overviewData} />
-          </div>
-
-          <div className="col-span-12">
-            <VerifiedUserTable
-              users={users?.data || null}
-              totalPages={users?.data?.last_page || 1}
-              currentPage={page}
-              pageSize={limit}
-            />
-          </div>
+      <div className="grid grid-cols-12 gap-30">
+        <div className="col-span-12">
+          <Suspense fallback={<div className="h-[150px] w-full animate-pulse bg-gray-100 dark:bg-gray-800 rounded-3xl" />}>
+            <VerifiedUserStatsWrapper />
+          </Suspense>
         </div>
-      )}
+
+        <div className="col-span-12">
+          <Suspense key={`${page}-${limit}`} fallback={<div className="h-[500px] w-full animate-pulse bg-gray-100 dark:bg-gray-800 rounded-3xl" />}>
+            <VerifiedUserTableWrapper page={page} limit={limit} />
+          </Suspense>
+        </div>
+      </div>
     </>
   );
 };

@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { getMarketSquareShops, getMarketSquareStats } from "@/app/api/market-square";
 import SmallCards from "@/app/components/dashboards/ecommerce/smallCards";
 import ShopTable from "./ShopTable";
@@ -5,18 +6,8 @@ import shape1 from "/public/images/shapes/danger-card-shape.png";
 import shape2 from "/public/images/shapes/secondary-card-shape.png";
 import shape3 from "/public/images/shapes/success-card-shape.png";
 
-const Page = async ({
-  searchParams,
-}: {
-  searchParams: { [key: string]: string | string[] | undefined };
-}) => {
-  const page = Number(searchParams.page) || 1;
-  const limit = Number(searchParams.limit) || 20;
-
-  const [marketSquareStats, marketSquareShops] = await Promise.all([
-    getMarketSquareStats(),
-    getMarketSquareShops(page, limit),
-  ]);
+const MarketStatsWrapper = async () => {
+  const marketSquareStats = await getMarketSquareStats();
 
   const overviewData: IOverviewData[] = [
     {
@@ -53,19 +44,41 @@ const Page = async ({
     },
   ];
 
+  return <SmallCards overviewData={overviewData} />;
+};
+
+const MarketTableWrapper = async ({ page, limit }: { page: number; limit: number }) => {
+  const marketSquareShops = await getMarketSquareShops(page, limit);
+  return (
+    <ShopTable
+      shops={marketSquareShops?.data || null}
+      totalPages={marketSquareShops?.data?.last_page || 1}
+      currentPage={page}
+      pageSize={limit}
+    />
+  );
+};
+
+const Page = async ({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string | string[] | undefined };
+}) => {
+  const page = Number(searchParams.page) || 1;
+  const limit = Number(searchParams.limit) || 20;
+
   return (
     <>
       <div className="grid grid-cols-12 gap-30">
         <div className="col-span-12">
-          <SmallCards overviewData={overviewData} />
+          <Suspense fallback={<div className="h-[150px] w-full animate-pulse bg-gray-100 dark:bg-gray-800 rounded-3xl" />}>
+            <MarketStatsWrapper />
+          </Suspense>
         </div>
         <div className="col-span-12">
-          <ShopTable
-            shops={marketSquareShops?.data || null}
-            totalPages={marketSquareShops?.data?.last_page || 1}
-            currentPage={page}
-            pageSize={limit}
-          />
+          <Suspense key={`${page}-${limit}`} fallback={<div className="h-[500px] w-full animate-pulse bg-gray-100 dark:bg-gray-800 rounded-3xl" />}>
+            <MarketTableWrapper page={page} limit={limit} />
+          </Suspense>
         </div>
       </div>
     </>
