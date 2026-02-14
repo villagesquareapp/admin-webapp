@@ -86,3 +86,20 @@ export const declineATCApplication = async (uuid: string) => {
         token
     );
 };
+
+export const getATCSuggestions = async () => {
+    const token = await getToken();
+    return await apiGet<IATCData>(
+        `africa-talent-challenge/suggestions`,
+        token
+    );
+};
+
+export const approveATCSuggestion = async (uuid: string) => {
+    const token = await getToken();
+    return await apiPatch<any>(
+        `africa-talent-challenge/suggestions/${uuid}/approve`,
+        {},
+        token
+    );
+};

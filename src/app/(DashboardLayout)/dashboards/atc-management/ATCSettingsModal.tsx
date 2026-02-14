@@ -3,8 +3,12 @@
 import { Dialog, Transition } from "@headlessui/react";
 import React, { Fragment, useEffect, useState } from "react";
 import { Icon } from "@iconify/react";
-import { Button, Label, Select } from "flowbite-react";
-import { getATCStats } from "@/app/api/atc";
+import { Button, Label, Select, Spinner } from "flowbite-react";
+import {
+  getATCStats,
+  getATCSuggestions,
+  approveATCSuggestion,
+} from "@/app/api/atc";
 import CardBox from "@/app/components/shared/CardBox";
 
 interface ATCSettingsModalProps {
@@ -20,7 +24,10 @@ const ATCSettingsModal: React.FC<ATCSettingsModalProps> = ({
 }) => {
   const [stats, setStats] = useState<IAtcStats | null>(null);
   const [loading, setLoading] = useState(false);
+  const [suggestion, setSuggestion] = useState<ISuggestion | null>(null);
   const [isLocked, setIsLocked] = useState(false);
+  const [approving, setApproving] = useState(false);
+  const [currentMonthLabel, setCurrentMonthLabel] = useState("");
   const [settings, setSettings] = useState({
     status: "",
     phase: "audition",
@@ -41,18 +48,39 @@ const ATCSettingsModal: React.FC<ATCSettingsModalProps> = ({
   useEffect(() => {
     if (isOpen) {
       fetchStats();
-      // Reset isLocked when modal opens if needed, or keep it persistent for the session.
-      // Usually, it's safer to keep it false until "Accept" is clicked in the session.
-      // setIsLocked(false);
+      fetchSuggestion();
     }
   }, [isOpen, period]);
+
+  const fetchSuggestion = async () => {
+    try {
+      const response = await getATCSuggestions();
+      const data = response?.data;
+      if (data) {
+        setSuggestion(data.suggestion);
+        if (data.current_month?.label) {
+          setCurrentMonthLabel(data.current_month.label);
+        }
+        if (data.approved) {
+          setIsLocked(true);
+          setSettings((prev) => ({
+            ...prev,
+            status: data.suggestion.name,
+          }));
+        }
+      }
+    } catch (error) {
+      console.error("Failed to fetch suggestion", error);
+    }
+  };
 
   const fetchStats = async () => {
     setLoading(true);
     try {
       const response = await getATCStats(period);
-      if (response && response.data) {
-        setStats(response.data);
+      const data = response?.data;
+      if (data) {
+        setStats(data);
       }
     } catch (error) {
       console.error("Failed to fetch stats", error);
@@ -62,10 +90,19 @@ const ATCSettingsModal: React.FC<ATCSettingsModalProps> = ({
   };
 
   const handleSave = async () => {
-    // Stub for saving settings
-    console.log("Saving settings:", { period, settings });
-    setIsLocked(true);
-    // Optionally close modal after some delay or keep it open to show the "locked" state
+    if (!suggestion) return;
+    setApproving(true);
+    try {
+      const response = await approveATCSuggestion(suggestion.uuid);
+      if (response && response.status) {
+        setIsLocked(true);
+        console.log("Suggestion approved:", response);
+      }
+    } catch (error) {
+      console.error("Failed to approve suggestion", error);
+    } finally {
+      setApproving(false);
+    }
   };
 
   const timelineCards = [
@@ -161,7 +198,9 @@ const ATCSettingsModal: React.FC<ATCSettingsModalProps> = ({
                           Current Month
                         </Label>
                         <h4 className="text-xl font-bold text-primary">
-                          {formatPeriod(period) || "Select Episode"}
+                          {currentMonthLabel ||
+                            formatPeriod(period) ||
+                            "Select Episode"}
                         </h4>
                       </div>
 
@@ -169,43 +208,27 @@ const ATCSettingsModal: React.FC<ATCSettingsModalProps> = ({
                         <h5 className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wide mb-3">
                           {isLocked
                             ? "Selected ATC Episode"
-                            : "Select your preferred ATC Episode"}
+                            : "Suggested ATC Episode"}
                         </h5>
                         <div className="flex items-center gap-4">
                           {isLocked ? (
                             <div className="px-4 py-2.5 bg-white dark:bg-darkgray border border-gray-200 dark:border-gray-700 rounded-lg w-full">
                               <span className="text-gray-900 dark:text-white font-semibold">
-                                {settings.status.charAt(0).toUpperCase() +
-                                  settings.status.slice(1)}
+                                {settings.status}
                               </span>
                             </div>
+                          ) : suggestion ? (
+                            <div className="w-full p-4 bg-primary/5 border border-primary/20 rounded-xl">
+                              <h4 className="font-bold text-primary text-lg">
+                                {suggestion.name}
+                              </h4>
+                              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1 line-clamp-2">
+                                {suggestion.description}
+                              </p>
+                            </div>
                           ) : (
-                            <div className="w-full">
-                              <Select
-                                id="status"
-                                value={settings.status}
-                                onChange={(e) => {
-                                  const val = e.target.value;
-                                  if (val) {
-                                    setSettings({ ...settings, status: val });
-                                    console.log("Saving settings:", {
-                                      period,
-                                      status: val,
-                                    });
-                                  }
-                                }}
-                                className="bg-white dark:bg-darkgray"
-                              >
-                                <option value="">Select Option</option>
-                                <option value="elixir">The Elixir</option>
-                                <option value="breakthrough">
-                                  The Breakthrough
-                                </option>
-                                <option value="showdown">The Showdown</option>
-                                <option value="spotlight">
-                                  Spotlight Africa
-                                </option>
-                              </Select>
+                            <div className="w-full py-2 text-gray-500 italic text-sm">
+                              No suggestion available for this month.
                             </div>
                           )}
                         </div>
@@ -220,7 +243,7 @@ const ATCSettingsModal: React.FC<ATCSettingsModalProps> = ({
                             className="w-full rounded-xl shadow-lg shadow-primary/30"
                             onClick={handleSave}
                           >
-                            Accept
+                            {approving ? "Accepting..." : "Accept"}
                           </Button>
                         </div>
                       )}
