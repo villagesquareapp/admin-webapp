@@ -136,6 +136,33 @@ interface ISuggestion {
   updated_at: string;
 }
 
+interface IKeyInformation {
+  icon: string;
+  text: string;
+}
+
+interface IRequirement {
+  icon: string;
+  text: string;
+}
+
+interface ITimeline {
+  title: string;
+  date: string;
+}
+
+interface IATCChallengeInfo {
+  key_information: IKeyInformation[];
+  requirements: IRequirement[];
+  timelines: ITimeline[];
+}
+
+interface IATCChallengeInfoResponse {
+  status: boolean;
+  message: string;
+  data: IATCChallengeInfo;
+}
+
 interface IATCData {
   approved: boolean;
   current_month: {

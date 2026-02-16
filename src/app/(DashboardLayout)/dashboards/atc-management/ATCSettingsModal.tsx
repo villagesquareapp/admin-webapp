@@ -8,6 +8,7 @@ import {
   getATCStats,
   getATCSuggestions,
   approveATCSuggestion,
+  getATCChallengeInfo,
 } from "@/app/api/atc";
 import CardBox from "@/app/components/shared/CardBox";
 
@@ -25,6 +26,7 @@ const ATCSettingsModal: React.FC<ATCSettingsModalProps> = ({
   const [stats, setStats] = useState<IAtcStats | null>(null);
   const [loading, setLoading] = useState(false);
   const [suggestion, setSuggestion] = useState<ISuggestion | null>(null);
+  const [challengeInfo, setChallengeInfo] = useState<IATCChallengeInfo | null>(null);
   const [isLocked, setIsLocked] = useState(false);
   const [approving, setApproving] = useState(false);
   const [currentMonthLabel, setCurrentMonthLabel] = useState("");
@@ -49,8 +51,24 @@ const ATCSettingsModal: React.FC<ATCSettingsModalProps> = ({
     if (isOpen) {
       fetchStats();
       fetchSuggestion();
+      fetchChallengeInfo();
     }
   }, [isOpen, period]);
+
+  const fetchChallengeInfo = async () => {
+    try {
+      const response = await getATCChallengeInfo();
+      console.log("ATC Challenge Info Response:", response);
+      const data = response?.data;
+      if (data) {
+        setChallengeInfo(data);
+      } else {
+        console.warn("ATC Challenge Info: No data found in response");
+      }
+    } catch (error) {
+      console.error("Failed to fetch challenge info", error);
+    }
+  };
 
   const fetchSuggestion = async () => {
     try {
@@ -105,32 +123,32 @@ const ATCSettingsModal: React.FC<ATCSettingsModalProps> = ({
     }
   };
 
-  const timelineCards = [
-    {
-      label: "Application Timeline",
-      value: "Feb 7 - Feb 14 (11:59 PM)",
-      icon: "solar:calendar-date-bold-duotone",
-      bgcolor: "primary",
-    },
-    {
-      label: "Selection Timeline",
-      value: "Feb 14 - Feb 18",
-      icon: "solar:checklist-minimalistic-bold-duotone",
-      bgcolor: "secondary",
-    },
-    {
-      label: "Voting Timeline",
-      value: "Feb 19 - Feb 27 (11:59 PM)",
-      icon: "solar:ranking-bold-duotone",
-      bgcolor: "success",
-    },
-    {
-      label: "Challenge Ends",
-      value: "Feb 28 (8:00 PM)",
-      icon: "solar:flag-bold-duotone",
-      bgcolor: "warning",
-    },
-  ];
+  const getIcon = (iconName: string) => {
+    const mapping: { [key: string]: string } = {
+      document: "solar:notes-bold-duotone",
+      video: "solar:videocamera-record-bold-duotone",
+      bell: "solar:bell-bing-bold-duotone",
+      play: "solar:videocamera-bold-duotone",
+      calendar: "solar:calendar-bold-duotone",
+      check: "solar:check-circle-bold",
+    };
+    return mapping[iconName] || "solar:info-circle-bold-duotone";
+  };
+
+  const getTimelineColor = (index: number) => {
+    const colors = ["primary", "secondary", "success", "warning"];
+    return colors[index % colors.length];
+  };
+
+  const getTimelineIcon = (index: number) => {
+    const icons = [
+      "solar:calendar-date-bold-duotone",
+      "solar:checklist-minimalistic-bold-duotone",
+      "solar:ranking-bold-duotone",
+      "solar:flag-bold-duotone"
+    ];
+    return icons[index % icons.length];
+  }
 
   return (
     <Transition appear show={isOpen} as={Fragment}>
@@ -257,60 +275,23 @@ const ATCSettingsModal: React.FC<ATCSettingsModalProps> = ({
                         Key Informations
                       </h5>
                       <ul className="space-y-4">
-                        <li className="flex items-start gap-3">
-                          <Icon
-                            icon="solar:notes-bold-duotone"
-                            className="text-gray-400 mt-1"
-                            width={20}
-                          />
-                          <span className="text-sm text-gray-600 dark:text-gray-400">
-                            Application is Free.
-                          </span>
-                        </li>
-                        <li className="flex items-start gap-3">
-                          <Icon
-                            icon="solar:videocamera-record-bold-duotone"
-                            className="text-gray-400 mt-1"
-                            width={20}
-                          />
-                          <span className="text-sm text-gray-600 dark:text-gray-400">
-                            Uploading a 15-60 seconds video showcasing your
-                            talent will be required of you, as part of your
-                            application process.
-                          </span>
-                        </li>
-                        <li className="flex items-start gap-3">
-                          <Icon
-                            icon="solar:bell-bing-bold-duotone"
-                            className="text-gray-400 mt-1"
-                            width={20}
-                          />
-                          <span className="text-sm text-gray-600 dark:text-gray-400">
-                            If selected, you'll be notified by email or in-app
-                            notification.
-                          </span>
-                        </li>
-                        <li className="flex items-start gap-3">
-                          <Icon
-                            icon="solar:videocamera-bold-duotone"
-                            className="text-gray-400 mt-1"
-                            width={20}
-                          />
-                          <span className="text-sm text-gray-600 dark:text-gray-400">
-                            The winner will be announced on VillageSquare Live
-                            (Every 28 of each month by 8:00 PM)
-                          </span>
-                        </li>
-                        <li className="flex items-start gap-3">
-                          <Icon
-                            icon="solar:calendar-bold-duotone"
-                            className="text-gray-400 mt-1"
-                            width={20}
-                          />
-                          <span className="text-sm text-gray-600 dark:text-gray-400">
-                            Candidates can only apply once in 6 months.
-                          </span>
-                        </li>
+                        {challengeInfo?.key_information.map((info, i) => (
+                          <li key={i} className="flex items-start gap-3">
+                            <Icon
+                              icon={getIcon(info.icon)}
+                              className="text-gray-400 mt-1"
+                              width={20}
+                            />
+                            <span className="text-sm text-gray-600 dark:text-gray-400">
+                              {info.text}
+                            </span>
+                          </li>
+                        ))}
+                        {!challengeInfo && (
+                          <div className="flex flex-col gap-2 animate-pulse">
+                            {[...Array(5)].map((_, i) => <div key={i} className="h-4 bg-gray-100 dark:bg-gray-800 rounded w-full"></div>)}
+                          </div>
+                        )}
                       </ul>
                     </div>
 
@@ -320,24 +301,23 @@ const ATCSettingsModal: React.FC<ATCSettingsModalProps> = ({
                         Requirements
                       </h5>
                       <ul className="space-y-4">
-                        {[
-                          "Full name, what you do, and for how long",
-                          "Current address",
-                          "Solo or group application",
-                          "Proof of ID (Driver's License or Passport)",
-                          "Talent video upload",
-                        ].map((requirement, i) => (
+                        {challengeInfo?.requirements.map((req, i) => (
                           <li key={i} className="flex items-start gap-3">
                             <Icon
-                              icon="solar:check-circle-bold"
+                              icon={getIcon(req.icon)}
                               className="text-primary mt-1"
                               width={18}
                             />
                             <span className="text-sm text-gray-600 dark:text-gray-400">
-                              {requirement}
+                              {req.text}
                             </span>
                           </li>
                         ))}
+                        {!challengeInfo && (
+                          <div className="flex flex-col gap-2 animate-pulse">
+                            {[...Array(5)].map((_, i) => <div key={i} className="h-4 bg-gray-100 dark:bg-gray-800 rounded w-full"></div>)}
+                          </div>
+                        )}
                       </ul>
                     </div>
                   </div>
@@ -347,7 +327,7 @@ const ATCSettingsModal: React.FC<ATCSettingsModalProps> = ({
                     <h5 className="text-sm font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wide mb-4">
                       Timeline and Key Dates
                     </h5>
-                    {loading ? (
+                    {loading || !challengeInfo ? (
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 animate-pulse">
                         {[...Array(4)].map((_, i) => (
                           <div
@@ -358,28 +338,32 @@ const ATCSettingsModal: React.FC<ATCSettingsModalProps> = ({
                       </div>
                     ) : (
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        {timelineCards.map((card, index) => (
-                          <CardBox
-                            key={index}
-                            className={`p-5 border-none rounded-2xl bg-light${card.bgcolor} dark:bg-dark${card.bgcolor}/10 transition-transform hover:scale-105`}
-                          >
-                            <div className="flex flex-col gap-3">
-                              <span
-                                className={`w-8 h-8 rounded-lg flex items-center justify-center text-white bg-${card.bgcolor}`}
-                              >
-                                <Icon icon={card.icon} width={20} />
-                              </span>
-                              <div>
-                                <h4 className="text-darklink dark:text-bodytext text-[12px] uppercase tracking-wider font-bold opacity-60">
-                                  {card.label}
-                                </h4>
-                                <p className="text-sm font-extrabold mt-1 text-gray-900 dark:text-white">
-                                  {card.value}
-                                </p>
+                        {challengeInfo?.timelines.map((card, index) => {
+                          const bgcolor = getTimelineColor(index);
+                          const icon = getTimelineIcon(index);
+                          return (
+                            <CardBox
+                              key={index}
+                              className={`p-5 border-none rounded-2xl bg-light${bgcolor} dark:bg-dark${bgcolor}/10 transition-transform hover:scale-105`}
+                            >
+                              <div className="flex flex-col gap-3">
+                                <span
+                                  className={`w-8 h-8 rounded-lg flex items-center justify-center text-white bg-${bgcolor}`}
+                                >
+                                  <Icon icon={icon} width={20} />
+                                </span>
+                                <div>
+                                  <h4 className="text-darklink dark:text-bodytext text-[12px] uppercase tracking-wider font-bold opacity-60">
+                                    {card.title}
+                                  </h4>
+                                  <p className="text-sm font-extrabold mt-1 text-gray-900 dark:text-white">
+                                    {card.date}
+                                  </p>
+                                </div>
                               </div>
-                            </div>
-                          </CardBox>
-                        ))}
+                            </CardBox>
+                          )
+                        })}
                       </div>
                     )}
                   </div>
