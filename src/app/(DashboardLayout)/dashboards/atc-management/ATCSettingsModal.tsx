@@ -25,6 +25,7 @@ const ATCSettingsModal: React.FC<ATCSettingsModalProps> = ({
 }) => {
   const [stats, setStats] = useState<IAtcStats | null>(null);
   const [loading, setLoading] = useState(false);
+  const [loadingSuggestion, setLoadingSuggestion] = useState(false);
   const [suggestion, setSuggestion] = useState<ISuggestion | null>(null);
   const [challengeInfo, setChallengeInfo] = useState<IATCChallengeInfo | null>(null);
   const [isLocked, setIsLocked] = useState(false);
@@ -71,6 +72,7 @@ const ATCSettingsModal: React.FC<ATCSettingsModalProps> = ({
   };
 
   const fetchSuggestion = async () => {
+    setLoadingSuggestion(true);
     try {
       const response = await getATCSuggestions();
       const data = response?.data;
@@ -89,6 +91,8 @@ const ATCSettingsModal: React.FC<ATCSettingsModalProps> = ({
       }
     } catch (error) {
       console.error("Failed to fetch suggestion", error);
+    } finally {
+      setLoadingSuggestion(false);
     }
   };
 
@@ -215,11 +219,15 @@ const ATCSettingsModal: React.FC<ATCSettingsModalProps> = ({
                         <Label className="text-xs uppercase tracking-wider text-gray-400 font-bold mb-1 block">
                           Current Month
                         </Label>
-                        <h4 className="text-xl font-bold text-primary">
-                          {currentMonthLabel ||
-                            formatPeriod(period) ||
-                            "Select Episode"}
-                        </h4>
+                        {loadingSuggestion ? (
+                          <div className="h-8 w-32 bg-gray-200 dark:bg-gray-700 animate-pulse rounded md:mt-1"></div>
+                        ) : (
+                          <h4 className="text-xl font-bold text-primary">
+                            {currentMonthLabel ||
+                              formatPeriod(period) ||
+                              "Select Episode"}
+                          </h4>
+                        )}
                       </div>
 
                       <div className="flex-[4] min-w-[400px]">
@@ -228,28 +236,32 @@ const ATCSettingsModal: React.FC<ATCSettingsModalProps> = ({
                             ? "Selected ATC Episode"
                             : "Suggested ATC Episode"}
                         </h5>
-                        <div className="flex items-center gap-4">
-                          {isLocked ? (
-                            <div className="px-4 py-2.5 bg-white dark:bg-darkgray border border-gray-200 dark:border-gray-700 rounded-lg w-full">
-                              <span className="text-gray-900 dark:text-white font-semibold">
-                                {settings.status}
-                              </span>
-                            </div>
-                          ) : suggestion ? (
-                            <div className="w-full p-4 bg-primary/5 border border-primary/20 rounded-xl">
-                              <h4 className="font-bold text-primary text-lg">
-                                {suggestion.name}
-                              </h4>
-                              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1 line-clamp-2">
-                                {suggestion.description}
-                              </p>
-                            </div>
-                          ) : (
-                            <div className="w-full py-2 text-gray-500 italic text-sm">
-                              No suggestion available for this month.
-                            </div>
-                          )}
-                        </div>
+                        {loadingSuggestion ? (
+                          <div className="w-full h-24 bg-gray-100 dark:bg-gray-800 rounded-xl animate-pulse"></div>
+                        ) : (
+                          <div className="flex items-center gap-4">
+                            {isLocked ? (
+                              <div className="px-4 py-2.5 bg-white dark:bg-darkgray border border-gray-200 dark:border-gray-700 rounded-lg w-full">
+                                <span className="text-gray-900 dark:text-white font-semibold">
+                                  {settings.status}
+                                </span>
+                              </div>
+                            ) : suggestion ? (
+                              <div className="w-full p-4 bg-primary/5 border border-primary/20 rounded-xl">
+                                <h4 className="font-bold text-primary text-lg">
+                                  {suggestion.name}
+                                </h4>
+                                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1 line-clamp-2">
+                                  {suggestion.description}
+                                </p>
+                              </div>
+                            ) : (
+                              <div className="w-full py-2 text-gray-500 italic text-sm">
+                                No suggestion available for this month.
+                              </div>
+                            )}
+                          </div>
+                        )}
                       </div>
 
                       {!isLocked && (
