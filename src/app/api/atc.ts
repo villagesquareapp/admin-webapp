@@ -103,3 +103,11 @@ export const approveATCSuggestion = async (uuid: string) => {
         token
     );
 };
+
+export const getATCChallengeInfo = async () => {
+    const token = await getToken();
+    return await apiGet<IATCChallengeInfo>(
+        `africa-talent-challenge/challenge-info`,
+        token
+    );
+};
