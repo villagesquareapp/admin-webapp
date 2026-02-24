@@ -37,7 +37,7 @@ const SearchAndFilter = ({ period }: { period?: string }) => {
 
   const statuses = [
     { value: "pending", label: "Pending" },
-    { value: "in-view", label: "In-View" },
+    { value: "in-review", label: "In-Review" },
     { value: "approved", label: "Approved" },
     { value: "declined", label: "Declined" },
   ];

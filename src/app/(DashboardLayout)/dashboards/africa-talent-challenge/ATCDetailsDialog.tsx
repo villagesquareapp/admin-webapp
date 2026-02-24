@@ -15,10 +15,12 @@ const ATCDetailsDialog = ({
   isOpen,
   onClose,
   application,
+  onStatusChange,
 }: {
   isOpen: boolean;
   onClose: () => void;
   application: IATCApplication | null;
+  onStatusChange?: () => void;
 }) => {
   if (!application) return null;
 
@@ -57,6 +59,7 @@ const ATCDetailsDialog = ({
       const res = await approveATCApplication(application.uuid);
       if (res.status) {
         setCurrentStatus("approved");
+        onStatusChange?.();
       }
     } catch (error) {
       console.error("Failed to approve application:", error);
@@ -71,6 +74,7 @@ const ATCDetailsDialog = ({
       const res = await declineATCApplication(application.uuid);
       if (res.status) {
         setCurrentStatus("declined");
+        onStatusChange?.();
       }
     } catch (error) {
       console.error("Failed to decline application:", error);
