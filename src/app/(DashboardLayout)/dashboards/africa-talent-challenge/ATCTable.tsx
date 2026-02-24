@@ -43,6 +43,10 @@ const ApplicationTable = ({
     setSelectedApplication(null);
   };
 
+  const handleStatusChange = () => {
+    router.refresh();
+  };
+
   useEffect(() => {
     const fetchStatuses = async () => {
       setStatusLoading(true);
@@ -108,14 +112,21 @@ const ApplicationTable = ({
             "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300",
           declined:
             "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300",
+          in_review:
+            "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300",
+        };
+
+        const formatStatus = (status: string) => {
+          if (status === "in_review") return "In-Review";
+          return status.charAt(0).toUpperCase() + status.slice(1);
         };
 
         return (
           <span
-            className={`text-sm px-3 py-1 capitalize rounded-full w-fit ${statusStyles[status] || "bg-gray-100 text-gray-800"
+            className={`text-sm px-3 py-1 rounded-full w-fit ${statusStyles[status] || "bg-gray-100 text-gray-800"
               }`}
           >
-            {status}
+            {formatStatus(status)}
           </span>
         );
       },
@@ -147,6 +158,7 @@ const ApplicationTable = ({
         isOpen={isDialogOpen}
         onClose={handleDialogClose}
         application={selectedApplication}
+        onStatusChange={handleStatusChange}
       />
     </div>
   );
