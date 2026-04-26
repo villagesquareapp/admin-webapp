@@ -151,7 +151,19 @@ interface ITimeline {
   date: string;
 }
 
+interface IEpisode {
+  uuid: string;
+  name: string;
+  description: string;
+  start_date: string; 
+  end_date: string;  
+  status: "active" | "inactive" | "completed"; 
+}
+
+
 interface IATCChallengeInfo {
+  period: string;
+  episode: IEpisode;
   key_information: IKeyInformation[];
   requirements: IRequirement[];
   timelines: ITimeline[];

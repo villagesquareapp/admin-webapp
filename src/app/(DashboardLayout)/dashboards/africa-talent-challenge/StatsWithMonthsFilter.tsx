@@ -8,9 +8,8 @@ import shape2 from "/public/images/shapes/secondary-card-shape.png";
 import shape3 from "/public/images/shapes/success-card-shape.png";
 import { Button } from "@headlessui/react";
 import { Icon } from "@iconify/react";
-import { getATCStats, getATCPeriods } from "@/app/api/atc";
-
-
+import { getATCStats, getATCPeriods, getATCChallengeInfo } from "@/app/api/atc";
+import { Spinner } from "flowbite-react";
 
 const StatsWithMonthsFilter = ({ initialStats }: { initialStats: any }) => {
   const searchParams = useSearchParams();
@@ -23,7 +22,8 @@ const StatsWithMonthsFilter = ({ initialStats }: { initialStats: any }) => {
   const [atcStats, setAtcStats] = useState(initialStats);
   const [isLoading, setIsLoading] = useState(false);
   const [periods, setPeriods] = useState<IATCPeriod[]>([]);
-
+  const [currentEpisodeName, setCurrentEpisodeName] = useState<string>("");
+  const [selectedEpisodeName, setSelectedEpisodeName] = useState<string>("");
 
   // Sync local state with URL param if it changes externally or on load
   useEffect(() => {
@@ -57,7 +57,6 @@ const StatsWithMonthsFilter = ({ initialStats }: { initialStats: any }) => {
     handlePeriodChange("");
   };
 
-
   useEffect(() => {
     const fetchPeriods = async () => {
       try {
@@ -75,6 +74,21 @@ const StatsWithMonthsFilter = ({ initialStats }: { initialStats: any }) => {
     fetchPeriods();
   }, []);
 
+  // Fetch current month episode name
+  useEffect(() => {
+    const fetchCurrentEpisode = async () => {
+      try {
+        const res = await getATCChallengeInfo();
+        if (res?.status && res?.data?.episode?.name) {
+          setCurrentEpisodeName(res.data.episode.name);
+        }
+      } catch (error) {
+        console.error("Error fetching current episode:", error);
+      }
+    };
+    fetchCurrentEpisode();
+  }, []);
+
   useEffect(() => {
     if (selectedMonth && showHistory) {
       const fetchStats = async () => {
@@ -82,6 +96,12 @@ const StatsWithMonthsFilter = ({ initialStats }: { initialStats: any }) => {
         try {
           const stats = await getATCStats(selectedMonth);
           setAtcStats(stats);
+          
+          // Fetch selected month episode name
+          const episodeRes = await getATCChallengeInfo(selectedMonth);
+          if (episodeRes?.status && episodeRes?.data?.episode?.name) {
+            setSelectedEpisodeName(episodeRes.data.episode.name);
+          }
         } catch (error) {
           console.error("Error fetching stats:", error);
         } finally {
@@ -176,22 +196,35 @@ const StatsWithMonthsFilter = ({ initialStats }: { initialStats: any }) => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         {showHistory ? (
-          <Button
-            onClick={handleBackToDashboard}
-            className="flex items-center gap-2 text-primary hover:text-primary-dark transition-colors px-0 py-2"
-          >
-            <Icon icon="solar:arrow-left-linear" width={20} />
-            Back to Dashboard
-          </Button>
+          <div className="flex justify-start items-start gap-3">
+            <Button
+              onClick={handleBackToDashboard}
+              className="flex items-center gap-2 text-primary hover:text-primary-dark transition-colors px-0 py-2"
+            >
+              <Icon icon="solar:arrow-left-linear" width={20} />
+              Back to current month
+            </Button>
+            <Button
+              className={
+                "px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors flex items-center gap-2"
+              }
+            >
+              {selectedEpisodeName || <Spinner />}
+            </Button>
+          </div>
         ) : (
-          <div className="flex-1"></div>
+          <Button
+            className={
+              "px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors flex items-center gap-2"
+            }
+          >
+            {currentEpisodeName || <Spinner />}
+          </Button>
         )}
 
         <div className="flex gap-4 items-center">
           {showHistory ? (
             <div className="flex gap-4 items-center">
-
-
               <div className="w-48">
                 <select
                   value={selectedMonth}
@@ -207,13 +240,15 @@ const StatsWithMonthsFilter = ({ initialStats }: { initialStats: any }) => {
               </div>
             </div>
           ) : (
-            <Button
-              onClick={handleViewPastEpisodes}
-              className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors flex items-center gap-2"
-            >
-              <Icon icon="solar:history-bold-duotone" width={20} />
-              View Past Episodes
-            </Button>
+            <div className="flex items-center justify-between">
+              <Button
+                onClick={handleViewPastEpisodes}
+                className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors flex items-center gap-2"
+              >
+                <Icon icon="solar:history-bold-duotone" width={20} />
+                View Past Episodes
+              </Button>
+            </div>
           )}
         </div>
       </div>
@@ -226,9 +261,7 @@ const StatsWithMonthsFilter = ({ initialStats }: { initialStats: any }) => {
       >
         <ATCSmallCards overviewData={showHistory ? historyData : homeData} />
       </div>
-
-
-    </div >
+    </div>
   );
 };
 export default StatsWithMonthsFilter;

@@ -1,6 +1,6 @@
 'use server'
 
-import { apiGet, apiPost, apiPut } from '@/lib/api';
+import { apiGet, apiPost, apiPut, apiPatch } from '@/lib/api';
 import { getToken } from '@/lib/getToken';
 import { revalidateCurrentPath } from '@/lib/revalidate';
 
@@ -21,6 +21,16 @@ export const addNewSettings = async (newSetting: Omit<ISettings, "uuid" | "creat
         await revalidateCurrentPath()
     }
     return response
+};
+
+export const updateSettings = async (settingId: string, body: { name?: string; value?: any }) => {
+    const token = await getToken();
+    const response = await apiPatch(`app-settings/${settingId}/update`, body, token);
+
+    if (response?.status) {
+        await revalidateCurrentPath();
+    }
+    return response;
 };
 
 export const updatePassword = async (old_password: string, new_password: string) => {

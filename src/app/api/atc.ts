@@ -104,10 +104,14 @@ export const approveATCSuggestion = async (uuid: string) => {
     );
 };
 
-export const getATCChallengeInfo = async () => {
+export const getATCChallengeInfo = async (period?: string) => {
     const token = await getToken();
+    const queryParams = new URLSearchParams();
+    if (period) {
+        queryParams.append('period', period);
+    }
     return await apiGet<IATCChallengeInfo>(
-        `africa-talent-challenge/challenge-info`,
+        `africa-talent-challenge/challenge-info${period ? `?${queryParams.toString()}` : ''}`,
         token
     );
 };
