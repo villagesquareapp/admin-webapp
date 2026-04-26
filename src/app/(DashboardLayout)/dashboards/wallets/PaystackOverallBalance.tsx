@@ -277,7 +277,7 @@ const OverallBalance: React.FC = () => {
             {/* Left: Balance Info */}
             <div>
               <span className="text-sm font-light text-ld">
-                Paystack Overall Balance
+                Flutterwave Overall Balance
                 <button
                   onClick={fetchBalance}
                   className="ml-2 text-lg text-primary hover:rotate-90 transition-transform"
