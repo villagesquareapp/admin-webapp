@@ -387,11 +387,11 @@ const OverallBalance: React.FC = () => {
               <Button
                 color="success"
                 size="sm"
-                className="lg:h-10 lg:text-base w-full"
+                className="lg:h-10 lg:text-sm w-full"
                 onClick={() => setIsOpen(true)}
               >
-                <FaPlus size={14} />
-                Fund Paystack
+                {/* <FaPlus size={16} /> */}
+                Fund Flutterwave
               </Button>
             </div>
           </div>

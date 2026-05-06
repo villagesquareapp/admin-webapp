@@ -32,7 +32,8 @@ const FundPaystackComp: React.FC<FundModalProps> = ({
   const [cowryValue, setCowryValue] = useState<string>("");
   const [loading, setLoading] = useState(false);
 
-  const publicKey: string = process.env.NEXT_PUBLIC_FLUTTERWAVE_PUBLIC_KEY ?? "";
+  const publicKey: string =
+    process.env.NEXT_PUBLIC_FLUTTERWAVE_PUBLIC_KEY ?? "";
   const userEmail = "admin@admin.com";
 
   useEffect(() => {
@@ -68,7 +69,7 @@ const FundPaystackComp: React.FC<FundModalProps> = ({
 
     const modal = window.FlutterwaveCheckout({
       public_key: publicKey,
-      tx_ref: `fund-paystack-${Date.now()}`,
+      tx_ref: `fund-flutterwave-${Date.now()}`,
       amount: amountInNaira,
       currency: "NGN",
       payment_options: "card, banktransfer, ussd",
@@ -82,14 +83,14 @@ const FundPaystackComp: React.FC<FundModalProps> = ({
       },
       callback: (payment: any) => {
         console.log("Payment response:", payment);
-        if (payment.status === "successful") {
+        if (payment?.status === "successful") {
+          modal.close();
           toast.success("Payment Successful");
           onSuccess?.();
-          modal.close();
           onClose();
         } else {
-          toast.error("Payment was not successful");
           modal.close();
+          toast.error("Payment was not successful");
         }
       },
       onclose: (incomplete: boolean) => {
@@ -102,11 +103,19 @@ const FundPaystackComp: React.FC<FundModalProps> = ({
 
   return (
     <>
-      <Script src="https://checkout.flutterwave.com/v3.js" strategy="lazyOnload" />
+      <Script
+        src="https://checkout.flutterwave.com/v3.js"
+        strategy="lazyOnload"
+      />
 
       <AnimatePresence>
         {isOpen && (
-          <Dialog onClose={onClose} static open={isOpen} className="relative z-50">
+          <Dialog
+            onClose={onClose}
+            static
+            open={isOpen}
+            className="relative z-50"
+          >
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -126,7 +135,10 @@ const FundPaystackComp: React.FC<FundModalProps> = ({
                   <DialogTitle className="text-xl lg:text-2xl font-semibold">
                     Fund Wallet Directly
                   </DialogTitle>
-                  <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
+                  <button
+                    onClick={onClose}
+                    className="text-gray-500 hover:text-gray-700"
+                  >
                     ✕
                   </button>
                 </div>
@@ -174,7 +186,12 @@ const FundPaystackComp: React.FC<FundModalProps> = ({
                   </div>
 
                   <div className="flex justify-end gap-4">
-                    <Button color="gray" type="button" onClick={onClose} disabled={loading}>
+                    <Button
+                      color="gray"
+                      type="button"
+                      onClick={onClose}
+                      disabled={loading}
+                    >
                       Cancel
                     </Button>
                     {amountInNaira >= 1 && (

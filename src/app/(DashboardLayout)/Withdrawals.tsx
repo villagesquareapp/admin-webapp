@@ -381,10 +381,10 @@ const Withdrawals = ({
                 </div>
 
                 <div className="flex gap-2 items-center ml-auto">
-                  <div className="font-medium truncate">
+                  {/* <div className="font-medium truncate">
                     {item.wallet?.currency?.symbol}
                     {item.amount}
-                  </div>
+                  </div> */}
                   {!selectedPendingWithdrawals?.length && (
                     <div className="flex gap-2 shrink-0">
                       <Button
@@ -498,7 +498,7 @@ const Withdrawals = ({
                 <p className="text-gray-600 dark:text-gray-300">
                   Are you sure you want to approve withdrawal request of{" "}
                   <span className="font-medium">
-                    {selectedWithdrawal?.wallet?.currency?.symbol}
+                    {/* {selectedWithdrawal?.wallet?.currency?.symbol} */}
                     {formatNumber(selectedWithdrawal?.amount || 0)}
                   </span>{" "}
                   for <span className="font-medium">{selectedWithdrawal?.user.name}</span>?
@@ -547,7 +547,7 @@ const Withdrawals = ({
                 <p className="text-gray-600 dark:text-gray-300">
                   Are you sure you want to decline withdrawal request of{" "}
                   <span className="font-medium">
-                    {selectedWithdrawal?.wallet?.currency?.symbol}
+                    {/* {selectedWithdrawal?.wallet?.currency?.symbol} */}
                     {selectedWithdrawal?.amount}
                   </span>{" "}
                   for <span className="font-medium">{selectedWithdrawal?.user.name}</span>?
