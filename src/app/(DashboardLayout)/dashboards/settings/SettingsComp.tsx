@@ -6,7 +6,7 @@ import { useState } from "react";
 import { FaPlus } from "react-icons/fa6";
 import { PiEmpty } from "react-icons/pi";
 import SettingsCardList from "./SettingsCardList";
-import { addNewSettings, updateSettings } from "@/app/api/setting";
+import { addNewSettings, updateSettings, deleteSettings } from "@/app/api/setting";
 import { toast } from "sonner";
 
 interface IJsonSettingsValue {
@@ -77,9 +77,7 @@ const SettingsComp = ({ settings: initialSettings }: { settings: ISettings[] | n
     }));
 
     try {
-      const body: { name?: string; value?: any } = {};
-      if (updatedSetting.name !== undefined) body.name = updatedSetting.name;
-      if (updatedSetting.value !== undefined) body.value = updatedSetting.value;
+      const body: { value: any } = { value: updatedSetting.value };
 
       const response = await updateSettings(uuid, body);
 
@@ -107,11 +105,31 @@ const SettingsComp = ({ settings: initialSettings }: { settings: ISettings[] | n
     }
   };
 
-  const handleDeleteSetting = (uuid: string) => {
-    setSettings((prev) => prev.filter((setting) => setting.uuid !== uuid));
+  const handleDeleteSetting = async (uuid: string) => {
+    setLoadingStates((prev) => ({
+      ...prev,
+      [uuid]: { ...prev[uuid], isDeleting: true },
+    }));
 
-    // Make an API call to delete the setting
-    console.log("Deleting setting:", uuid);
+    try {
+      const response = await deleteSettings(uuid);
+
+      if (response?.status) {
+        setSettings((prev) => prev.filter((setting) => setting.uuid !== uuid));
+        toast.success("Setting deleted successfully!");
+      } else {
+        toast.error(response?.message || "Failed to delete setting");
+      }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      console.error("Error deleting setting:", message);
+      toast.error(`${message}`);
+    } finally {
+      setLoadingStates((prev) => ({
+        ...prev,
+        [uuid]: { ...prev[uuid], isDeleting: false },
+      }));
+    }
   };
 
   if (!initialSettings?.length && !showAddForm && settings.length === 0) {
