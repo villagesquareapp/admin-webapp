@@ -1,6 +1,6 @@
 'use server'
 
-import { apiGet, apiPost, apiPut, apiPatch } from '@/lib/api';
+import { apiGet, apiPost, apiPut, apiPatch, apiDelete } from '@/lib/api';
 import { getToken } from '@/lib/getToken';
 import { revalidateCurrentPath } from '@/lib/revalidate';
 
@@ -23,9 +23,20 @@ export const addNewSettings = async (newSetting: Omit<ISettings, "uuid" | "creat
     return response
 };
 
-export const updateSettings = async (settingId: string, body: { name?: string; value?: any }) => {
+export const updateSettings = async (settingId: string, body: { value: any }) => {
     const token = await getToken();
     const response = await apiPatch(`app-settings/${settingId}/update`, body, token);
+
+    if (response?.status) {
+        await revalidateCurrentPath();
+    }
+    return response;
+};
+
+export const deleteSettings = async (settingId: string) => {
+    const token = await getToken();
+    if (!token) return null;
+    const response = await apiDelete(`app-settings/${settingId}`, token);
 
     if (response?.status) {
         await revalidateCurrentPath();

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   IconDotsVertical,
   IconEye,
@@ -9,8 +9,9 @@ import {
   IconTrash,
 } from "@tabler/icons-react";
 import { Dropdown } from "flowbite-react";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { formatDate } from "@/utils/dateUtils";
+import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 
 interface IJsonSettingsValue {
   [key: string]: any;
@@ -306,6 +307,7 @@ function SettingsCard({
 }) {
   const { value_type, value } = settings;
   const [isEditing, setIsEditing] = useState(false);
+  const cardRef = useRef<HTMLDivElement>(null);
 
   // For non-JSON values, use a single visibility state
   const [isValueVisible, setIsValueVisible] = useState(false);
@@ -349,6 +351,10 @@ function SettingsCard({
         Object.entries(value).map(([key, val]) => ({ key, value: String(val) }))
       );
     }
+    // Scroll card into view after state update
+    setTimeout(() => {
+      cardRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }, 50);
   };
 
   const handleCancelEdit = () => {
@@ -399,13 +405,21 @@ function SettingsCard({
   };
 
   const handleDelete = () => {
-    if (settings.uuid && confirm("Are you sure you want to delete this setting?")) {
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = () => {
+    if (settings.uuid) {
       onDelete(settings.uuid);
     }
+    setShowDeleteModal(false);
   };
+
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   return (
     <motion.div
+      ref={cardRef}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, delay: index * 0.1 }}
@@ -636,6 +650,63 @@ function SettingsCard({
           </>
         )}
       </div>
+
+      {/* Delete Confirmation Modal */}
+      <AnimatePresence>
+        {showDeleteModal && (
+          <Dialog
+            static
+            open={showDeleteModal}
+            onClose={() => setShowDeleteModal(false)}
+            className="relative z-50"
+          >
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/30"
+            />
+            <div className="fixed inset-0 flex items-center justify-center p-4">
+              <DialogPanel
+                as={motion.div}
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                className="w-full max-w-sm rounded-lg bg-white dark:bg-darkgray p-6 shadow-xl"
+              >
+                <DialogTitle className="text-lg font-semibold text-gray-900 dark:text-white">
+                  Delete Setting
+                </DialogTitle>
+                <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                  Are you sure you want to delete <strong>{settings.name}</strong>? This action cannot be undone.
+                </p>
+                <div className="mt-6 flex justify-end gap-3">
+                  <button
+                    onClick={() => setShowDeleteModal(false)}
+                    className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-md transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={confirmDelete}
+                    disabled={isDeleting}
+                    className="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 disabled:bg-red-400 rounded-md transition-colors flex items-center gap-2"
+                  >
+                    {isDeleting ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        Deleting...
+                      </>
+                    ) : (
+                      "Delete"
+                    )}
+                  </button>
+                </div>
+              </DialogPanel>
+            </div>
+          </Dialog>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }

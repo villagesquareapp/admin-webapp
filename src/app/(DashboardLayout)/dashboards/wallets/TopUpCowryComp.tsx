@@ -98,8 +98,8 @@ const TopUpCowryComp: React.FC<TopUpModalProps> = ({
         name: "Admin",
       },
       meta: {
-        paymentEvent: cowryTopup,
-        paymentUserId: userId,
+        payment_event: cowryTopup,
+        payment_user_id: userId,
       },
       customizations: {
         title: "Top Up Cowry",
@@ -112,7 +112,7 @@ const TopUpCowryComp: React.FC<TopUpModalProps> = ({
           modal.close();
 
           try {
-            const result = await verifyCowryTransaction(payment.transaction_id);
+            const result = await verifyCowryTransaction(String(payment.transaction_id));
             console.log("Transaction Verified:", result);
             toast.success("Cowry updated!");
             onSuccess?.();

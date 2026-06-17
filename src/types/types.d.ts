@@ -30,7 +30,7 @@ interface ISettings {
   deleted_at: string | null;
 }
 
-interface ISettingsResponse extends ApiResponse<ISettings> { }
+interface ISettingsResponse extends ApiResponse<ISettings> {}
 
 interface IUserTableDetails {
   profile_picture: string;
@@ -155,11 +155,10 @@ interface IEpisode {
   uuid: string;
   name: string;
   description: string;
-  start_date: string; 
-  end_date: string;  
-  status: "active" | "inactive" | "completed"; 
+  start_date: string;
+  end_date: string;
+  status: "active" | "inactive" | "completed";
 }
-
 
 interface IATCChallengeInfo {
   period: string;
@@ -183,8 +182,6 @@ interface IATCData {
   };
   suggestion: ISuggestion;
 }
-
-
 
 interface IMarketSquareStats {
   total_products: number;
@@ -283,14 +280,14 @@ interface IUser {
       bio: string;
       last_online: string | null;
       status:
-      | "active"
-      | "suspended"
-      | "disabled"
-      | "reported"
-      | "flagged"
-      | "banned"
-      | "shadow_hidden"
-      | "archived";
+        | "active"
+        | "suspended"
+        | "disabled"
+        | "reported"
+        | "flagged"
+        | "banned"
+        | "shadow_hidden"
+        | "archived";
       verified_status: number;
       profile_picture: string;
       profile_banner: string;
@@ -319,7 +316,7 @@ interface IUser {
   actions?: any;
 }
 
-interface IUsersResponse extends IPaginatedResponse<IUser> { }
+interface IUsersResponse extends IPaginatedResponse<IUser> {}
 
 interface IVerifiedUsers {
   uuid: string;
@@ -347,14 +344,14 @@ interface IVerifiedUsers {
   is_private: boolean;
   has_two_factor_auth: boolean;
   status:
-  | "active"
-  | "suspended"
-  | "disabled"
-  | "reported"
-  | "flagged"
-  | "banned"
-  | "shadow_hidden"
-  | "archived";
+    | "active"
+    | "suspended"
+    | "disabled"
+    | "reported"
+    | "flagged"
+    | "banned"
+    | "shadow_hidden"
+    | "archived";
   address: string;
   latitude: string;
   longitude: string;
@@ -371,7 +368,7 @@ interface IVerifiedUsers {
   deleted_at: string | null;
 }
 
-interface IVerifiedUsersResponse extends IPaginatedResponse<IVerifiedUsers> { }
+interface IVerifiedUsersResponse extends IPaginatedResponse<IVerifiedUsers> {}
 
 interface IAdminUsers {
   uuid: string;
@@ -381,14 +378,14 @@ interface IAdminUsers {
   is_super_admin: boolean;
   role: string;
   status:
-  | "active"
-  | "suspended"
-  | "disabled"
-  | "reported"
-  | "flagged"
-  | "banned"
-  | "shadow_hidden"
-  | "archived";
+    | "active"
+    | "suspended"
+    | "disabled"
+    | "reported"
+    | "flagged"
+    | "banned"
+    | "shadow_hidden"
+    | "archived";
   created_at: string;
   updated_at: string;
 }
@@ -431,7 +428,7 @@ interface IRandomUsers {
   deleted_at: string | null;
 }
 
-interface IRandomUsersResponse extends IPaginatedResponse<IRandomUsers> { }
+interface IRandomUsersResponse extends IPaginatedResponse<IRandomUsers> {}
 
 interface IBillingPlan {
   uuid: string;
@@ -460,7 +457,7 @@ interface IPostStatusList {
   value: string;
 }
 
-interface IUserStatusListResponse extends IPaginatedResponse<IUserStatusList> { }
+interface IUserStatusListResponse extends IPaginatedResponse<IUserStatusList> {}
 
 interface IMedia {
   thumbnail: string;
@@ -476,14 +473,14 @@ interface IPosts {
   quote_post_id: string | null;
   thread_id: string;
   status:
-  | "active"
-  | "suspended"
-  | "disabled"
-  | "reported"
-  | "flagged"
-  | "banned"
-  | "shadow_hidden"
-  | "archived";
+    | "active"
+    | "suspended"
+    | "disabled"
+    | "reported"
+    | "flagged"
+    | "banned"
+    | "shadow_hidden"
+    | "archived";
   views_count: number;
   shares_count: number;
   likes_count: number;
@@ -527,7 +524,7 @@ interface IPosts {
   actions?: any;
 }
 
-interface IPostResponse extends IPaginatedResponse<IPosts> { }
+interface IPostResponse extends IPaginatedResponse<IPosts> {}
 
 interface ILivestreams {
   uuid: string;
@@ -580,7 +577,7 @@ interface ILivestreams {
   actions?: any;
 }
 
-interface ILivestreamResponse extends IPaginatedResponse<ILivestreams> { }
+interface ILivestreamResponse extends IPaginatedResponse<ILivestreams> {}
 
 interface IEchoes {
   uuid: string;
@@ -634,7 +631,7 @@ interface IEchoes {
   actions?: any;
 }
 
-interface IEchosResponse extends IPaginatedResponse<IEchoes> { }
+interface IEchosResponse extends IPaginatedResponse<IEchoes> {}
 
 interface IMarketProduct {
   uuid: string;
@@ -659,7 +656,7 @@ interface IMarketSquareShops {
   actions?: any;
 }
 
-interface IMarketSquareShopsResponse extends IPaginatedResponse<IMarketSquareShops> { }
+interface IMarketSquareShopsResponse extends IPaginatedResponse<IMarketSquareShops> {}
 
 interface ITickerUser {
   name: string;
@@ -684,7 +681,7 @@ interface ITicket {
   actions?: any;
 }
 
-interface ITicketResponse extends IPaginatedResponse<ITicket> { }
+interface ITicketResponse extends IPaginatedResponse<ITicket> {}
 
 interface IGifting {
   uuid: string;
@@ -697,7 +694,7 @@ interface IGifting {
   deleted_at: string | null;
 }
 
-interface IGiftingResponse extends IPaginatedResponse<IGifting> { }
+interface IGiftingResponse extends IPaginatedResponse<IGifting> {}
 
 interface ICoins {
   uuid: string;
@@ -713,7 +710,7 @@ interface ICoins {
   deleted_at: string | null;
 }
 
-interface ICoinsResponse extends IPaginatedResponse<ICoins> { }
+interface ICoinsResponse extends IPaginatedResponse<ICoins> {}
 
 interface IComment {
   text: string;
@@ -806,7 +803,7 @@ interface IReport {
   reported_user: IReportUser;
 }
 
-interface IReportResponse extends IPaginatedResponse<IReport> { }
+interface IReportResponse extends IPaginatedResponse<IReport> {}
 
 interface IWithdrawalUser {
   uuid: string;
@@ -845,35 +842,57 @@ interface IRecentTransfer {
   date_transferred: string;
 }
 
-interface IRecentTransferResponse extends IPaginatedResponse<IRecentTransfer> { }
+interface IRecentTransferResponse extends IPaginatedResponse<IRecentTransfer> {}
 
 interface IPendingWithdrawals {
   uuid: string;
-  amount: string;
-  transaction_type: string;
-  transaction_category: string;
+  amount: number;
+  transaction_type: string
+  transaction_category: string
   transaction_status: string;
-  transaction_fee: string;
+  payment_provider: string;
   description: string;
-  transaction_id: string;
-  payment_method: string;
+  reference_id: string;
   created_at: string;
-  updated_at: string;
-  user: IWithdrawalUser;
-  wallet: {
-    balance: string;
-    currency: {
-      uuid: string;
-      name: string;
-      code: string;
-      symbol: string;
-      decimal_places: number;
+  metadata: {
+    fee_cowry: number;
+    amount_usd: number;
+    amount_cowry: number
+    withdrawal_id: string;
+    payment_provider: string
+    withdrawal_method: string
+    withdrawal_init_data: {
+      payout_kobo: number;
+      naira_amount: string;
+      payout_naira: string;
+      fixed_fee_naira: string
+      overall_fee_usd: string;
+      overall_fee_cowry: string;
+      overall_fee_naira: string;
+      total_spread_fee_naira: string;
+      original_rate_naira_per_usd: string;
+      discounted_rate_naira_per_usd: string;
     };
   };
-  last_withdrawal: string | null;
+  fees: {
+    overall_fee_cowry: string;
+    payout_kobo: number;
+  };
+  user: {
+    uuid: string;
+    email: string;
+    username: string;
+    profile_picture: string;
+    name: string;
+  };
+  cowry_balance: number;
+  last_withdrawal: {
+    amount: number;
+    date: string;
+  };
 }
 
-interface IPendingWithdrawalsResponse extends IPaginatedResponse<IPendingWithdrawals> { }
+interface IPendingWithdrawalsResponse extends IPaginatedResponse<IPendingWithdrawals> {}
 
 interface IPendingVerification {
   uuid: string;
@@ -932,7 +951,7 @@ interface IPendingVerification {
   duration_since_joining: string;
 }
 
-interface IPendingVerificationResponse extends IPaginatedResponse<IPendingVerification> { }
+interface IPendingVerificationResponse extends IPaginatedResponse<IPendingVerification> {}
 
 interface IVerificationDocument {
   uuid: string;
@@ -1142,6 +1161,6 @@ interface IPushNotifications {
   deleted_at: string | null;
 }
 
-interface IPushNotificationResponse extends IPaginatedResponse<IPushNotifications> { }
+interface IPushNotificationResponse extends IPaginatedResponse<IPushNotifications> {}
 
-interface IVerificationRequestedResponse extends IPaginatedResponse<IVerificationRequested> { }
+interface IVerificationRequestedResponse extends IPaginatedResponse<IVerificationRequested> {}
