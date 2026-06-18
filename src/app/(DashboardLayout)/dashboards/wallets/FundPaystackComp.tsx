@@ -96,7 +96,7 @@ const FundPaystackComp: React.FC<FundModalProps> = ({
       },
       callback: (payment: any) => {
         console.log("Payment response:", payment);
-        if (payment?.status === "successful") {
+        if (payment?.status === "successful" || payment?.status === "completed") {
           modal.close();
           toast.success("Payment Successful");
           onSuccess?.();
