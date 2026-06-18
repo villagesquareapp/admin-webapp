@@ -34,9 +34,17 @@ const TopUpCowryComp: React.FC<TopUpModalProps> = ({
   const [userId, setUserId] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [loadingMetadata, setLoadingMetadata] = useState<boolean>(false);
+  const [scriptLoaded, setScriptLoaded] = useState(false);
 
   const publicKey: string = process.env.NEXT_PUBLIC_FLUTTERWAVE_PUBLIC_KEY ?? "";
   const userEmail = "admin@admin.com";
+
+  // Check if script is already loaded on mount
+  useEffect(() => {
+    if ("FlutterwaveCheckout" in window) {
+      setScriptLoaded(true);
+    }
+  }, []);
 
   useEffect(() => {
     const fetchExchangeRate = async () => {
@@ -83,7 +91,12 @@ const TopUpCowryComp: React.FC<TopUpModalProps> = ({
 
   const handlePayment = () => {
     if (typeof window === "undefined" || !window.FlutterwaveCheckout) {
-      toast.error("Payment library not loaded. Please try again.");
+      toast.error("Payment library is still loading. Please wait a moment and try again.");
+      return;
+    }
+
+    if (!publicKey) {
+      toast.error("Payment configuration missing. Contact support.");
       return;
     }
 
@@ -136,7 +149,11 @@ const TopUpCowryComp: React.FC<TopUpModalProps> = ({
 
   return (
     <>
-      <Script src="https://checkout.flutterwave.com/v3.js" strategy="lazyOnload" />
+      <Script
+        src="https://checkout.flutterwave.com/v3.js"
+        strategy="afterInteractive"
+        onReady={() => setScriptLoaded(true)}
+      />
 
       <AnimatePresence>
         {isOpen && (
@@ -221,9 +238,9 @@ const TopUpCowryComp: React.FC<TopUpModalProps> = ({
                         color="success"
                         type="button"
                         onClick={handlePayment}
-                        disabled={loading || loadingMetadata}
+                        disabled={loading || loadingMetadata || !scriptLoaded}
                       >
-                        Top Up
+                        {!scriptLoaded ? "Loading..." : "Top Up"}
                       </Button>
                     )}
                   </div>

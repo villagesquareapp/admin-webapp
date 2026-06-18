@@ -31,10 +31,18 @@ const FundPaystackComp: React.FC<FundModalProps> = ({
   const [dollarValue, setDollarValue] = useState<string>("");
   const [cowryValue, setCowryValue] = useState<string>("");
   const [loading, setLoading] = useState(false);
+  const [scriptLoaded, setScriptLoaded] = useState(false);
 
   const publicKey: string =
     process.env.NEXT_PUBLIC_FLUTTERWAVE_PUBLIC_KEY ?? "";
   const userEmail = "admin@admin.com";
+
+  // Check if script is already loaded on mount
+  useEffect(() => {
+    if ("FlutterwaveCheckout" in window) {
+      setScriptLoaded(true);
+    }
+  }, []);
 
   useEffect(() => {
     const fetchExchangeRate = async () => {
@@ -63,7 +71,12 @@ const FundPaystackComp: React.FC<FundModalProps> = ({
 
   const handlePayment = () => {
     if (typeof window === "undefined" || !window.FlutterwaveCheckout) {
-      toast.error("Payment library not loaded. Please try again.");
+      toast.error("Payment library is still loading. Please wait a moment and try again.");
+      return;
+    }
+
+    if (!publicKey) {
+      toast.error("Payment configuration missing. Contact support.");
       return;
     }
 
@@ -105,7 +118,8 @@ const FundPaystackComp: React.FC<FundModalProps> = ({
     <>
       <Script
         src="https://checkout.flutterwave.com/v3.js"
-        strategy="lazyOnload"
+        strategy="afterInteractive"
+        onReady={() => setScriptLoaded(true)}
       />
 
       <AnimatePresence>
@@ -199,9 +213,9 @@ const FundPaystackComp: React.FC<FundModalProps> = ({
                         color="success"
                         type="button"
                         onClick={handlePayment}
-                        disabled={loading}
+                        disabled={loading || !scriptLoaded}
                       >
-                        Fund
+                        {!scriptLoaded ? "Loading..." : "Fund"}
                       </Button>
                     )}
                   </div>
