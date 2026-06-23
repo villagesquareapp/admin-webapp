@@ -1,7 +1,8 @@
 import { Suspense } from "react";
-import { getLivestreams, getLivestreamStats } from "@/app/api/livestream";
+import { getLivestreams, getLivestreamStats, getLivestreamCategories } from "@/app/api/livestream";
 import SmallCards from "@/app/components/dashboards/ecommerce/smallCards";
 import LivestreamTable from "./LivestreamTable";
+import LivestreamCategories from "./LivestreamCategories";
 import shape1 from "/public/images/shapes/danger-card-shape.png";
 import shape2 from "/public/images/shapes/secondary-card-shape.png";
 import shape3 from "/public/images/shapes/success-card-shape.png";
@@ -39,6 +40,14 @@ const LivestreamStatsWrapper = async () => {
   return <SmallCards overviewData={overviewData} />;
 };
 
+const LivestreamCategoriesWrapper = async () => {
+  const categoriesRes = await getLivestreamCategories();
+  const categories = categoriesRes?.data && Array.isArray(categoriesRes.data)
+    ? categoriesRes.data
+    : [];
+  return <LivestreamCategories initialCategories={categories} />;
+};
+
 const LivestreamTableWrapper = async ({ page, limit }: { page: number; limit: number }) => {
   const livestreams = await getLivestreams(page, limit);
   return (
@@ -65,6 +74,11 @@ const Page = async ({
         <div className="col-span-12">
           <Suspense fallback={<div className="h-[150px] w-full animate-pulse bg-gray-100 dark:bg-gray-800 rounded-3xl" />}>
             <LivestreamStatsWrapper />
+          </Suspense>
+        </div>
+        <div className="col-span-12">
+          <Suspense fallback={<div className="h-[200px] w-full animate-pulse bg-gray-100 dark:bg-gray-800 rounded-3xl" />}>
+            <LivestreamCategoriesWrapper />
           </Suspense>
         </div>
         <div className="col-span-12">
