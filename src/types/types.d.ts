@@ -198,6 +198,19 @@ interface IEchoStats {
   total_comments: number;
 }
 
+interface ILivestreamCategory {
+  id: number;
+  name: string;
+  status: boolean;
+  streams_count: number;
+  created_at: string;
+  updated_at: string;
+}
+
+interface ILivestreamCategoryResponse {
+  categories: ILivestreamCategory[];
+}
+
 interface ILivestreamStats {
   total_livestreams: number;
   new_livestreams: number;
