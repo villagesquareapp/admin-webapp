@@ -31,26 +31,34 @@ export const getLivestreamCategories = async () => {
     );
 };
 
-export const addLivestreamCategory = async (name: string) => {
+export const addLivestreamCategory = async (name: string, description: string, icon: string) => {
     const token = await getToken();
     if (!token) throw new Error("No token found");
+
     const response = await apiPost(
         `livestream/categories/add`,
-        { name },
+        { name, description, icon },
         token
     );
+
     if (response.status) {
         await revalidateCurrentPath();
     }
     return response;
 };
 
-export const updateLivestreamCategory = async (categoryId: number, name: string) => {
+export const updateLivestreamCategory = async (categoryId: number, data: { name?: string; description?: string; icon?: string }) => {
     const token = await getToken();
     if (!token) throw new Error("No token found");
+
+    const body: { name?: string; description?: string; icon?: string } = {};
+    if (data.name) body.name = data.name;
+    if (data.description) body.description = data.description;
+    if (data.icon) body.icon = data.icon;
+
     const response = await apiPatch(
         `livestream/categories/${categoryId}/update`,
-        { name },
+        body,
         token
     );
     if (response.status) {

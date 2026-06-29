@@ -1,51 +1,32 @@
 import { Suspense } from "react";
 import { getLivestreams, getLivestreamStats, getLivestreamCategories } from "@/app/api/livestream";
-import SmallCards from "@/app/components/dashboards/ecommerce/smallCards";
 import LivestreamTable from "./LivestreamTable";
 import LivestreamCategories from "./LivestreamCategories";
-import shape1 from "/public/images/shapes/danger-card-shape.png";
-import shape2 from "/public/images/shapes/secondary-card-shape.png";
-import shape3 from "/public/images/shapes/success-card-shape.png";
+import LivestreamStatsSection from "./LivestreamStatsSection";
 
-const LivestreamStatsWrapper = async () => {
-  const livestreamStats = await getLivestreamStats();
+const LivestreamDataWrapper = async () => {
+  const [livestreamStats, categoriesRes] = await Promise.all([
+    getLivestreamStats(),
+    getLivestreamCategories(),
+  ]);
 
-  const overviewData: IOverviewData[] = [
-    {
-      total: livestreamStats?.data?.total_livestreams || 0,
-      icon: "mdi:video-outline",
-      bgcolor: "secondary",
-      title: "Total Livestreams",
-      shape: shape1,
-      link: "",
-    },
-    {
-      total: livestreamStats?.data?.new_livestreams || 0,
-      icon: "mdi:video-plus-outline",
-      bgcolor: "success",
-      title: "New Livestreams",
-      shape: shape2,
-      link: "",
-    },
-    {
-      total: livestreamStats?.data?.currently_live || 0,
-      icon: "mdi:broadcast",
-      bgcolor: "primary",
-      title: "Currently Live",
-      shape: shape3,
-      link: "",
-    },
-  ];
-
-  return <SmallCards overviewData={overviewData} />;
-};
-
-const LivestreamCategoriesWrapper = async () => {
-  const categoriesRes = await getLivestreamCategories();
   const categories = categoriesRes?.data && Array.isArray(categoriesRes.data)
     ? categoriesRes.data
     : [];
-  return <LivestreamCategories initialCategories={categories} />;
+
+  return (
+    <>
+      <LivestreamStatsSection
+        totalLivestreams={livestreamStats?.data?.total_livestreams || 0}
+        currentlyLive={livestreamStats?.data?.currently_live || 0}
+        categoriesCount={categories.length}
+        initialCategories={categories}
+      />
+      <div className="mt-6">
+        <LivestreamCategories initialCategories={categories} />
+      </div>
+    </>
+  );
 };
 
 const LivestreamTableWrapper = async ({ page, limit }: { page: number; limit: number }) => {
@@ -72,13 +53,8 @@ const Page = async ({
     <>
       <div className="grid grid-cols-12 gap-30">
         <div className="col-span-12">
-          <Suspense fallback={<div className="h-[150px] w-full animate-pulse bg-gray-100 dark:bg-gray-800 rounded-3xl" />}>
-            <LivestreamStatsWrapper />
-          </Suspense>
-        </div>
-        <div className="col-span-12">
-          <Suspense fallback={<div className="h-[200px] w-full animate-pulse bg-gray-100 dark:bg-gray-800 rounded-3xl" />}>
-            <LivestreamCategoriesWrapper />
+          <Suspense fallback={<div className="h-[300px] w-full animate-pulse bg-gray-100 dark:bg-gray-800 rounded-3xl" />}>
+            <LivestreamDataWrapper />
           </Suspense>
         </div>
         <div className="col-span-12">
