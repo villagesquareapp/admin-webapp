@@ -201,8 +201,9 @@ interface IEchoStats {
 interface ILivestreamCategory {
   id: number;
   name: string;
-  status: boolean;
-  streams_count: number;
+  icon: string;
+  icon_id: string;
+  description: string;
   created_at: string;
   updated_at: string;
 }
