@@ -204,6 +204,8 @@ interface ILivestreamCategory {
   icon: string;
   icon_id: string;
   description: string;
+  status?: boolean;
+  streams_count?: number;
   created_at: string;
   updated_at: string;
 }
