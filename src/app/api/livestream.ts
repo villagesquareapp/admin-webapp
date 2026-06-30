@@ -1,6 +1,6 @@
 'use server'
 
-import { apiGet, apiPost, apiPatch, apiDelete } from '@/lib/api';
+import { apiGet, apiPost, apiPatch, apiDelete, apiPut } from '@/lib/api';
 import { getToken } from '@/lib/getToken';
 import { revalidateCurrentPath } from '@/lib/revalidate';
 
@@ -31,6 +31,14 @@ export const getLivestreamCategories = async () => {
     );
 };
 
+export const getTopPerformanceCategories = async () => {
+    const token = await getToken();
+    return await apiGet<ITopPerformanceCategory[]>(
+        `livestream/categories/top`,
+        token
+    );
+};
+
 export const addLivestreamCategory = async (name: string, description: string, icon: string) => {
     const token = await getToken();
     if (!token) throw new Error("No token found");
@@ -53,11 +61,11 @@ export const updateLivestreamCategory = async (categoryId: number, data: { name?
 
     const body: { name?: string; description?: string; icon?: string } = {};
     if (data.name) body.name = data.name;
-    if (data.description) body.description = data.description;
     if (data.icon) body.icon = data.icon;
+    if (data.description) body.description = data.description;
 
-    const response = await apiPatch(
-        `livestream/categories/${categoryId}/update`,
+    const response = await apiPut(
+        `livestream/categories/${categoryId}`,
         body,
         token
     );

@@ -1,17 +1,22 @@
 import { Suspense } from "react";
-import { getLivestreams, getLivestreamStats, getLivestreamCategories } from "@/app/api/livestream";
+import { getLivestreams, getLivestreamStats, getLivestreamCategories, getTopPerformanceCategories } from "@/app/api/livestream";
 import LivestreamTable from "./LivestreamTable";
 import LivestreamCategories from "./LivestreamCategories";
 import LivestreamStatsSection from "./LivestreamStatsSection";
 
 const LivestreamDataWrapper = async () => {
-  const [livestreamStats, categoriesRes] = await Promise.all([
+  const [livestreamStats, categoriesRes, topPerformanceCat] = await Promise.all([
     getLivestreamStats(),
     getLivestreamCategories(),
+    getTopPerformanceCategories(),
   ]);
 
   const categories = categoriesRes?.data && Array.isArray(categoriesRes.data)
     ? categoriesRes.data
+    : [];
+
+  const topCategories = topPerformanceCat?.data && Array.isArray(topPerformanceCat.data)
+    ? topPerformanceCat.data
     : [];
 
   return (
@@ -23,7 +28,7 @@ const LivestreamDataWrapper = async () => {
         initialCategories={categories}
       />
       <div className="mt-6">
-        <LivestreamCategories initialCategories={categories} />
+        <LivestreamCategories initialCategories={topCategories} />
       </div>
     </>
   );
