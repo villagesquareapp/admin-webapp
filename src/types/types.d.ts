@@ -210,6 +210,15 @@ interface ILivestreamCategory {
   updated_at: string;
 }
 
+interface ITopPerformanceCategory {
+  id: number;
+  name: string;
+  icon: string;
+  icon_id: string;
+  description: string;
+  streams_count: number;
+}
+
 interface ILivestreamCategoryResponse {
   categories: ILivestreamCategory[];
 }
@@ -863,8 +872,8 @@ interface IRecentTransferResponse extends IPaginatedResponse<IRecentTransfer> {}
 interface IPendingWithdrawals {
   uuid: string;
   amount: number;
-  transaction_type: string
-  transaction_category: string
+  transaction_type: string;
+  transaction_category: string;
   transaction_status: string;
   payment_provider: string;
   description: string;
@@ -873,15 +882,15 @@ interface IPendingWithdrawals {
   metadata: {
     fee_cowry: number;
     amount_usd: number;
-    amount_cowry: number
+    amount_cowry: number;
     withdrawal_id: string;
-    payment_provider: string
-    withdrawal_method: string
+    payment_provider: string;
+    withdrawal_method: string;
     withdrawal_init_data: {
       payout_kobo: number;
       naira_amount: string;
       payout_naira: string;
-      fixed_fee_naira: string
+      fixed_fee_naira: string;
       overall_fee_usd: string;
       overall_fee_cowry: string;
       overall_fee_naira: string;
