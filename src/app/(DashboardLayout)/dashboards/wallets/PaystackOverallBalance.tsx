@@ -277,7 +277,7 @@ const OverallBalance: React.FC = () => {
             {/* Left: Balance Info */}
             <div>
               <span className="text-sm font-light text-ld">
-                Paystack Overall Balance
+                Flutterwave Overall Balance
                 <button
                   onClick={fetchBalance}
                   className="ml-2 text-lg text-primary hover:rotate-90 transition-transform"
@@ -387,11 +387,11 @@ const OverallBalance: React.FC = () => {
               <Button
                 color="success"
                 size="sm"
-                className="lg:h-10 lg:text-base w-full"
+                className="lg:h-10 lg:text-sm w-full"
                 onClick={() => setIsOpen(true)}
               >
-                <FaPlus size={14} />
-                Fund Paystack
+                {/* <FaPlus size={16} /> */}
+                Fund Flutterwave
               </Button>
             </div>
           </div>

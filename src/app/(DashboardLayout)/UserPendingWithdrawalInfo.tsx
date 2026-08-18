@@ -142,22 +142,22 @@ const UserPendingWithdrawalInfo = ({
                                 <div>
                                     <p className="text-sm lg:text-base text-gray-500">Current Balance</p>
                                     <p className="text-lg lg:text-xl font-semibold">
-                                        {withdrawal.wallet?.currency?.symbol}
-                                        {formatNumber(withdrawal.wallet?.balance)}
+                                        {/* {withdrawal.wallet?.currency?.symbol} */}
+                                        {formatNumber(withdrawal.cowry_balance)}
                                     </p>
                                 </div>
                                 <div>
                                     <p className="text-sm lg:text-base text-gray-500">Withdrawal Amount</p>
                                     <p className="text-lg lg:text-xl font-semibold text-primary">
-                                        {withdrawal.wallet?.currency?.symbol}
+                                        {/* {withdrawal.wallet?.currency?.symbol} */}
                                         {formatNumber(withdrawal.amount)}
                                     </p>
                                 </div>
                                 <div>
                                     <p className="text-sm lg:text-base text-gray-500">Last Withdrawal</p>
                                     <p className="text-lg lg:text-xl font-semibold">
-                                        {withdrawal.wallet?.currency?.symbol}
-                                        {formatNumber(withdrawal.last_withdrawal || 0)}
+                                        {/* {withdrawal.wallet?.currency?.symbol} */}
+                                        {withdrawal.last_withdrawal === null ? 'N/A' : formatNumber(withdrawal.last_withdrawal.amount)}
                                     </p>
                                 </div>
                                 <div>
@@ -219,7 +219,7 @@ const UserPendingWithdrawalInfo = ({
                             <p className="text-gray-600 dark:text-gray-300">
                                 Are you sure you want to decline withdrawal request of{" "}
                                 <span className="font-medium">
-                                    {withdrawal.wallet?.currency?.symbol}
+                                    {/* {withdrawal.wallet?.currency?.symbol} */}
                                     {formatNumber(withdrawal.amount)}
                                 </span>{" "}
                                 for <span className="font-medium">{withdrawal.user.name}</span>?
@@ -295,7 +295,7 @@ const UserPendingWithdrawalInfo = ({
                             <p className="text-gray-600 dark:text-gray-300">
                                 Are you sure you want to approve withdrawal request of{" "}
                                 <span className="font-medium">
-                                    {withdrawal.wallet?.currency?.symbol}
+                                    {/* {withdrawal.wallet?.currency?.symbol} */}
                                     {formatNumber(withdrawal.amount)}
                                 </span>{" "}
                                 for <span className="font-medium">{withdrawal.user.name}</span>?

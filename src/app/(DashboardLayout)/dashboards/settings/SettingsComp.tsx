@@ -6,7 +6,7 @@ import { useState } from "react";
 import { FaPlus } from "react-icons/fa6";
 import { PiEmpty } from "react-icons/pi";
 import SettingsCardList from "./SettingsCardList";
-import { addNewSettings } from "@/app/api/setting";
+import { addNewSettings, updateSettings, deleteSettings } from "@/app/api/setting";
 import { toast } from "sonner";
 
 interface IJsonSettingsValue {
@@ -14,7 +14,7 @@ interface IJsonSettingsValue {
 }
 
 interface ISettings {
-  uuid?: string;
+  uuid: string;
   name: string;
   value_type: "boolean" | "string" | "json";
   value: boolean | string | IJsonSettingsValue;
@@ -70,28 +70,66 @@ const SettingsComp = ({ settings: initialSettings }: { settings: ISettings[] | n
     }
   };
 
-  const handleUpdateSetting = (uuid: string, updatedSetting: Partial<ISettings>) => {
-    setSettings((prev) =>
-      prev.map((setting) =>
-        setting.uuid === uuid
-          ? {
-              ...setting,
-              ...updatedSetting,
-              updated_at: new Date().toISOString(),
-            }
-          : setting
-      )
-    );
+  const handleUpdateSetting = async (uuid: string, updatedSetting: Partial<ISettings>) => {
+    setLoadingStates((prev) => ({
+      ...prev,
+      [uuid]: { ...prev[uuid], isUpdating: true },
+    }));
 
-    // Make an API call to update the setting
-    console.log("Updating setting:", uuid, updatedSetting);
+    try {
+      const body: { value: any } = { value: updatedSetting.value };
+
+      const response = await updateSettings(uuid, body);
+
+      if (response?.status) {
+        setSettings((prev) =>
+          prev.map((setting) =>
+            setting.uuid === uuid
+              ? { ...setting, ...updatedSetting, updated_at: new Date().toISOString() }
+              : setting
+          )
+        );
+        toast.success("Setting updated successfully!");
+      } else {
+        toast.error(response?.message || "Failed to update setting");
+      }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      console.error("Error updating setting:", message);
+      toast.error(`${message}`);
+    } finally {
+      setLoadingStates((prev) => ({
+        ...prev,
+        [uuid]: { ...prev[uuid], isUpdating: false },
+      }));
+    }
   };
 
-  const handleDeleteSetting = (uuid: string) => {
-    setSettings((prev) => prev.filter((setting) => setting.uuid !== uuid));
+  const handleDeleteSetting = async (uuid: string) => {
+    setLoadingStates((prev) => ({
+      ...prev,
+      [uuid]: { ...prev[uuid], isDeleting: true },
+    }));
 
-    // Make an API call to delete the setting
-    console.log("Deleting setting:", uuid);
+    try {
+      const response = await deleteSettings(uuid);
+
+      if (response?.status) {
+        setSettings((prev) => prev.filter((setting) => setting.uuid !== uuid));
+        toast.success("Setting deleted successfully!");
+      } else {
+        toast.error(response?.message || "Failed to delete setting");
+      }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      console.error("Error deleting setting:", message);
+      toast.error(`${message}`);
+    } finally {
+      setLoadingStates((prev) => ({
+        ...prev,
+        [uuid]: { ...prev[uuid], isDeleting: false },
+      }));
+    }
   };
 
   if (!initialSettings?.length && !showAddForm && settings.length === 0) {

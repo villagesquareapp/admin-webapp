@@ -96,6 +96,12 @@ const SidebarContent: MenuItem[] = [
             url: "/dashboards/wallets",
           },
           {
+            name: "Africa Talent Challenge",
+            icon: "game-icons:africa",
+            id: uniqueId(),
+            url: "/dashboards/africa-talent-challenge",
+          },
+          {
             name: "Admin Users",
             icon: "solar:users-group-rounded-line-duotone",
             id: uniqueId(),

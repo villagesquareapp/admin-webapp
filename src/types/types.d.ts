@@ -97,6 +97,92 @@ interface IPostStats {
   android_posts: number;
 }
 
+interface IAtcStats {
+  episodes: {
+    total: number;
+    active: number;
+  };
+  applications: {
+    overall: {
+      total: number;
+      pending: number;
+      approved: number;
+      declined: number;
+    };
+    period: {
+      label: string;
+      total: number;
+      pending: number;
+      approved: number;
+      declined: number;
+    };
+  };
+  engagement: {
+    total_votes: number;
+    total_likes: number;
+    total_comments: number;
+  };
+}
+
+interface ISuggestion {
+  uuid: string;
+  name: string;
+  description: string;
+  status: string;
+  target_month: string;
+  approved_by?: string;
+  approved_at?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+interface IKeyInformation {
+  icon: string;
+  text: string;
+}
+
+interface IRequirement {
+  icon: string;
+  text: string;
+}
+
+interface ITimeline {
+  title: string;
+  date: string;
+}
+
+interface IEpisode {
+  uuid: string;
+  name: string;
+  description: string;
+  start_date: string;
+  end_date: string;
+  status: "active" | "inactive" | "completed";
+}
+
+interface IATCChallengeInfo {
+  period: string;
+  episode: IEpisode;
+  key_information: IKeyInformation[];
+  requirements: IRequirement[];
+  timelines: ITimeline[];
+}
+
+interface IATCChallengeInfoResponse {
+  status: boolean;
+  message: string;
+  data: IATCChallengeInfo;
+}
+
+interface IATCData {
+  approved: boolean;
+  current_month: {
+    value: string;
+    label: string;
+  };
+  suggestion: ISuggestion;
+}
+
 interface IMarketSquareStats {
   total_products: number;
   today_products: number;
@@ -110,6 +196,31 @@ interface IEchoStats {
   live_echoes: number;
   total_participants: number;
   total_comments: number;
+}
+
+interface ILivestreamCategory {
+  id: number;
+  name: string;
+  icon: string;
+  icon_id: string;
+  description: string;
+  status?: boolean;
+  streams_count?: number;
+  created_at: string;
+  updated_at: string;
+}
+
+interface ITopPerformanceCategory {
+  id: number;
+  name: string;
+  icon: string;
+  icon_id: string;
+  description: string;
+  streams_count: number;
+}
+
+interface ILivestreamCategoryResponse {
+  categories: ILivestreamCategory[];
 }
 
 interface ILivestreamStats {
@@ -570,8 +681,7 @@ interface IMarketSquareShops {
   actions?: any;
 }
 
-interface IMarketSquareShopsResponse
-  extends IPaginatedResponse<IMarketSquareShops> {}
+interface IMarketSquareShopsResponse extends IPaginatedResponse<IMarketSquareShops> {}
 
 interface ITickerUser {
   name: string;
@@ -761,32 +871,53 @@ interface IRecentTransferResponse extends IPaginatedResponse<IRecentTransfer> {}
 
 interface IPendingWithdrawals {
   uuid: string;
-  amount: string;
+  amount: number;
   transaction_type: string;
   transaction_category: string;
   transaction_status: string;
-  transaction_fee: string;
+  payment_provider: string;
   description: string;
-  transaction_id: string;
-  payment_method: string;
+  reference_id: string;
   created_at: string;
-  updated_at: string;
-  user: IWithdrawalUser;
-  wallet: {
-    balance: string;
-    currency: {
-      uuid: string;
-      name: string;
-      code: string;
-      symbol: string;
-      decimal_places: number;
+  metadata: {
+    fee_cowry: number;
+    amount_usd: number;
+    amount_cowry: number;
+    withdrawal_id: string;
+    payment_provider: string;
+    withdrawal_method: string;
+    withdrawal_init_data: {
+      payout_kobo: number;
+      naira_amount: string;
+      payout_naira: string;
+      fixed_fee_naira: string;
+      overall_fee_usd: string;
+      overall_fee_cowry: string;
+      overall_fee_naira: string;
+      total_spread_fee_naira: string;
+      original_rate_naira_per_usd: string;
+      discounted_rate_naira_per_usd: string;
     };
   };
-  last_withdrawal: string | null;
+  fees: {
+    overall_fee_cowry: string;
+    payout_kobo: number;
+  };
+  user: {
+    uuid: string;
+    email: string;
+    username: string;
+    profile_picture: string;
+    name: string;
+  };
+  cowry_balance: number;
+  last_withdrawal: {
+    amount: number;
+    date: string;
+  };
 }
 
-interface IPendingWithdrawalsResponse
-  extends IPaginatedResponse<IPendingWithdrawals> {}
+interface IPendingWithdrawalsResponse extends IPaginatedResponse<IPendingWithdrawals> {}
 
 interface IPendingVerification {
   uuid: string;
@@ -845,8 +976,7 @@ interface IPendingVerification {
   duration_since_joining: string;
 }
 
-interface IPendingVerificationResponse
-  extends IPaginatedResponse<IPendingVerification> {}
+interface IPendingVerificationResponse extends IPaginatedResponse<IPendingVerification> {}
 
 interface IVerificationDocument {
   uuid: string;
@@ -957,7 +1087,7 @@ interface IVerificationRequested {
               time: number;
               type: string;
               message: string;
-            }
+            },
           ];
           success: boolean;
           attempts: number;
@@ -1056,8 +1186,6 @@ interface IPushNotifications {
   deleted_at: string | null;
 }
 
-interface IPushNotificationResponse
-  extends IPaginatedResponse<IPushNotifications> {}
+interface IPushNotificationResponse extends IPaginatedResponse<IPushNotifications> {}
 
-interface IVerificationRequestedResponse
-  extends IPaginatedResponse<IVerificationRequested> {}
+interface IVerificationRequestedResponse extends IPaginatedResponse<IVerificationRequested> {}

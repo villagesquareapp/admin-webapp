@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import { getEchoStats } from "../api/echo";
 import { getLivestreamStats } from "../api/livestream";
@@ -14,64 +15,21 @@ import shape4 from "/public/images/shapes/circlr-shape.png";
 import shape1 from "/public/images/shapes/danger-card-shape.png";
 import shape2 from "/public/images/shapes/secondary-card-shape.png";
 import shape3 from "/public/images/shapes/success-card-shape.png";
-import { Button } from "flowbite-react";
 
-const Page = async ({
-  searchParams,
-}: {
-  searchParams: { [key: string]: string | string[] | undefined };
-}) => {
-  const selectedWithdrawalID = searchParams.withdrawal as string;
-  const selectedPendingVerificationID = searchParams.pending_verification as string;
-  const page = Number(searchParams.page) || 1;
-  const limit = Number(searchParams.limit) || 20;
-  const pWLimit = Number(searchParams.pwLimit) || 10;
-  const pWPage = Number(searchParams.pwPage) || 1;
-
+const StatsWrapper = async () => {
   const [
     userStats,
     postStats,
     marketSquareStats,
     liveStreamStats,
     echoStats,
-    pendingVerification,
-    pendingWithdrawals,
   ] = await Promise.all([
     getUserStats(),
     getPostStats(),
     getMarketSquareStats(),
     getLivestreamStats(),
     getEchoStats(),
-    getPendingVerification(page, limit),
-    getPendingWithdrawals(pWPage, pWLimit),
   ]);
-
-
-  let selectedPendingVerification: IPendingVerification | null = null;
-  let selectedVerificationRequested: IVerificationRequested | null = null;
-  let selectedUser: IUser | null = null;
-
-  if (selectedPendingVerificationID) {
-    selectedPendingVerification = pendingVerification?.data?.data.find(
-      (item) => item.uuid === selectedPendingVerificationID
-    ) || null;
-
-    if (selectedPendingVerification) {
-      const [user, verificationRequested] = await Promise.all([
-        getUserDetails(selectedPendingVerification?.user?.uuid || ""),
-        getVerificationRequested(selectedPendingVerification?.uuid || "")
-      ])
-
-      selectedVerificationRequested = !!verificationRequested?.data ?
-        (verificationRequested.data as unknown as IVerificationRequested) : null;
-
-      selectedUser = !!user?.data ?
-        (user.data as unknown as IUser) : null;
-
-    }
-
-
-  }
 
   const overviewData: IOverviewData[] = [
     {
@@ -116,52 +74,115 @@ const Page = async ({
     },
   ];
 
+  return <SmallCards overviewData={overviewData} />;
+};
+
+const PendingVerificationsWrapper = async ({
+  selectedPendingVerificationID,
+  page,
+  limit
+}: {
+  selectedPendingVerificationID: string;
+  page: number;
+  limit: number;
+}) => {
+  const pendingVerification = await getPendingVerification(page, limit);
+
+  let selectedPendingVerification: IPendingVerification | null = null;
+  let selectedVerificationRequested: IVerificationRequested | null = null;
+  let selectedUser: IUser | null = null;
+
+  if (selectedPendingVerificationID) {
+    selectedPendingVerification = pendingVerification?.data?.data.find(
+      (item) => item.uuid === selectedPendingVerificationID
+    ) || null;
+
+    if (selectedPendingVerification) {
+      const [user, verificationRequested] = await Promise.all([
+        getUserDetails(selectedPendingVerification?.user?.uuid || ""),
+        getVerificationRequested(selectedPendingVerification?.uuid || "")
+      ]);
+
+      selectedVerificationRequested = !!verificationRequested?.data ?
+        (verificationRequested.data as unknown as IVerificationRequested) : null;
+
+      selectedUser = !!user?.data ?
+        (user.data as unknown as IUser) : null;
+    }
+  }
+
+  return (
+    <PendingVerifications
+      pendingVerification={pendingVerification?.data || null}
+      totalPages={pendingVerification?.data?.last_page || 1}
+      currentPage={page}
+      pageSize={limit}
+      currentSelectedPendingVerification={selectedPendingVerification}
+      currentSelectedVerificationRequested={selectedVerificationRequested}
+      currentSelectedUser={selectedUser}
+    />
+  );
+};
+
+const WithdrawalsWrapper = async ({
+  selectedWithdrawalID,
+  pWPage,
+  pWLimit
+}: {
+  selectedWithdrawalID: string;
+  pWPage: number;
+  pWLimit: number;
+}) => {
+  const pendingWithdrawals = await getPendingWithdrawals(pWPage, pWLimit);
+  return (
+    <Withdrawals
+      selectedWithdrawalID={selectedWithdrawalID}
+      withdrawals={pendingWithdrawals?.data || null}
+      totalPages={pendingWithdrawals?.data?.last_page || 1}
+      currentPage={pWPage}
+      pageSize={pWLimit}
+    />
+  );
+};
+
+const Page = async ({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string | string[] | undefined };
+}) => {
+  const selectedWithdrawalID = searchParams.withdrawal as string;
+  const selectedPendingVerificationID = searchParams.pending_verification as string;
+  const page = Number(searchParams.page) || 1;
+  const limit = Number(searchParams.limit) || 20;
+  const pWLimit = Number(searchParams.pwLimit) || 10;
+  const pWPage = Number(searchParams.pwPage) || 1;
+
   return (
     <>
       <div className="grid grid-cols-12 gap-y-8 lg:gap-x-30 lg:gap-y-30">
-        {/* <div className="lg:col-span-6  col-span-12">
-          <Welcome />
-        </div> */}
-        {/* <div className="lg:col-span-6 col-span-12"> */}
         <div className="col-span-12">
-          <SmallCards overviewData={overviewData} />
+          <Suspense fallback={<div className="h-[150px] w-full animate-pulse bg-gray-100 dark:bg-gray-800 rounded-3xl" />}>
+            <StatsWrapper />
+          </Suspense>
         </div>
-        {/* @Remove from here */}
-        {/* <div className="lg:col-span-8 col-span-12">
-          <SalesProfit />
-        </div>
-        <div className="lg:col-span-4 col-span-12">
-          <ProductSales />
-        </div>
-        <div className="lg:col-span-5 col-span-12">
-          <MarketingReport />
-        </div>
-        <div className="lg:col-span-3 col-span-12">
-          <Payments />
-        </div>
-        <div className="lg:col-span-4 col-span-12">
-          <AnnualProfit />
-        </div> */}
-        {/* @Remove to here */}
+
         <div className="lg:col-span-7 col-span-12">
-          <PendingVerifications
-            pendingVerification={pendingVerification?.data || null}
-            totalPages={pendingVerification?.data?.last_page || 1}
-            currentPage={page}
-            pageSize={limit}
-            currentSelectedPendingVerification={selectedPendingVerification}
-            currentSelectedVerificationRequested={selectedVerificationRequested}
-            currentSelectedUser={selectedUser}
-          />
+          <Suspense fallback={<div className="h-[400px] w-full animate-pulse bg-gray-100 dark:bg-gray-800 rounded-3xl" />}>
+            <PendingVerificationsWrapper
+              selectedPendingVerificationID={selectedPendingVerificationID}
+              page={page}
+              limit={limit}
+            />
+          </Suspense>
         </div>
         <div className="lg:col-span-5 col-span-12">
-          <Withdrawals
-            selectedWithdrawalID={selectedWithdrawalID}
-            withdrawals={pendingWithdrawals?.data || null}
-            totalPages={pendingWithdrawals?.data?.last_page || 1}
-            currentPage={pWPage}
-            pageSize={pWLimit}
-          />
+          <Suspense fallback={<div className="h-[400px] w-full animate-pulse bg-gray-100 dark:bg-gray-800 rounded-3xl" />}>
+            <WithdrawalsWrapper
+              selectedWithdrawalID={selectedWithdrawalID}
+              pWPage={pWPage}
+              pWLimit={pWLimit}
+            />
+          </Suspense>
         </div>
       </div>
     </>

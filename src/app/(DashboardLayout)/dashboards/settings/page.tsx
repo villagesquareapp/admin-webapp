@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import BreadcrumbComp from "@/app/(DashboardLayout)/layout/shared/breadcrumb/BreadcrumbComp";
 import { getSettings } from "@/app/api/setting";
 import type { Metadata } from "next";
@@ -16,7 +17,8 @@ const BCrumb = [
     title: "Settings",
   },
 ];
-const CreateTickets = async () => {
+
+const SettingsWrapper = async () => {
   const settings: ISettingsResponse | null = await getSettings();
 
   return (
@@ -29,4 +31,12 @@ const CreateTickets = async () => {
   );
 };
 
-export default CreateTickets;
+const Page = async () => {
+  return (
+    <Suspense fallback={<div className="h-[600px] w-full animate-pulse bg-gray-100 dark:bg-gray-800 rounded-3xl" />}>
+      <SettingsWrapper />
+    </Suspense>
+  );
+};
+
+export default Page;
