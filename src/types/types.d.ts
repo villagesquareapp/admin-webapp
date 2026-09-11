@@ -1189,3 +1189,125 @@ interface IPushNotifications {
 interface IPushNotificationResponse extends IPaginatedResponse<IPushNotifications> {}
 
 interface IVerificationRequestedResponse extends IPaginatedResponse<IVerificationRequested> {}
+
+/* =========================================================================
+ * VFlix — short-form vertical video management
+ * Contract source: vflix-admin-management-guide.md (§4, §6)
+ * Status values are identical to PostStatus, so status chips are shared.
+ * ========================================================================= */
+
+type VflixStatus =
+  | "active"
+  | "disabled"
+  | "reported"
+  | "flagged"
+  | "banned"
+  | "shadow_hidden"
+  | "archived";
+
+type VflixContentType = "video" | "carousel";
+
+type VflixReportType = "spam" | "nudity" | "parody";
+
+type VflixReportStatus = "open" | "in_review" | "resolved" | "dismissed";
+
+interface IVflixMedia {
+  uuid: string;
+  media_url: string;
+  transcoded_media_url: string | null;
+  thumbnail: string;
+  media_type: "video" | "image";
+  duration: number; // seconds
+  is_transcode_complete: boolean;
+}
+
+interface IVflixCreator {
+  uuid: string;
+  name: string;
+  username: string;
+  profile_picture: string;
+}
+
+interface IVflixVideo {
+  uuid: string;
+  caption: string;
+  privacy: string;
+  content_type: VflixContentType;
+  status: VflixStatus;
+  is_featured: boolean;
+  is_duplicate: boolean;
+  views_count: number;
+  likes_count: number;
+  comments_count: number;
+  shares_count: number;
+  gifts_count: number;
+  created_at: string;
+  deleted_at: string | null;
+  moderated_at: string | null;
+  media: IVflixMedia[];
+  creator: IVflixCreator;
+  // present on moderation-queue items only
+  report_count?: number;
+}
+
+interface IVflixReport {
+  uuid: string;
+  reporter_id: string;
+  type: VflixReportType;
+  reason: string;
+  status: VflixReportStatus;
+  created_at: string;
+}
+
+interface IVflixVideoDetail extends IVflixVideo {
+  moderated_by: string | null;
+  moderation_reason: string | null;
+  address: string | null;
+  latitude: string | null;
+  longitude: string | null;
+  language: string | null;
+  culture_tag: string | null;
+  series_id: string | null;
+  episode_number: number | null;
+  audio_id: string | null;
+  filter_id: string | null;
+  template_id: string | null;
+  reports: IVflixReport[];
+}
+
+// VFlix list endpoints use the contract's pagination shape (totalPages),
+// which differs from the older IPaginatedResponse (last_page).
+interface IVflixListResponse {
+  data: IVflixVideo[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
+interface IVflixStats {
+  total: number;
+  by_status: Partial<Record<VflixStatus, number>>;
+  featured: number;
+  removed: number;
+  created_last_7d: number;
+}
+
+interface IVflixCreatorSummary {
+  total: number;
+  by_status: Partial<Record<VflixStatus, number>>;
+  total_views: number;
+  total_likes: number;
+  strikes: number;
+}
+
+interface IVflixCreatorView {
+  creator: IVflixCreator;
+  summary: IVflixCreatorSummary;
+  videos: {
+    data: IVflixVideo[];
+    total: number;
+    page: number;
+    limit: number;
+  };
+}
