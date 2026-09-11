@@ -60,6 +60,12 @@ const SidebarContent: MenuItem[] = [
             url: "/dashboards/livestreams",
           },
           {
+            name: "VFlix",
+            icon: "solar:video-frame-play-vertical-line-duotone",
+            id: uniqueId(),
+            url: "/dashboards/vflix",
+          },
+          {
             name: "Marketsquare",
             icon: "solar:shop-2-line-duotone",
             id: uniqueId(),
