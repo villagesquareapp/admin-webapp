@@ -12,7 +12,6 @@ import {
   updateVflixStatus,
 } from "@/app/api/vflix";
 import { can } from "@/utils/permissions";
-import { formatStatusLabel } from "./vflixStatus";
 
 /**
  * Row-level moderation actions for a VFlix video.
@@ -27,7 +26,7 @@ const VflixActions = ({
   statusLoading,
 }: {
   video: IVflixVideo;
-  statuses: string[];
+  statuses: IVflixStatusOption[];
   statusLoading: boolean;
 }) => {
   const [showModal, setShowModal] = useState(false);
@@ -153,9 +152,9 @@ const VflixActions = ({
                       className="w-full"
                     >
                       <option value="">Select a status</option>
-                      {statuses.map((status) => (
-                        <option key={status} value={status}>
-                          {formatStatusLabel(status)}
+                      {statuses.map((s) => (
+                        <option key={s.value} value={s.value}>
+                          {s.name}
                         </option>
                       ))}
                     </Select>

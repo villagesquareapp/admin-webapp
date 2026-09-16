@@ -14,7 +14,7 @@ const VflixVideoPlayer = ({ media }: { media?: IVflixMedia | null }) => {
 
   if (!media) {
     return (
-      <div className="w-full aspect-[9/16] rounded-xl overflow-hidden bg-black/90 flex items-center justify-center text-white/60 text-sm">
+      <div className="w-full h-full rounded-xl overflow-hidden bg-black/90 flex items-center justify-center text-white/60 text-sm">
         No media
       </div>
     );
@@ -26,7 +26,7 @@ const VflixVideoPlayer = ({ media }: { media?: IVflixMedia | null }) => {
       : media.media_url;
 
   return (
-    <div className="w-full aspect-[9/16] max-h-[70vh] rounded-xl overflow-hidden bg-black relative mx-auto">
+    <div className="w-full h-full rounded-xl overflow-hidden bg-black relative">
       {/* transcode + duration overlays */}
       <div className="absolute top-3 left-3 z-10 flex gap-2">
         {!media.is_transcode_complete && (

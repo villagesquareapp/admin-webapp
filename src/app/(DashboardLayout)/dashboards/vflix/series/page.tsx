@@ -1,23 +1,22 @@
 import { Suspense } from "react";
-import { getVflixVideos } from "@/app/api/vflix";
+import { getVflixSeries } from "@/app/api/vflix-insights";
 import VflixBreadcrumb from "../VflixBreadcrumb";
-import VflixTable from "../VflixTable";
+import SeriesView from "./SeriesView";
 
 const BCrumb = [
   { to: "/", title: "Home" },
   { to: "/dashboards/vflix", title: "VFlix" },
-  { title: "Featured" },
+  { title: "Series" },
 ];
 
-const FeaturedWrapper = async ({ page, limit }: { page: number; limit: number }) => {
-  const res = await getVflixVideos(page, limit, { is_featured: "true" });
+const Wrapper = async ({ page, limit, status, search }: { page: number; limit: number; status?: string; search?: string }) => {
+  const res = await getVflixSeries(page, limit, { status, search });
   return (
-    <VflixTable
-      videos={res?.data?.data || []}
+    <SeriesView
+      series={res?.data?.data || []}
       totalPages={res?.data?.last_page || 1}
       currentPage={page}
       pageSize={limit}
-      tableTitle="Featured Videos"
     />
   );
 };
@@ -28,18 +27,20 @@ const Page = async ({
   searchParams: { [key: string]: string | string[] | undefined };
 }) => {
   const page = Number(searchParams.page) || 1;
-  const limit = Number(searchParams.limit) || 20;
+  const limit = Number(searchParams.limit) || 12;
+  const status = searchParams.status as string | undefined;
+  const search = searchParams.search as string | undefined;
 
   return (
     <>
-      <VflixBreadcrumb title="Featured Videos" items={BCrumb} backTo="/dashboards/vflix" />
+      <VflixBreadcrumb title="Series & Collections" items={BCrumb} backTo="/dashboards/vflix" />
       <div className="grid grid-cols-12 gap-30">
         <div className="col-span-12">
           <Suspense
-            key={`${page}-${limit}`}
+            key={`${page}-${limit}-${status}-${search}`}
             fallback={<div className="h-[500px] w-full animate-pulse bg-gray-100 dark:bg-gray-800 rounded-3xl" />}
           >
-            <FeaturedWrapper page={page} limit={limit} />
+            <Wrapper page={page} limit={limit} status={status} search={search} />
           </Suspense>
         </div>
       </div>

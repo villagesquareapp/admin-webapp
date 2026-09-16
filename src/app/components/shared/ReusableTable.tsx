@@ -38,6 +38,7 @@ function ReusableTable({
   onRowClick,
   filterDropdowns,
   extraButtons,
+  dense = false,
 }: {
   tableData: any[];
   columns: any[];
@@ -49,6 +50,7 @@ function ReusableTable({
   extraButtons?: React.ReactNode;
   onRowClick?: (row: any) => void;
   filterDropdowns?: FilterDropdown[];
+  dense?: boolean;
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -192,7 +194,9 @@ function ReusableTable({
                   {headerGroup.headers.map((header) => (
                     <th
                       key={header.id}
-                      className="text-base text-ld font-semibold text-left border-b border-ld px-4 py-3"
+                      className={`text-ld font-semibold text-left border-b border-ld ${
+                        dense ? "text-[13px] px-3 py-2.5" : "text-base px-4 py-3"
+                      }`}
                     >
                       {header.isPlaceholder
                         ? null
@@ -211,7 +215,7 @@ function ReusableTable({
                     onClick={() => onRowClick?.(row.original)}
                   >
                     {row.getVisibleCells().map((cell) => (
-                      <td key={cell.id} className="whitespace-nowrap py-3 px-4">
+                      <td key={cell.id} className={`whitespace-nowrap ${dense ? "py-2.5 px-3" : "py-3 px-4"}`}>
                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                       </td>
                     ))}

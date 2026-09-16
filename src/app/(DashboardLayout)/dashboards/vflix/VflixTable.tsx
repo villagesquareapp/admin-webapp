@@ -6,9 +6,9 @@ import { createColumnHelper } from "@tanstack/react-table";
 import { Icon } from "@iconify/react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { getVflixStatusList } from "@/app/api/vflix";
 import VflixActions from "./VflixActions";
-import VflixDialog from "./VflixDialog";
 import VflixStatusBadge from "./VflixStatusBadge";
 import { formatCount, formatDuration } from "./vflixStatus";
 
@@ -38,10 +38,9 @@ const VflixTable = ({
   filterDropdowns?: FilterDropdown[];
   extraButtons?: React.ReactNode;
 }) => {
-  const [statuses, setStatuses] = useState<string[]>([]);
+  const router = useRouter();
+  const [statuses, setStatuses] = useState<IVflixStatusOption[]>([]);
   const [statusLoading, setStatusLoading] = useState(false);
-  const [selectedVideo, setSelectedVideo] = useState<IVflixVideo | null>(null);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   useEffect(() => {
     const fetchStatuses = async () => {
@@ -59,8 +58,7 @@ const VflixTable = ({
   }, []);
 
   const handleRowClick = (video: IVflixVideo) => {
-    setSelectedVideo(video);
-    setIsDialogOpen(true);
+    router.push(`/dashboards/vflix/videos/${video.uuid}`);
   };
 
   const columnHelper = createColumnHelper<IVflixVideo>();
@@ -176,16 +174,11 @@ const VflixTable = ({
         totalPages={totalPages}
         currentPage={currentPage}
         pageSize={pageSize}
+        dense
         onRowClick={handleRowClick}
         tableTitle={tableTitle}
         filterDropdowns={filterDropdowns}
         extraButtons={extraButtons}
-      />
-      <VflixDialog
-        isOpen={isDialogOpen}
-        setIsOpen={setIsDialogOpen}
-        video={selectedVideo}
-        statuses={statuses}
       />
     </div>
   );

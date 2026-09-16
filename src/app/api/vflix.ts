@@ -3,30 +3,11 @@
 /**
  * VFlix video-moderation server actions.
  * Contract: vflix-admin-management-guide.md §4 (base path `/v2/vflix`).
- *
- * NOTE: the backend endpoints are not live yet, so every action currently
- * returns mock data (see vflix.mock.ts). The real `apiGet`/`apiPost` calls are
- * written out below exactly as they'll run — when the endpoints ship, set
- * VFLIX_USE_MOCK=false (or remove the flag) and delete vflix.mock.ts. No call
- * site or component needs to change.
  */
 
-import { apiGet, apiPost } from "@/lib/api";
+import { apiGet, apiPost, apiPut } from "@/lib/api";
 import { getToken } from "@/lib/getToken";
 import { revalidateCurrentPath } from "@/lib/revalidate";
-import {
-  mockCreatorView,
-  mockListVideos,
-  mockModerationQueue,
-  mockSetFeatured,
-  mockStats,
-  mockStatusList,
-  mockUpdateStatus,
-  mockVideoDetail,
-} from "./vflix.mock";
-
-// Default to mock until the endpoints are ready.
-const USE_MOCK = process.env.VFLIX_USE_MOCK !== "false";
 
 export interface VflixVideoFilters {
   status?: string;
@@ -42,8 +23,6 @@ export const getVflixVideos = async (
   limit: number = 20,
   filters: VflixVideoFilters = {}
 ) => {
-  if (USE_MOCK) return mockListVideos(page, limit, filters);
-
   const token = await getToken();
   const queryParams = new URLSearchParams({
     page: page.toString(),
@@ -60,16 +39,68 @@ export const getVflixVideos = async (
 
 // §4.2 — stats for the dashboard header
 export const getVflixStats = async () => {
-  if (USE_MOCK) return mockStats();
   const token = await getToken();
   return await apiGet<IVflixStats>(`vflix/stats`, token);
 };
 
+// Cross-segment summary for the VFlix landing dashboard (GET /vflix/overview).
+export const getVflixOverview = async () => {
+  const token = await getToken();
+  return await apiGet<IVflixOverview>(`vflix/overview`, token);
+};
+
+// Creators list (ranked / at-risk).
+export const getVflixCreators = async (
+  page = 1,
+  limit = 15,
+  filters: { search?: string; at_risk?: boolean; sort?: string; status?: string } = {}
+) => {
+  const token = await getToken();
+  const q = new URLSearchParams({ page: String(page), limit: String(limit) });
+  if (filters.search) q.append("search", filters.search);
+  if (filters.at_risk) q.append("at_risk", "true");
+  if (filters.sort) q.append("sort", filters.sort);
+  if (filters.status) q.append("status", filters.status);
+  return await apiGet<IVflixPaged<IVflixCreatorListItem>>(`vflix/creators?${q}`, token);
+};
+
+// VFlix report inbox (service_type = vflix).
+export const getVflixReports = async (
+  page = 1,
+  limit = 15,
+  filters: { status?: string; type?: string } = {}
+) => {
+  const token = await getToken();
+  const q = new URLSearchParams({ page: String(page), limit: String(limit) });
+  if (filters.status) q.append("status", filters.status);
+  if (filters.type) q.append("type", filters.type);
+  return await apiGet<IVflixPaged<IVflixReportRow>>(`vflix/reports?${q}`, token);
+};
+
+export const resolveVflixReport = async (id: string, method: string) => {
+  const token = await getToken();
+  if (!token) return null;
+  const r = await apiPut(
+    `reports/${id}/resolve`,
+    { reason: `Report resolved — ${method.replace(/_/g, " ")}`, resolution_methods: [method] },
+    token
+  );
+  if (r.status) await revalidateCurrentPath();
+  return r;
+};
+
+export const dismissVflixReport = async (id: string, reason: string) => {
+  const token = await getToken();
+  if (!token) return null;
+  const r = await apiPut(`reports/${id}/dismiss`, { reason }, token);
+  if (r.status) await revalidateCurrentPath();
+  return r;
+};
+
 // §4.3 — status list (dropdown source)
 export const getVflixStatusList = async () => {
-  if (USE_MOCK) return mockStatusList();
   const token = await getToken();
-  return await apiGet<VflixStatus[]>(`vflix/status-list`, token);
+  return await apiGet<IVflixStatusOption[]>(`vflix/status-list`, token);
 };
 
 // §4.4 — moderation queue (reported/flagged or has open reports)
@@ -77,7 +108,6 @@ export const getVflixModerationQueue = async (
   page: number = 1,
   limit: number = 20
 ) => {
-  if (USE_MOCK) return mockModerationQueue(page, limit);
   const token = await getToken();
   return await apiGet<IVflixListResponse>(
     `vflix/moderation?page=${page}&limit=${limit}`,
@@ -87,7 +117,6 @@ export const getVflixModerationQueue = async (
 
 // §4.5 — video detail
 export const getVflixVideoDetail = async (id: string) => {
-  if (USE_MOCK) return mockVideoDetail(id);
   const token = await getToken();
   return await apiGet<IVflixVideoDetail>(`vflix/${id}`, token);
 };
@@ -99,49 +128,28 @@ export const updateVflixStatus = async (
   status: string,
   reason?: string
 ) => {
-  if (USE_MOCK) {
-    const res = mockUpdateStatus(id, status, reason);
-    await revalidateCurrentPath();
-    return res;
-  }
   const token = await getToken();
   const response = await apiPost(
     `vflix/${id}/update-status`,
     { status, reason },
     token
   );
-  if (response.status) {
-    await revalidateCurrentPath();
-  }
+  if (response.status) await revalidateCurrentPath();
   return response;
 };
 
 // §4.7 — feature / unfeature
 export const featureVflixVideo = async (id: string) => {
-  if (USE_MOCK) {
-    const res = mockSetFeatured(id, true);
-    await revalidateCurrentPath();
-    return res;
-  }
   const token = await getToken();
   const response = await apiPost(`vflix/${id}/feature`, {}, token);
-  if (response.status) {
-    await revalidateCurrentPath();
-  }
+  if (response.status) await revalidateCurrentPath();
   return response;
 };
 
 export const unfeatureVflixVideo = async (id: string) => {
-  if (USE_MOCK) {
-    const res = mockSetFeatured(id, false);
-    await revalidateCurrentPath();
-    return res;
-  }
   const token = await getToken();
   const response = await apiPost(`vflix/${id}/unfeature`, {}, token);
-  if (response.status) {
-    await revalidateCurrentPath();
-  }
+  if (response.status) await revalidateCurrentPath();
   return response;
 };
 
@@ -151,7 +159,6 @@ export const getVflixByCreator = async (
   page: number = 1,
   limit: number = 20
 ) => {
-  if (USE_MOCK) return mockCreatorView(userId, page, limit);
   const token = await getToken();
   return await apiGet<IVflixCreatorView>(
     `vflix/creator/${userId}?page=${page}&limit=${limit}`,

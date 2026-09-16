@@ -14,7 +14,7 @@ const ModerationWrapper = async ({ page, limit }: { page: number; limit: number 
   return (
     <VflixTable
       videos={res?.data?.data || []}
-      totalPages={res?.data?.totalPages || 1}
+      totalPages={res?.data?.last_page || 1}
       currentPage={page}
       pageSize={limit}
       showReportCount

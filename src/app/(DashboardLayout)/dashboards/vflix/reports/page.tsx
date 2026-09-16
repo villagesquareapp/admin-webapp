@@ -1,23 +1,32 @@
 import { Suspense } from "react";
-import { getVflixVideos } from "@/app/api/vflix";
+import { getVflixReports } from "@/app/api/vflix";
 import VflixBreadcrumb from "../VflixBreadcrumb";
-import VflixTable from "../VflixTable";
+import ReportsView from "./ReportsView";
 
 const BCrumb = [
   { to: "/", title: "Home" },
   { to: "/dashboards/vflix", title: "VFlix" },
-  { title: "Featured" },
+  { title: "Reports" },
 ];
 
-const FeaturedWrapper = async ({ page, limit }: { page: number; limit: number }) => {
-  const res = await getVflixVideos(page, limit, { is_featured: "true" });
+const Wrapper = async ({
+  page,
+  limit,
+  status,
+  type,
+}: {
+  page: number;
+  limit: number;
+  status?: string;
+  type?: string;
+}) => {
+  const res = await getVflixReports(page, limit, { status, type });
   return (
-    <VflixTable
-      videos={res?.data?.data || []}
+    <ReportsView
+      reports={res?.data?.data || []}
       totalPages={res?.data?.last_page || 1}
       currentPage={page}
       pageSize={limit}
-      tableTitle="Featured Videos"
     />
   );
 };
@@ -28,18 +37,20 @@ const Page = async ({
   searchParams: { [key: string]: string | string[] | undefined };
 }) => {
   const page = Number(searchParams.page) || 1;
-  const limit = Number(searchParams.limit) || 20;
+  const limit = Number(searchParams.limit) || 15;
+  const status = searchParams.status as string | undefined;
+  const type = searchParams.type as string | undefined;
 
   return (
     <>
-      <VflixBreadcrumb title="Featured Videos" items={BCrumb} backTo="/dashboards/vflix" />
+      <VflixBreadcrumb title="VFlix Reports" items={BCrumb} backTo="/dashboards/vflix" />
       <div className="grid grid-cols-12 gap-30">
         <div className="col-span-12">
           <Suspense
-            key={`${page}-${limit}`}
+            key={`${page}-${limit}-${status}-${type}`}
             fallback={<div className="h-[500px] w-full animate-pulse bg-gray-100 dark:bg-gray-800 rounded-3xl" />}
           >
-            <FeaturedWrapper page={page} limit={limit} />
+            <Wrapper page={page} limit={limit} status={status} type={type} />
           </Suspense>
         </div>
       </div>

@@ -1209,7 +1209,7 @@ type VflixContentType = "video" | "carousel";
 
 type VflixReportType = "spam" | "nudity" | "parody";
 
-type VflixReportStatus = "open" | "in_review" | "resolved" | "dismissed";
+type VflixReportStatus = "pending" | "resolved" | "dismissed";
 
 interface IVflixMedia {
   uuid: string;
@@ -1251,7 +1251,7 @@ interface IVflixVideo {
 }
 
 interface IVflixReport {
-  uuid: string;
+  id: string;
   reporter_id: string;
   type: VflixReportType;
   reason: string;
@@ -1275,14 +1275,12 @@ interface IVflixVideoDetail extends IVflixVideo {
   reports: IVflixReport[];
 }
 
-// VFlix list endpoints use the contract's pagination shape (totalPages),
-// which differs from the older IPaginatedResponse (last_page).
 interface IVflixListResponse {
   data: IVflixVideo[];
   total: number;
-  page: number;
-  limit: number;
-  totalPages: number;
+  current_page: number;
+  per_page: number;
+  last_page: number;
 }
 
 interface IVflixStats {
@@ -1307,7 +1305,271 @@ interface IVflixCreatorView {
   videos: {
     data: IVflixVideo[];
     total: number;
-    page: number;
-    limit: number;
+    current_page: number;
+    per_page: number;
+    last_page: number;
   };
+}
+
+interface IVflixUploadPoint {
+  label: string;
+  count: number;
+}
+
+interface IVflixTopCreator {
+  creator: IVflixCreator;
+  videos: number;
+  views: number;
+  strikes: number;
+}
+
+interface IVflixTopSound {
+  id: string;
+  name: string;
+  tag: string;
+  uses: number;
+}
+
+interface IVflixCatalogCounts {
+  sounds: number;
+  filters: number;
+  templates: number;
+  stickers: number;
+  fonts: number;
+  colours: number;
+  pending_templates: number;
+}
+
+// Cross-segment summary for the VFlix landing dashboard (GET /vflix/overview).
+interface IVflixOverview {
+  kpis: {
+    total: number;
+    active: number;
+    in_moderation: number;
+    featured: number;
+    removed: number;
+    views_30d: number;
+  };
+  by_status: Partial<Record<VflixStatus, number>>;
+  uploads: IVflixUploadPoint[];
+  uploads_total: number;
+  uploads_delta_pct: number;
+  moderation: {
+    open: number;
+    reported: number;
+    flagged: number;
+    items: IVflixVideo[];
+  };
+  transcode: { complete: number; pending: number; failed: number };
+  top_creators: IVflixTopCreator[];
+  top_videos: IVflixVideo[];
+  top_sounds: IVflixTopSound[];
+  catalog: IVflixCatalogCounts;
+}
+
+// ---- Catalog / Studio assets ----
+type VflixAssetKind = "sound" | "filter" | "template" | "sticker" | "font" | "colour";
+
+interface IVflixSound {
+  id: string;
+  name: string;
+  artist: string;
+  category: string;
+  mood_tags: string[];
+  duration: number;
+  uses_count: number;
+  is_featured: boolean;
+  created_at: string;
+}
+
+interface IVflixFilter {
+  id: string;
+  name: string;
+  thumbnail: string;
+  category: string;
+  intensity: number;
+  uses_count: number;
+  is_active: boolean;
+  created_at: string;
+}
+
+interface IVflixTemplate {
+  id: string;
+  name: string;
+  cover: string;
+  category: string;
+  status: "pending" | "approved" | "rejected";
+  submitted_by: string;
+  uses_count: number;
+  created_at: string;
+}
+
+interface IVflixSticker {
+  id: string;
+  name: string;
+  image: string;
+  pack: string;
+  is_active: boolean;
+  uses_count: number;
+}
+
+interface IVflixFont {
+  id: string;
+  name: string;
+  family: string;
+  is_active: boolean;
+  uses_count: number;
+}
+
+interface IVflixColour {
+  id: string;
+  name: string;
+  hex: string;
+  is_active: boolean;
+  uses_count: number;
+}
+
+interface IVflixCatalogSummary {
+  sounds: number;
+  filters: number;
+  templates: number;
+  stickers: number;
+  fonts: number;
+  colours: number;
+  pending_templates: number;
+  featured_sounds: number;
+  active_filters: number;
+}
+
+interface IVflixPaged<T> {
+  data: T[];
+  total: number;
+  current_page: number;
+  per_page: number;
+  last_page: number;
+}
+
+interface IVflixStatusOption {
+  name: string;
+  value: string;
+}
+
+interface IVflixCreatorListItem {
+  creator: IVflixCreator;
+  videos: number;
+  views: number;
+  likes: number;
+  strikes: number;
+  status: "active" | "suspended" | "banned";
+  featured_count: number;
+  joined: string;
+}
+
+interface IVflixReportRow {
+  id: string;
+  video: { uuid: string; caption: string; thumbnail: string };
+  reported_user: IVflixCreator;
+  reporter_id: string;
+  type: VflixReportType;
+  reason: string;
+  status: "pending" | "resolved" | "dismissed";
+  created_at: string;
+}
+
+// ---- Insights / Ops / Settings ----
+interface IVflixNamed {
+  name: string;
+  value: number;
+}
+
+interface IVflixTimePoint {
+  label: string;
+  views: number;
+  uploads: number;
+  engagement: number;
+}
+
+interface IVflixAnalytics {
+  kpis: {
+    views: number;
+    watch_through: number;
+    avg_watch_seconds: number;
+    engagement_rate: number;
+  };
+  trend: IVflixTimePoint[];
+  content_mix: { video: number; carousel: number };
+  top_videos: IVflixVideo[];
+  top_creators: IVflixTopCreator[];
+  top_sounds: IVflixTopSound[];
+  geography: IVflixNamed[];
+  retention: IVflixNamed[];
+}
+
+interface IVflixTrendItem {
+  rank: number;
+  video: IVflixVideo;
+  velocity: number;
+  boosted: boolean;
+  suppressed: boolean;
+}
+
+interface IVflixTrending {
+  trending: IVflixTrendItem[];
+  hot: IVflixTrendItem[];
+}
+
+interface IVflixSeries {
+  id: string;
+  title: string;
+  creator: IVflixCreator;
+  episodes: number;
+  views: number;
+  status: "ongoing" | "completed";
+  cover: string;
+  updated_at: string;
+}
+
+interface IVflixPipelineJob {
+  id: string;
+  video: { uuid: string; caption: string; thumbnail: string };
+  status: "queued" | "processing" | "complete" | "failed";
+  attempts: number;
+  duration_sec: number | null;
+  created_at: string;
+}
+
+interface IVflixPipeline {
+  kpis: { queued: number; processing: number; complete_24h: number; failed_24h: number };
+  throughput: IVflixNamed[];
+  jobs: IVflixPipelineJob[];
+}
+
+interface IVflixEarner {
+  creator: IVflixCreator;
+  gifts: number;
+  coins: number;
+}
+
+interface IVflixEarningVideo {
+  video: IVflixVideo;
+  gifts: number;
+  coins: number;
+}
+
+interface IVflixMonetization {
+  kpis: { total_gifts: number; coin_value: number; paid_out: number; top_earner: string };
+  gifts_trend: IVflixNamed[];
+  top_earning_videos: IVflixEarningVideo[];
+  top_earners: IVflixEarner[];
+}
+
+interface IVflixSettings {
+  uploads_enabled: boolean;
+  comments_default_on: boolean;
+  auto_moderation: boolean;
+  max_duration_sec: number;
+  auto_flag_reports: number;
+  weight_engagement: number;
+  weight_freshness: number;
+  weight_affinity: number;
 }

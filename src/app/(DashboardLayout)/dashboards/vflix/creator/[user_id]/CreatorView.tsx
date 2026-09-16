@@ -54,7 +54,7 @@ const CreatorView = ({
   }
 
   const { creator, summary, videos } = data;
-  const totalPages = Math.max(1, Math.ceil((videos.total || 0) / (videos.limit || limit)));
+  const totalPages = videos.last_page || 1;
 
   return (
     <div className="flex flex-col gap-30">
