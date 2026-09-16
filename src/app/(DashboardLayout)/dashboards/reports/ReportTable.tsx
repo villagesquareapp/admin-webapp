@@ -3,9 +3,22 @@
 import LoadingComponent from "@/app/components/shared/LoadingComponent";
 import ReusableTable from "@/app/components/shared/ReusableTable";
 import { UserDetailsComp } from "@/app/components/shared/TableSnippets";
+import ResolveReportModal, { ReportAction } from "@/app/components/shared/ResolveReportModal";
 import { formatDate } from "@/utils/dateUtils";
 import { createColumnHelper } from "@tanstack/react-table";
+import { Icon } from "@iconify/react";
 import Image from "next/image";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+
+const STATUS_STYLE: Record<string, string> = {
+  open: "bg-lightwarning text-warning",
+  in_review: "bg-lightinfo text-info",
+  resolved: "bg-lightsuccess text-success",
+  dismissed: "bg-lightgray dark:bg-dark text-darklink",
+};
+const NEUTRAL_BADGE = "bg-lightgray dark:bg-dark text-darklink";
+const ACTIONABLE = (s?: string) => s === "open" || s === "in_review";
 
 const ReportTable = ({
   reports,
@@ -20,6 +33,8 @@ const ReportTable = ({
   pageSize: number;
   filterDropdowns: any;
 }) => {
+  const router = useRouter();
+  const [modal, setModal] = useState<{ id: string; action: ReportAction } | null>(null);
   if (!reports) return <LoadingComponent />;
   const columnHelper = createColumnHelper<IReport>();
 
@@ -32,17 +47,22 @@ const ReportTable = ({
       ),
       header: () => <span>Reason</span>,
     }),
-    columnHelper.accessor("report_type", {
-      cell: (info) => (
-        <p className="text-darklink dark:text-bodytext text-sm">{info.getValue() || "--"}</p>
-      ),
-      header: () => <span>Type</span>,
-    }),
     columnHelper.accessor("report_service_type", {
       cell: (info) => (
-        <p className="text-darklink dark:text-bodytext text-sm">{info.getValue() || "--"}</p>
+        <p className="text-darklink dark:text-bodytext text-sm capitalize">{info.getValue() || "--"}</p>
       ),
       header: () => <span>Service</span>,
+    }),
+    columnHelper.accessor("status", {
+      cell: (info) => {
+        const s = info.getValue() || "open";
+        return (
+          <span className={`text-xs font-semibold px-2.5 py-1 rounded-full capitalize ${STATUS_STYLE[s] || NEUTRAL_BADGE}`}>
+            {s.replace(/_/g, " ")}
+          </span>
+        );
+      },
+      header: () => <span>Status</span>,
     }),
     columnHelper.accessor("reported_user.uuid", {
       cell: (info) => {
@@ -70,12 +90,7 @@ const ReportTable = ({
           <div className="flex gap-3 items-center">
             {rp.profile_picture && (
               <div className="relative size-12 rounded-full">
-                <Image
-                  src={rp.profile_picture}
-                  alt="icon"
-                  fill
-                  className="rounded-full object-cover"
-                />
+                <Image src={rp.profile_picture} alt="icon" fill className="rounded-full object-cover" />
               </div>
             )}
             <div className="truncat line-clamp-2 sm:max-w-56 flex flex-col">
@@ -88,40 +103,35 @@ const ReportTable = ({
       header: () => <span>Reporter</span>,
     }),
     columnHelper.accessor("created_at", {
-      cell: (info) => {
-        return (
-          <p className="text-darklink dark:text-bodytext text-sm">
-            {formatDate(info.getValue())}
-          </p>
-        );
-      },
+      cell: (info) => (
+        <p className="text-darklink dark:text-bodytext text-sm">{formatDate(info.getValue())}</p>
+      ),
       header: () => <span>Date Reported</span>,
     }),
-    // columnHelper.accessor("actions", {
-    //   cell: () => (
-    //     <Dropdown
-    //       label=""
-    //       dismissOnClick={false}
-    //       renderTrigger={() => (
-    //         <span className="h-9 w-9 flex justify-center items-center rounded-full hover:bg-lightprimary hover:text-primary cursor-pointer">
-    //           <IconDotsVertical size={22} />
-    //         </span>
-    //       )}
-    //     >
-    //       {[
-    //         { icon: "solar:add-circle-outline", listtitle: "Add" },
-    //         { icon: "solar:pen-new-square-broken", listtitle: "Edit" },
-    //         { icon: "solar:trash-bin-minimalistic-outline", listtitle: "Delete" },
-    //       ].map((item, index) => (
-    //         <Dropdown.Item key={index} className="flex gap-3">
-    //           <Icon icon={item.icon} height={18} />
-    //           <span>{item.listtitle}</span>
-    //         </Dropdown.Item>
-    //       ))}
-    //     </Dropdown>
-    //   ),
-    //   header: () => <span></span>,
-    // }),
+    columnHelper.display({
+      id: "actions",
+      header: () => <span>Actions</span>,
+      cell: (info) => {
+        const r = info.row.original;
+        if (!ACTIONABLE(r.status)) return <span className="text-darklink text-sm">--</span>;
+        return (
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setModal({ id: r.id, action: "resolve" })}
+              className="flex items-center gap-1 text-xs font-semibold bg-lightsuccess text-success px-2.5 py-1.5 rounded-md"
+            >
+              <Icon icon="solar:check-circle-bold" height={15} /> Resolve
+            </button>
+            <button
+              onClick={() => setModal({ id: r.id, action: "dismiss" })}
+              className="text-xs font-semibold bg-lightgray dark:bg-dark text-darklink px-2.5 py-1.5 rounded-md"
+            >
+              Dismiss
+            </button>
+          </div>
+        );
+      },
+    }),
   ];
   return (
     <div className="col-span-12">
@@ -133,6 +143,12 @@ const ReportTable = ({
         pageSize={pageSize}
         filterDropdowns={filterDropdowns}
         tableTitle="All Reports"
+      />
+      <ResolveReportModal
+        reportId={modal?.id ?? null}
+        action={modal?.action ?? "resolve"}
+        onClose={() => setModal(null)}
+        onDone={() => router.refresh()}
       />
     </div>
   );

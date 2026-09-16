@@ -5,7 +5,7 @@
  * Contract: vflix-admin-management-guide.md §4 (base path `/v2/vflix`).
  */
 
-import { apiGet, apiPost, apiPut } from "@/lib/api";
+import { apiGet, apiPost } from "@/lib/api";
 import { getToken } from "@/lib/getToken";
 import { revalidateCurrentPath } from "@/lib/revalidate";
 
@@ -77,25 +77,7 @@ export const getVflixReports = async (
   return await apiGet<IVflixPaged<IVflixReportRow>>(`vflix/reports?${q}`, token);
 };
 
-export const resolveVflixReport = async (id: string, method: string) => {
-  const token = await getToken();
-  if (!token) return null;
-  const r = await apiPut(
-    `reports/${id}/resolve`,
-    { reason: `Report resolved — ${method.replace(/_/g, " ")}`, resolution_methods: [method] },
-    token
-  );
-  if (r.status) await revalidateCurrentPath();
-  return r;
-};
-
-export const dismissVflixReport = async (id: string, reason: string) => {
-  const token = await getToken();
-  if (!token) return null;
-  const r = await apiPut(`reports/${id}/dismiss`, { reason }, token);
-  if (r.status) await revalidateCurrentPath();
-  return r;
-};
+// Resolve/dismiss are generic across report types — see @/app/api/report.ts.
 
 // §4.3 — status list (dropdown source)
 export const getVflixStatusList = async () => {

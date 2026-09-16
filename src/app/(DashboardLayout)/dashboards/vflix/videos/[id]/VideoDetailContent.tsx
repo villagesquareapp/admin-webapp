@@ -16,6 +16,7 @@ import {
   unfeatureVflixVideo,
   updateVflixStatus,
 } from "@/app/api/vflix";
+import ResolveReportModal, { ReportAction } from "@/app/components/shared/ResolveReportModal";
 
 const STATUS_OPTIONS = ["active", "reported", "flagged", "shadow_hidden", "disabled", "banned", "archived"];
 
@@ -44,6 +45,7 @@ const VideoDetailContent = ({ video }: { video: IVflixVideoDetail | null }) => {
   const [selected, setSelected] = useState("");
   const [reason, setReason] = useState("");
   const [pending, startTransition] = useTransition();
+  const [reportModal, setReportModal] = useState<{ id: string; action: ReportAction } | null>(null);
 
   if (!detail) {
     return (
@@ -82,6 +84,11 @@ const VideoDetailContent = ({ video }: { video: IVflixVideoDetail | null }) => {
         setDetail((p) => (p ? { ...p, is_featured: !p.is_featured } : p));
       } else toast.error(res?.message || "Failed");
     });
+
+  const onReportDone = (id: string, status: "resolved" | "dismissed") =>
+    setDetail((p) =>
+      p ? { ...p, reports: p.reports?.map((r) => (r.id === id ? { ...r, status } : r)) } : p
+    );
 
   return (
     <div className="flex flex-col gap-30">
@@ -335,21 +342,48 @@ const VideoDetailContent = ({ video }: { video: IVflixVideoDetail | null }) => {
               </h5>
               {detail.reports?.length ? (
                 <div className="flex flex-col gap-2.5">
-                  {detail.reports.map((r) => (
-                    <div key={r.id} className="rounded-md bg-lightgray dark:bg-dark p-3 flex items-start gap-3">
-                      <span className="size-9 rounded-md grid place-items-center bg-lighterror text-error shrink-0">
-                        <Icon icon="solar:flag-2-bold" height={17} />
-                      </span>
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-2">
-                          <span className="text-sm font-semibold capitalize">{r.type}</span>
-                          <span className="text-[11px] px-2 py-0.5 rounded-full bg-lightwarning text-warning capitalize">{r.status}</span>
+                  {detail.reports.map((r) => {
+                    const actionable = r.status === "open" || r.status === "in_review";
+                    const badge =
+                      r.status === "resolved"
+                        ? "bg-lightsuccess text-success"
+                        : r.status === "dismissed"
+                          ? "bg-lightgray dark:bg-darkgray text-darklink"
+                          : "bg-lightwarning text-warning";
+                    return (
+                      <div key={r.id} className="rounded-md bg-lightgray dark:bg-dark p-3 flex items-start gap-3">
+                        <span className="size-9 rounded-md grid place-items-center bg-lighterror text-error shrink-0">
+                          <Icon icon="solar:flag-2-bold" height={17} />
+                        </span>
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            {r.type && <span className="text-sm font-semibold capitalize">{r.type}</span>}
+                            <span className={`text-[11px] px-2 py-0.5 rounded-full capitalize ${badge}`}>
+                              {r.status.replace(/_/g, " ")}
+                            </span>
+                          </div>
+                          <p className="text-sm text-darklink mt-1">{r.reason}</p>
+                          {actionable && (
+                            <div className="flex items-center gap-2 mt-2">
+                              <button
+                                onClick={() => setReportModal({ id: r.id, action: "resolve" })}
+                                className="flex items-center gap-1 text-xs font-semibold bg-lightsuccess text-success px-2.5 py-1 rounded-md"
+                              >
+                                <Icon icon="solar:check-circle-bold" height={14} /> Resolve
+                              </button>
+                              <button
+                                onClick={() => setReportModal({ id: r.id, action: "dismiss" })}
+                                className="text-xs font-semibold bg-white dark:bg-darkgray text-darklink px-2.5 py-1 rounded-md"
+                              >
+                                Dismiss
+                              </button>
+                            </div>
+                          )}
                         </div>
-                        <p className="text-sm text-darklink mt-1">{r.reason}</p>
+                        <span className="text-xs text-darklink shrink-0">{formatDate(r.created_at)}</span>
                       </div>
-                      <span className="text-xs text-darklink shrink-0">{formatDate(r.created_at)}</span>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               ) : (
                 <div className="flex items-center gap-2 text-sm text-darklink py-2">
@@ -360,6 +394,12 @@ const VideoDetailContent = ({ video }: { video: IVflixVideoDetail | null }) => {
           </CardBox>
         </div>
       </div>
+      <ResolveReportModal
+        reportId={reportModal?.id ?? null}
+        action={reportModal?.action ?? "resolve"}
+        onClose={() => setReportModal(null)}
+        onDone={onReportDone}
+      />
     </div>
   );
 };

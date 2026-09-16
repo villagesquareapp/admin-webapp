@@ -813,19 +813,30 @@ interface IReportUser {
   deleted_at: string | null;
 }
 
+interface IReportActionDetails {
+  resolved_at?: string;
+  resolved_by?: string;
+  resolved_reason?: string;
+  resolution_methods?: string[];
+  dismissed_at?: string;
+  dismissed_by?: string;
+  dismissed_reason?: string;
+}
+
 interface IReport {
   id: string;
   reporter_id: string;
-  reported_user_id: string;
+  reported_id?: string;
   reason: string;
-  report_type: string;
-  reported_service_id: string;
   report_service_type: string;
+  status?: "open" | "in_review" | "resolved" | "dismissed";
+  handled_by?: string | null;
+  action_details?: IReportActionDetails | null;
   created_at: string;
   updated_at: string;
   deleted_at: string | null;
-  reporter: IReportUser;
-  reported_user: IReportUser;
+  reporter?: IReportUser;
+  reported_user?: IReportUser;
 }
 
 interface IReportResponse extends IPaginatedResponse<IReport> {}
@@ -1256,6 +1267,7 @@ interface IVflixReport {
   type: VflixReportType;
   reason: string;
   status: VflixReportStatus;
+  action_details?: IReportActionDetails | null;
   created_at: string;
 }
 
@@ -1472,7 +1484,8 @@ interface IVflixReportRow {
   reporter_id: string;
   type: VflixReportType;
   reason: string;
-  status: "pending" | "resolved" | "dismissed";
+  status: VflixReportStatus;
+  action_details?: IReportActionDetails | null;
   created_at: string;
 }
 

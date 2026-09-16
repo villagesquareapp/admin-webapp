@@ -1,14 +1,14 @@
 "use client";
 
-import { useTransition } from "react";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { createColumnHelper } from "@tanstack/react-table";
 import { Icon } from "@iconify/react";
 import { Dropdown } from "flowbite-react";
 import { HiOutlineDotsVertical } from "react-icons/hi";
-import { toast } from "sonner";
 import ReusableTable from "@/app/components/shared/ReusableTable";
-import { resolveVflixReport, dismissVflixReport } from "@/app/api/vflix";
+import ResolveReportModal, { ReportAction } from "@/app/components/shared/ResolveReportModal";
 import { formatDate } from "@/utils/dateUtils";
 
 const STATUS_STYLE: Record<string, string> = {
@@ -31,20 +31,10 @@ const ReportsView = ({
   currentPage: number;
   pageSize: number;
 }) => {
-  const [pending, startTransition] = useTransition();
-
-  const resolve = (r: IVflixReportRow) =>
-    startTransition(async () => {
-      const res = await resolveVflixReport(r.id, "content_removed");
-      if (res?.status) toast.success("Report resolved — content removed");
-      else toast.error(res?.message || "Failed");
-    });
-  const dismiss = (r: IVflixReportRow) =>
-    startTransition(async () => {
-      const res = await dismissVflixReport(r.id, "No violation found");
-      if (res?.status) toast.success("Report dismissed");
-      else toast.error(res?.message || "Failed");
-    });
+  const router = useRouter();
+  const [modal, setModal] = useState<{ id: string; action: ReportAction } | null>(null);
+  const openVideo = (r: IVflixReportRow) =>
+    router.push(`/dashboards/vflix/videos/${r.video.uuid}`);
 
   const col = createColumnHelper<IVflixReportRow>();
   const columns = [
@@ -95,20 +85,18 @@ const ReportsView = ({
       cell: (info) => {
         const r = info.row.original;
         return (
-          <div className="flex items-center justify-end gap-2">
+          <div className="flex items-center justify-end gap-2" onClick={(e) => e.stopPropagation()}>
             {ACTIONABLE(r.status) && (
               <>
                 <button
-                  onClick={() => resolve(r)}
-                  disabled={pending}
-                  className="flex items-center gap-1 text-xs font-semibold bg-lightsuccess text-success px-2.5 py-1.5 rounded-md disabled:opacity-50"
+                  onClick={() => setModal({ id: r.id, action: "resolve" })}
+                  className="flex items-center gap-1 text-xs font-semibold bg-lightsuccess text-success px-2.5 py-1.5 rounded-md"
                 >
                   <Icon icon="solar:check-circle-bold" height={15} /> Resolve
                 </button>
                 <button
-                  onClick={() => dismiss(r)}
-                  disabled={pending}
-                  className="flex items-center gap-1 text-xs font-semibold bg-lightgray dark:bg-dark text-darklink px-2.5 py-1.5 rounded-md disabled:opacity-50"
+                  onClick={() => setModal({ id: r.id, action: "dismiss" })}
+                  className="flex items-center gap-1 text-xs font-semibold bg-lightgray dark:bg-dark text-darklink px-2.5 py-1.5 rounded-md"
                 >
                   Dismiss
                 </button>
@@ -123,9 +111,13 @@ const ReportsView = ({
                 </button>
               )}
             >
-              <Dropdown.Item onClick={() => toast.info("Open video — links to the video detail")}>View video</Dropdown.Item>
-              {ACTIONABLE(r.status) && <Dropdown.Item onClick={() => resolve(r)}>Resolve (remove content)</Dropdown.Item>}
-              {ACTIONABLE(r.status) && <Dropdown.Item onClick={() => dismiss(r)}>Dismiss</Dropdown.Item>}
+              <Dropdown.Item onClick={() => openVideo(r)}>View video</Dropdown.Item>
+              {ACTIONABLE(r.status) && (
+                <Dropdown.Item onClick={() => setModal({ id: r.id, action: "resolve" })}>Resolve</Dropdown.Item>
+              )}
+              {ACTIONABLE(r.status) && (
+                <Dropdown.Item onClick={() => setModal({ id: r.id, action: "dismiss" })}>Dismiss</Dropdown.Item>
+              )}
             </Dropdown>
           </div>
         );
@@ -147,16 +139,25 @@ const ReportsView = ({
   };
 
   return (
-    <ReusableTable
-      tableData={reports}
-      columns={columns}
-      totalPages={totalPages}
-      currentPage={currentPage}
-      pageSize={pageSize}
-      dense
-      tableTitle="VFlix Reports"
-      filterDropdowns={[statusFilter]}
-    />
+    <>
+      <ReusableTable
+        tableData={reports}
+        columns={columns}
+        totalPages={totalPages}
+        currentPage={currentPage}
+        pageSize={pageSize}
+        dense
+        onRowClick={openVideo}
+        tableTitle="VFlix Reports"
+        filterDropdowns={[statusFilter]}
+      />
+      <ResolveReportModal
+        reportId={modal?.id ?? null}
+        action={modal?.action ?? "resolve"}
+        onClose={() => setModal(null)}
+        onDone={() => router.refresh()}
+      />
+    </>
   );
 };
 

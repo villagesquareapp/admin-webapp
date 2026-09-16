@@ -7,9 +7,11 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Button, Label, TextInput, FileInput, Select } from "flowbite-react";
 import { toast } from "sonner";
 import { getUsers, getUserStatus, updateUserStatus } from "@/app/api/user";
+import ModerateUserModal from "@/app/components/shared/ModerateUserModal";
 
 const UserActions = ({ user, statuses, statusLoading }: { user: IUser, statuses: IUserStatusList[], statusLoading: boolean }) => {
   const [showModal, setShowModal] = useState<boolean>(false);
+  const [showModerate, setShowModerate] = useState<boolean>(false);
   const [selected, setSelected] = useState("");
   const [loading, setLoading] = useState<boolean>(false);
   
@@ -51,8 +53,15 @@ const UserActions = ({ user, statuses, statusLoading }: { user: IUser, statuses:
           </button>
         )}
       >
-        <Dropdown.Item onClick={() => setShowModal(true)}>Update</Dropdown.Item>
+        <Dropdown.Item onClick={() => setShowModal(true)}>Update status</Dropdown.Item>
+        <Dropdown.Item onClick={() => setShowModerate(true)}>Moderate</Dropdown.Item>
       </Dropdown>
+
+      <ModerateUserModal
+        userId={showModerate ? user.user_details.profile.id : null}
+        open={showModerate}
+        onClose={() => setShowModerate(false)}
+      />
 
       {/* Modal */}
       {/* {showModal && (
