@@ -45,39 +45,46 @@ const ReportTable = ({
       header: () => <span>Service</span>,
     }),
     columnHelper.accessor("reported_user.uuid", {
-      cell: (info) => (
-        <UserDetailsComp
-          user={{
-            name: info.row.original.reported_user.name,
-            username: info.row.original.reported_user.username,
-            email: info.row.original.reported_user.email,
-            last_online: info.row.original.reported_user.last_online,
-            profile_picture: info.row.original.reported_user.profile_picture,
-          }}
-        />
-      ),
+      cell: (info) => {
+        const u = info.row.original.reported_user;
+        if (!u) return <p className="text-darklink dark:text-bodytext text-sm">--</p>;
+        return (
+          <UserDetailsComp
+            user={{
+              name: u.name,
+              username: u.username,
+              email: u.email,
+              last_online: u.last_online,
+              profile_picture: u.profile_picture,
+            }}
+          />
+        );
+      },
       header: () => <span>Reported User</span>,
     }),
     columnHelper.accessor("reporter.uuid", {
-      cell: (info) => (
-        <div className="flex gap-3 items-center">
-          <div className="relative size-12 rounded-full">
-            <Image
-              src={info.row.original.reporter.profile_picture}
-              alt="icon"
-              fill
-              className="rounded-full object-cover"
-            />
+      cell: (info) => {
+        const rp = info.row.original.reporter;
+        if (!rp) return <p className="text-darklink dark:text-bodytext text-sm">--</p>;
+        return (
+          <div className="flex gap-3 items-center">
+            {rp.profile_picture && (
+              <div className="relative size-12 rounded-full">
+                <Image
+                  src={rp.profile_picture}
+                  alt="icon"
+                  fill
+                  className="rounded-full object-cover"
+                />
+              </div>
+            )}
+            <div className="truncat line-clamp-2 sm:max-w-56 flex flex-col">
+              <p className="font-medium">{rp.name}</p>
+              <p className="text-sm text-darklink dark:text-bodytext">@{rp.username}</p>
+            </div>
           </div>
-
-          <div className="truncat line-clamp-2 sm:max-w-56 flex flex-col">
-            <p className="font-medium">{info.row.original.reporter.name}</p>
-            <p className="text-sm text-darklink dark:text-bodytext">
-              @{info.row.original.reporter.username}
-            </p>
-          </div>
-        </div>
-      ),
+        );
+      },
       header: () => <span>Reporter</span>,
     }),
     columnHelper.accessor("created_at", {

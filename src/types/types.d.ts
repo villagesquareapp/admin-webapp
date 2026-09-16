@@ -1209,7 +1209,7 @@ type VflixContentType = "video" | "carousel";
 
 type VflixReportType = "spam" | "nudity" | "parody";
 
-type VflixReportStatus = "pending" | "resolved" | "dismissed";
+type VflixReportStatus = "open" | "in_review" | "resolved" | "dismissed";
 
 interface IVflixMedia {
   uuid: string;

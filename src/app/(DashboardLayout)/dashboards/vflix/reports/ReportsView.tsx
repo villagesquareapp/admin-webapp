@@ -11,16 +11,14 @@ import ReusableTable from "@/app/components/shared/ReusableTable";
 import { resolveVflixReport, dismissVflixReport } from "@/app/api/vflix";
 import { formatDate } from "@/utils/dateUtils";
 
-const TYPE_STYLE: Record<string, string> = {
-  spam: "bg-lightinfo text-info",
-  nudity: "bg-lighterror text-error",
-  parody: "bg-lightsecondary text-secondary",
-};
 const STATUS_STYLE: Record<string, string> = {
-  pending: "bg-lightwarning text-warning",
+  open: "bg-lightwarning text-warning",
+  in_review: "bg-lightinfo text-info",
   resolved: "bg-lightsuccess text-success",
   dismissed: "bg-lightgray dark:bg-dark text-darklink",
 };
+const NEUTRAL_BADGE = "bg-lightgray dark:bg-dark text-darklink";
+const ACTIONABLE = (s: string) => s === "open" || s === "in_review";
 
 const ReportsView = ({
   reports,
@@ -70,8 +68,8 @@ const ReportsView = ({
     col.accessor("type", {
       header: () => <span>Type</span>,
       cell: (i) => (
-        <span className={`text-xs font-semibold px-2.5 py-1 rounded-full capitalize ${TYPE_STYLE[i.getValue()]}`}>
-          {i.getValue()}
+        <span className={`text-xs font-semibold px-2.5 py-1 rounded-full capitalize ${NEUTRAL_BADGE}`}>
+          {i.getValue() || "—"}
         </span>
       ),
     }),
@@ -82,8 +80,8 @@ const ReportsView = ({
     col.accessor("status", {
       header: () => <span>Status</span>,
       cell: (i) => (
-        <span className={`text-xs font-semibold px-2.5 py-1 rounded-full capitalize ${STATUS_STYLE[i.getValue()]}`}>
-          {i.getValue()}
+        <span className={`text-xs font-semibold px-2.5 py-1 rounded-full capitalize ${STATUS_STYLE[i.getValue()] || NEUTRAL_BADGE}`}>
+          {i.getValue().replace(/_/g, " ")}
         </span>
       ),
     }),
@@ -98,7 +96,7 @@ const ReportsView = ({
         const r = info.row.original;
         return (
           <div className="flex items-center justify-end gap-2">
-            {r.status === "pending" && (
+            {ACTIONABLE(r.status) && (
               <>
                 <button
                   onClick={() => resolve(r)}
@@ -126,8 +124,8 @@ const ReportsView = ({
               )}
             >
               <Dropdown.Item onClick={() => toast.info("Open video — links to the video detail")}>View video</Dropdown.Item>
-              {r.status === "pending" && <Dropdown.Item onClick={() => resolve(r)}>Resolve (remove content)</Dropdown.Item>}
-              {r.status === "pending" && <Dropdown.Item onClick={() => dismiss(r)}>Dismiss</Dropdown.Item>}
+              {ACTIONABLE(r.status) && <Dropdown.Item onClick={() => resolve(r)}>Resolve (remove content)</Dropdown.Item>}
+              {ACTIONABLE(r.status) && <Dropdown.Item onClick={() => dismiss(r)}>Dismiss</Dropdown.Item>}
             </Dropdown>
           </div>
         );
@@ -141,20 +139,10 @@ const ReportsView = ({
     defaultValue: "",
     options: [
       { value: "", label: "All statuses" },
-      { value: "pending", label: "Pending" },
+      { value: "open", label: "Open" },
+      { value: "in_review", label: "In review" },
       { value: "resolved", label: "Resolved" },
       { value: "dismissed", label: "Dismissed" },
-    ],
-  };
-  const typeFilter = {
-    label: "Type",
-    key: "type",
-    defaultValue: "",
-    options: [
-      { value: "", label: "All types" },
-      { value: "spam", label: "Spam" },
-      { value: "nudity", label: "Nudity" },
-      { value: "parody", label: "Parody" },
     ],
   };
 
@@ -167,7 +155,7 @@ const ReportsView = ({
       pageSize={pageSize}
       dense
       tableTitle="VFlix Reports"
-      filterDropdowns={[statusFilter, typeFilter]}
+      filterDropdowns={[statusFilter]}
     />
   );
 };
