@@ -1,145 +1,118 @@
 "use client";
 
 import ReusableTable from "@/app/components/shared/ReusableTable";
-import { Icon } from "@iconify/react";
-import { IconDotsVertical } from "@tabler/icons-react";
 import { createColumnHelper } from "@tanstack/react-table";
-import { Dropdown } from "flowbite-react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { formatDate } from "@/utils/dateUtils";
-import { UserDetailsComp } from "@/app/components/shared/TableSnippets";
+import { ECHO_STATUS_TONE } from "@/utils/echoLabels";
+import LivestreamActions from "./LivestreamActions";
+
+const fmt = (n: number) => new Intl.NumberFormat("en", { notation: "compact" }).format(n || 0);
 
 const LivestreamTable = ({
   livestreams,
   totalPages,
   currentPage,
   pageSize,
+  tableTitle,
+  backTo,
+  filterDropdowns,
+  extraButtons,
 }: {
-  livestreams: ILivestreamResponse | null;
+  livestreams: ILivestreams[];
   totalPages: number;
   currentPage: number;
   pageSize: number;
+  tableTitle?: string;
+  backTo?: string;
+  filterDropdowns?: any;
+  extraButtons?: React.ReactNode;
 }) => {
-  if (!livestreams) return <div>No livestreams found</div>;
-  const columnHelper = createColumnHelper<ILivestreams>();
+  const router = useRouter();
+  const col = createColumnHelper<ILivestreams>();
 
   const columns = [
-    columnHelper.accessor("host.profile_picture", {
+    col.accessor("title", {
+      header: () => <span>Stream</span>,
       cell: (info) => (
-        <UserDetailsComp
-          user={{
-            name: info.row.original.host.name,
-            username: info.row.original.host.username,
-            email: info.row.original.host.email,
-            last_online: info.row.original.host.last_online,
-            profile_picture: info.row.original.host.profile_picture,
-          }}
-        />
-      ),
-      header: () => <span>Host</span>,
-    }),
-    columnHelper.accessor("title", {
-      cell: (info) => (
-        <p className="text-darklink dark:text-bodytext text-sm">{info.getValue() || "-"}</p>
-      ),
-      header: () => <span>Title</span>,
-    }),
-    columnHelper.accessor("category.name", {
-      cell: (info) => (
-        <p className="text-darklink dark:text-bodytext text-sm">{info.getValue() || 0}</p>
-      ),
-      header: () => <span>Category</span>,
-    }),
-    columnHelper.accessor("users", {
-      cell: (info) => (
-        <div className="flex flex-col gap-1">
-          <div className="flex items-center gap-2">
-            <Icon icon="heroicons:user-group" className="text-gray-500" width={16} />
-            <p className="text-darklink dark:text-bodytext text-sm">
-              <span className="font-medium">20</span> Speakers
-            </p>
+        <div className="flex items-center gap-3 max-w-[300px]">
+          <div className="relative w-14 h-9 rounded-md overflow-hidden bg-lightgray dark:bg-dark shrink-0">
+            {info.row.original.cover && <Image src={info.row.original.cover} alt="" fill className="object-cover" />}
           </div>
-          <div className="flex items-center gap-2">
-            <Icon icon="heroicons:users" className="text-gray-500" width={16} />
-            <p className="text-darklink dark:text-bodytext text-sm">
-              <span className="font-medium">100</span> Listeners
-            </p>
+          <div className="min-w-0">
+            <p className="font-medium truncate">{info.getValue() || "Untitled stream"}</p>
+            <span className="text-[11px] text-darklink capitalize">{info.row.original.orientation}</span>
           </div>
         </div>
       ),
-      header: () => <span>Participants</span>,
     }),
-    columnHelper.accessor("gifts", {
-      cell: (info) => (
-        <p className="text-darklink dark:text-bodytext text-sm">{info.getValue() || 0}</p>
-      ),
-      header: () => <span>Gifts</span>,
-    }),
-    columnHelper.accessor("duration", {
+    col.accessor("host", {
+      header: () => <span>Host</span>,
       cell: (info) => {
-        const minutes = info.getValue() || 0;
-        const hours = Math.floor(minutes / 60);
-        const remainingMinutes = minutes % 60;
-
-        let formattedDuration = "";
-
-        if (hours > 0) {
-          formattedDuration += `${hours}${hours === 1 ? "hr" : "hrs"}`;
-          if (remainingMinutes > 0) {
-            formattedDuration += ` ${remainingMinutes}min`;
-          }
-        } else {
-          formattedDuration = `${minutes}min`;
-        }
-
-        return <p className="text-darklink dark:text-bodytext text-sm">{formattedDuration}</p>;
+        const h = info.getValue();
+        return (
+          <div className="flex items-center gap-2.5">
+            <div className="relative size-8 rounded-full overflow-hidden shrink-0">
+              {h?.profile_picture && <Image src={h.profile_picture} alt="" fill className="object-cover" />}
+            </div>
+            <div className="min-w-0">
+              <p className="font-medium truncate max-w-[130px]">{h?.name || "Unknown"}</p>
+              <p className="text-xs text-darklink truncate">@{h?.username}</p>
+            </div>
+          </div>
+        );
       },
+    }),
+    col.accessor("category", {
+      header: () => <span>Category</span>,
+      cell: (info) => <span className="text-sm text-darklink">{info.getValue()?.name || "—"}</span>,
+    }),
+    col.accessor("users", {
+      header: () => <span>Viewers</span>,
+      cell: (info) => <span className="text-sm tabular-nums">{fmt(info.getValue())}</span>,
+    }),
+    col.accessor("gifts", {
+      header: () => <span>Gifts</span>,
+      cell: (info) => <span className="text-sm tabular-nums">{fmt(info.getValue())}</span>,
+    }),
+    col.accessor("duration", {
       header: () => <span>Duration</span>,
+      cell: (info) => <span className="text-sm text-darklink">{info.getValue() || 0}m</span>,
     }),
-    columnHelper.accessor("created_at", {
+    col.accessor("status", {
+      header: () => <span>Status</span>,
       cell: (info) => (
-        <p className="text-darklink dark:text-bodytext text-sm">
-          {formatDate(info.row.original.created_at)}
-        </p>
+        <span className={`text-xs px-2.5 py-1 rounded-full capitalize ${ECHO_STATUS_TONE[info.getValue()] || "bg-lightgray text-darklink dark:bg-dark"}`}>
+          {info.getValue()}
+        </span>
       ),
-      header: () => <span>Date Created</span>,
     }),
-    // columnHelper.accessor("actions", {
-    //   cell: () => (
-    //     <Dropdown
-    //       label=""
-    //       dismissOnClick={false}
-    //       renderTrigger={() => (
-    //         <span className="h-9 w-9 flex justify-center items-center rounded-full hover:bg-lightprimary hover:text-primary cursor-pointer">
-    //           <IconDotsVertical size={22} />
-    //         </span>
-    //       )}
-    //     >
-    //       {[
-    //         { icon: "solar:add-circle-outline", listtitle: "Add" },
-    //         { icon: "solar:pen-new-square-broken", listtitle: "Edit" },
-    //         { icon: "solar:trash-bin-minimalistic-outline", listtitle: "Delete" },
-    //       ].map((item, index) => (
-    //         <Dropdown.Item key={index} className="flex gap-3">
-    //           <Icon icon={item.icon} height={18} />
-    //           <span>{item.listtitle}</span>
-    //         </Dropdown.Item>
-    //       ))}
-    //     </Dropdown>
-    //   ),
-    //   header: () => <span></span>,
-    // }),
+    col.accessor("created_at", {
+      header: () => <span>Created</span>,
+      cell: (info) => <span className="text-sm text-darklink">{formatDate(info.getValue())}</span>,
+    }),
+    col.display({
+      id: "actions",
+      header: () => <span>Actions</span>,
+      cell: (info) => <LivestreamActions stream={info.row.original} />,
+    }),
   ];
+
   return (
     <div className="col-span-12">
       <ReusableTable
-        tableData={
-          livestreams?.data && Array.isArray(livestreams?.data) ? livestreams?.data : []
-        }
+        tableData={Array.isArray(livestreams) ? livestreams : []}
         columns={columns}
         totalPages={totalPages}
         currentPage={currentPage}
         pageSize={pageSize}
+        dense
+        tableTitle={tableTitle}
+        backTo={backTo}
+        filterDropdowns={filterDropdowns}
+        extraButtons={extraButtons}
+        onRowClick={(s: ILivestreams) => router.push(`/dashboards/livestreams/${s.uuid}`)}
       />
     </div>
   );

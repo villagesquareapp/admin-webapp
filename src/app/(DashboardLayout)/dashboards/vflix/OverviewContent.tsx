@@ -149,7 +149,7 @@ const OverviewContent = ({ data }: { data: IVflixOverview | null }) => {
   ];
 
   return (
-    <div className="flex flex-col gap-30">
+    <div className="flex flex-col gap-5">
       {/* header */}
       <div className="flex items-end justify-between gap-4 flex-wrap">
         <div>
@@ -164,7 +164,7 @@ const OverviewContent = ({ data }: { data: IVflixOverview | null }) => {
       </div>
 
       {/* segment quick-nav */}
-      <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-30">
+      <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-5">
         {segs.map((s) => (
           <Link
             key={s.label}
@@ -184,7 +184,7 @@ const OverviewContent = ({ data }: { data: IVflixOverview | null }) => {
       </div>
 
       {/* KPI row */}
-      <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-30">
+      <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-5">
         {kpis.map((kp) => (
           <div key={kp.label} className="bg-white dark:bg-darkgray rounded-tw shadow-md dark:shadow-dark-md p-4">
             <span className={`size-10 rounded-md grid place-items-center mb-3 ${TONE[kp.tone]}`}>
@@ -200,7 +200,7 @@ const OverviewContent = ({ data }: { data: IVflixOverview | null }) => {
       </div>
 
       {/* uploads + status */}
-      <div className="grid grid-cols-12 gap-30">
+      <div className="grid grid-cols-12 gap-5">
         <div className="col-span-12 lg:col-span-8">
           <CardBox className="h-full">
             <div>
@@ -240,7 +240,7 @@ const OverviewContent = ({ data }: { data: IVflixOverview | null }) => {
       </div>
 
       {/* moderation + transcode + creators */}
-      <div className="grid grid-cols-12 gap-30">
+      <div className="grid grid-cols-12 gap-5">
         <div className="col-span-12 lg:col-span-5">
           <CardBox className="h-full">
             <div>
@@ -343,7 +343,7 @@ const OverviewContent = ({ data }: { data: IVflixOverview | null }) => {
       </div>
 
       {/* top videos + top sounds + catalog */}
-      <div className="grid grid-cols-12 gap-30">
+      <div className="grid grid-cols-12 gap-5">
         <div className="col-span-12 lg:col-span-5">
           <CardBox className="h-full">
             <div>

@@ -1,13 +1,6 @@
 import { Suspense } from "react";
 import { getSounds } from "@/app/api/vflix-catalog";
-import VflixBreadcrumb from "../../VflixBreadcrumb";
 import SoundsView from "../SoundsView";
-
-const BCrumb = [
-  { to: "/", title: "Home" },
-  { to: "/dashboards/vflix/catalog", title: "Catalog" },
-  { title: "Sounds" },
-];
 
 const Wrapper = async ({
   page,
@@ -42,19 +35,12 @@ const Page = async ({
   const search = searchParams.search as string | undefined;
 
   return (
-    <>
-      <VflixBreadcrumb title="Sounds" items={BCrumb} backTo="/dashboards/vflix/catalog" />
-      <div className="grid grid-cols-12 gap-30">
-        <div className="col-span-12">
-          <Suspense
-            key={`${page}-${limit}-${category}-${search}`}
-            fallback={<div className="h-[500px] w-full animate-pulse bg-gray-100 dark:bg-gray-800 rounded-3xl" />}
-          >
-            <Wrapper page={page} limit={limit} category={category} search={search} />
-          </Suspense>
-        </div>
-      </div>
-    </>
+    <Suspense
+      key={`${page}-${limit}-${category}-${search}`}
+      fallback={<div className="h-[500px] w-full animate-pulse bg-gray-100 dark:bg-gray-800 rounded-3xl" />}
+    >
+      <Wrapper page={page} limit={limit} category={category} search={search} />
+    </Suspense>
   );
 };
 

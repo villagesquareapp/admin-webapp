@@ -1,14 +1,7 @@
 import { Suspense } from "react";
 import { getVflixVideos } from "@/app/api/vflix";
-import VflixBreadcrumb from "../VflixBreadcrumb";
 import VflixTable from "../VflixTable";
 import VflixSearch from "../VflixSearch";
-
-const BCrumb = [
-  { to: "/", title: "Home" },
-  { to: "/dashboards/vflix", title: "VFlix" },
-  { title: "Videos" },
-];
 
 const VideosWrapper = async ({
   page,
@@ -61,6 +54,7 @@ const VideosWrapper = async ({
       currentPage={page}
       pageSize={limit}
       tableTitle="VFlix Videos"
+      backTo="/dashboards/vflix"
       filterDropdowns={[statusFilter, typeFilter]}
       extraButtons={<VflixSearch />}
     />
@@ -80,26 +74,19 @@ const Page = async ({
   const search = searchParams.search as string | undefined;
 
   return (
-    <>
-      <VflixBreadcrumb title="VFlix Videos" items={BCrumb} backTo="/dashboards/vflix" />
-      <div className="grid grid-cols-12 gap-30">
-        <div className="col-span-12">
-          <Suspense
-            key={`${page}-${limit}-${status}-${content_type}-${is_featured}-${search}`}
-            fallback={<div className="h-[500px] w-full animate-pulse bg-gray-100 dark:bg-gray-800 rounded-3xl" />}
-          >
-            <VideosWrapper
-              page={page}
-              limit={limit}
-              status={status}
-              content_type={content_type}
-              is_featured={is_featured}
-              search={search}
-            />
-          </Suspense>
-        </div>
-      </div>
-    </>
+    <Suspense
+      key={`${page}-${limit}-${status}-${content_type}-${is_featured}-${search}`}
+      fallback={<div className="h-[500px] w-full animate-pulse bg-gray-100 dark:bg-gray-800 rounded-3xl" />}
+    >
+      <VideosWrapper
+        page={page}
+        limit={limit}
+        status={status}
+        content_type={content_type}
+        is_featured={is_featured}
+        search={search}
+      />
+    </Suspense>
   );
 };
 

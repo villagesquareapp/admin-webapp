@@ -42,16 +42,16 @@ const VflixBreadcrumb = ({
   };
 
   return (
-    <CardBox className="mb-[30px]">
+    <CardBox className="mb-4">
       <Breadcrumb className="flex justify-between">
         <div className="flex items-center gap-3">
           <Icon
             icon="solar:arrow-left-line-duotone"
-            height={25}
+            height={22}
             className="cursor-pointer"
             onClick={handleBack}
           />
-          <h6 className="text-base">{title}</h6>
+          <span className="text-sm font-medium text-darklink">{title}</span>
         </div>
         <div className="flex items-center gap-3 ms-auto">
           {items.map((item) => (

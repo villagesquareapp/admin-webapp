@@ -140,6 +140,7 @@ const SoundsView = ({
       pageSize={pageSize}
       dense
       tableTitle="Sounds"
+      backTo="/dashboards/vflix/catalog"
       filterDropdowns={[categoryFilter]}
       extraButtons={
         <button

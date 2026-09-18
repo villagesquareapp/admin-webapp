@@ -26,6 +26,7 @@ const VflixTable = ({
   pageSize,
   showReportCount = false,
   tableTitle,
+  backTo,
   filterDropdowns,
   extraButtons,
 }: {
@@ -35,6 +36,7 @@ const VflixTable = ({
   pageSize: number;
   showReportCount?: boolean;
   tableTitle?: string;
+  backTo?: string;
   filterDropdowns?: FilterDropdown[];
   extraButtons?: React.ReactNode;
 }) => {
@@ -71,7 +73,7 @@ const VflixTable = ({
         const duration = v.media?.[0]?.duration || 0;
         return (
           <div className="flex gap-3 items-center max-w-96">
-            <div className="relative w-12 h-16 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800 shrink-0">
+            <div className="relative w-9 h-12 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800 shrink-0">
               {thumb && <Image src={thumb} alt="thumb" fill className="object-cover" />}
               <span className="absolute bottom-0.5 right-0.5 text-[10px] bg-black/70 text-white px-1 rounded">
                 {formatDuration(duration)}
@@ -98,7 +100,7 @@ const VflixTable = ({
         const creator = info.row.original.creator;
         return (
           <div className="flex gap-3 items-center">
-            <div className="relative size-10 rounded-full overflow-hidden">
+            <div className="relative size-9 rounded-full overflow-hidden">
               <Image src={creator.profile_picture} alt={creator.name} fill className="object-cover" />
             </div>
             <div className="sm:max-w-40 flex flex-col">
@@ -177,6 +179,7 @@ const VflixTable = ({
         dense
         onRowClick={handleRowClick}
         tableTitle={tableTitle}
+        backTo={backTo}
         filterDropdowns={filterDropdowns}
         extraButtons={extraButtons}
       />

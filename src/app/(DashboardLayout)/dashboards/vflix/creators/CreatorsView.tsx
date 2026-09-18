@@ -156,6 +156,7 @@ const CreatorsView = ({
       pageSize={pageSize}
       dense
       tableTitle="Creators"
+      backTo="/dashboards/vflix"
       onRowClick={(c: IVflixCreatorListItem) => router.push(`/dashboards/vflix/creator/${c.creator.uuid}`)}
       filterDropdowns={[statusFilter, riskFilter, sortFilter]}
       extraButtons={

@@ -135,6 +135,7 @@ const TemplatesView = ({
       pageSize={pageSize}
       dense
       tableTitle="Templates"
+      backTo="/dashboards/vflix/catalog"
       filterDropdowns={[statusFilter]}
       extraButtons={
         <button

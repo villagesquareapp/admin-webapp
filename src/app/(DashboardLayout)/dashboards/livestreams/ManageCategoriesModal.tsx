@@ -354,7 +354,7 @@ const POPULAR_ICONS = [
 ];
 
 // Reusable form modal for Add/Edit with Icon Picker
-function CategoryFormModal({
+export function CategoryFormModal({
   isOpen,
   onClose,
   onSubmit,

@@ -1,13 +1,13 @@
 "use client";
 
-import CardBox from "@/app/components/shared/CardBox";
 import ReusableTable from "@/app/components/shared/ReusableTable";
 import { formatDate } from "@/utils/dateUtils";
 import { createColumnHelper } from "@tanstack/react-table";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import PostDialog from "./PostDialog";
+import { useRouter } from "next/navigation";
 import PostActions from "./PostActions";
+import PostTypeBadge from "./PostTypeBadge";
 import { getPostStatus } from "@/app/api/post";
 
 const PostTable = ({
@@ -15,19 +15,21 @@ const PostTable = ({
   totalPages,
   currentPage,
   pageSize,
-  // onRefresh,
-  // onPageChange,
+  tableTitle,
+  backTo,
+  filterDropdowns,
+  extraButtons,
 }: {
   posts: IPostResponse | null;
   totalPages: number;
   currentPage: number;
   pageSize: number;
-  // onRefresh?: () => Promise<void>;
-  // onPageChange?: (page: number) => void;
+  tableTitle?: string;
+  backTo?: string;
+  filterDropdowns?: any;
+  extraButtons?: React.ReactNode;
 }) => {
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [selectedPost, setSelectedPost] = useState<IPosts | null>(null);
-
+  const router = useRouter();
   const [statuses, setStatuses] = useState<IPostStatusList[]>([]);
   const [statusLoading, setStatusLoading] = useState<boolean>(false);
 
@@ -50,22 +52,22 @@ const PostTable = ({
   const columnHelper = createColumnHelper<IPosts>();
 
   const handleRowClick = (post: IPosts) => {
-    setSelectedPost(post);
-    setIsDialogOpen(true);
-  };
-
-  const handleDialogClose = () => {
-    setIsDialogOpen(false);
-    setSelectedPost(null);
+    router.push(`/dashboards/posts/${post.uuid}`);
   };
 
   const columns = [
     columnHelper.accessor("caption", {
       cell: (info) => (
-        <div className="max-w-80">
-          <p className="font-[500] text-base break-words whitespace-normal">
-            {info.getValue() || 0}
-          </p>
+        <div className="flex items-center gap-2 max-w-[320px]">
+          <span
+            className="font-medium truncate min-w-0"
+            title={info.getValue() || undefined}
+          >
+            {info.getValue() || "Untitled"}
+          </span>
+          <span className="shrink-0">
+            <PostTypeBadge post={info.row.original} />
+          </span>
         </div>
       ),
       header: () => <span>Caption</span>,
@@ -73,7 +75,7 @@ const PostTable = ({
     columnHelper.accessor("user.username", {
       cell: (info) => (
         <div className="flex gap-3 items-center">
-          <div className="relative size-12 rounded-full">
+          <div className="relative size-9 rounded-full shrink-0">
             <Image
               src={info.row.original.user.profile_picture}
               alt="icon"
@@ -207,13 +209,12 @@ const PostTable = ({
         totalPages={totalPages}
         currentPage={currentPage}
         pageSize={pageSize}
+        dense
+        tableTitle={tableTitle}
+        backTo={backTo}
+        filterDropdowns={filterDropdowns}
+        extraButtons={extraButtons}
         onRowClick={handleRowClick}
-      />
-      <PostDialog
-        isOpen={isDialogOpen}
-        setIsOpen={handleDialogClose}
-        post={selectedPost}
-        postId={selectedPost?.uuid}
       />
     </div>
   );

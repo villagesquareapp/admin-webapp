@@ -1,13 +1,6 @@
 import { Suspense } from "react";
 import { getVflixReports } from "@/app/api/vflix";
-import VflixBreadcrumb from "../VflixBreadcrumb";
 import ReportsView from "./ReportsView";
-
-const BCrumb = [
-  { to: "/", title: "Home" },
-  { to: "/dashboards/vflix", title: "VFlix" },
-  { title: "Reports" },
-];
 
 const Wrapper = async ({
   page,
@@ -42,19 +35,12 @@ const Page = async ({
   const type = searchParams.type as string | undefined;
 
   return (
-    <>
-      <VflixBreadcrumb title="VFlix Reports" items={BCrumb} backTo="/dashboards/vflix" />
-      <div className="grid grid-cols-12 gap-30">
-        <div className="col-span-12">
-          <Suspense
-            key={`${page}-${limit}-${status}-${type}`}
-            fallback={<div className="h-[500px] w-full animate-pulse bg-gray-100 dark:bg-gray-800 rounded-3xl" />}
-          >
-            <Wrapper page={page} limit={limit} status={status} type={type} />
-          </Suspense>
-        </div>
-      </div>
-    </>
+    <Suspense
+      key={`${page}-${limit}-${status}-${type}`}
+      fallback={<div className="h-[500px] w-full animate-pulse bg-gray-100 dark:bg-gray-800 rounded-3xl" />}
+    >
+      <Wrapper page={page} limit={limit} status={status} type={type} />
+    </Suspense>
   );
 };
 

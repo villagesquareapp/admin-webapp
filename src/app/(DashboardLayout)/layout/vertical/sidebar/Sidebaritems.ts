@@ -39,25 +39,44 @@ const SidebarContent: MenuItem[] = [
             name: "Users",
             icon: "solar:users-group-rounded-line-duotone",
             id: uniqueId(),
-            url: "/dashboards/users",
+            children: [
+              { name: "Overview", icon: "solar:widget-add-line-duotone", id: uniqueId(), url: "/dashboards/users" },
+              { name: "All Users", icon: "solar:users-group-rounded-line-duotone", id: uniqueId(), url: "/dashboards/users/list" },
+              { name: "Reports", icon: "solar:danger-triangle-line-duotone", id: uniqueId(), url: "/dashboards/users/reports" },
+              { name: "Enforcement Log", icon: "solar:clipboard-list-line-duotone", id: uniqueId(), url: "/dashboards/users/enforcement" },
+            ],
           },
           {
             name: "Posts",
             icon: "solar:document-text-line-duotone",
             id: uniqueId(),
-            url: "/dashboards/posts",
+            children: [
+              { name: "Overview", icon: "solar:widget-add-line-duotone", id: uniqueId(), url: "/dashboards/posts" },
+              { name: "All Posts", icon: "solar:document-text-line-duotone", id: uniqueId(), url: "/dashboards/posts/list" },
+              { name: "Moderation Queue", icon: "solar:shield-warning-line-duotone", id: uniqueId(), url: "/dashboards/posts/queue" },
+              { name: "Reports", icon: "solar:danger-triangle-line-duotone", id: uniqueId(), url: "/dashboards/posts/reports" },
+              { name: "Enforcement Log", icon: "solar:clipboard-list-line-duotone", id: uniqueId(), url: "/dashboards/posts/enforcement" },
+            ],
           },
           {
             name: "Echoes",
             icon: "solar:microphone-line-duotone",
             id: uniqueId(),
-            url: "/dashboards/echoes",
+            children: [
+              { name: "Overview", icon: "solar:widget-add-line-duotone", id: uniqueId(), url: "/dashboards/echoes" },
+              { name: "All Echoes", icon: "solar:microphone-line-duotone", id: uniqueId(), url: "/dashboards/echoes/list" },
+              { name: "Categories", icon: "solar:library-line-duotone", id: uniqueId(), url: "/dashboards/echoes/categories" },
+            ],
           },
           {
             name: "Livestreams",
             icon: "solar:play-stream-line-duotone",
             id: uniqueId(),
-            url: "/dashboards/livestreams",
+            children: [
+              { name: "Overview", icon: "solar:widget-add-line-duotone", id: uniqueId(), url: "/dashboards/livestreams" },
+              { name: "All Livestreams", icon: "solar:play-stream-line-duotone", id: uniqueId(), url: "/dashboards/livestreams/list" },
+              { name: "Categories", icon: "solar:library-line-duotone", id: uniqueId(), url: "/dashboards/livestreams/categories" },
+            ],
           },
           {
             name: "VFlix",

@@ -149,6 +149,7 @@ const ReportsView = ({
         dense
         onRowClick={openVideo}
         tableTitle="VFlix Reports"
+        backTo="/dashboards/vflix"
         filterDropdowns={[statusFilter]}
       />
       <ResolveReportModal

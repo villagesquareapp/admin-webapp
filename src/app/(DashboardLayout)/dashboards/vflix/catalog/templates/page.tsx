@@ -1,13 +1,6 @@
 import { Suspense } from "react";
 import { getTemplates } from "@/app/api/vflix-catalog";
-import VflixBreadcrumb from "../../VflixBreadcrumb";
 import TemplatesView from "../TemplatesView";
-
-const BCrumb = [
-  { to: "/", title: "Home" },
-  { to: "/dashboards/vflix/catalog", title: "Catalog" },
-  { title: "Templates" },
-];
 
 const Wrapper = async ({ page, limit, status }: { page: number; limit: number; status?: string }) => {
   const res = await getTemplates(page, limit, { status });
@@ -31,19 +24,12 @@ const Page = async ({
   const status = searchParams.status as string | undefined;
 
   return (
-    <>
-      <VflixBreadcrumb title="Templates" items={BCrumb} backTo="/dashboards/vflix/catalog" />
-      <div className="grid grid-cols-12 gap-30">
-        <div className="col-span-12">
-          <Suspense
-            key={`${page}-${limit}-${status}`}
-            fallback={<div className="h-[500px] w-full animate-pulse bg-gray-100 dark:bg-gray-800 rounded-3xl" />}
-          >
-            <Wrapper page={page} limit={limit} status={status} />
-          </Suspense>
-        </div>
-      </div>
-    </>
+    <Suspense
+      key={`${page}-${limit}-${status}`}
+      fallback={<div className="h-[500px] w-full animate-pulse bg-gray-100 dark:bg-gray-800 rounded-3xl" />}
+    >
+      <Wrapper page={page} limit={limit} status={status} />
+    </Suspense>
   );
 };
 

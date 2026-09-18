@@ -1,13 +1,6 @@
 import { Suspense } from "react";
 import { getVflixSeries } from "@/app/api/vflix-insights";
-import VflixBreadcrumb from "../VflixBreadcrumb";
 import SeriesView from "./SeriesView";
-
-const BCrumb = [
-  { to: "/", title: "Home" },
-  { to: "/dashboards/vflix", title: "VFlix" },
-  { title: "Series" },
-];
 
 const Wrapper = async ({ page, limit, status, search }: { page: number; limit: number; status?: string; search?: string }) => {
   const res = await getVflixSeries(page, limit, { status, search });
@@ -32,19 +25,12 @@ const Page = async ({
   const search = searchParams.search as string | undefined;
 
   return (
-    <>
-      <VflixBreadcrumb title="Series & Collections" items={BCrumb} backTo="/dashboards/vflix" />
-      <div className="grid grid-cols-12 gap-30">
-        <div className="col-span-12">
-          <Suspense
-            key={`${page}-${limit}-${status}-${search}`}
-            fallback={<div className="h-[500px] w-full animate-pulse bg-gray-100 dark:bg-gray-800 rounded-3xl" />}
-          >
-            <Wrapper page={page} limit={limit} status={status} search={search} />
-          </Suspense>
-        </div>
-      </div>
-    </>
+    <Suspense
+      key={`${page}-${limit}-${status}-${search}`}
+      fallback={<div className="h-[500px] w-full animate-pulse bg-gray-100 dark:bg-gray-800 rounded-3xl" />}
+    >
+      <Wrapper page={page} limit={limit} status={status} search={search} />
+    </Suspense>
   );
 };
 

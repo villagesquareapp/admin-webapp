@@ -1,13 +1,6 @@
 import { Suspense } from "react";
 import { getVflixCreators } from "@/app/api/vflix";
-import VflixBreadcrumb from "../VflixBreadcrumb";
 import CreatorsView from "./CreatorsView";
-
-const BCrumb = [
-  { to: "/", title: "Home" },
-  { to: "/dashboards/vflix", title: "VFlix" },
-  { title: "Creators" },
-];
 
 const Wrapper = async ({
   page,
@@ -53,19 +46,12 @@ const Page = async ({
   const status = searchParams.status as string | undefined;
 
   return (
-    <>
-      <VflixBreadcrumb title="VFlix Creators" items={BCrumb} backTo="/dashboards/vflix" />
-      <div className="grid grid-cols-12 gap-30">
-        <div className="col-span-12">
-          <Suspense
-            key={`${page}-${limit}-${search}-${at_risk}-${sort}-${status}`}
-            fallback={<div className="h-[500px] w-full animate-pulse bg-gray-100 dark:bg-gray-800 rounded-3xl" />}
-          >
-            <Wrapper page={page} limit={limit} search={search} at_risk={at_risk} sort={sort} status={status} />
-          </Suspense>
-        </div>
-      </div>
-    </>
+    <Suspense
+      key={`${page}-${limit}-${search}-${at_risk}-${sort}-${status}`}
+      fallback={<div className="h-[500px] w-full animate-pulse bg-gray-100 dark:bg-gray-800 rounded-3xl" />}
+    >
+      <Wrapper page={page} limit={limit} search={search} at_risk={at_risk} sort={sort} status={status} />
+    </Suspense>
   );
 };
 

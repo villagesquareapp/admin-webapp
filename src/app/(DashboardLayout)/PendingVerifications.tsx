@@ -278,6 +278,8 @@ const PendingVerifications = ({
         pageSize={pageSize}
         tableTitle="Pending Verifications"
         onRowClick={handleRowClick}
+        dense
+        compactTitle
       />
       <PendingVerificationDialog
         isOpen={isDialogOpen}

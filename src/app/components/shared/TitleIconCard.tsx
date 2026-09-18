@@ -38,7 +38,7 @@ const TitleIconCard: React.FC<TitleCardProps> = ({
           </Button>
         )}
       </div>
-      <div className="pt-4 p-6">{children}</div>
+      <div className="p-4">{children}</div>
     </Card>
   );
 };

@@ -13,13 +13,39 @@ export const getLivestreamStats = async () => {
     );
 };
 
+export const getLivestreamOverview = async () => {
+    const token = await getToken();
+    return await apiGet<ILivestreamOverview>(`livestream/overview`, token);
+};
 
-export const getLivestreams = async (page: number = 1, limit: number = 10) => {
-    const token = await getToken()
-    return await apiGet<ILivestreamResponse>(
-        `livestream?page=${page}&limit=${limit}`,
-        token
-    );
+export const getLivestreams = async (
+    page: number = 1,
+    limit: number = 10,
+    filters: { status?: string; search?: string; category?: string } = {}
+) => {
+    const token = await getToken();
+    const q = new URLSearchParams({ page: String(page), limit: String(limit) });
+    if (filters.status) q.append('status', filters.status);
+    if (filters.search) q.append('search', filters.search);
+    if (filters.category) q.append('category', filters.category);
+    return await apiGet<ILivestreamResponse>(`livestream?${q}`, token);
+};
+
+export const getLivestreamDetail = async (streamId: string) => {
+    const token = await getToken();
+    return await apiGet<ILivestreamDetail>(`livestream/${streamId}`, token);
+};
+
+export const getLivestreamStatusList = async () => {
+    const token = await getToken();
+    return await apiGet<ILivestreamStatusList[]>(`livestream/livestream-status-list`, token);
+};
+
+export const forceEndLivestream = async (streamId: string) => {
+    const token = await getToken();
+    const r = await apiPost(`livestream/${streamId}/force-end`, {}, token);
+    if (r.status) await revalidateCurrentPath();
+    return r;
 };
 
 // Category CRUD

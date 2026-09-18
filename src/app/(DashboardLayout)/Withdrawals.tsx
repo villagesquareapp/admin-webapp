@@ -291,7 +291,7 @@ const Withdrawals = ({
                 checked={selectedPendingWithdrawals.length === localWithdrawals.length}
               />
             )}
-            <h5 className="card-title whitespace-nowrap">Pending Withdrawals</h5>
+            <h5 className="text-sm font-semibold text-dark dark:text-white whitespace-nowrap">Pending Withdrawals</h5>
           </div>
 
           <div className="flex items-center gap-4 flex-nowrap">
@@ -322,7 +322,7 @@ const Withdrawals = ({
           </div>
         </div>
 
-        <div className="mt-5 flex flex-col relative min-h-[200px]">
+        <div className="mt-3 flex flex-col relative min-h-[200px]">
           {isLoading ? (
             <div className="absolute inset-0 flex items-center justify-center bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm">
               <div className="flex flex-col items-center gap-2">
@@ -341,7 +341,7 @@ const Withdrawals = ({
                 onMouseEnter={() => setIsHovering(item.uuid)}
                 onMouseLeave={() => setIsHovering(null)}
                 onClick={() => setOpenUserPendingWithdrawalInfo(item.uuid)}
-                className={`flex cursor-pointer border-b border-gray-300 dark:border-gray-600 gap-3 items-center w-full relative transition-all duration-300 !p-2 !py-3 
+                className={`flex cursor-pointer border-b border-ld gap-3 items-center w-full relative transition-all duration-300 !p-2 !py-2
                   ${
                     isHovering === item.uuid || selectedPendingWithdrawals.includes(item.uuid)
                       ? "!pl-10 bg-gray-200 dark:bg-gray-700"
@@ -364,20 +364,20 @@ const Withdrawals = ({
                 </div>
 
                 <div
-                  className={`h-10 w-10 shrink-0 rounded-full flex justify-center items-center relative`}
+                  className={`h-9 w-9 shrink-0 rounded-full overflow-hidden flex justify-center items-center relative bg-lightgray dark:bg-dark`}
                 >
                   {item.user.profile_picture && (
                     <Image
                       src={item.user.profile_picture}
                       fill
                       alt="icon"
-                      className="h-6 w-6 rounded-full"
+                      className="object-cover rounded-full"
                     />
                   )}
                 </div>
                 <div className="flex flex-col min-w-0 flex-shrink">
-                  <h5 className="text-base truncate">{item.user.name}</h5>
-                  <p className="text-sm text-gray-500 truncate">@{item.user.username}</p>
+                  <h5 className="text-sm font-medium truncate">{item.user.name}</h5>
+                  <p className="text-xs text-darklink truncate">@{item.user.username}</p>
                 </div>
 
                 <div className="flex gap-2 items-center ml-auto">

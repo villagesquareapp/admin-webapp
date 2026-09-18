@@ -1,5 +1,6 @@
 "use client";
 import {
+  IconArrowLeft,
   IconChevronLeft,
   IconChevronRight,
   IconChevronsLeft,
@@ -35,10 +36,12 @@ function ReusableTable({
   pageSize = 20,
   dropdownItems,
   tableTitle,
+  backTo,
   onRowClick,
   filterDropdowns,
   extraButtons,
   dense = false,
+  compactTitle = false,
 }: {
   tableData: any[];
   columns: any[];
@@ -47,10 +50,12 @@ function ReusableTable({
   pageSize?: number;
   dropdownItems?: string[];
   tableTitle?: string;
+  backTo?: string;
   extraButtons?: React.ReactNode;
   onRowClick?: (row: any) => void;
   filterDropdowns?: FilterDropdown[];
   dense?: boolean;
+  compactTitle?: boolean;
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -128,9 +133,23 @@ function ReusableTable({
   return (
     <>
       <CardBox className="border rounded-md md:rounded-3xl  shadow-md border-ld overflow-hidden">
-        <div className="flex md:items-center md:justify-between mb-4">
+        {(backTo || tableTitle || filterDropdowns || extraButtons || dropdownItems) && (
+        <div className="flex md:items-center md:justify-between mb-2.5">
           <div className="flex items-center gap-4 w-full justify-between flex-col md:flex-row">
-            {tableTitle && <h5 className="card-title">{tableTitle}</h5>}
+            {(backTo || tableTitle) && (
+              <div className="flex items-center gap-2 shrink-0">
+                {backTo && (
+                  <button
+                    onClick={() => router.push(backTo)}
+                    className="p-1.5 -ml-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 text-darklink"
+                    aria-label="Back"
+                  >
+                    <IconArrowLeft size={20} />
+                  </button>
+                )}
+                {tableTitle && <h5 className={compactTitle ? "text-sm font-semibold text-dark dark:text-white" : "card-title"}>{tableTitle}</h5>}
+              </div>
+            )}
             <div className="flex items-center gap-3 flex-col md:flex-row ml-auto justify-end">
               {/* Add the filter dropdowns */}
               {filterDropdowns && (
@@ -185,6 +204,7 @@ function ReusableTable({
             )}
           </div>
         </div>
+        )}
 
         <div className="overflow-x-auto">
           <table className="min-w-full">
@@ -195,7 +215,7 @@ function ReusableTable({
                     <th
                       key={header.id}
                       className={`text-ld font-semibold text-left border-b border-ld ${
-                        dense ? "text-[13px] px-3 py-2.5" : "text-base px-4 py-3"
+                        dense ? "text-[13px] px-3 py-1.5" : "text-[15px] px-4 py-2.5"
                       }`}
                     >
                       {header.isPlaceholder
@@ -215,7 +235,7 @@ function ReusableTable({
                     onClick={() => onRowClick?.(row.original)}
                   >
                     {row.getVisibleCells().map((cell) => (
-                      <td key={cell.id} className={`whitespace-nowrap ${dense ? "py-2.5 px-3" : "py-3 px-4"}`}>
+                      <td key={cell.id} className={`whitespace-nowrap ${dense ? "py-1.5 px-3" : "py-2 px-4"}`}>
                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                       </td>
                     ))}
@@ -237,7 +257,7 @@ function ReusableTable({
             </tbody>
           </table>
         </div>
-        <div className="sm:flex gap-2 p-3 items-center justify-between">
+        <div className="sm:flex gap-2 pt-3 items-center justify-between">
           <div className="flex items-center gap-2">
             <h1 className="text-gray-700">{tableData.length} Rows</h1>
           </div>

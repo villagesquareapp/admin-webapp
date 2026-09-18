@@ -101,6 +101,7 @@ const SeriesView = ({
       pageSize={pageSize}
       dense
       tableTitle="Series & Collections"
+      backTo="/dashboards/vflix"
       filterDropdowns={[statusFilter]}
       extraButtons={
         <div className="relative">

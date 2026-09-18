@@ -5,7 +5,8 @@ import { useState, useEffect } from "react";
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Button, Label, TextInput, FileInput } from "flowbite-react";
-import { getPostStatus, updatePostStatus } from "@/app/api/post";
+import { updatePostStatus } from "@/app/api/post";
+import { executeModeration } from "@/app/api/moderation";
 import { toast } from "sonner";
 
 const PostActions = ({
@@ -25,6 +26,16 @@ const PostActions = ({
 
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
+  };
+
+  const moderate = async (action: string, label: string) => {
+    const res = await executeModeration({
+      service_type: "post",
+      target_id: post.uuid,
+      actions: [{ action }],
+    });
+    if (res?.status) toast.success(label);
+    else toast.error(res?.message || "Action failed");
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -61,7 +72,22 @@ const PostActions = ({
           </button>
         )}
       >
-        <Dropdown.Item onClick={() => setShowModal(true)}>Update</Dropdown.Item>
+        <Dropdown.Item onClick={() => setShowModal(true)}>Update status</Dropdown.Item>
+        {post.is_duplicate ? (
+          <Dropdown.Item onClick={() => moderate("restore_content", "Post restored")}>
+            Restore reach
+          </Dropdown.Item>
+        ) : (
+          <Dropdown.Item onClick={() => moderate("limit_visibility", "Reach limited")}>
+            Limit reach
+          </Dropdown.Item>
+        )}
+        <Dropdown.Item onClick={() => moderate("remove_content", "Post taken down")}>
+          Take down
+        </Dropdown.Item>
+        <Dropdown.Item onClick={() => moderate("restore_content", "Post restored")}>
+          Restore
+        </Dropdown.Item>
       </Dropdown>
 
       <AnimatePresence>
