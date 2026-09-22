@@ -1,0 +1,34 @@
+name: Admin Webapp CI
+
+on:
+  push:
+    branches:
+      - 'feat-*'
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: package-lock.json
+      - run: npm ci
+      - name: TypeScript check
+        run: npx tsc --noEmit
+      - name: Build admin application
+        env:
+          API_URL: https://staging-api.villagesquare.io/v2
+          NEXTAUTH_URL: https://admin-dev.villagesquare.io
+          NEXTAUTH_SECRET: ci-placeholder
+          OTEL_SDK_DISABLED: "true"
+        run: npm run build
