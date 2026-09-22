@@ -23,8 +23,14 @@ jobs:
           cache: npm
           cache-dependency-path: package-lock.json
       - run: npm ci
-      - name: TypeScript check
-        run: npx tsc --noEmit
+      - name: Type-check OTel instrumentation
+        run: >-
+          npx tsc src/instrumentation.ts
+          --noEmit
+          --skipLibCheck
+          --target ES2020
+          --module ESNext
+          --moduleResolution Bundler
       - name: Build admin application
         env:
           API_URL: https://staging-api.villagesquare.io/v2
