@@ -175,7 +175,7 @@ const PostDetailContent = ({ detail, postId }: { detail: Detail | null; postId: 
                 {media.length ? `${media.length} media` : "Text"}
               </span>
               <span className="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-white/10 text-white/80 capitalize">
-                {m.privacy}
+                {m.audience}
               </span>
               <span className="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-white/10 text-white/60">
                 {formatDate(m.created_at)}
@@ -263,7 +263,7 @@ const PostDetailContent = ({ detail, postId }: { detail: Detail | null; postId: 
               <Tile icon="solar:users-group-rounded-linear" label="Unique views" value={fmt(m.unique_views)} />
               <Tile icon="solar:bolt-linear" label="Engagements" value={fmt(m.engagements)} />
               <Tile icon="solar:map-point-linear" label="Location" value={m.address} />
-              <Tile icon="solar:lock-keyhole-minimalistic-linear" label="Privacy" value={m.privacy} />
+              <Tile icon="solar:lock-keyhole-minimalistic-linear" label="Audience" value={m.audience} />
               <Tile icon="solar:flag-2-linear" label="Reports" value={`${m.report_count} (${m.open_report_count} open)`} />
               <Tile icon="solar:calendar-linear" label="Posted" value={formatDate(m.created_at)} />
             </div>

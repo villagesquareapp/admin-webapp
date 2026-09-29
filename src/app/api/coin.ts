@@ -9,6 +9,11 @@ export const getCoins = async () => {
   return await apiGet<ICoinsResponse>(`coin/recharge-options`, token);
 };
 
+export const getCoinOverview = async () => {
+  const token = await getToken();
+  return await apiGet<ICoinOverview>(`coin/overview`, token);
+};
+
 export const addCoin = async (amount: number, price: number) => {
   const token = await getToken();
   if (!token) throw new Error("Token not found");

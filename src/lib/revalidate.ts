@@ -3,53 +3,46 @@
 import { revalidatePath } from 'next/cache'
 import { headers } from 'next/headers'
 
-export async function revalidatePathClient(path: string) {
-    try {
-        const response = await fetch(`/api/revalidate?path=${encodeURIComponent(path)}`, {
-            method: 'POST',
-            cache: 'no-store',
-            headers: {
-                'Cache-Control': 'no-cache'
-            }
-        })
-        if (!response.ok) {
-            throw new Error('Failed to revalidate')
-        }
-    } catch (error) {
-        console.error('Revalidation error:', error)
-    }
+// Revalidation must never break or spam a mutation — log at most once.
+let warnedOnce = false
+function warnOnce(context: string, error: unknown) {
+    if (warnedOnce) return
+    warnedOnce = true
+    console.warn(`[revalidate] ${context} failed (further warnings suppressed):`, error)
 }
 
-export async function revalidatePathServer(path: string) {
-    try {
-        revalidatePath(path)
-        // Also revalidate the root path if we're not on it
-        if (path !== '/') {
-            revalidatePath('/')
-        }
-    } catch (error) {
-        console.error('Server revalidation error:', error)
-    }
-}
-
+/** Revalidate the page the current server action was invoked from (via middleware's x-pathname). */
 export async function revalidateCurrentPath() {
     try {
-        const headersList = headers()
-        const pathname = headersList.get('x-pathname') || '/'
-
-        // Revalidate the current path
+        const pathname = headers().get('x-pathname') || '/'
         revalidatePath(pathname)
-
-        // Also revalidate specific paths that need to stay in sync
-        revalidatePath('/dashboards/withdrawals')
+        // Keep the dashboard/withdrawals summaries in sync after any mutation.
         revalidatePath('/dashboards')
-
-        // Revalidate the root path if we're not on it
         if (pathname !== '/') {
             revalidatePath('/')
         }
     } catch (error) {
-        console.error('Current path revalidation error:', error)
+        warnOnce('revalidateCurrentPath', error)
     }
 }
 
+/**
+ * Back-compat wrapper used by apiPost/apiPatch/apiDelete. The argument is an API
+ * route (not a page path), so it is ignored: we revalidate the current page in
+ * server context. Never fetches a relative URL (which throws `Invalid URL` in Node).
+ */
+export async function revalidatePathClient(_route?: string) {
+    await revalidateCurrentPath()
+}
+
+/** Revalidate an explicit page path (plus the root). */
+export async function revalidatePathServer(path: string) {
+    try {
+        revalidatePath(path)
+        if (path !== '/') {
+            revalidatePath('/')
+        }
+    } catch (error) {
+        warnOnce('revalidatePathServer', error)
+    }
+}

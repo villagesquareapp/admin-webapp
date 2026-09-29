@@ -4,14 +4,14 @@ import { apiGet, apiPost } from "@/lib/api";
 import { getToken } from "@/lib/getToken";
 import { revalidateCurrentPath } from "@/lib/revalidate";
 
-export const getPaystackBalance = async () => {
-  const token = await getToken();
-  return await apiGet<IPaystackBalance>(`wallet/balance/paystack`, token);
-};
-
 export const getCowryBalance = async () => {
   const token = await getToken();
   return await apiGet<ICowryBalance>(`wallet/balance/villagesquare`, token);
+};
+
+export const getFlutterwaveBalance = async () => {
+  const token = await getToken();
+  return await apiGet<IFlutterwaveBalance>(`wallet/balance/flutterwave`, token);
 };
 
 export const getRecentTransfers = async (
@@ -101,6 +101,31 @@ export const transferCowry = async (userIds: string[], amount: number = 20000) =
     token
   );
 
+  if (response.status) {
+    await revalidateCurrentPath();
+  }
+  return response;
+};
+
+export const getWithdrawalHolds = async (
+  status: "active" | "released" | "all" = "active",
+  page: number = 1,
+  limit: number = 10
+) => {
+  const token = await getToken();
+  return await apiGet<IWithdrawalHoldsResponse>(
+    `wallet/withdrawal-holds?status=${status}&page=${page}&limit=${limit}`,
+    token
+  );
+};
+
+export const releaseWithdrawalHold = async (uuid: string) => {
+  const token = await getToken();
+  const response = await apiPost(
+    `wallet/withdrawal-holds/${encodeURIComponent(uuid)}/release`,
+    {},
+    token
+  );
   if (response.status) {
     await revalidateCurrentPath();
   }

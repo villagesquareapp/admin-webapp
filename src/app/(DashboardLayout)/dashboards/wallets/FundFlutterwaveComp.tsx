@@ -22,7 +22,7 @@ declare global {
   }
 }
 
-const FundPaystackComp: React.FC<FundModalProps> = ({
+const FundFlutterwaveComp: React.FC<FundModalProps> = ({
   isOpen,
   onClose,
   onSuccess,
@@ -229,4 +229,4 @@ const FundPaystackComp: React.FC<FundModalProps> = ({
   );
 };
 
-export default FundPaystackComp;
+export default FundFlutterwaveComp;

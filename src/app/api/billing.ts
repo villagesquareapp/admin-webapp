@@ -12,6 +12,14 @@ export const getBillingPlans = async () => {
     );
 }
 
+export const getBillingOverview = async () => {
+    const token = await getToken();
+    return await apiGet<IBillingOverview>(
+        `billing/overview`,
+        token
+    );
+}
+
 export const createSubscription = async (plan_id: string, user_id: string, validity_period: string) => {
   const token = await getToken();
   const response = await apiPost(

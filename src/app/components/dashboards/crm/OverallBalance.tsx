@@ -246,7 +246,7 @@ const OverallBalance = () => {
             <div className="sm:flex items-start  justify-between">
               <div>
                 <span className="text-sm font-light text-ld">
-                  Paystack Overall Balance
+                  Overall Balance
                 </span>
                 <h3 className="text-3xl my-1">$2,538,942</h3>
                 <div className="flex gap-1 items-center">

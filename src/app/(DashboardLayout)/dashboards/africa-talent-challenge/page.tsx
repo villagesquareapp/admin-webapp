@@ -1,74 +1,35 @@
-import { getATCStats, getATCApplications } from "@/app/api/atc";
-import StatsWithMonthsFilter from "./StatsWithMonthsFilter";
-import SearchAndFilter from "./SearchAndFilter";
-import ATCTable from "./ATCTable";
 import { Suspense } from "react";
-import TableLoader from "./TableLoader";
+import { getATCStats, getATCPeriods, getATCApplications, getLeaderboard, getATCSuggestions } from "@/app/api/atc";
+import ATCOverviewContent, { ATCOverviewData } from "./ATCOverviewContent";
 
-const ATCTableWrapper = async ({
-  period,
-  status,
-  search,
-  page,
-  limit,
-}: {
-  period: string;
-  status: string;
-  search: string;
-  page: number;
-  limit: number;
-}) => {
-  const applications = await getATCApplications(period, status, search, page, limit);
+const OverviewWrapper = async ({ period }: { period: string }) => {
+  const [stats, leaderboard, apps, suggestion, periods] = await Promise.all([
+    getATCStats(period),
+    getLeaderboard(period),
+    getATCApplications(period, "", "", 1, 6),
+    getATCSuggestions(),
+    getATCPeriods(),
+  ]);
 
-  return (
-    <ATCTable
-      applications={applications?.data || null}
-      totalPages={applications?.data?.last_page || 1}
-      currentPage={page}
-      pageSize={limit}
-    />
-  );
+  const data: ATCOverviewData = {
+    stats: stats?.data || null,
+    leaderboard: leaderboard?.data?.leaderboard || [],
+    active_episode: leaderboard?.data?.active_episode || null,
+    recent_applications: apps?.data?.data || [],
+    suggestion: suggestion?.data || null,
+    periods: periods?.data?.periods || [],
+    period,
+  };
+
+  return <ATCOverviewContent data={data} />;
 };
 
-const StatsWrapper = async () => {
-  const atcStats = await getATCStats();
-  return <StatsWithMonthsFilter initialStats={atcStats} />;
-};
-
-const Page = async ({
-  searchParams,
-}: {
-  searchParams: { [key: string]: string | string[] | undefined };
-}) => {
-  const page = Number(searchParams.page) || 1;
-  const limit = Number(searchParams.limit) || 20;
-  const search = searchParams.search as string;
-  const status = searchParams.status as string;
-  const period = searchParams.period as string;
-
+const Page = async ({ searchParams }: { searchParams: { [key: string]: string | string[] | undefined } }) => {
+  const period = (searchParams.period as string) || "";
   return (
-    <>
-      <div className="grid grid-cols-12 gap-30">
-        <div className="col-span-12">
-          <Suspense fallback={<div className="h-[200px] w-full animate-pulse bg-gray-100 dark:bg-gray-800 rounded-3xl" />}>
-            <StatsWrapper />
-          </Suspense>
-        </div>
-
-        <div className="col-span-12">
-          <SearchAndFilter period={period} />
-          <Suspense key={`${period}-${status}-${search}-${page}-${limit}`} fallback={<TableLoader />}>
-            <ATCTableWrapper
-              period={period}
-              status={status}
-              search={search}
-              page={page}
-              limit={limit}
-            />
-          </Suspense>
-        </div>
-      </div>
-    </>
+    <Suspense key={period} fallback={<div className="h-[600px] w-full animate-pulse bg-gray-100 dark:bg-gray-800 rounded-3xl" />}>
+      <OverviewWrapper period={period} />
+    </Suspense>
   );
 };
 

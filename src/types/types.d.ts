@@ -226,7 +226,7 @@ interface IPostDetail {
       report_count: number;
       open_report_count: number;
       address: string;
-      privacy: string;
+      audience: string;
       created_at: string;
       updated_at: string;
     };
@@ -321,7 +321,7 @@ interface IATCData {
     value: string;
     label: string;
   };
-  suggestion: ISuggestion;
+  suggestions: ISuggestion[];
 }
 
 interface IMarketSquareStats {
@@ -685,6 +685,22 @@ interface IBillingPlan {
   deleted_at: string | null;
 }
 
+interface IBillingOverview {
+  revenue: {
+    gross: number;
+    net: number;
+    fees: number;
+    this_month_net: number;
+    by_category: { category: string; net: number; count: number }[];
+    by_currency: { currency: string; net: number; count: number }[];
+    trends: { date: string; net: number }[];
+  };
+  payments: { total: number; success: number; failed: number; pending: number };
+  subscriptions: { active: number; total: number; by_status: Record<string, number> };
+  gifting: { total_sent: number; total_value: number };
+  plans: { total: number; active: number };
+}
+
 interface IUserStatusList {
   name: string;
   value: string;
@@ -1006,21 +1022,133 @@ interface IMarketProduct {
   updated_at: string;
 }
 
+type ShopStatus = "active" | "inactive" | "banned";
+
+interface IMarketUserLite {
+  uuid: string;
+  name: string;
+  username: string;
+  profile_picture: string;
+  created_at?: string;
+}
+
 interface IMarketSquareShops {
   uuid: string;
   name: string;
-  logo: string;
+  logo: string | null;
   tagline: string | null;
   website: string | null;
   location: string | null;
   address: string | null;
+  status: ShopStatus;
+  products_count: number;
   created_at: string;
   updated_at: string;
-  products: IMarketProduct[];
-  actions?: any;
+  user: IMarketUserLite;
 }
 
 interface IMarketSquareShopsResponse extends IPaginatedResponse<IMarketSquareShops> {}
+
+interface IProductMedia {
+  url: string;
+  thumbnail?: string;
+  filename?: string;
+  type?: "primary" | "gallery";
+  media_type?: string;
+  transcoded_media_url?: string;
+  order?: number;
+}
+
+interface IMarketProductLite {
+  uuid: string;
+  title: string;
+  price: number | null;
+  currency: { code: string; symbol: string } | null;
+  image: string | null;
+  featured: boolean;
+  in_stock: boolean;
+  quantity: number;
+  views_count: number;
+  reviews_count: number;
+  taken_down: boolean;
+  created_at: string;
+  shop: { uuid: string; name: string; status?: ShopStatus } | null;
+  category: { id: number; name: string } | null;
+  user: IMarketUserLite | null;
+  report_count?: number;
+}
+
+interface IMarketProductsResponse extends IPaginatedResponse<IMarketProductLite> {}
+
+interface IMarketReview {
+  uuid: string;
+  rating: number;
+  comment: string | null;
+  is_visible: boolean;
+  created_at: string;
+  user: IMarketUserLite | null;
+}
+
+interface IMarketProductDetail extends IMarketProductLite {
+  description: string | null;
+  address: string | null;
+  location: string | null;
+  has_discount: boolean;
+  discount_percentage: number | null;
+  tags: string[];
+  attributes: Record<string, any>;
+  wishlist_count: number;
+  purchase_count: number;
+  media: IProductMedia[];
+  updated_at: string;
+  moderation: { open_reports: number; taken_down: boolean };
+  reviews: IMarketReview[];
+}
+
+interface IMarketShopDetail {
+  uuid: string;
+  name: string;
+  logo: string | null;
+  tagline: string | null;
+  website: string | null;
+  location: string | null;
+  address: string | null;
+  status: ShopStatus;
+  created_at: string;
+  updated_at: string;
+  user: IMarketUserLite;
+  products_count: number;
+  products: IMarketProductLite[];
+}
+
+interface IMarketCategory {
+  id: number;
+  name: string;
+  icon: string | null;
+  color: string | null;
+  products_count: number;
+}
+
+interface IMarketOverview {
+  kpis: {
+    total_products: number;
+    total_shops: number;
+    today_products: number;
+    new_7d_products: number;
+    featured: number;
+    out_of_stock: number;
+    taken_down: number;
+    banned_shops: number;
+    total_categories: number;
+    total_reviews: number;
+    open_reports: number;
+  };
+  by_category: { name: string; count: number }[];
+  top_shops: { uuid: string; name: string; products: number }[];
+  trends: { date: string; products: number }[];
+  recent_products: IMarketProductLite[];
+  reported_products: IMarketProductLite[];
+}
 
 interface ITickerUser {
   name: string;
@@ -1060,6 +1188,61 @@ interface IGifting {
 
 interface IGiftingResponse extends IPaginatedResponse<IGifting> {}
 
+interface IGiftStat {
+  uuid: string;
+  name: string;
+  icon: string;
+  value: number | string;
+  status: boolean;
+  created_at: string;
+  updated_at?: string;
+  sent_count: number;
+  value_sent: number;
+  share: number;
+}
+
+interface IGiftOverview {
+  totals: {
+    total_gifts: number;
+    active_gifts: number;
+    disabled_gifts: number;
+    total_sent: number;
+    total_value_sent: number;
+  };
+  gifts: IGiftStat[];
+  top_gifts: IGiftStat[];
+  trend: { date: string; sent: number }[];
+}
+
+interface ICoinStat {
+  uuid: string;
+  name: string | null;
+  amount: string;
+  price: string;
+  in_app_purchase_id: string;
+  tag: string | null;
+  description: string | null;
+  status: boolean;
+  created_at: string;
+  updated_at?: string;
+  purchases: number;
+  revenue: number;
+  coins_per_usd: number;
+}
+
+interface ICoinOverview {
+  totals: {
+    total_packages: number;
+    active_packages: number;
+    disabled_packages: number;
+    total_purchases: number;
+    total_revenue: number;
+    min_price: number;
+    max_price: number;
+  };
+  packages: ICoinStat[];
+}
+
 interface ICoins {
   uuid: string;
   name: string;
@@ -1097,7 +1280,7 @@ interface ISinglePost {
       shares: number;
       views: number;
       address: string;
-      privacy: string;
+      audience: string;
       created_at: string;
       updated_at: string;
     };
@@ -1189,14 +1372,28 @@ interface IWithdrawalUser {
   profile_picture: string;
 }
 
-interface IPaystackBalance {
-  usd_value: {
-    balance: string;
+// Withdrawals held after a refund couldn't be fully taken back.
+interface IWithdrawalHold {
+  uuid: string;
+  user: {
+    uuid: string;
+    name: string | null;
+    username: string | null;
+    email: string | null;
+    profile_picture: string | null;
+    coin_balance: number;
+    cowry_balance: number;
   };
-  ngn_value: {
-    balance: string;
-  };
+  reason: string;
+  provider: string;
+  purchase_reference: string;
+  shortfall: number;
+  created_at: string;
+  released_at: string | null;
+  released_by: { uuid: string; name: string | null; email: string | null } | null;
 }
+
+interface IWithdrawalHoldsResponse extends IPaginatedResponse<IWithdrawalHold> {}
 
 interface ICowryBalance {
   cowry_value: {
@@ -1208,6 +1405,11 @@ interface ICowryBalance {
   ngn_value: {
     balance: string;
   };
+}
+
+interface IFlutterwaveBalance {
+  usd_value?: { balance: string };
+  ngn_value?: { balance: string };
 }
 
 interface IRecentTransfer {

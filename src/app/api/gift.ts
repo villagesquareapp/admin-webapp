@@ -9,6 +9,11 @@ export const getGifts = async () => {
   return await apiGet<IGiftingResponse>(`gifting/all-gifts`, token);
 };
 
+export const getGiftingOverview = async () => {
+  const token = await getToken();
+  return await apiGet<IGiftOverview>(`gifting/overview`, token);
+};
+
 export const addGifts = async (
   name: string,
   value: string | number,

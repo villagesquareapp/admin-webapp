@@ -3,7 +3,10 @@ import { NextResponse } from "next/server";
 
 export default withAuth(
     function middleware(req) {
-        return NextResponse.next();
+        // Expose the current path so server actions can revalidate the page they run on.
+        const requestHeaders = new Headers(req.headers);
+        requestHeaders.set("x-pathname", req.nextUrl.pathname);
+        return NextResponse.next({ request: { headers: requestHeaders } });
     },
     {
         callbacks: {
