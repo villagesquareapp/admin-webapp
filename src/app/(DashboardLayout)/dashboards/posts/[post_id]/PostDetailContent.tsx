@@ -10,6 +10,7 @@ import CardBox from "@/app/components/shared/CardBox";
 import PostVideo from "../PostVideo";
 import PostModerationPanel from "../PostModerationPanel";
 import PostTypeBadge from "../PostTypeBadge";
+import { PostOriginals } from "@/app/components/shared/PrivateFiles";
 import { formatDate } from "@/utils/dateUtils";
 import { POST_STATUS_TONE } from "@/utils/moderationLabels";
 
@@ -198,6 +199,11 @@ const PostDetailContent = ({ detail, postId }: { detail: Detail | null; postId: 
                 <div className="min-w-0">
                   <p className="font-bold truncate">{detail.author?.name || "Unknown"}</p>
                   <p className="text-sm text-darklink truncate">@{detail.author?.username}</p>
+                  {detail.is_anonymous && (
+                    <p className="text-xs font-semibold text-secondary mt-0.5">
+                      Posted anonymously: the app shows &quot;Anonymous&quot;
+                    </p>
+                  )}
                 </div>
               </div>
               {detail.author && (
@@ -210,6 +216,7 @@ const PostDetailContent = ({ detail, postId }: { detail: Detail | null; postId: 
               )}
             </div>
             <p className="text-[15px] leading-relaxed mt-4 whitespace-pre-wrap">{detail.content.caption || "—"}</p>
+            {detail.is_anonymous && media.length > 0 && <PostOriginals postId={detail.uuid} />}
           </CardBox>
 
           {/* thread / reply / quote context */}

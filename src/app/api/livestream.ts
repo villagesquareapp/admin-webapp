@@ -49,10 +49,12 @@ export const forceEndLivestream = async (streamId: string) => {
 };
 
 // Category CRUD
-export const getLivestreamCategories = async () => {
+// type: "general", a Trybe type uuid, or omitted for every category.
+export const getLivestreamCategories = async (type?: string) => {
     const token = await getToken();
+    const q = type ? `?${new URLSearchParams({ type })}` : '';
     return await apiGet<ILivestreamCategory[]>(
-        `livestream/categories`,
+        `livestream/categories${q}`,
         token
     );
 };
@@ -65,13 +67,14 @@ export const getTopPerformanceCategories = async () => {
     );
 };
 
-export const addLivestreamCategory = async (name: string, description: string, icon: string) => {
+// No trybeTypeId creates a General category.
+export const addLivestreamCategory = async (name: string, description: string, icon: string, trybeTypeId?: string) => {
     const token = await getToken();
     if (!token) throw new Error("No token found");
 
     const response = await apiPost(
         `livestream/categories/add`,
-        { name, description, icon },
+        { name, description, icon, ...(trybeTypeId ? { trybe_type_id: trybeTypeId } : {}) },
         token
     );
 

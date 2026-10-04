@@ -113,12 +113,13 @@ const MarketReportsView = ({
             <Dropdown label="" inline renderTrigger={() => (
               <button className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"><HiOutlineDotsVertical /></button>
             )}>
-              {ACTIONABLE(r.status) ? (
+              <Dropdown.Item onClick={() => router.push(`/dashboards/reports/${r.id}`)}>View report</Dropdown.Item>
+              {ACTIONABLE(r.status) && (
                 <>
                   <Dropdown.Item onClick={() => setModal({ id: r.id, action: "resolve" })}>Resolve</Dropdown.Item>
                   <Dropdown.Item onClick={() => setModal({ id: r.id, action: "dismiss" })}>Dismiss</Dropdown.Item>
                 </>
-              ) : <Dropdown.Item disabled>No actions</Dropdown.Item>}
+              )}
             </Dropdown>
           </div>
         );

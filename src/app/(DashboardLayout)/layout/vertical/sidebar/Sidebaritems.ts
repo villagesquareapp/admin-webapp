@@ -53,6 +53,7 @@ const SidebarContent: MenuItem[] = [
             children: [
               { name: "Overview", icon: "solar:widget-add-line-duotone", id: uniqueId(), url: "/dashboards/posts" },
               { name: "All Posts", icon: "solar:document-text-line-duotone", id: uniqueId(), url: "/dashboards/posts/list" },
+              { name: "Categories", icon: "solar:library-line-duotone", id: uniqueId(), url: "/dashboards/posts/categories" },
               { name: "Moderation Queue", icon: "solar:shield-warning-line-duotone", id: uniqueId(), url: "/dashboards/posts/queue" },
               { name: "Reports", icon: "solar:danger-triangle-line-duotone", id: uniqueId(), url: "/dashboards/posts/reports" },
               { name: "Enforcement Log", icon: "solar:clipboard-list-line-duotone", id: uniqueId(), url: "/dashboards/posts/enforcement" },
@@ -106,8 +107,19 @@ const SidebarContent: MenuItem[] = [
               { name: "Overview", icon: "solar:widget-add-line-duotone", id: uniqueId(), url: "/dashboards/markets" },
               { name: "Products", icon: "solar:box-line-duotone", id: uniqueId(), url: "/dashboards/markets/products" },
               { name: "Shops", icon: "solar:shop-line-duotone", id: uniqueId(), url: "/dashboards/markets/shops" },
+              { name: "Categories", icon: "solar:library-line-duotone", id: uniqueId(), url: "/dashboards/markets/categories" },
               { name: "Reports", icon: "solar:danger-triangle-line-duotone", id: uniqueId(), url: "/dashboards/markets/reports" },
               { name: "Enforcement Log", icon: "solar:clipboard-list-line-duotone", id: uniqueId(), url: "/dashboards/markets/enforcement" },
+            ],
+          },
+          {
+            name: "Trybes",
+            icon: "solar:users-group-two-rounded-line-duotone",
+            id: uniqueId(),
+            children: [
+              { name: "Join Requests", icon: "solar:user-check-rounded-line-duotone", id: uniqueId(), url: "/dashboards/trybes/requests" },
+              { name: "All Trybes", icon: "solar:users-group-two-rounded-line-duotone", id: uniqueId(), url: "/dashboards/trybes/list" },
+              { name: "Types", icon: "solar:library-line-duotone", id: uniqueId(), url: "/dashboards/trybes/types" },
             ],
           },
           {

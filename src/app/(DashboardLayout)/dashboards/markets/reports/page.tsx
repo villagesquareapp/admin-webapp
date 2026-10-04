@@ -3,7 +3,7 @@ import { getAllReports } from "@/app/api/report";
 import MarketReportsView from "./MarketReportsView";
 
 const Wrapper = async ({ page, limit }: { page: number; limit: number }) => {
-  const res = await getAllReports(page, limit, "marketplace");
+  const res = await getAllReports(page, limit, "marketsquare");
   return (
     <MarketReportsView
       reports={res?.data?.data || []}

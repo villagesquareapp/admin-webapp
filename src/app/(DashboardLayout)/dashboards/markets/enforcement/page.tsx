@@ -18,7 +18,7 @@ const actionFilter = {
 };
 
 const Wrapper = async ({ page, limit, action, target_id }: { page: number; limit: number; action?: string; target_id?: string }) => {
-  const res = await getEnforcementLog(page, limit, { service_type: "marketplace", action, target_id });
+  const res = await getEnforcementLog(page, limit, { service_type: "marketsquare", action, target_id });
   return (
     <EnforcementTable
       rows={res?.data?.data || []}

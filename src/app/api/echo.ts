@@ -1,6 +1,6 @@
 'use server'
 
-import { apiGet, apiPost, apiDelete } from '@/lib/api';
+import { apiGet, apiPost, apiDelete, apiPut } from '@/lib/api';
 import { getToken } from '@/lib/getToken';
 import { revalidateCurrentPath } from '@/lib/revalidate';
 
@@ -44,14 +44,30 @@ export const forceEndEcho = async (echoId: string) => {
     return r;
 };
 
-export const getEchoCategories = async () => {
+// type: "general", a Trybe type uuid, or omitted for every category.
+export const getEchoCategories = async (type?: string) => {
     const token = await getToken();
-    return await apiGet<IEchoCategory[]>(`echo/categories`, token);
+    const q = type ? `?${new URLSearchParams({ type })}` : '';
+    return await apiGet<IEchoCategory[]>(`echo/categories${q}`, token);
 };
 
-export const addEchoCategory = async (payload: { name: string; icon?: string }) => {
+// No trybe_type_id creates a General category.
+export const addEchoCategory = async (payload: { name: string; icon?: string; trybe_type_id?: string }) => {
     const token = await getToken();
     const r = await apiPost(`echo/categories/add`, payload, token);
+    if (r.status) await revalidateCurrentPath();
+    return r;
+};
+
+export const updateEchoCategory = async (categoryId: number, data: { name?: string; icon?: string }) => {
+    const token = await getToken();
+    if (!token) throw new Error("No token found");
+
+    const body: { name?: string; icon?: string } = {};
+    if (data.name) body.name = data.name;
+    if (data.icon) body.icon = data.icon;
+
+    const r = await apiPut(`echo/categories/${categoryId}`, body, token);
     if (r.status) await revalidateCurrentPath();
     return r;
 };

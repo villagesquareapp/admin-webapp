@@ -9,20 +9,32 @@ import { FaPlus } from "react-icons/fa";
 import { toast } from "sonner";
 import ReusableTable from "@/app/components/shared/ReusableTable";
 import { formatDate } from "@/utils/dateUtils";
+import type { CategoryScope } from "@/utils/categoryScope";
 import EchoCategoryFormModal from "./EchoCategoryFormModal";
-import { addEchoCategory, deleteEchoCategory } from "@/app/api/echo";
+import { addEchoCategory, updateEchoCategory, deleteEchoCategory } from "@/app/api/echo";
 
-const EchoCategoryTable = ({ categories }: { categories: IEchoCategory[] }) => {
+const EchoCategoryTable = ({ categories, scope }: { categories: IEchoCategory[]; scope: CategoryScope }) => {
   const router = useRouter();
   const [addOpen, setAddOpen] = useState(false);
+  const [editCat, setEditCat] = useState<IEchoCategory | null>(null);
   const [loading, setLoading] = useState(false);
 
   const handleAdd = async (data: { name: string; icon: string }) => {
     setLoading(true);
     try {
-      const res = await addEchoCategory(data);
+      const res = await addEchoCategory({ ...data, ...(scope.trybeTypeId ? { trybe_type_id: scope.trybeTypeId } : {}) });
       if (res?.status) { toast.success("Category added"); setAddOpen(false); router.refresh(); }
       else toast.error(res?.message || "Failed to add category");
+    } finally { setLoading(false); }
+  };
+
+  const handleEdit = async (data: { name: string; icon: string }) => {
+    if (!editCat) return;
+    setLoading(true);
+    try {
+      const res = await updateEchoCategory(editCat.id, data);
+      if (res?.status) { toast.success("Category updated"); setEditCat(null); router.refresh(); }
+      else toast.error(res?.message || "Failed to update category");
     } finally { setLoading(false); }
   };
 
@@ -58,7 +70,10 @@ const EchoCategoryTable = ({ categories }: { categories: IEchoCategory[] }) => {
       id: "actions",
       header: () => <span>Actions</span>,
       cell: (info) => (
-        <div className="flex items-center justify-end">
+        <div className="flex items-center justify-end gap-1">
+          <button onClick={() => setEditCat(info.row.original)} className="p-2 rounded-lg hover:bg-lightprimary hover:text-primary text-darklink" title="Edit">
+            <Icon icon="solar:pen-new-square-linear" height={17} />
+          </button>
           <button onClick={() => handleDelete(info.row.original)} className="p-2 rounded-lg hover:bg-lighterror hover:text-error text-darklink" title="Delete">
             <Icon icon="solar:trash-bin-trash-linear" height={17} />
           </button>
@@ -76,7 +91,7 @@ const EchoCategoryTable = ({ categories }: { categories: IEchoCategory[] }) => {
         currentPage={1}
         pageSize={categories.length || 1}
         dense
-        tableTitle="Echo Categories"
+        tableTitle={`Echo Categories · ${scope.label}`}
         backTo="/dashboards/echoes"
         extraButtons={
           <Button onClick={() => setAddOpen(true)}>
@@ -89,8 +104,18 @@ const EchoCategoryTable = ({ categories }: { categories: IEchoCategory[] }) => {
         onClose={() => setAddOpen(false)}
         onSubmit={handleAdd}
         loading={loading}
-        title="Add Echo Category"
+        title={`Add Echo Category · ${scope.label}`}
         submitText="Add"
+      />
+      <EchoCategoryFormModal
+        isOpen={!!editCat}
+        onClose={() => setEditCat(null)}
+        onSubmit={handleEdit}
+        loading={loading}
+        title="Edit Echo Category"
+        submitText="Save"
+        defaultName={editCat?.name || ""}
+        defaultIcon={editCat?.icon || ""}
       />
     </div>
   );

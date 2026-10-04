@@ -1,6 +1,6 @@
 'use server'
 
-import { apiGet, apiPost } from '@/lib/api';
+import { apiGet, apiPost, apiPut, apiDelete } from '@/lib/api';
 import { getToken } from '@/lib/getToken';
 import { revalidateCurrentPath } from '@/lib/revalidate';
 
@@ -14,9 +14,52 @@ export const getMarketSquareOverview = async () => {
     return await apiGet<IMarketOverview>(`marketsquare/overview`, token);
 };
 
-export const getMarketSquareCategories = async () => {
+// type: "general", a Trybe type uuid, or omitted for every category.
+export const getMarketSquareCategories = async (type?: string) => {
     const token = await getToken()
-    return await apiGet<IMarketCategory[]>(`marketsquare/categories`, token);
+    const q = type ? `?${new URLSearchParams({ type })}` : '';
+    return await apiGet<IMarketCategory[]>(`marketsquare/categories${q}`, token);
+};
+
+// icon is an Iconify id (stored by the API as a URL); no trybe_type_id creates a General category.
+export const addMarketSquareCategory = async (payload: {
+    name: string;
+    description?: string;
+    icon?: string;
+    color: string;
+    trybe_type_id?: string;
+}) => {
+    const token = await getToken()
+    const r = await apiPost(`marketsquare/categories/add`, payload, token);
+    if (r.status) await revalidateCurrentPath();
+    return r;
+};
+
+export const updateMarketSquareCategory = async (
+    categoryId: number,
+    data: { name?: string; description?: string; icon?: string; color?: string },
+) => {
+    const token = await getToken()
+    if (!token) throw new Error("No token found");
+
+    const body: { name?: string; description?: string; icon?: string; color?: string } = {};
+    if (data.name) body.name = data.name;
+    // An empty string clears the description.
+    if (data.description !== undefined) body.description = data.description;
+    if (data.icon) body.icon = data.icon;
+    if (data.color) body.color = data.color;
+
+    const r = await apiPut(`marketsquare/categories/${categoryId}`, body, token);
+    if (r.status) await revalidateCurrentPath();
+    return r;
+};
+
+export const deleteMarketSquareCategory = async (categoryId: number) => {
+    const token = await getToken()
+    if (!token) throw new Error("No token found");
+    const r = await apiDelete(`marketsquare/categories/${categoryId}`, token);
+    if (r.status) await revalidateCurrentPath();
+    return r;
 };
 
 export const getMarketSquareProducts = async (

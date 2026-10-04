@@ -32,7 +32,7 @@ const ProductDetailContent = ({ product }: { product: IMarketProductDetail | nul
   }
 
   const moderate = async (action: string, label: string) => {
-    const res = await executeModeration({ service_type: "marketplace", target_id: product.uuid, actions: [{ action }] });
+    const res = await executeModeration({ service_type: "marketsquare", target_id: product.uuid, actions: [{ action }] });
     if (res?.status) { toast.success(label); router.refresh(); }
     else toast.error(res?.message || "Action failed");
   };

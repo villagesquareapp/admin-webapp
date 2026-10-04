@@ -85,6 +85,8 @@ interface IReportStats {
   total_live_stream_reports: number;
   total_marketplace_reports: number;
   total_comment_reports: number;
+  total_vflix_reports?: number;
+  total_trybe_reports?: number;
 }
 
 interface IPostStats {
@@ -208,6 +210,9 @@ interface IPostDetail {
     is_duplicate: boolean;
     deleted_at: string | null;
     trybe_id: string | null;
+    // Anonymous in the app (a Trybe's Confessions-type tab); staff see the author.
+    is_anonymous?: boolean;
+    category_id?: number | null;
     post_type: "single" | "thread" | "reply" | "quote";
     is_reply: boolean;
     is_quote: boolean;
@@ -347,6 +352,7 @@ interface ILivestreamCategory {
   description: string;
   status?: boolean;
   streams_count?: number;
+  trybe_type?: { uuid: string; name: string } | null;
   created_at: string;
   updated_at: string;
 }
@@ -928,6 +934,7 @@ interface IEchoCategory {
   name: string;
   icon?: string;
   echoes_count?: number;
+  trybe_type?: { uuid: string; name: string } | null;
   created_at?: string;
   updated_at?: string;
 }
@@ -1124,9 +1131,29 @@ interface IMarketShopDetail {
 interface IMarketCategory {
   id: number;
   name: string;
+  description?: string | null;
   icon: string | null;
+  icon_id?: string | null;
   color: string | null;
   products_count: number;
+  trybe_type?: { uuid: string; name: string } | null;
+  created_at?: string;
+}
+
+// A social home tab after the fixed ones. trybe_type null = General (main app).
+interface IPostCategory {
+  id: number;
+  name: string;
+  slug: string;
+  description: string | null;
+  icon: string | null;
+  is_anonymous: boolean;
+  is_enabled: boolean;
+  position: number;
+  posts_count: number;
+  trybe_type: { uuid: string; name: string } | null;
+  created_at: string;
+  updated_at: string;
 }
 
 interface IMarketOverview {
@@ -1360,6 +1387,49 @@ interface IReport {
   reporter?: IReportUser;
   reported_user?: IReportUser;
   reason_ref?: { title: string; description?: string } | null;
+  trybe_id?: string | null;
+}
+
+interface IReportPerson {
+  uuid: string;
+  name: string | null;
+  username: string | null;
+  profile_picture: string | null;
+  status?: string;
+}
+
+// What a report is about, by service type.
+interface IReportTarget {
+  kind: string;
+  uuid: string;
+  caption?: string | null;
+  title?: string | null;
+  name?: string | null;
+  username?: string | null;
+  slug?: string;
+  subtitle?: string | null;
+  status?: string;
+  privacy?: string;
+  audience?: string;
+  member_count?: number;
+  avatar?: string | null;
+  profile_picture?: string | null;
+  is_anonymous?: boolean;
+  is_duplicate?: boolean;
+  category?: string | null;
+  parent_post_id?: string | null;
+  trybe_id?: string | null;
+  created_at?: string;
+  deleted_at?: string | null;
+  author?: IReportPerson | null;
+  owner?: IReportPerson | null;
+  media?: { uuid: string; media_type: string; url: string | null; thumbnail: string | null; has_private_original: boolean }[];
+}
+
+interface IReportDetail extends IReport {
+  attachments_count: number;
+  target: IReportTarget | null;
+  trybe: { uuid: string; name: string; slug: string; status: string; avatar: string | null } | null;
 }
 
 interface IReportResponse extends IPaginatedResponse<IReport> {}

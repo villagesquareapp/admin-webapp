@@ -105,7 +105,10 @@ const MarketOverviewContent = ({ data }: { data: IMarketOverview | null }) => {
       <div className="grid grid-cols-12 gap-5">
         <div className="col-span-12 lg:col-span-5">
           <CardBox>
-            <h5 className="text-sm font-semibold text-dark dark:text-white mb-3">Products by category</h5>
+            <div className="flex items-center justify-between mb-3">
+              <h5 className="text-sm font-semibold text-dark dark:text-white">Products by category</h5>
+              <Link href="/dashboards/markets/categories" className="text-primary text-sm font-semibold">Manage</Link>
+            </div>
             {by_category.length ? (
               <div className="flex flex-col gap-2.5">
                 {by_category.map((c) => (

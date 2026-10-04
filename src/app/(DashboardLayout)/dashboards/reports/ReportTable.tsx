@@ -113,9 +113,18 @@ const ReportTable = ({
       header: () => <span>Actions</span>,
       cell: (info) => {
         const r = info.row.original;
-        if (!ACTIONABLE(r.status)) return <span className="text-darklink text-sm">--</span>;
+        const view = (
+          <button
+            onClick={() => router.push(`/dashboards/reports/${r.id}`)}
+            className="text-xs font-semibold bg-lightprimary text-primary px-2.5 py-1.5 rounded-md"
+          >
+            View
+          </button>
+        );
+        if (!ACTIONABLE(r.status)) return view;
         return (
           <div className="flex items-center gap-2">
+            {view}
             <button
               onClick={() => setModal({ id: r.id, action: "resolve" })}
               className="flex items-center gap-1 text-xs font-semibold bg-lightsuccess text-success px-2.5 py-1.5 rounded-md"

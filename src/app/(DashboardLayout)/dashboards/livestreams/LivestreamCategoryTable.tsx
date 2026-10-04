@@ -9,6 +9,7 @@ import { FaPlus } from "react-icons/fa";
 import { toast } from "sonner";
 import ReusableTable from "@/app/components/shared/ReusableTable";
 import { formatDate } from "@/utils/dateUtils";
+import type { CategoryScope } from "@/utils/categoryScope";
 import { CategoryFormModal } from "./ManageCategoriesModal";
 import {
   addLivestreamCategory,
@@ -16,7 +17,7 @@ import {
   deleteLivestreamCategory,
 } from "@/app/api/livestream";
 
-const LivestreamCategoryTable = ({ categories }: { categories: ILivestreamCategory[] }) => {
+const LivestreamCategoryTable = ({ categories, scope }: { categories: ILivestreamCategory[]; scope: CategoryScope }) => {
   const router = useRouter();
   const [addOpen, setAddOpen] = useState(false);
   const [editCat, setEditCat] = useState<ILivestreamCategory | null>(null);
@@ -27,7 +28,7 @@ const LivestreamCategoryTable = ({ categories }: { categories: ILivestreamCatego
   const handleAdd = async (data: { name: string; description: string; icon: string }) => {
     setLoading(true);
     try {
-      const res = await addLivestreamCategory(data.name, data.description, data.icon);
+      const res = await addLivestreamCategory(data.name, data.description, data.icon, scope.trybeTypeId ?? undefined);
       if (res?.status) { toast.success("Category added"); setAddOpen(false); afterWrite(); }
       else toast.error(res?.message || "Failed to add category");
     } finally { setLoading(false); }
@@ -100,7 +101,7 @@ const LivestreamCategoryTable = ({ categories }: { categories: ILivestreamCatego
         currentPage={1}
         pageSize={categories.length || 1}
         dense
-        tableTitle="Livestream Categories"
+        tableTitle={`Livestream Categories · ${scope.label}`}
         backTo="/dashboards/livestreams"
         extraButtons={
           <Button onClick={() => setAddOpen(true)}>
@@ -114,7 +115,7 @@ const LivestreamCategoryTable = ({ categories }: { categories: ILivestreamCatego
         onClose={() => setAddOpen(false)}
         onSubmit={handleAdd}
         loading={loading}
-        title="Add Category"
+        title={`Add Category · ${scope.label}`}
         submitText="Add"
       />
       <CategoryFormModal

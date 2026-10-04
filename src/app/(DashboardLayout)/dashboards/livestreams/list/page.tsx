@@ -40,7 +40,7 @@ const Wrapper = async ({
     defaultValue: "",
     options: [
       { value: "", label: "All categories" },
-      ...(cats?.data || []).map((c) => ({ value: String(c.id), label: c.name })),
+      ...(cats?.data || []).map((c) => ({ value: String(c.id), label: c.trybe_type ? `${c.name} · ${c.trybe_type.name}` : c.name })),
     ],
   };
 

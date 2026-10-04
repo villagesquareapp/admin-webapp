@@ -116,7 +116,7 @@ const DashboardWrapper = async () => {
           { label: "users", count: num(rs.total_user_reports), color: "#FF6692" },
           { label: "echoes", count: num(rs.total_echo_reports), color: "#8965E5" },
           { label: "livestreams", count: num(rs.total_live_stream_reports), color: "#46caeb" },
-          { label: "marketplace", count: num(rs.total_marketplace_reports), color: "#FFB900" },
+          { label: "marketsquare", count: num(rs.total_marketplace_reports), color: "#FFB900" },
           { label: "comments", count: num(rs.total_comment_reports), color: "#00ceb6" },
         ].filter((r) => r.count > 0)
       : [],

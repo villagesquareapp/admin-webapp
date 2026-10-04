@@ -204,7 +204,7 @@ const PostsOverviewContent = ({ data }: { data: IPostOverview | null }) => {
             )}
           </CardBox>
         </div>
-        <div className="col-span-12 lg:col-span-4">
+        <div className="col-span-12 lg:col-span-4 flex flex-col gap-5">
           <CardBox>
             <h5 className="card-title mb-3">By status</h5>
             <div className="flex flex-col gap-2.5">
@@ -215,6 +215,13 @@ const PostsOverviewContent = ({ data }: { data: IPostOverview | null }) => {
                 </div>
               ))}
             </div>
+          </CardBox>
+          <CardBox>
+            <div className="flex items-center justify-between mb-2">
+              <h5 className="card-title">Categories</h5>
+              <Link href="/dashboards/posts/categories" className="text-primary text-sm font-semibold">Manage</Link>
+            </div>
+            <p className="text-sm text-darklink">The home tabs after the fixed ones, for the main app and for each Trybe type.</p>
           </CardBox>
         </div>
       </div>
