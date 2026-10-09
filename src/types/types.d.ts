@@ -1370,6 +1370,18 @@ interface IReportActionDetails {
   dismissed_at?: string;
   dismissed_by?: string;
   dismissed_reason?: string;
+  results?: IReportActionResult[];
+}
+
+// What each resolution outcome did: executed, unsupported (doesn't apply to
+// this kind of report) or failed.
+interface IReportActionResult {
+  action: string;
+  result: "executed" | "unsupported" | "failed";
+}
+
+interface IReportResolveResult {
+  results: IReportActionResult[];
 }
 
 interface IReport {
@@ -1385,7 +1397,6 @@ interface IReport {
   updated_at: string;
   deleted_at: string | null;
   reporter?: IReportUser;
-  reported_user?: IReportUser;
   reason_ref?: { title: string; description?: string } | null;
   trybe_id?: string | null;
 }

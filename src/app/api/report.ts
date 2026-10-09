@@ -13,7 +13,7 @@ export const resolveReport = async (
 ) => {
     const token = await getToken();
     if (!token) return null;
-    const r = await apiPut(`reports/${id}/resolve`, { reason, resolution_methods }, token);
+    const r = await apiPut<IReportResolveResult>(`reports/${id}/resolve`, { reason, resolution_methods }, token);
     if (r.status) await revalidateCurrentPath();
     return r;
 };
@@ -38,7 +38,7 @@ export const getAllReports = async (
     page: number = 1,
     limit: number = 20,
     service?: string,
-    type?: string
+    status?: string
 ) => {
     const token = await getToken();
 
@@ -51,8 +51,8 @@ export const getAllReports = async (
         params.append('service', service);
     }
 
-    if (type) {
-        params.append('type', type);
+    if (status) {
+        params.append('status', status);
     }
 
     return await apiGet<IReportResponse>(

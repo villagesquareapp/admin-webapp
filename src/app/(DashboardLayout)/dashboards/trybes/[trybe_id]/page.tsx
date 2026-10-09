@@ -7,7 +7,7 @@ type Params = { [key: string]: string | string[] | undefined };
 
 const Wrapper = async ({ id, searchParams }: { id: string; searchParams: Params }) => {
   const page = Number(searchParams.page) || 1;
-  const limit = Number(searchParams.limit) || 10;
+  const limit = Number(searchParams.limit) || 20;
   const [trybe, types, members] = await Promise.all([
     getTrybe(id),
     getTrybeTypes(),
@@ -25,7 +25,7 @@ const Wrapper = async ({ id, searchParams }: { id: string; searchParams: Params 
       membersPages={members?.data?.last_page || 1}
       page={page}
       limit={limit}
-      tab={TRYBE_TABS.includes(searchParams.tab as TrybeTab) ? (searchParams.tab as TrybeTab) : "profile"}
+      tab={TRYBE_TABS.includes(searchParams.tab as TrybeTab) ? (searchParams.tab as TrybeTab) : TRYBE_TABS[0]}
     />
   );
 };

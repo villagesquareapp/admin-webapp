@@ -7,15 +7,20 @@ import { Icon } from "@iconify/react";
 import { Button, Modal, Tabs, Textarea } from "flowbite-react";
 import { toast } from "sonner";
 import CardBox from "@/app/components/shared/CardBox";
-import { setTrybeStatus, uploadTrybeImage } from "@/app/api/trybes";
+import { formatDate } from "@/utils/dateUtils";
+import { setTrybeStatus, updateTrybe, uploadTrybeImage } from "@/app/api/trybes";
 import TrybeForm from "../TrybeForm";
 import TrybePeople from "./TrybePeople";
 import TrybeAnnouncement from "./TrybeAnnouncement";
 import TrybeContent from "./TrybeContent";
+import TrybeModeration from "./TrybeModeration";
+import TrybeReports from "./TrybeReports";
+import TrybeOverview from "./TrybeOverview";
+import TrybeAudit from "./TrybeAudit";
 import { TRYBE_TABS, TrybeTab } from "./trybeTabs";
 import { Chip, TrybeAvatar } from "../trybeUi";
 
-type StatusAction = "suspend" | "activate" | "archive";
+type StatusAction = "suspend" | "activate" | "archive" | "restore";
 
 const STATUS_COPY: Record<StatusAction, { title: string; body: string; button: string; color: string }> = {
   suspend: {
@@ -26,14 +31,20 @@ const STATUS_COPY: Record<StatusAction, { title: string; body: string; button: s
   },
   archive: {
     title: "Archive this Trybe",
-    body: "It is closed for good: hidden from the app, no new members. Its content is kept for records.",
+    body: "It closes: hidden from the app, members lose access and no one can ask to join. Nothing is deleted; you can restore it from the archive later.",
     button: "Archive",
     color: "failure",
   },
   activate: {
-    title: "Reactivate this Trybe",
+    title: "Lift the suspension",
     body: "Members get access again and it shows in Explore.",
     button: "Reactivate",
+    color: "primary",
+  },
+  restore: {
+    title: "Restore from archive",
+    body: "It opens again: back in Explore, members get access and people can ask to join.",
+    button: "Restore",
     color: "primary",
   },
 };
@@ -42,6 +53,19 @@ const ImagePicker = ({ trybe, kind }: { trybe: ITrybeDetail; kind: "avatar" | "c
   const input = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
   const current = trybe[kind];
+
+  const clear = async () => {
+    setBusy(true);
+    try {
+      const res = await updateTrybe(trybe.uuid, { [kind]: null });
+      if (res?.status) toast.success(kind === "avatar" ? "Avatar removed" : "Cover removed");
+      else toast.error(res?.message || "Couldn't remove it");
+    } catch {
+      toast.error("Something went wrong");
+    } finally {
+      setBusy(false);
+    }
+  };
 
   const upload = async (file: File | undefined) => {
     if (!file) return;
@@ -82,9 +106,16 @@ const ImagePicker = ({ trybe, kind }: { trybe: ITrybeDetail; kind: "avatar" | "c
         className="hidden"
         onChange={(e) => upload(e.target.files?.[0])}
       />
-      <Button size="xs" color="light" className="w-fit" onClick={() => input.current?.click()} isProcessing={busy} disabled={busy}>
-        {current ? "Replace" : "Upload"}
-      </Button>
+      <div className="flex gap-2">
+        <Button size="xs" color="light" className="w-fit" onClick={() => input.current?.click()} isProcessing={busy} disabled={busy}>
+          {current ? "Replace" : "Upload"}
+        </Button>
+        {current && (
+          <Button size="xs" color="light" className="w-fit" onClick={clear} disabled={busy}>
+            Remove
+          </Button>
+        )}
+      </div>
     </div>
   );
 };
@@ -134,13 +165,15 @@ const TrybeDetailContent = ({
     router.replace(`?${params.toString()}`, { scroll: false });
   };
 
+  const openTab = (name: string) => changeTab(Math.max(0, TRYBE_TABS.indexOf(name as TrybeTab)));
+
   const runAction = async () => {
     if (!action) return;
     setBusy(true);
     try {
       const res = await setTrybeStatus(trybe.uuid, action, reason.trim() || undefined);
       if (res?.status) {
-        toast.success(`${trybe.name}: ${STATUS_COPY[action].button.toLowerCase()}d`);
+        toast.success(`${trybe.name}: ${STATUS_COPY[action].button.toLowerCase()}d`.replace("restored", "restored from the archive"));
         setAction(null);
         setReason("");
       } else toast.error(res?.message || "Couldn't change the status");
@@ -164,7 +197,16 @@ const TrybeDetailContent = ({
             </Link>
             <h4 className="text-lg font-bold">{trybe.name}</h4>
             <p className="text-sm text-darklink flex flex-wrap items-center gap-2">
-              {trybe.subtitle && <span>{trybe.subtitle} ·</span>}
+              {trybe.institution ? (
+                <span>
+                  <Link href={`/dashboards/trybes/institutions/${trybe.institution.uuid}`} className="text-primary">
+                    {trybe.institution.short_name ?? trybe.institution.name}
+                  </Link>{" "}
+                  ·
+                </span>
+              ) : (
+                trybe.subtitle && <span>{trybe.subtitle} ·</span>
+              )}
               <span>{trybe.type?.name}</span> · <span>{Number(trybe.member_count).toLocaleString()} members</span>
               <Chip value={trybe.status} />
             </p>
@@ -176,16 +218,21 @@ const TrybeDetailContent = ({
               Review {trybe.pending_requests} {trybe.pending_requests === 1 ? "request" : "requests"}
             </Button>
           )}
-          {trybe.status === "active" ? (
+          {trybe.status === "active" && (
             <Button color="light" onClick={() => setAction("suspend")}>
               Suspend
             </Button>
-          ) : (
+          )}
+          {trybe.status === "suspended" && (
             <Button color="light" onClick={() => setAction("activate")}>
               Reactivate
             </Button>
           )}
-          {trybe.status !== "archived" && (
+          {trybe.status === "archived" ? (
+            <Button color="primary" onClick={() => setAction("restore")}>
+              Restore from archive
+            </Button>
+          ) : (
             <Button color="light" onClick={() => setAction("archive")}>
               Archive
             </Button>
@@ -193,7 +240,20 @@ const TrybeDetailContent = ({
         </div>
       </div>
 
+      {trybe.type?.join_form === "campus" && !trybe.institution && (
+        <div className="flex items-center gap-2 rounded-lg bg-lightwarning text-warning text-sm px-3 py-2">
+          <Icon icon="solar:danger-triangle-line-duotone" height={18} />
+          <span>
+            No institution linked. Its join form uses the Trybe&apos;s own levels until you pick its institution under
+            Profile.
+          </span>
+        </div>
+      )}
+
       <Tabs aria-label="Trybe" variant="underline" onActiveTabChange={changeTab}>
+        <Tabs.Item active={tab === "overview"} title="Overview" icon={() => <Icon icon="solar:chart-2-line-duotone" height={18} className="me-2" />}>
+          {tab === "overview" && <TrybeOverview trybe={trybe} onTab={openTab} />}
+        </Tabs.Item>
         <Tabs.Item active={tab === "profile"} title="Profile" icon={() => <Icon icon="solar:document-text-line-duotone" height={18} className="me-2" />}>
           <div className="grid grid-cols-12 gap-30">
             <div className="col-span-12 lg:col-span-4">
@@ -203,7 +263,7 @@ const TrybeDetailContent = ({
                   <ImagePicker trybe={trybe} kind="cover" />
                   <p className="text-xs text-darklink">
                     Created {trybe.created_by_name ? `by ${trybe.created_by_name}` : ""} on{" "}
-                    {new Date(trybe.created_at).toLocaleDateString()}
+                    {formatDate(trybe.created_at)}
                   </p>
                 </div>
               </CardBox>
@@ -221,6 +281,18 @@ const TrybeDetailContent = ({
         <Tabs.Item active={tab === "announcement"} title="Announcement" icon={() => <Icon icon="solar:speaker-minimalistic-line-duotone" height={18} className="me-2" />}>
           <TrybeAnnouncement trybe={trybe} />
         </Tabs.Item>
+        <Tabs.Item active={tab === "posts"} title="Posts" icon={() => <Icon icon="solar:document-text-line-duotone" height={18} className="me-2" />}>
+          {tab === "posts" && <TrybeModeration trybeId={trybe.uuid} kind="posts" />}
+        </Tabs.Item>
+        <Tabs.Item active={tab === "videos"} title="Videos" icon={() => <Icon icon="solar:videocamera-record-line-duotone" height={18} className="me-2" />}>
+          {tab === "videos" && <TrybeModeration trybeId={trybe.uuid} kind="videos" />}
+        </Tabs.Item>
+        <Tabs.Item active={tab === "live"} title="Live" icon={() => <Icon icon="solar:microphone-3-line-duotone" height={18} className="me-2" />}>
+          {tab === "live" && <TrybeModeration trybeId={trybe.uuid} kind="live" />}
+        </Tabs.Item>
+        <Tabs.Item active={tab === "market"} title="Market" icon={() => <Icon icon="solar:shop-2-line-duotone" height={18} className="me-2" />}>
+          {tab === "market" && <TrybeModeration trybeId={trybe.uuid} kind="products" />}
+        </Tabs.Item>
         <Tabs.Item active={tab === "events"} title="Events" icon={() => <Icon icon="solar:calendar-line-duotone" height={18} className="me-2" />}>
           {tab === "events" && <TrybeContent trybeId={trybe.uuid} kind="events" />}
         </Tabs.Item>
@@ -230,6 +302,12 @@ const TrybeDetailContent = ({
         <Tabs.Item active={tab === "polls"} title={trybe.type?.poll_label || "Polls"} icon={() => <Icon icon="solar:chart-square-line-duotone" height={18} className="me-2" />}>
           {tab === "polls" && <TrybeContent trybeId={trybe.uuid} kind="polls" />}
         </Tabs.Item>
+        <Tabs.Item active={tab === "reports"} title="Reports" icon={() => <Icon icon="solar:danger-triangle-line-duotone" height={18} className="me-2" />}>
+          {tab === "reports" && <TrybeReports trybeId={trybe.uuid} />}
+        </Tabs.Item>
+        <Tabs.Item active={tab === "audit"} title="Audit" icon={() => <Icon icon="solar:history-line-duotone" height={18} className="me-2" />}>
+          {tab === "audit" && <TrybeAudit trybeId={trybe.uuid} />}
+        </Tabs.Item>
       </Tabs>
 
       <Modal show={!!action} onClose={() => !busy && setAction(null)} size="md">
@@ -237,9 +315,7 @@ const TrybeDetailContent = ({
         <Modal.Body>
           <div className="flex flex-col gap-3">
             <p className="text-sm">{copy?.body}</p>
-            {action !== "activate" && (
-              <Textarea rows={2} maxLength={500} value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Reason (kept in the audit log)" />
-            )}
+            <Textarea rows={2} maxLength={500} value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Reason (kept in the audit log)" />
           </div>
         </Modal.Body>
         <Modal.Footer>

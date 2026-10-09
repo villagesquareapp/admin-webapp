@@ -1,15 +1,18 @@
 "use client";
 
 import { useState } from "react";
+import { Icon } from "@iconify/react";
 import { createColumnHelper } from "@tanstack/react-table";
-import { Button, Modal, Select, TextInput, Textarea } from "flowbite-react";
+import { formatDistanceToNow } from "date-fns";
+import { Button, Label, Modal, Select, TextInput, Textarea } from "flowbite-react";
 import { toast } from "sonner";
 import CardBox from "@/app/components/shared/CardBox";
 import ReusableTable from "@/app/components/shared/ReusableTable";
-import { assignTrybeRole, changeTrybeMember, setTrybeIntro } from "@/app/api/trybes";
+import { assignTrybeRole, changeTrybeMember, setTrybeIntro, transferTrybeOwner } from "@/app/api/trybes";
 import PostSearch from "../../posts/PostSearch";
 import { formatDate } from "@/utils/dateUtils";
-import { Chip, Person } from "../trybeUi";
+import { Chip, Person, label } from "../trybeUi";
+import MemberDetailModal from "./MemberDetailModal";
 
 const ROLES = [
   { value: "owner", label: "Owner" },
@@ -17,6 +20,8 @@ const ROLES = [
   { value: "moderator", label: "Moderator" },
   { value: "member", label: "Member" },
 ];
+// The owner changes only through Transfer ownership.
+const ASSIGNABLE = ROLES.filter((r) => r.value !== "owner");
 
 type MemberAction = { member: ITrybeMember; action: "remove" | "ban" | "unban" };
 
@@ -47,6 +52,33 @@ const TrybePeople = ({
   const [busy, setBusy] = useState(false);
   const [introFor, setIntroFor] = useState<ITrybeAdminMember | null>(null);
   const [intro, setIntro] = useState("");
+  const [roleChange, setRoleChange] = useState<{ member: ITrybeMember; role: string } | null>(null);
+  const [transferring, setTransferring] = useState(false);
+  const [newOwner, setNewOwner] = useState("");
+  const [previousRole, setPreviousRole] = useState("admin");
+  const [viewing, setViewing] = useState<string | null>(null);
+  const owner = trybe.admins.find((a) => a.role === "owner");
+
+  const transfer = async () => {
+    setBusy(true);
+    try {
+      const res = await transferTrybeOwner(trybe.uuid, {
+        username: newOwner.trim(),
+        previous_owner_role: owner ? previousRole : undefined,
+        reason: reason.trim() || undefined,
+      });
+      if (res?.status) {
+        toast.success(owner ? "Ownership transferred" : "Owner set");
+        setTransferring(false);
+        setNewOwner("");
+        setReason("");
+      } else toast.error(res?.message || "Couldn't change the owner");
+    } catch {
+      toast.error("Something went wrong");
+    } finally {
+      setBusy(false);
+    }
+  };
 
   const saveIntro = async () => {
     if (!introFor) return;
@@ -72,6 +104,7 @@ const TrybePeople = ({
       if (res?.status) {
         toast.success("Role saved");
         setUsername("");
+        setRoleChange(null);
       } else toast.error(res?.message || "Couldn't assign the role");
     } catch {
       toast.error("Something went wrong");
@@ -123,21 +156,37 @@ const TrybePeople = ({
       header: () => <span>Role</span>,
       cell: (info) => {
         const m = info.row.original;
-        if (m.status !== "active") return <Chip value={m.role} />;
+        if (m.status !== "active" || m.role === "owner") return <Chip value={m.role} />;
         return (
           <Select
             sizing="sm"
             value={m.role}
             disabled={assigning}
             onClick={(e) => e.stopPropagation()}
-            onChange={(e) => assign({ user_id: m.uuid, role: e.target.value })}
+            onChange={(e) => setRoleChange({ member: m, role: e.target.value })}
           >
-            {ROLES.map((r) => (
+            {ASSIGNABLE.map((r) => (
               <option key={r.value} value={r.value}>
                 {r.label}
               </option>
             ))}
           </Select>
+        );
+      },
+    }),
+    col.accessor("last_seen_at", {
+      header: () => <span>Last visit</span>,
+      cell: (info) => {
+        const m = info.row.original;
+        return (
+          <span className="text-xs text-darklink flex items-center gap-1.5">
+            {m.last_seen_at ? formatDistanceToNow(new Date(m.last_seen_at), { addSuffix: true }) : "Never"}
+            {!m.notifications_enabled && (
+              <span title="Notifications off">
+                <Icon icon="solar:bell-off-linear" height={14} />
+              </span>
+            )}
+          </span>
         );
       },
     }),
@@ -148,6 +197,7 @@ const TrybePeople = ({
         return (
           <div className="text-xs text-darklink">
             <p>{formatDate(m.joined_at)}</p>
+            <p>{m.joined_via === "staff" ? "Added by staff" : "By request"}</p>
             {m.status !== "active" && <Chip value={m.status} />}
             {m.ended_by && (
               <p className="mt-1">
@@ -163,8 +213,11 @@ const TrybePeople = ({
       header: () => <span />,
       cell: (info) => {
         const m = info.row.original;
+        if (m.status === "active" && m.role === "owner") {
+          return <p className="text-xs text-darklink text-right">Transfer ownership to remove</p>;
+        }
         return (
-          <div className="flex gap-2 justify-end">
+          <div className="flex gap-2 justify-end" onClick={(e) => e.stopPropagation()}>
             {m.status === "active" && (
               <Button size="xs" color="light" onClick={() => setPending({ member: m, action: "remove" })}>
                 Remove
@@ -191,10 +244,15 @@ const TrybePeople = ({
     <div className="flex flex-col gap-30">
       <CardBox>
         <h5 className="font-semibold">Trybe admins</h5>
-        <p className="text-sm text-darklink mb-4">
-          Admins and moderators run the Trybe in the app. A Trybe has one owner; making someone owner turns the current
-          owner into an admin.
-        </p>
+        <div className="flex flex-wrap items-start justify-between gap-3 mb-4">
+          <p className="text-sm text-darklink max-w-2xl">
+            Admins and moderators run the Trybe in the app. A Trybe has one owner, changed only by transferring
+            ownership; until then the owner can&apos;t be removed, banned or given another role.
+          </p>
+          <Button size="sm" color="light" onClick={() => setTransferring(true)}>
+            {owner ? "Transfer ownership" : "Set the owner"}
+          </Button>
+        </div>
         <div className="flex flex-wrap items-end gap-3">
           <TextInput
             value={username}
@@ -204,7 +262,7 @@ const TrybePeople = ({
             className="min-w-[220px]"
           />
           <Select value={role} onChange={(e) => setRole(e.target.value)}>
-            {ROLES.map((r) => (
+            {ASSIGNABLE.map((r) => (
               <option key={r.value} value={r.value}>
                 {r.label}
               </option>
@@ -273,7 +331,80 @@ const TrybePeople = ({
           { label: "Role", key: "role", options: [{ value: "", label: "Any role" }, ...ROLES] },
         ]}
         extraButtons={<PostSearch placeholder="Name, username or matric no..." />}
+        onRowClick={(row: ITrybeMember) => setViewing(row.uuid)}
       />
+
+      <MemberDetailModal trybeId={trybe.uuid} userId={viewing} onClose={() => setViewing(null)} />
+
+      <Modal show={!!roleChange} onClose={() => !assigning && setRoleChange(null)} size="md">
+        <Modal.Header>Change role</Modal.Header>
+        <Modal.Body>
+          <p className="text-sm">
+            Make <span className="font-semibold">{roleChange?.member.name || roleChange?.member.username}</span>{" "}
+            {roleChange?.role === "member" ? "a plain member" : `a ${label(roleChange?.role ?? "")}`}?
+            {roleChange?.role === "admin" && " Admins approve requests and manage people in the app."}
+          </p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button color="gray" onClick={() => setRoleChange(null)} disabled={assigning}>
+            Cancel
+          </Button>
+          <Button
+            color="primary"
+            onClick={() => roleChange && assign({ user_id: roleChange.member.uuid, role: roleChange.role })}
+            isProcessing={assigning}
+            disabled={assigning}
+          >
+            Change role
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      <Modal show={transferring} onClose={() => !busy && setTransferring(false)} size="md">
+        <Modal.Header>{owner ? "Transfer ownership" : "Set the owner"}</Modal.Header>
+        <Modal.Body>
+          <div className="flex flex-col gap-4 text-sm">
+            {owner && (
+              <p>
+                <span className="font-semibold">{owner.name || owner.username}</span> owns this Trybe now.
+              </p>
+            )}
+            <div>
+              <Label htmlFor="new-owner" value="New owner" />
+              <TextInput
+                id="new-owner"
+                value={newOwner}
+                onChange={(e) => setNewOwner(e.target.value.replace(/^@/, ""))}
+                placeholder="username"
+                addon="@"
+                className="mt-1"
+              />
+              <p className="text-xs text-darklink mt-1">They join the Trybe if they aren&apos;t in it.</p>
+            </div>
+            {owner && (
+              <div>
+                <Label htmlFor="previous-role" value={`${owner.name || owner.username} becomes`} />
+                <Select id="previous-role" value={previousRole} onChange={(e) => setPreviousRole(e.target.value)} className="mt-1">
+                  {ASSIGNABLE.map((r) => (
+                    <option key={r.value} value={r.value}>
+                      {r.label}
+                    </option>
+                  ))}
+                </Select>
+              </div>
+            )}
+            <Textarea rows={2} maxLength={500} value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Reason (kept in the audit log)" />
+          </div>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button color="gray" onClick={() => setTransferring(false)} disabled={busy}>
+            Cancel
+          </Button>
+          <Button color="primary" onClick={transfer} isProcessing={busy} disabled={busy || !newOwner.trim()}>
+            {owner ? "Transfer" : "Set owner"}
+          </Button>
+        </Modal.Footer>
+      </Modal>
 
       <Modal show={!!introFor} onClose={() => !busy && setIntroFor(null)} size="md">
         <Modal.Header>Intro on the About tab</Modal.Header>

@@ -195,8 +195,39 @@ const JoinRequestReview = ({ request }: { request: ITrybeJoinRequestDetail | nul
         <CardBox>
           <h5 className="font-semibold mb-3">Join form</h5>
           <KV name="Full name" value={a.full_name} />
-          <KV name="Matric no" value={a.matric_no} />
-          <KV name="Department" value={a.department} />
+          <KV
+            name="Matric no"
+            value={
+              <span>
+                {a.matric_no}
+                {request.matric_check === "mismatch" && (
+                  <span className="block text-xs text-warning font-normal">
+                    Doesn&apos;t look like this school&apos;s{request.matric_example ? ` (e.g. ${request.matric_example})` : ""}
+                  </span>
+                )}
+              </span>
+            }
+          />
+          <KV
+            name="Department"
+            value={
+              <span>
+                {a.department}
+                {request.department ? (
+                  <span className="block text-xs text-success font-normal">
+                    Matches {request.department.name}
+                  </span>
+                ) : (
+                  <Link
+                    href="/dashboards/trybes/departments?tab=unmatched"
+                    className="block text-xs text-warning font-normal"
+                  >
+                    Not on the department list
+                  </Link>
+                )}
+              </span>
+            }
+          />
           <KV name="Level" value={a.level} />
           <KV name="Agreed to the Trybe Code" value={formatDate(request.code_accepted_at)} />
         </CardBox>

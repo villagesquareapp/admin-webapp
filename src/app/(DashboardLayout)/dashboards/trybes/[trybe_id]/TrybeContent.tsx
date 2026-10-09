@@ -5,7 +5,14 @@ import { Badge, Button, Modal, Select, Spinner, TextInput, Textarea } from "flow
 import { Icon } from "@iconify/react";
 import { toast } from "sonner";
 import CardBox from "@/app/components/shared/CardBox";
-import { getTrybeEvents, getTrybeFiles, getTrybePolls, takeDownTrybeContent } from "@/app/api/trybes";
+import {
+  closeTrybePoll,
+  getTrybeEvents,
+  getTrybeFiles,
+  getTrybePolls,
+  restoreTrybeContent,
+  takeDownTrybeContent,
+} from "@/app/api/trybes";
 
 type Kind = "events" | "files" | "polls";
 type Row = ITrybeEvent | ITrybeFile | ITrybePoll;
@@ -16,19 +23,19 @@ const COPY: Record<Kind, { empty: string; action: string; confirm: string; done:
   events: {
     empty: "No events.",
     action: "Cancel event",
-    confirm: "The event stays, marked cancelled, and leaves the Trybe's Active list. An Echo scheduled for it is cancelled too.",
+    confirm: "The event stays, marked cancelled, and leaves the Trybe's Active list. An Echo scheduled for it is cancelled too. You can restore it until it ends.",
     done: "Event cancelled",
   },
   files: {
     empty: "No files.",
     action: "Remove file",
-    confirm: "The file disappears from the Trybe's Files tab and its stored copy is deleted.",
+    confirm: "The file disappears from the Trybe's Files tab and its stored copy is deleted, so only links can be restored later.",
     done: "File removed",
   },
   polls: {
     empty: "No polls.",
     action: "Remove poll",
-    confirm: "The poll and its results disappear from the Trybe.",
+    confirm: "The poll and its results disappear from the Trybe. You can restore it later.",
     done: "Poll removed",
   },
 };
@@ -106,12 +113,21 @@ const PollRow = ({ p }: { p: ITrybePoll }) => (
       })}
     </div>
     <p className="text-xs text-darklink mt-2">
-      {p.total_votes} votes · closes {when(p.closes_at)} · by {who(p.created_by)}
+      {p.total_votes} {p.total_votes === 1 ? "vote" : "votes"} · {p.is_open ? "closes" : "closed"} {when(p.closes_at)} · by{" "}
+      {who(p.created_by)}
     </p>
   </div>
 );
 
-// A Trybe's events, files or polls, with staff take-down (audited).
+type Action = "remove" | "restore" | "close";
+
+const ACTION_COPY: Record<Exclude<Action, "remove">, { title: string; confirm: string; done: string }> = {
+  restore: { title: "Restore", confirm: "It comes back for the Trybe as it was.", done: "Restored" },
+  close: { title: "Close the poll now", confirm: "Voting ends now; the results stay.", done: "Poll closed" },
+};
+
+// A Trybe's events, files or polls, with staff take-down, restore and (polls)
+// closing early. All audited.
 const TrybeContent = ({ trybeId, kind }: { trybeId: string; kind: Kind }) => {
   const [rows, setRows] = useState<Row[] | null>(null);
   const [page, setPage] = useState(1);
@@ -119,6 +135,9 @@ const TrybeContent = ({ trybeId, kind }: { trybeId: string; kind: Kind }) => {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("");
   const [target, setTarget] = useState<Row | null>(null);
+  const [action, setAction] = useState<Action>("remove");
+  // Files and polls: what's up, or what was removed.
+  const [view, setView] = useState<"active" | "removed">("active");
   const [reason, setReason] = useState("");
   const [busy, setBusy] = useState(false);
   const copy = COPY[kind];
@@ -129,8 +148,8 @@ const TrybeContent = ({ trybeId, kind }: { trybeId: string; kind: Kind }) => {
       kind === "events"
         ? await getTrybeEvents(trybeId, page, LIMIT, { status: filter || undefined, search: search || undefined })
         : kind === "files"
-          ? await getTrybeFiles(trybeId, page, LIMIT, { kind: filter || undefined, search: search || undefined })
-          : await getTrybePolls(trybeId, page, LIMIT);
+          ? await getTrybeFiles(trybeId, page, LIMIT, { kind: filter || undefined, search: search || undefined, status: view })
+          : await getTrybePolls(trybeId, page, LIMIT, view);
     if (res?.status) {
       setRows((res.data?.data as Row[]) ?? []);
       setLastPage(res.data?.last_page || 1);
@@ -138,7 +157,7 @@ const TrybeContent = ({ trybeId, kind }: { trybeId: string; kind: Kind }) => {
       setRows([]);
       toast.error(res?.message || "Couldn't load the list");
     }
-  }, [trybeId, kind, page, filter, search]);
+  }, [trybeId, kind, page, filter, search, view]);
 
   useEffect(() => {
     load();
@@ -148,9 +167,15 @@ const TrybeContent = ({ trybeId, kind }: { trybeId: string; kind: Kind }) => {
     if (!target) return;
     setBusy(true);
     try {
-      const res = await takeDownTrybeContent(trybeId, kind, target.uuid, reason.trim() || undefined);
+      const why = reason.trim() || undefined;
+      const res =
+        action === "restore"
+          ? await restoreTrybeContent(trybeId, kind, target.uuid, why)
+          : action === "close"
+            ? await closeTrybePoll(trybeId, target.uuid, why)
+            : await takeDownTrybeContent(trybeId, kind, target.uuid, why);
       if (res?.status) {
-        toast.success(copy.done);
+        toast.success(action === "remove" ? copy.done : ACTION_COPY[action].done);
         setTarget(null);
         setReason("");
         await load();
@@ -162,10 +187,61 @@ const TrybeContent = ({ trybeId, kind }: { trybeId: string; kind: Kind }) => {
     }
   };
 
-  const canTakeDown = (row: Row) => kind !== "events" || (row as ITrybeEvent).status === "active";
+  const open = (row: Row, next: Action) => {
+    setAction(next);
+    setTarget(row);
+  };
+  const removed = (row: Row) =>
+    kind === "events" ? (row as ITrybeEvent).status === "cancelled" : !!(row as ITrybeFile | ITrybePoll).deleted_at;
+
+  // What staff can do with a row.
+  const actions = (row: Row) => {
+    if (!removed(row)) {
+      return (
+        <div className="flex flex-col gap-2 items-end">
+          {kind === "polls" && (row as ITrybePoll).is_open && (
+            <Button size="xs" color="light" onClick={() => open(row, "close")}>
+              Close now
+            </Button>
+          )}
+          <Button size="xs" color="light" onClick={() => open(row, "remove")}>
+            <Icon icon="solar:trash-bin-minimalistic-linear" height={16} className="me-1" />
+            {copy.action}
+          </Button>
+        </div>
+      );
+    }
+    // A cancelled event can come back only until it ends.
+    if (kind === "events" && new Date((row as ITrybeEvent).ends_at) <= new Date()) return null;
+    if (kind === "files" && !(row as ITrybeFile).restorable) {
+      return <p className="text-xs text-darklink max-w-[160px] text-right">Stored copy deleted; can&apos;t be restored</p>;
+    }
+    return (
+      <Button size="xs" color="light" onClick={() => open(row, "restore")}>
+        Restore
+      </Button>
+    );
+  };
 
   return (
     <CardBox>
+      {kind !== "events" && (
+        <div className="flex gap-2 mb-3">
+          {(["active", "removed"] as const).map((v) => (
+            <Button
+              key={v}
+              size="xs"
+              color={view === v ? "primary" : "light"}
+              onClick={() => {
+                setPage(1);
+                setView(v);
+              }}
+            >
+              {v === "active" ? (kind === "files" ? "Files" : "Polls") : "Removed"}
+            </Button>
+          ))}
+        </div>
+      )}
       {kind !== "polls" && (
         <form
           className="flex flex-wrap gap-2 mb-4"
@@ -224,12 +300,7 @@ const TrybeContent = ({ trybeId, kind }: { trybeId: string; kind: Kind }) => {
               ) : (
                 <PollRow p={row as ITrybePoll} />
               )}
-              {canTakeDown(row) && (
-                <Button size="xs" color="light" onClick={() => setTarget(row)}>
-                  <Icon icon="solar:trash-bin-minimalistic-linear" height={16} className="me-1" />
-                  {copy.action}
-                </Button>
-              )}
+              {actions(row)}
             </div>
           ))}
         </div>
@@ -250,19 +321,19 @@ const TrybeContent = ({ trybeId, kind }: { trybeId: string; kind: Kind }) => {
       )}
 
       <Modal show={!!target} onClose={() => !busy && setTarget(null)} size="md">
-        <Modal.Header>{copy.action}</Modal.Header>
+        <Modal.Header>{action === "remove" ? copy.action : ACTION_COPY[action].title}</Modal.Header>
         <Modal.Body>
           <div className="flex flex-col gap-3">
-            <p className="text-sm">{copy.confirm}</p>
-            <Textarea rows={2} maxLength={500} value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Reason (kept in the audit log)" />
+            <p className="text-sm">{action === "remove" ? copy.confirm : ACTION_COPY[action].confirm}</p>
+            <Textarea rows={2} maxLength={500} value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Reason (kept in the audit log)" autoFocus />
           </div>
         </Modal.Body>
         <Modal.Footer>
           <Button color="gray" onClick={() => setTarget(null)} disabled={busy}>
             Back
           </Button>
-          <Button color="failure" onClick={takeDown} isProcessing={busy} disabled={busy}>
-            {copy.action}
+          <Button color={action === "remove" ? "failure" : "primary"} onClick={takeDown} isProcessing={busy} disabled={busy}>
+            {action === "remove" ? copy.action : ACTION_COPY[action].title}
           </Button>
         </Modal.Footer>
       </Modal>

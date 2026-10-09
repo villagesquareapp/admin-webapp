@@ -2,12 +2,12 @@
 
 import LoadingComponent from "@/app/components/shared/LoadingComponent";
 import ReusableTable from "@/app/components/shared/ReusableTable";
-import { UserDetailsComp } from "@/app/components/shared/TableSnippets";
 import ResolveReportModal, { ReportAction } from "@/app/components/shared/ResolveReportModal";
 import { formatDate } from "@/utils/dateUtils";
 import { createColumnHelper } from "@tanstack/react-table";
 import { Icon } from "@iconify/react";
 import Image from "next/image";
+import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -19,6 +19,18 @@ const STATUS_STYLE: Record<string, string> = {
 };
 const NEUTRAL_BADGE = "bg-lightgray dark:bg-dark text-darklink";
 const ACTIONABLE = (s?: string) => s === "open" || s === "in_review";
+
+// Where each kind of reported item opens in the dashboard.
+const ITEM_PAGE: Record<string, string> = {
+  user: "/dashboards/users/",
+  post: "/dashboards/posts/",
+  vflix: "/dashboards/vflix/videos/",
+  echo: "/dashboards/echoes/",
+  livestream: "/dashboards/livestreams/",
+  marketsquare: "/dashboards/markets/products/",
+  marketplace: "/dashboards/markets/products/",
+  trybe: "/dashboards/trybes/",
+};
 
 const ReportTable = ({
   reports,
@@ -39,12 +51,20 @@ const ReportTable = ({
   const columnHelper = createColumnHelper<IReport>();
 
   const columns = [
-    columnHelper.accessor("reason", {
-      cell: (info) => (
-        <p className="text-darklink dark:text-bodytext font-[500] text-sm">
-          {info.getValue() || "--"}
-        </p>
-      ),
+    columnHelper.accessor("reason_ref", {
+      cell: (info) => {
+        const r = info.row.original;
+        return (
+          <div className="min-w-0">
+            <p className="text-darklink dark:text-bodytext font-[500] text-sm truncate max-w-[240px]">
+              {r.reason_ref?.title || r.reason || "--"}
+            </p>
+            {r.reason && r.reason_ref?.title && (
+              <p className="text-xs text-darklink truncate max-w-[240px]">{r.reason}</p>
+            )}
+          </div>
+        );
+      },
       header: () => <span>Reason</span>,
     }),
     columnHelper.accessor("report_service_type", {
@@ -64,23 +84,21 @@ const ReportTable = ({
       },
       header: () => <span>Status</span>,
     }),
-    columnHelper.accessor("reported_user.uuid", {
+    columnHelper.accessor("reported_id", {
       cell: (info) => {
-        const u = info.row.original.reported_user;
-        if (!u) return <p className="text-darklink dark:text-bodytext text-sm">--</p>;
+        const r = info.row.original;
+        const base = ITEM_PAGE[r.report_service_type];
+        const label = `${r.report_service_type || "item"} ${r.reported_id?.slice(0, 8) || ""}`;
+        if (!base || !r.reported_id) {
+          return <p className="text-darklink dark:text-bodytext text-sm capitalize">{label}</p>;
+        }
         return (
-          <UserDetailsComp
-            user={{
-              name: u.name,
-              username: u.username,
-              email: u.email,
-              last_online: u.last_online,
-              profile_picture: u.profile_picture,
-            }}
-          />
+          <Link href={`${base}${r.reported_id}`} className="text-sm text-primary capitalize hover:underline">
+            {label}
+          </Link>
         );
       },
-      header: () => <span>Reported User</span>,
+      header: () => <span>Reported</span>,
     }),
     columnHelper.accessor("reporter.uuid", {
       cell: (info) => {

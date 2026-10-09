@@ -59,10 +59,10 @@ const ReportStatsWrapper = async () => {
       link: "",
     },
     {
-      total: reportStats?.data?.total_comment_reports || 0,
-      icon: "mdi:comment-alert",
+      total: reportStats?.data?.total_vflix_reports || 0,
+      icon: "mdi:movie-open-play",
       bgcolor: "primary",
-      title: "Comment Reports",
+      title: "VFlix Reports",
       shape: shape3,
       link: "",
     },
@@ -83,14 +83,14 @@ const ReportTableWrapper = async ({
   page,
   limit,
   service,
-  type,
+  status,
 }: {
   page: number;
   limit: number;
   service?: string;
-  type?: string;
+  status?: string;
 }) => {
-  const reports = await getAllReports(page, limit, service, type);
+  const reports = await getAllReports(page, limit, service, status);
 
   const filterDropdowns = [
     {
@@ -98,24 +98,25 @@ const ReportTableWrapper = async ({
       key: "service",
       options: [
         { value: "", label: "All Services" },
+        { value: "user", label: "User" },
         { value: "post", label: "Post" },
         { value: "echo", label: "Echo" },
         { value: "livestream", label: "Live Stream" },
         { value: "marketsquare", label: "MarketSquare" },
-        { value: "comment", label: "Comment" },
         { value: "vflix", label: "VFlix" },
         { value: "trybe", label: "Trybe" },
       ],
       defaultValue: "",
     },
     {
-      label: "Report Type",
-      key: "type",
+      label: "Status",
+      key: "status",
       options: [
-        { value: "", label: "All Report Types" },
-        { value: "spam", label: "Spam" },
-        { value: "nudity", label: "Nudity" },
-        { value: "parody", label: "Parody" },
+        { value: "", label: "All statuses" },
+        { value: "open", label: "Open" },
+        { value: "in_review", label: "In review" },
+        { value: "resolved", label: "Resolved" },
+        { value: "dismissed", label: "Dismissed" },
       ],
       defaultValue: "",
     },
@@ -140,7 +141,7 @@ const Page = async ({
   const page = Number(searchParams.page) || 1;
   const limit = Number(searchParams.limit) || 20;
   const service = searchParams.service?.toString();
-  const type = searchParams.type?.toString();
+  const status = searchParams.status?.toString();
 
   return (
     <>
@@ -151,12 +152,12 @@ const Page = async ({
           </Suspense>
         </div>
         <div className="col-span-12">
-          <Suspense key={`${page}-${limit}-${service}-${type}`} fallback={<div className="h-[500px] w-full animate-pulse bg-gray-100 dark:bg-gray-800 rounded-3xl" />}>
+          <Suspense key={`${page}-${limit}-${service}-${status}`} fallback={<div className="h-[500px] w-full animate-pulse bg-gray-100 dark:bg-gray-800 rounded-3xl" />}>
             <ReportTableWrapper
               page={page}
               limit={limit}
               service={service}
-              type={type}
+              status={status}
             />
           </Suspense>
         </div>

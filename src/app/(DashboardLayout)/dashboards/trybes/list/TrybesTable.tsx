@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createColumnHelper } from "@tanstack/react-table";
 import { Button } from "flowbite-react";
+import { Icon } from "@iconify/react";
 import ReusableTable from "@/app/components/shared/ReusableTable";
 import PostSearch from "../../posts/PostSearch";
 import { formatDate } from "@/utils/dateUtils";
@@ -35,7 +36,9 @@ const TrybesTable = ({
             <TrybeAvatar src={t.avatar} name={t.name} />
             <div className="min-w-0">
               <p className="text-sm font-medium truncate max-w-[220px]">{t.name}</p>
-              <p className="text-xs text-darklink truncate max-w-[220px]">{t.subtitle || t.tagline}</p>
+              <p className="text-xs text-darklink truncate max-w-[220px]">
+                {t.institution?.short_name ?? t.institution?.name ?? t.subtitle ?? t.tagline}
+              </p>
             </div>
           </div>
         );
@@ -44,7 +47,19 @@ const TrybesTable = ({
     col.accessor((r) => r.type?.name, {
       id: "type",
       header: () => <span>Type</span>,
-      cell: (i) => <span className="text-sm">{i.getValue()}</span>,
+      cell: (info) => {
+        const t = info.row.original;
+        return (
+          <span className="text-sm flex items-center gap-1.5">
+            {info.getValue()}
+            {t.type?.join_form === "campus" && !t.institution && (
+              <span title="No institution linked" className="text-warning">
+                <Icon icon="solar:danger-triangle-line-duotone" height={16} />
+              </span>
+            )}
+          </span>
+        );
+      },
     }),
     col.accessor("member_count", {
       header: () => <span>Members</span>,
@@ -102,6 +117,15 @@ const TrybesTable = ({
           label: "Type",
           key: "type_id",
           options: [{ value: "", label: "Any type" }, ...types.map((t) => ({ value: t.uuid, label: t.name }))],
+        },
+        {
+          label: "Institution",
+          key: "linked",
+          options: [
+            { value: "", label: "With or without institution" },
+            { value: "true", label: "Linked to an institution" },
+            { value: "false", label: "No institution" },
+          ],
         },
       ]}
       extraButtons={

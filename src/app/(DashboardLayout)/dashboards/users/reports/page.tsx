@@ -2,8 +2,8 @@ import { Suspense } from "react";
 import { getAllReports } from "@/app/api/report";
 import UsersReportsView from "../UsersReportsView";
 
-const Wrapper = async ({ page, limit }: { page: number; limit: number }) => {
-  const res = await getAllReports(page, limit, "user");
+const Wrapper = async ({ page, limit, status }: { page: number; limit: number; status?: string }) => {
+  const res = await getAllReports(page, limit, "user", status);
   return (
     <UsersReportsView
       reports={res?.data?.data || []}
@@ -21,9 +21,10 @@ const Page = async ({
 }) => {
   const page = Number(searchParams.page) || 1;
   const limit = Number(searchParams.limit) || 20;
+  const status = searchParams.status?.toString();
   return (
-    <Suspense key={`${page}-${limit}`} fallback={<div className="h-[500px] w-full animate-pulse bg-gray-100 dark:bg-gray-800 rounded-3xl" />}>
-      <Wrapper page={page} limit={limit} />
+    <Suspense key={`${page}-${limit}-${status}`} fallback={<div className="h-[500px] w-full animate-pulse bg-gray-100 dark:bg-gray-800 rounded-3xl" />}>
+      <Wrapper page={page} limit={limit} status={status} />
     </Suspense>
   );
 };

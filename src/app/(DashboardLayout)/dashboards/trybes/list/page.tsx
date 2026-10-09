@@ -7,7 +7,7 @@ const Wrapper = async ({
   page,
   limit,
 }: {
-  filters: { status?: string; type_id?: string; search?: string };
+  filters: { status?: string; type_id?: string; search?: string; linked?: string };
   page: number;
   limit: number;
 }) => {
@@ -28,9 +28,10 @@ const Page = ({ searchParams }: { searchParams: { [key: string]: string | string
     status: (searchParams.status as string) || undefined,
     type_id: (searchParams.type_id as string) || undefined,
     search: (searchParams.search as string) || undefined,
+    linked: (searchParams.linked as string) || undefined,
   };
   const page = Number(searchParams.page) || 1;
-  const limit = Number(searchParams.limit) || 10;
+  const limit = Number(searchParams.limit) || 20;
   return (
     <div className="flex flex-col gap-4">
       <div>

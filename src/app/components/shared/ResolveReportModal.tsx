@@ -18,6 +18,15 @@ const METHODS: { value: string; label: string }[] = [
   { value: "other", label: "Other" },
 ];
 
+const ACTION_LABEL: Record<string, string> = {
+  remove_content: "remove the content",
+  limit_visibility: "limit the content",
+  warn_user: "warn the user",
+  suspend_user: "suspend the user",
+  ban_user: "ban the user",
+  restrict_user: "restrict the account",
+};
+
 /**
  * Generic report resolve/dismiss modal, reusable across every report type.
  * `reportId` non-null opens it; on success `onDone(id, status)` lets the caller
@@ -55,6 +64,7 @@ const ResolveReportModal = ({
       return toast.error("Select at least one resolution outcome");
     if (action === "dismiss" && note.trim().length < 10)
       return toast.error("Dismissal reason must be at least 10 characters");
+    if (note.trim().length > 500) return toast.error("Keep it under 500 characters");
 
     setLoading(true);
     try {
@@ -67,7 +77,12 @@ const ResolveReportModal = ({
             )
           : await dismissReport(reportId, note.trim());
       if (res?.status) {
-        toast.success(action === "resolve" ? "Report resolved" : "Report dismissed");
+        // Resolved, but some outcomes couldn't be applied (or don't apply here).
+        const missed = (action === "resolve" ? (res.data as IReportResolveResult | undefined)?.results ?? [] : [])
+          .filter((r) => r.result !== "executed")
+          .map((r) => ACTION_LABEL[r.action] || r.action.replace(/_/g, " "));
+        if (missed.length) toast.warning(`Report resolved, but we couldn't ${missed.join(", ")}.`);
+        else toast.success(action === "resolve" ? "Report resolved" : "Report dismissed");
         onDone?.(reportId, action === "resolve" ? "resolved" : "dismissed");
         close();
       } else {
@@ -110,6 +125,7 @@ const ResolveReportModal = ({
             <Textarea
               className="mt-2"
               rows={3}
+              maxLength={500}
               value={note}
               onChange={(e) => setNote(e.target.value)}
               placeholder={

@@ -39,7 +39,7 @@ const Page = ({ searchParams }: { searchParams: { [key: string]: string | string
   const trybeId = (searchParams.trybe_id as string) || undefined;
   const search = (searchParams.search as string) || undefined;
   const page = Number(searchParams.page) || 1;
-  const limit = Number(searchParams.limit) || 10;
+  const limit = Number(searchParams.limit) || 20;
 
   return (
     <div className="flex flex-col gap-4">

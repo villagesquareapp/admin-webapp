@@ -117,9 +117,25 @@ const SidebarContent: MenuItem[] = [
             icon: "solar:users-group-two-rounded-line-duotone",
             id: uniqueId(),
             children: [
+              { name: "Overview", icon: "solar:chart-2-line-duotone", id: uniqueId(), url: "/dashboards/trybes/overview" },
               { name: "Join Requests", icon: "solar:user-check-rounded-line-duotone", id: uniqueId(), url: "/dashboards/trybes/requests" },
               { name: "All Trybes", icon: "solar:users-group-two-rounded-line-duotone", id: uniqueId(), url: "/dashboards/trybes/list" },
+              { name: "Institutions", icon: "solar:buildings-2-line-duotone", id: uniqueId(), url: "/dashboards/trybes/institutions" },
+              { name: "Departments", icon: "solar:notebook-line-duotone", id: uniqueId(), url: "/dashboards/trybes/departments" },
+              { name: "Levels", icon: "solar:ranking-line-duotone", id: uniqueId(), url: "/dashboards/trybes/levels" },
+              { name: "Campus Settings", icon: "solar:settings-line-duotone", id: uniqueId(), url: "/dashboards/trybes/settings" },
               { name: "Types", icon: "solar:library-line-duotone", id: uniqueId(), url: "/dashboards/trybes/types" },
+            ],
+          },
+          {
+            name: "Meetings",
+            icon: "solar:videocamera-record-line-duotone",
+            id: uniqueId(),
+            children: [
+              { name: "Overview", icon: "solar:chart-2-line-duotone", id: uniqueId(), url: "/dashboards/meetings/overview" },
+              { name: "All Meetings", icon: "solar:videocamera-record-line-duotone", id: uniqueId(), url: "/dashboards/meetings/list" },
+              { name: "Hosts", icon: "solar:user-speak-rounded-line-duotone", id: uniqueId(), url: "/dashboards/meetings/hosts" },
+              { name: "AI PM", icon: "solar:cpu-bolt-line-duotone", id: uniqueId(), url: "/dashboards/meetings/assistant" },
             ],
           },
           {
