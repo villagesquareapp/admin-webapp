@@ -10,6 +10,7 @@ import { IoMdCheckmark } from "react-icons/io";
 import { LiaTimesSolid } from "react-icons/lia";
 import { useState } from "react";
 import { approveWithdrawal, declineWithdrawal } from "../api/wallet";
+import { batchFailureMessage, batchFailures } from "@/utils/withdrawalBatch";
 import { toast } from "sonner";
 
 const UserPendingWithdrawalInfo = ({
@@ -37,7 +38,10 @@ const UserPendingWithdrawalInfo = ({
         try {
             setIsDeclining(true);
             const response = await declineWithdrawal([withdrawal.uuid], declineReason);
-            if (response?.status) {
+            const failures = batchFailures(response);
+            if (response?.status && failures.length) {
+                toast.error(batchFailureMessage(failures, 1));
+            } else if (response?.status) {
                 setIsDeclineDialogOpen(false);
                 setIsOpen(false);
                 onWithdrawalAction?.(withdrawal.uuid, 'declined');
@@ -60,7 +64,10 @@ const UserPendingWithdrawalInfo = ({
         try {
             setIsApproving(true);
             const response = await approveWithdrawal([withdrawal.uuid]);
-            if (response?.status) {
+            const failures = batchFailures(response);
+            if (response?.status && failures.length) {
+                toast.error(batchFailureMessage(failures, 1));
+            } else if (response?.status) {
                 setIsApproveDialogOpen(false);
                 setIsOpen(false);
                 onWithdrawalAction?.(withdrawal.uuid, 'approved');

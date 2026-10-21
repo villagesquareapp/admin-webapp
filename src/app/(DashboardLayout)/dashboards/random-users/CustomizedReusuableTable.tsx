@@ -107,6 +107,13 @@ function CustomizedReusableTable({
     });
   };
 
+  // One id per transfer: a retry or double click after a lost response
+  // can't pay anyone twice. A new selection or amount is a new transfer.
+  const transferIdRef = React.useRef<string | null>(null);
+  React.useEffect(() => {
+    transferIdRef.current = null;
+  }, [selectedRows, amount]);
+
   const handleConfirmTransfer = async () => {
     setIsLoadingTransfer(true);
 
@@ -116,15 +123,21 @@ function CustomizedReusableTable({
         return user.uuid;
       });
 
-      const res = await transferCowry(userIds, amount);
+      transferIdRef.current ??= crypto.randomUUID();
+      const res = await transferCowry(userIds, amount, transferIdRef.current);
 
       if (res?.status) {
+        transferIdRef.current = null;
         setShowConfirmModal(false);
         // Re-fetch data
-        router.refresh(); 
+        router.refresh();
         toast.success(res.message);
+        const skipped = res.data?.skipped?.length ?? 0;
+        if (skipped) toast.warning(`${skipped} user(s) skipped: no wallet to credit`);
         setSelectedRows([]);
         onRefresh();
+      } else {
+        toast.error(res?.message || "Transfer failed");
       }
     } catch (error) {
       console.error("Transfer error:", error);

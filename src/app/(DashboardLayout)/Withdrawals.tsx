@@ -10,6 +10,7 @@ import { IoMdCheckmark } from "react-icons/io";
 import { LiaTimesSolid } from "react-icons/lia";
 import { toast } from "sonner";
 import { approveWithdrawal, declineWithdrawal, getPendingWithdrawals } from "../api/wallet";
+import { batchFailureMessage, batchFailures } from "@/utils/withdrawalBatch";
 import CardBox from "../components/shared/CardBox";
 import useSetSearchParams from "../hooks/useSetSearchParams";
 import UserPendingWithdrawalInfo from "./UserPendingWithdrawalInfo";
@@ -181,8 +182,13 @@ const Withdrawals = ({
           setTotalWithdrawals(newWithdrawals.data.total || 0);
           setHasReachedEnd(currentLocalPage >= (newWithdrawals.data.last_page || totalPages));
         }
-        setIsOpenApproval(false);
-        toast.success("Withdrawal request approved successfully");
+        const failures = batchFailures(response);
+        if (failures.length) {
+          toast.error(batchFailureMessage(failures, 1));
+        } else {
+          setIsOpenApproval(false);
+          toast.success("Withdrawal request approved successfully");
+        }
       } else {
         toast.error(response?.message || "Failed to approve withdrawal");
         console.error("Failed to approve withdrawal:", response?.message);
@@ -210,8 +216,13 @@ const Withdrawals = ({
           setTotalWithdrawals(newWithdrawals.data.total || 0);
           setHasReachedEnd(currentLocalPage >= (newWithdrawals.data.last_page || totalPages));
         }
+        const failures = batchFailures(response);
         setSelectedPendingWithdrawals([]);
-        toast.success("Withdrawal requests approved successfully");
+        if (failures.length) {
+          toast.error(batchFailureMessage(failures, selectedPendingWithdrawals.length));
+        } else {
+          toast.success("Withdrawal requests approved successfully");
+        }
       } else {
         toast.error(response?.message || "Failed to approve withdrawals");
         console.error("Failed to approve withdrawals:", response?.message);
@@ -239,8 +250,13 @@ const Withdrawals = ({
           setTotalWithdrawals(newWithdrawals.data.total || 0);
           setHasReachedEnd(currentLocalPage >= (newWithdrawals.data.last_page || totalPages));
         }
-        setIsOpenDecline(false);
-        toast.success("Withdrawal request declined successfully");
+        const failures = batchFailures(response);
+        if (failures.length) {
+          toast.error(batchFailureMessage(failures, 1));
+        } else {
+          setIsOpenDecline(false);
+          toast.success("Withdrawal request declined successfully");
+        }
       } else {
         toast.error(response?.message || "Failed to decline withdrawal");
         console.error("Failed to decline withdrawal:", response?.message);

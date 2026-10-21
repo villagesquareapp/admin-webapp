@@ -5,9 +5,13 @@ import {
   getFlutterwaveBalance,
   getRecentTransfers,
   getPendingWithdrawals,
+  getWithdrawalsNeedingAttention,
+  getMissingLegacyTransfers,
 } from "@/app/api/wallet";
 import TreasuryBalances from "./TreasuryBalances";
 import RecentTransfers from "./RecentTransfers";
+import PayoutsNeedingAttention from "./PayoutsNeedingAttention";
+import MissingLegacyTransfers from "./MissingLegacyTransfers";
 import Withdrawals from "../../Withdrawals";
 
 const skeleton = (h: string) => <div className={`${h} w-full animate-pulse bg-gray-100 dark:bg-gray-800 rounded-3xl`} />;
@@ -41,6 +45,17 @@ const WithdrawalsWrapper = async ({
   );
 };
 
+const AttentionWrapper = async () => {
+  const attention = await getWithdrawalsNeedingAttention();
+  const items = Array.isArray(attention?.data?.data) ? attention.data.data : [];
+  return <PayoutsNeedingAttention items={items} />;
+};
+
+const LegacyTransfersWrapper = async () => {
+  const report = await getMissingLegacyTransfers();
+  return <MissingLegacyTransfers report={report?.data ?? null} />;
+};
+
 const TransfersWrapper = async ({ page, limit }: { page: number; limit: number }) => {
   const recent = await getRecentTransfers(page, limit);
   return (
@@ -70,6 +85,10 @@ const Page = async (props: { searchParams: Promise<{ [key: string]: string | str
         <BalancesWrapper token={token} />
       </Suspense>
 
+      <Suspense fallback={null}>
+        <AttentionWrapper />
+      </Suspense>
+
       <div>
         <h5 className="text-sm font-bold text-darklink uppercase tracking-wide mb-2.5">Pending withdrawals</h5>
         <Suspense key={`w-${wPage}-${wLimit}`} fallback={skeleton("h-[420px]")}>
@@ -83,6 +102,10 @@ const Page = async (props: { searchParams: Promise<{ [key: string]: string | str
           <TransfersWrapper page={page} limit={limit} />
         </Suspense>
       </div>
+
+      <Suspense fallback={null}>
+        <LegacyTransfersWrapper />
+      </Suspense>
     </div>
   );
 };

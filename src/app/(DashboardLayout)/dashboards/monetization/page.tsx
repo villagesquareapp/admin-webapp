@@ -31,8 +31,8 @@ const OverviewWrapper = async () => {
 
   const data: MonetizationData = {
     treasury: {
-      flutterwave_ngn: flutterwave?.data?.ngn_value?.balance || "—",
-      flutterwave_usd: flutterwave?.data?.usd_value?.balance || "—",
+      flutterwave_ngn: flutterwave?.data?.available_balance?.ngn || "—",
+      flutterwave_usd: flutterwave?.data?.available_balance?.usd || "—",
       cowry: cowry?.data?.cowry_value?.balance || "—",
       cowry_ngn: cowry?.data?.ngn_value?.balance || "—",
     },

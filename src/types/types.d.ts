@@ -1491,8 +1491,16 @@ interface ICowryBalance {
 }
 
 interface IFlutterwaveBalance {
-  usd_value?: { balance: string };
-  ngn_value?: { balance: string };
+  available_balance?: { ngn: string; usd: string };
+  ledger_balance?: { ngn: string; usd: string };
+}
+
+interface ICowryTransferResult {
+  transfer_id: string;
+  cowries_each: number;
+  credited: string[];
+  already_credited: string[];
+  skipped: { user_id: string; reason: string }[];
 }
 
 interface IRecentTransfer {
@@ -1554,6 +1562,49 @@ interface IPendingWithdrawals {
 }
 
 interface IPendingWithdrawalsResponse extends IPaginatedResponse<IPendingWithdrawals> {}
+
+interface IWithdrawalAttention {
+  uuid: string;
+  reference_id: string;
+  transaction_status: "pending" | "failed" | string;
+  amount: number;
+  created_at: string;
+  payout_naira: number;
+  payout_destination: {
+    bank_name?: string;
+    account_name?: string;
+    account_number?: string;
+  } | null;
+  transfer_id: string | number | null;
+  unconfirmed: { at: string; message: string } | null;
+  review: { reason: string } | null;
+  can_requeue: boolean;
+  user: {
+    uuid: string;
+    name: string;
+    username: string;
+    email: string;
+    profile_picture: string;
+  };
+}
+
+interface IWithdrawalAttentionResponse extends IPaginatedResponse<IWithdrawalAttention> {}
+
+interface ILegacyTransferReport {
+  opening_balances_copied: number;
+  opening_balances_started_at: string | null;
+  missing_count: number;
+  missing_cowries: number;
+  users: number;
+  missing: {
+    legacy_transaction_id: string;
+    user_id: string;
+    username: string | null;
+    amount: number;
+    transferred_at: string;
+    opening_balance_at: string | null;
+  }[];
+}
 
 interface IPendingVerification {
   uuid: string;

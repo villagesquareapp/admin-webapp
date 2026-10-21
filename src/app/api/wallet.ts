@@ -90,13 +90,18 @@ export const verifyCowryTransaction = async (reference: string) => {
   return await apiGet<any>(`wallet/cowry/topup/verify-transaction/${reference}`, token);
 };
 
-export const transferCowry = async (userIds: string[], amount: number = 20000) => {
+export const transferCowry = async (
+  userIds: string[],
+  amount: number = 20000,
+  transferId?: string
+) => {
   const token = await getToken();
-  const response = await apiPost(
+  const response = await apiPost<ICowryTransferResult>(
     `wallet/cowry/transfer`,
     {
       user_ids: userIds,
-      amount
+      amount,
+      transfer_id: transferId,
     },
     token
   );
@@ -124,6 +129,51 @@ export const releaseWithdrawalHold = async (uuid: string) => {
   const response = await apiPost(
     `wallet/withdrawal-holds/${encodeURIComponent(uuid)}/release`,
     {},
+    token
+  );
+  if (response.status) {
+    await revalidateCurrentPath();
+  }
+  return response;
+};
+
+export const getWithdrawalsNeedingAttention = async (
+  page: number = 1,
+  limit: number = 50
+) => {
+  const token = await getToken();
+  return await apiGet<IWithdrawalAttentionResponse>(
+    `wallet/withdrawals/attention?page=${page}&limit=${limit}`,
+    token
+  );
+};
+
+export const requeueWithdrawals = async (transactionIds: string[]) => {
+  const token = await getToken();
+  const response = await apiPost(
+    `wallet/withdraw/requeue`,
+    { transaction_ids: transactionIds },
+    token
+  );
+  if (response.status) {
+    await revalidateCurrentPath();
+  }
+  return response;
+};
+
+export const getMissingLegacyTransfers = async () => {
+  const token = await getToken();
+  return await apiGet<ILegacyTransferReport>(
+    `wallet/cowry/transfer/legacy-missing`,
+    token
+  );
+};
+
+export const applyMissingLegacyTransfers = async (legacyIds?: string[]) => {
+  const token = await getToken();
+  const response = await apiPost<{ credited: number; cowries: number }>(
+    `wallet/cowry/transfer/legacy-missing/apply`,
+    legacyIds ? { legacy_transaction_ids: legacyIds } : {},
     token
   );
   if (response.status) {

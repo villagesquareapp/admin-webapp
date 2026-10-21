@@ -93,8 +93,11 @@ const TreasuryBalances = ({
         />
         <BalanceCard
           label="Flutterwave" icon="solar:card-transfer-linear" tone="bg-lightsuccess text-success"
-          primary={flutterwave?.ngn_value?.balance}
-          secondary={[flutterwave?.usd_value?.balance]}
+          primary={flutterwave?.available_balance?.ngn}
+          secondary={[
+            flutterwave?.available_balance?.usd,
+            flutterwave?.ledger_balance?.ngn && `Ledger ${flutterwave.ledger_balance.ngn}`,
+          ]}
           unavailable={!flutterwave}
           loading={!!loading.flutter} onRefresh={refreshFlutter}
         />
