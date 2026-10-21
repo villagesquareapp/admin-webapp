@@ -7,11 +7,13 @@ import {
   getPendingWithdrawals,
   getWithdrawalsNeedingAttention,
   getMissingLegacyTransfers,
+  getPayoutSettings,
 } from "@/app/api/wallet";
 import TreasuryBalances from "./TreasuryBalances";
 import RecentTransfers from "./RecentTransfers";
 import PayoutsNeedingAttention from "./PayoutsNeedingAttention";
 import MissingLegacyTransfers from "./MissingLegacyTransfers";
+import PayoutRules from "./PayoutRules";
 import Withdrawals from "../../Withdrawals";
 
 const skeleton = (h: string) => <div className={`${h} w-full animate-pulse bg-gray-100 dark:bg-gray-800 rounded-3xl`} />;
@@ -54,6 +56,11 @@ const AttentionWrapper = async () => {
 const LegacyTransfersWrapper = async () => {
   const report = await getMissingLegacyTransfers();
   return <MissingLegacyTransfers report={report?.data ?? null} />;
+};
+
+const PayoutRulesWrapper = async () => {
+  const settings = await getPayoutSettings();
+  return <PayoutRules settings={settings?.status ? (settings.data ?? null) : null} />;
 };
 
 const TransfersWrapper = async ({ page, limit }: { page: number; limit: number }) => {
@@ -105,6 +112,10 @@ const Page = async (props: { searchParams: Promise<{ [key: string]: string | str
 
       <Suspense fallback={null}>
         <LegacyTransfersWrapper />
+      </Suspense>
+
+      <Suspense fallback={skeleton("h-[360px]")}>
+        <PayoutRulesWrapper />
       </Suspense>
     </div>
   );

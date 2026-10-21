@@ -1590,6 +1590,32 @@ interface IWithdrawalAttention {
 
 interface IWithdrawalAttentionResponse extends IPaginatedResponse<IWithdrawalAttention> {}
 
+type PayoutVerificationLevel = "none" | "checkmark" | "premium";
+
+interface IPayoutLevel {
+  level: PayoutVerificationLevel;
+  can_be_paid: boolean;
+  cycle_days: number;
+  cycle_limit_usd: number | null;
+}
+
+interface IPayoutSettings {
+  min_followers: number;
+  first_cycle_starts_at: string | null;
+  min_payout_usd: number;
+  fx_spread_percent: number;
+  fixed_fee_ngn: number;
+  review_first_payout: boolean;
+  auto_payouts_enabled: boolean;
+  updated_at: string;
+  updated_by: string | null;
+  levels: IPayoutLevel[];
+}
+
+type IPayoutSettingsUpdate = Partial<
+  Omit<IPayoutSettings, "auto_payouts_enabled" | "updated_at" | "updated_by">
+>;
+
 interface ILegacyTransferReport {
   opening_balances_copied: number;
   opening_balances_started_at: string | null;

@@ -1,6 +1,6 @@
 "use server";
 
-import { apiGet, apiPost } from "@/lib/api";
+import { apiGet, apiPost, apiPut } from "@/lib/api";
 import { getToken } from "@/lib/getToken";
 import { revalidateCurrentPath } from "@/lib/revalidate";
 
@@ -175,6 +175,24 @@ export const applyMissingLegacyTransfers = async (legacyIds?: string[]) => {
     `wallet/cowry/transfer/legacy-missing/apply`,
     legacyIds ? { legacy_transaction_ids: legacyIds } : {},
     token
+  );
+  if (response.status) {
+    await revalidateCurrentPath();
+  }
+  return response;
+};
+
+export const getPayoutSettings = async () => {
+  const token = await getToken();
+  return await apiGet<IPayoutSettings>(`wallet/payouts/settings`, token);
+};
+
+export const updatePayoutSettings = async (body: IPayoutSettingsUpdate) => {
+  const token = await getToken();
+  const response = await apiPut<IPayoutSettings>(
+    `wallet/payouts/settings`,
+    body,
+    token as string
   );
   if (response.status) {
     await revalidateCurrentPath();
