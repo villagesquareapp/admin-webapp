@@ -47,10 +47,11 @@ export const resetStaffPassword = async (uuid: string) => {
     return await apiPost(`admin-users/${uuid}/reset-password`, {}, token);
 }
 
-// Super admins: they set up a new authenticator at their next sign-in.
-export const resetStaffAuthenticator = async (uuid: string) => {
+// Super admins, for staff who lost every sign-in method: all of them go and
+// they set up a new one at their next sign-in. The reason is audited.
+export const resetStaffAuthenticator = async (uuid: string, reason: string) => {
     const token = await getToken();
-    const response = await apiPost(`admin-users/${uuid}/reset-authenticator`, {}, token);
+    const response = await apiPost(`admin-users/${uuid}/reset-authenticator`, { reason }, token);
     if (response?.status) {
         await revalidateCurrentPath();
     }

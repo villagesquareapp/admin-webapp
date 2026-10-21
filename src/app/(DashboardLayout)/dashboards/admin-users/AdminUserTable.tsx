@@ -52,7 +52,7 @@ const AdminUserTable = ({
         <p className="text-darklink dark:text-bodytext text-sm">
           {staffRoleLabel(info.row.original.is_super_admin ? "super_admin" : info.getValue())}
           {info.row.original.is_active === false ? " · access off" : ""}
-          {info.row.original.is_active !== false && !info.row.original.totp_enabled_at ? " · authenticator not set up" : ""}
+          {info.row.original.is_active !== false && !info.row.original.totp_enabled_at ? " · two-factor not set up" : ""}
         </p>
       ),
       header: () => <span>Role</span>,

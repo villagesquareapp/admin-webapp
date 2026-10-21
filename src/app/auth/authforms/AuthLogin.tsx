@@ -9,18 +9,26 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { HiEye, HiEyeOff } from "react-icons/hi";
+import { QRCodeSVG } from "qrcode.react";
+import { browserSupportsWebAuthn, startAuthentication, startRegistration } from "@simplewebauthn/browser";
 import {
   beginMfaSetup,
+  beginPasskeySetup,
   confirmMfaSetup,
+  confirmPasskeySetup,
+  passkeySignInOptions,
+  sendEmailCode,
   setFirstPassword,
   startSignIn,
+  type SignInMethods,
   type SignInStep,
 } from "@/lib/staffAuth";
 
 type Step = "credentials" | SignInStep | "backup_codes";
 
-// Sign-in in steps: email and password, then (once) a new password and an
-// authenticator set-up, then a 6-digit code at every sign-in.
+// Sign-in in steps: email and password, then (once) a new password and a
+// second step (authenticator app or passkey), then that second step at every
+// sign-in: a passkey, a code from an app or an email, or a backup code.
 const AuthLogin = () => {
   const [step, setStep] = React.useState<Step>("credentials");
   const [challenge, setChallenge] = React.useState("");
@@ -30,6 +38,11 @@ const AuthLogin = () => {
   const [newPassword, setNewPassword] = React.useState("");
   const [confirmPassword, setConfirmPassword] = React.useState("");
   const [setup, setSetup] = React.useState<{ secret: string; otpauthUrl: string } | null>(null);
+  const [setupKind, setSetupKind] = React.useState<"authenticator" | "passkey" | null>(null);
+  const [methodName, setMethodName] = React.useState("");
+  const [methods, setMethods] = React.useState<SignInMethods | null>(null);
+  const [emailSentTo, setEmailSentTo] = React.useState<string | null>(null);
+  const [passkeysWork, setPasskeysWork] = React.useState(false);
   const [code, setCode] = React.useState("");
   const [backupCodes, setBackupCodes] = React.useState<string[]>([]);
   const [savedCodes, setSavedCodes] = React.useState(false);
@@ -45,10 +58,13 @@ const AuthLogin = () => {
     setStep(next);
   };
 
-  const finish = async (finalChallenge: string, finalCode?: string) => {
+  React.useEffect(() => setPasskeysWork(browserSupportsWebAuthn()), []);
+
+  const finish = async (finalChallenge: string, finalCode?: string, passkey?: string) => {
     const result = await signIn("credentials", {
       challenge: finalChallenge,
       code: finalCode ?? "",
+      passkey: passkey ?? "",
       redirect: false,
     });
     if (!result || result.error) {
@@ -75,6 +91,7 @@ const AuthLogin = () => {
     run(async () => {
       const res = await startSignIn(values.email, values.password);
       if (!res.ok) return void toast.error(res.message);
+      setMethods(res.methods ?? null);
       go(res.next, res.challenge);
     });
 
@@ -91,7 +108,7 @@ const AuthLogin = () => {
   };
 
   React.useEffect(() => {
-    if (step !== "mfa_setup" || setup) return;
+    if (step !== "mfa_setup" || setupKind !== "authenticator" || setup) return;
     run(async () => {
       const res = await beginMfaSetup(challenge);
       if (!res.ok) {
@@ -102,17 +119,59 @@ const AuthLogin = () => {
       setSetup({ secret: res.secret, otpauthUrl: res.otpauthUrl });
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [step]);
+  }, [step, setupKind]);
 
   const onConfirmSetup = (e: React.FormEvent) => {
     e.preventDefault();
     run(async () => {
-      const res = await confirmMfaSetup(challenge, code.trim());
+      const res = await confirmMfaSetup(challenge, code.trim(), methodName.trim());
       if (!res.ok) return void toast.error(res.message);
       setBackupCodes(res.backupCodes);
       go("backup_codes", res.challenge);
     });
   };
+
+  // The browser's own passkey prompt; cancelling it is not an error.
+  const browserPasskey = async <T,>(work: () => Promise<T>): Promise<T | null> => {
+    try {
+      return await work();
+    } catch (error) {
+      const name = (error as { name?: string })?.name;
+      toast.error(name === "NotAllowedError" ? "Passkey cancelled" : "Your browser couldn't use a passkey");
+      return null;
+    }
+  };
+
+  const onCreatePasskey = (e: React.FormEvent) => {
+    e.preventDefault();
+    run(async () => {
+      const begin = await beginPasskeySetup(challenge, window.location.origin);
+      if (!begin.ok) return void toast.error(begin.message);
+      const response = await browserPasskey(() => startRegistration({ optionsJSON: begin.options }));
+      if (!response) return;
+      const res = await confirmPasskeySetup(challenge, response, methodName.trim());
+      if (!res.ok) return void toast.error(res.message);
+      setBackupCodes(res.backupCodes);
+      go("backup_codes", res.challenge);
+    });
+  };
+
+  const onUsePasskey = () =>
+    run(async () => {
+      const begin = await passkeySignInOptions(challenge, window.location.origin);
+      if (!begin.ok) return void toast.error(begin.message);
+      const response = await browserPasskey(() => startAuthentication({ optionsJSON: begin.options }));
+      if (!response) return;
+      await finish(challenge, undefined, JSON.stringify(response));
+    });
+
+  const onEmailCode = (methodId?: string) =>
+    run(async () => {
+      const res = await sendEmailCode(challenge, methodId);
+      if (!res.ok) return void toast.error(res.message);
+      setEmailSentTo(res.sentTo);
+      toast.success(`Code sent to ${res.sentTo}`);
+    });
 
   const onCode = (e: React.FormEvent) => {
     e.preventDefault();
@@ -125,6 +184,10 @@ const AuthLogin = () => {
     setStep("credentials");
     setChallenge("");
     setSetup(null);
+    setSetupKind(null);
+    setMethodName("");
+    setMethods(null);
+    setEmailSentTo(null);
     setCode("");
     setNewPassword("");
     setConfirmPassword("");
@@ -157,27 +220,86 @@ const AuthLogin = () => {
     );
   }
 
+  if (step === "mfa_setup" && !setupKind) {
+    const option = (kind: "authenticator" | "passkey", title: string, text: string, disabled = false) => (
+      <button
+        type="button"
+        disabled={disabled}
+        onClick={() => {
+          setMethodName(kind === "authenticator" ? "Authenticator app" : "Passkey");
+          setSetupKind(kind);
+        }}
+        className="w-full text-left rounded-md border border-ld p-4 mb-3 hover:border-primary disabled:opacity-50 disabled:hover:border-ld"
+      >
+        <p className="font-semibold">{title}</p>
+        <p className="text-sm text-darklink mt-1">{text}</p>
+      </button>
+    );
+    return (
+      <div className="mt-6">
+        {heading("Add a second step", "You'll use it every time you sign in, after your password. You can add more later under Security.")}
+        {option("authenticator", "Authenticator app", "A 6-digit code from Google Authenticator, Microsoft Authenticator, 1Password or similar.")}
+        {option(
+          "passkey",
+          "Passkey or security key",
+          passkeysWork
+            ? "Face ID, Touch ID, Windows Hello or a YubiKey. Nothing to type."
+            : "This browser can't use passkeys. Use an authenticator app, or another browser.",
+          !passkeysWork,
+        )}
+        <button type="button" onClick={restart} className="w-full text-sm text-darklink mt-2">Start again</button>
+      </div>
+    );
+  }
+
+  const nameField = (id: string, hint: string) => (
+    <div className="mb-4">
+      <Label htmlFor={id} className="mb-2 block">Name it</Label>
+      <TextInput id={id} value={methodName} maxLength={60} onChange={(e) => setMethodName(e.target.value)} />
+      <p className="text-xs text-darklink mt-1">{hint}</p>
+    </div>
+  );
+
+  if (step === "mfa_setup" && setupKind === "passkey") {
+    return (
+      <form key="passkey_setup" method="post" className="mt-6" onSubmit={onCreatePasskey}>
+        {heading("Set up a passkey", "Your browser will ask you to use Face ID, Touch ID, Windows Hello, your phone or a security key.")}
+        {nameField("passkey-name", "So you can tell your passkeys apart, e.g. \"MacBook Touch ID\" or \"YubiKey\".")}
+        <Button type="submit" color="primary" className="w-full" disabled={busy}>
+          {busy ? "Waiting for your passkey..." : "Create passkey"}
+        </Button>
+        <button type="button" onClick={() => setSetupKind(null)} className="w-full text-sm text-darklink mt-4">Choose another way</button>
+      </form>
+    );
+  }
+
   if (step === "mfa_setup") {
     const grouped = setup?.secret.match(/.{1,4}/g)?.join(" ");
     return (
       <form key="mfa_setup" method="post" className="mt-6" onSubmit={onConfirmSetup}>
-        {heading("Set up your authenticator app", "You'll enter a code from it every time you sign in.")}
-        <ol className="text-sm text-darklink list-decimal ps-5 space-y-2 mb-4">
-          <li>Open an authenticator app (Google Authenticator, Microsoft Authenticator, 1Password…).</li>
-          <li>
-            Add an account with this setup key
-            {setup && (
-              <>
-                , or{" "}
-                <a href={setup.otpauthUrl} className="text-primary font-medium">open it in the app</a> on this phone
-              </>
+        {heading("Set up your authenticator app", "Scan the QR code with an authenticator app (Google Authenticator, Microsoft Authenticator, 1Password…).")}
+        <div className="flex justify-center mb-3">
+          <div className="rounded-md bg-white p-3">
+            {setup ? (
+              <QRCodeSVG value={setup.otpauthUrl} size={176} level="M" title="Authenticator app QR code" />
+            ) : (
+              <div className="h-[176px] w-[176px] grid place-items-center text-sm text-gray-500">Loading…</div>
             )}
-            :
-          </li>
-        </ol>
+          </div>
+        </div>
+        <p className="text-sm text-darklink text-center mb-2">
+          Can&apos;t scan it? Add an account with this setup key
+          {setup && (
+            <>
+              , or <a href={setup.otpauthUrl} className="text-primary font-medium">open it in the app</a> on this phone
+            </>
+          )}
+          :
+        </p>
         <div className="mb-4 rounded-md border border-ld bg-lightgray dark:bg-dark p-3 text-center font-mono text-base tracking-wider select-all break-all">
           {grouped || "Loading…"}
         </div>
+        {nameField("setup-name", "So you can tell your apps apart, e.g. \"Work phone\".")}
         <div className="mb-6">
           <Label htmlFor="setup-code" className="mb-2 block">Then enter the 6-digit code it shows</Label>
           <TextInput id="setup-code" inputMode="numeric" autoComplete="one-time-code" maxLength={6} value={code} onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))} required />
@@ -185,7 +307,17 @@ const AuthLogin = () => {
         <Button type="submit" color="primary" className="w-full" disabled={busy || !setup || code.length !== 6}>
           {busy ? "Checking..." : "Confirm"}
         </Button>
-        <button type="button" onClick={restart} className="w-full text-sm text-darklink mt-4">Start again</button>
+        <button
+          type="button"
+          onClick={() => {
+            setSetupKind(null);
+            setSetup(null);
+            setCode("");
+          }}
+          className="w-full text-sm text-darklink mt-4"
+        >
+          Choose another way
+        </button>
       </form>
     );
   }
@@ -223,15 +355,48 @@ const AuthLogin = () => {
   }
 
   if (step === "mfa") {
+    const usePasskey = !!methods?.passkey && passkeysWork;
+    const emails = methods?.email ?? [];
+    const codeHint = [
+      methods?.authenticator ? "your authenticator app" : null,
+      emails.length ? "the email we send you" : null,
+    ]
+      .filter(Boolean)
+      .join(" or ");
     return (
       <form key="mfa" method="post" className="mt-6" onSubmit={onCode}>
-        {heading("Enter your code", "Open your authenticator app and enter the 6-digit code. Lost your phone? Use one of your backup codes.")}
-        <div className="mb-6">
+        {heading("Confirm it's you", usePasskey ? "Use your passkey, or enter a code." : `Enter the 6-digit code from ${codeHint || "your authenticator app"}.`)}
+        {usePasskey && (
+          <>
+            <Button type="button" color="primary" className="w-full" disabled={busy} onClick={onUsePasskey}>
+              {busy ? "Waiting for your passkey..." : "Use passkey"}
+            </Button>
+            <div className="flex items-center gap-3 my-5 text-xs text-darklink">
+              <span className="h-px flex-1 bg-border dark:bg-darkborder" />
+              or enter a code
+              <span className="h-px flex-1 bg-border dark:bg-darkborder" />
+            </div>
+          </>
+        )}
+        <div className="mb-2">
           <Label htmlFor="mfa-code" className="mb-2 block">Code</Label>
-          <TextInput id="mfa-code" autoComplete="one-time-code" maxLength={9} value={code} onChange={(e) => setCode(e.target.value)} autoFocus required />
+          <TextInput id="mfa-code" autoComplete="one-time-code" maxLength={9} value={code} onChange={(e) => setCode(e.target.value)} autoFocus={!usePasskey} />
         </div>
-        <Button type="submit" color="primary" className="w-full" disabled={busy || code.trim().length < 6}>
-          {busy ? "Signing in..." : "Sign in"}
+        {emails.length > 0 && (
+          <div className="mb-2 text-sm">
+            {emailSentTo ? (
+              <p className="text-darklink">We sent a code to {emailSentTo}. It works for 10 minutes.</p>
+            ) : null}
+            {emails.map((m) => (
+              <button key={m.uuid} type="button" disabled={busy} onClick={() => onEmailCode(m.uuid)} className="text-primary font-medium me-3">
+                {emailSentTo ? "Send another code" : `Email me a code${emails.length > 1 ? ` (${m.sent_to})` : ""}`}
+              </button>
+            ))}
+          </div>
+        )}
+        <p className="text-xs text-darklink mb-6">Lost your phone? Enter one of your backup codes.</p>
+        <Button type="submit" color={usePasskey ? "light" : "primary"} className="w-full" disabled={busy || code.trim().length < 6}>
+          {busy && !usePasskey ? "Signing in..." : "Sign in with code"}
         </Button>
         <button type="button" onClick={restart} className="w-full text-sm text-darklink mt-4">Use a different account</button>
       </form>

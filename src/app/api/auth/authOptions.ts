@@ -12,18 +12,27 @@ export const authOptions: NextAuthOptions = {
         CredentialsProvider({
             name: 'Credentials',
             // The last sign-in step: the challenge from the earlier steps and,
-            // unless an authenticator was just set up, a code.
+            // unless a second step was just set up, a code or a passkey answer
+            // (WebAuthn JSON, as a string).
             credentials: {
                 challenge: { label: 'Challenge', type: 'text' },
                 code: { label: 'Code', type: 'text' },
+                passkey: { label: 'Passkey', type: 'text' },
             },
             async authorize(credentials) {
+                let passkey: unknown;
+                try {
+                    passkey = credentials?.passkey ? JSON.parse(credentials.passkey) : undefined;
+                } catch {
+                    throw new Error("That passkey didn't work");
+                }
                 const response = await fetch(`${process.env.API_URL}/auth/token`, {
                     method: "POST",
                     headers: { 'Content-Type': 'application/json', "Accept": "application/json" },
                     body: JSON.stringify({
                         challenge: credentials?.challenge,
                         ...(credentials?.code ? { code: credentials.code } : {}),
+                        ...(passkey ? { passkey } : {}),
                     }),
                 }).catch(() => null);
                 const data = await response?.json().catch(() => null);

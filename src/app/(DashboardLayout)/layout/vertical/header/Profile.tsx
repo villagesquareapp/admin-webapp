@@ -73,7 +73,8 @@ const Profile = () => {
           ))}
         </SimpleBar> */}
 
-        <div className='mx-6'>
+        <div className='mx-6 flex flex-col gap-2'>
+          <Link href='/dashboards/security' className='no-underline'>Security</Link>
           <Link href='/dashboards/update-password' className='no-underline'>Update Password</Link>
         </div>
 

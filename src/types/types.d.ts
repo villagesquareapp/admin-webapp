@@ -613,6 +613,21 @@ interface IVerifiedUsers {
 
 interface IVerifiedUsersResponse extends IPaginatedResponse<IVerifiedUsers> {}
 
+// A staff member's second step at sign-in (Settings → Security).
+interface ISignInMethod {
+  uuid: string;
+  type: "authenticator" | "passkey" | "email";
+  name: string;
+  email?: string;
+  created_at: string;
+  last_used_at: string | null;
+}
+
+interface ISecurityOverview {
+  methods: ISignInMethod[];
+  backup_codes_left: number;
+}
+
 interface IAdminUsers {
   uuid: string;
   email: string;
