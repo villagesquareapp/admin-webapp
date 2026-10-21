@@ -139,7 +139,7 @@ const AuthLogin = () => {
 
   if (step === "change_password") {
     return (
-      <form key="change_password" className="mt-6" onSubmit={onNewPassword}>
+      <form key="change_password" method="post" className="mt-6" onSubmit={onNewPassword}>
         {heading("Choose your password", "Replace the temporary password with your own. Use at least 12 characters.")}
         <div className="mb-4">
           <Label htmlFor="new-password" className="mb-2 block">New password</Label>
@@ -160,7 +160,7 @@ const AuthLogin = () => {
   if (step === "mfa_setup") {
     const grouped = setup?.secret.match(/.{1,4}/g)?.join(" ");
     return (
-      <form key="mfa_setup" className="mt-6" onSubmit={onConfirmSetup}>
+      <form key="mfa_setup" method="post" className="mt-6" onSubmit={onConfirmSetup}>
         {heading("Set up your authenticator app", "You'll enter a code from it every time you sign in.")}
         <ol className="text-sm text-darklink list-decimal ps-5 space-y-2 mb-4">
           <li>Open an authenticator app (Google Authenticator, Microsoft Authenticator, 1Password…).</li>
@@ -224,7 +224,7 @@ const AuthLogin = () => {
 
   if (step === "mfa") {
     return (
-      <form key="mfa" className="mt-6" onSubmit={onCode}>
+      <form key="mfa" method="post" className="mt-6" onSubmit={onCode}>
         {heading("Enter your code", "Open your authenticator app and enter the 6-digit code. Lost your phone? Use one of your backup codes.")}
         <div className="mb-6">
           <Label htmlFor="mfa-code" className="mb-2 block">Code</Label>
@@ -238,8 +238,15 @@ const AuthLogin = () => {
     );
   }
 
+  // POST: a submit before the page has loaded must never put the password
+  // in the URL.
   return (
-    <form key="credentials" className="mt-6" onSubmit={form.handleSubmit(onCredentials)}>
+    <form
+      key="credentials"
+      method="post"
+      className="mt-6"
+      onSubmit={form.handleSubmit(onCredentials)}
+    >
       {heading("Admin Dashboard")}
       <div className="mb-4">
         <div className="mb-2 block">
