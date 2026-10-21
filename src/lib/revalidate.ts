@@ -16,7 +16,7 @@ export async function revalidateCurrentPath() {
     try {
         const pathname = (await headers()).get('x-pathname') || '/'
         revalidatePath(pathname)
-        // Keep the dashboard/withdrawals summaries in sync after any mutation.
+        // Keep the dashboard/payout summaries in sync after any mutation.
         revalidatePath('/dashboards')
         if (pathname !== '/') {
             revalidatePath('/')

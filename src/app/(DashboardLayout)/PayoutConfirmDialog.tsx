@@ -3,18 +3,18 @@ import { Icon } from "@iconify/react";
 import { Button } from "@/app/components/shared/Button";
 import { AnimatePresence, motion } from "framer-motion";
 
-const WithdrawalDialog = ({
+const PayoutConfirmDialog = ({
   isOpen,
   setIsOpen,
-  selectedWithdrawal,
+  payout,
   content,
 }: {
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
-  selectedWithdrawal: IPendingWithdrawals | null;
+  payout: IQueuedPayout | null;
   content: React.ReactNode;
 }) => {
-  if (!selectedWithdrawal) return null;
+  if (!payout) return null;
 
   return (
     <AnimatePresence>
@@ -29,7 +29,7 @@ const WithdrawalDialog = ({
         <div className="sticky top-0 bg-background border-b dark:border-gray-600 z-50 m-0 h-16 p-0">
           <div className="flex items-center justify-between px-6 py-3">
             <DialogTitle className="text-center flex-1 m-0">
-              {selectedWithdrawal?.user.name}
+              {payout?.user.name}
             </DialogTitle>
             <Button
               onClick={() => setIsOpen(false)}
@@ -62,4 +62,4 @@ const WithdrawalDialog = ({
   );
 };
 
-export default WithdrawalDialog;
+export default PayoutConfirmDialog;

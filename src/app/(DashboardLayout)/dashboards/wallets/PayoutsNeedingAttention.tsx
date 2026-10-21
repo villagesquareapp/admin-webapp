@@ -6,10 +6,10 @@ import CardBox from "@/app/components/shared/CardBox";
 import { Button } from "@/app/components/shared/Button";
 import { formatDate } from "@/utils/dateUtils";
 import { formatNumber } from "@/utils/formatNumber";
-import { requeueWithdrawals } from "@/app/api/wallet";
-import { batchFailureMessage, batchFailures } from "@/utils/withdrawalBatch";
+import { requeuePayouts } from "@/app/api/wallet";
+import { batchFailureMessage, batchFailures } from "@/utils/payoutBatch";
 
-const stateOf = (w: IWithdrawalAttention) =>
+const stateOf = (w: IPayoutAttention) =>
   w.review
     ? {
         label: "Needs review",
@@ -29,7 +29,7 @@ const stateOf = (w: IWithdrawalAttention) =>
           detail: "Sent to Flutterwave. It settles on its own when the transfer finishes.",
         };
 
-const destinationOf = (w: IWithdrawalAttention) => {
+const destinationOf = (w: IPayoutAttention) => {
   const d = w.payout_destination;
   if (!d?.account_number) return "Bank account on file";
   return `${d.bank_name ?? "Bank"} ••${d.account_number.slice(-4)}`;
@@ -37,18 +37,18 @@ const destinationOf = (w: IWithdrawalAttention) => {
 
 // Payouts that are in flight, never confirmed by Flutterwave, or flagged by
 // the payout check. Nothing here can be approved or declined again.
-const PayoutsNeedingAttention = ({ items }: { items: IWithdrawalAttention[] }) => {
+const PayoutsNeedingAttention = ({ items }: { items: IPayoutAttention[] }) => {
   const [busy, setBusy] = useState<string | null>(null);
   if (!items.length) return null;
 
   const requeue = async (uuid: string) => {
     setBusy(uuid);
     try {
-      const res = await requeueWithdrawals([uuid]);
+      const res = await requeuePayouts([uuid]);
       const failures = batchFailures(res);
       if (!res?.status) toast.error(res?.message || "Couldn't move it back to the queue");
       else if (failures.length) toast.error(batchFailureMessage(failures, 1));
-      else toast.success("Back in the approval queue");
+      else toast.success("Back in the payout queue");
     } catch {
       toast.error("Couldn't move it back to the queue");
     } finally {

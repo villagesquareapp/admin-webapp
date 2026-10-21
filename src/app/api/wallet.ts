@@ -25,21 +25,21 @@ export const getRecentTransfers = async (
   );
 };
 
-export const getPendingWithdrawals = async (
+export const getPayoutQueue = async (
   page: number = 1,
   limit: number = 20
 ) => {
   const token = await getToken();
-  return await apiGet<IPendingWithdrawalsResponse>(
-    `wallet/pending-withdrawals?page=${page}&limit=${limit}`,
+  return await apiGet<IPayoutQueueResponse>(
+    `wallet/payouts/queue?page=${page}&limit=${limit}`,
     token
   );
 };
 
-export const approveWithdrawal = async (transactionIds: string[]) => {
+export const approvePayouts = async (transactionIds: string[]) => {
   const token = await getToken();
   const response = await apiPost(
-    `wallet/withdraw/approve`,
+    `wallet/payouts/approve`,
     {
       transaction_ids: transactionIds,
     },
@@ -52,13 +52,13 @@ export const approveWithdrawal = async (transactionIds: string[]) => {
   return response;
 };
 
-export const declineWithdrawal = async (
+export const declinePayouts = async (
   transactionIds: string[],
   reason: string
 ) => {
   const token = await getToken();
   const response = await apiPost(
-    `wallet/withdraw/reject`,
+    `wallet/payouts/decline`,
     {
       transaction_ids: transactionIds,
       reason,
@@ -112,22 +112,22 @@ export const transferCowry = async (
   return response;
 };
 
-export const getWithdrawalHolds = async (
+export const getPayoutHolds = async (
   status: "active" | "released" | "all" = "active",
   page: number = 1,
   limit: number = 10
 ) => {
   const token = await getToken();
-  return await apiGet<IWithdrawalHoldsResponse>(
-    `wallet/withdrawal-holds?status=${status}&page=${page}&limit=${limit}`,
+  return await apiGet<IPayoutHoldsResponse>(
+    `wallet/payout-holds?status=${status}&page=${page}&limit=${limit}`,
     token
   );
 };
 
-export const releaseWithdrawalHold = async (uuid: string) => {
+export const releasePayoutHold = async (uuid: string) => {
   const token = await getToken();
   const response = await apiPost(
-    `wallet/withdrawal-holds/${encodeURIComponent(uuid)}/release`,
+    `wallet/payout-holds/${encodeURIComponent(uuid)}/release`,
     {},
     token
   );
@@ -137,21 +137,21 @@ export const releaseWithdrawalHold = async (uuid: string) => {
   return response;
 };
 
-export const getWithdrawalsNeedingAttention = async (
+export const getPayoutsNeedingAttention = async (
   page: number = 1,
   limit: number = 50
 ) => {
   const token = await getToken();
-  return await apiGet<IWithdrawalAttentionResponse>(
-    `wallet/withdrawals/attention?page=${page}&limit=${limit}`,
+  return await apiGet<IPayoutAttentionResponse>(
+    `wallet/payouts/attention?page=${page}&limit=${limit}`,
     token
   );
 };
 
-export const requeueWithdrawals = async (transactionIds: string[]) => {
+export const requeuePayouts = async (transactionIds: string[]) => {
   const token = await getToken();
   const response = await apiPost(
-    `wallet/withdraw/requeue`,
+    `wallet/payouts/requeue`,
     { transaction_ids: transactionIds },
     token
   );
@@ -198,4 +198,20 @@ export const updatePayoutSettings = async (body: IPayoutSettingsUpdate) => {
     await revalidateCurrentPath();
   }
   return response;
+};
+
+export const getPayouts = async (
+  status: PayoutStatus | "" = "",
+  page: number = 1,
+  limit: number = 20
+) => {
+  const token = await getToken();
+  const query = new URLSearchParams({ page: String(page), limit: String(limit) });
+  if (status) query.set("status", status);
+  return await apiGet<IPayoutsResponse>(`wallet/payouts?${query}`, token);
+};
+
+export const getPayoutCycles = async (limit: number = 12) => {
+  const token = await getToken();
+  return await apiGet<IPayoutCycle[]>(`wallet/payouts/cycles?limit=${limit}`, token);
 };

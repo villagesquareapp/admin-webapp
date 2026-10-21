@@ -6,7 +6,7 @@ import { Badge, Modal, ModalBody, ModalFooter, ModalHeader, Spinner } from "flow
 import { Button } from "@/app/components/shared/Button";
 import { toast } from "sonner";
 import ReusableTable from "@/app/components/shared/ReusableTable";
-import { releaseWithdrawalHold } from "@/app/api/wallet";
+import { releasePayoutHold } from "@/app/api/wallet";
 import { formatDate } from "@/utils/dateUtils";
 
 const PROVIDERS: Record<string, string> = {
@@ -27,31 +27,31 @@ const statusFilter = {
   ],
 };
 
-const WithdrawalHoldsTable = ({
+const PayoutHoldsTable = ({
   holds,
   status,
   totalPages,
   currentPage,
   pageSize,
 }: {
-  holds: IWithdrawalHoldsResponse | null;
+  holds: IPayoutHoldsResponse | null;
   status: "active" | "released" | "all";
   totalPages: number;
   currentPage: number;
   pageSize: number;
 }) => {
   const rows = Array.isArray(holds?.data) ? holds!.data : [];
-  const [releasing, setReleasing] = useState<IWithdrawalHold | null>(null);
+  const [releasing, setReleasing] = useState<IPayoutHold | null>(null);
   const [loading, setLoading] = useState(false);
-  const col = createColumnHelper<IWithdrawalHold>();
+  const col = createColumnHelper<IPayoutHold>();
 
   const release = async () => {
     if (!releasing) return;
     setLoading(true);
     try {
-      const res = await releaseWithdrawalHold(releasing.uuid);
+      const res = await releasePayoutHold(releasing.uuid);
       if (res?.status) {
-        toast.success("Hold released; this account can withdraw again");
+        toast.success("Hold released; this account can be paid out again");
         setReleasing(null);
       } else {
         toast.error(res?.message || "Failed to release the hold");
@@ -159,13 +159,13 @@ const WithdrawalHoldsTable = ({
       />
 
       <Modal show={!!releasing} onClose={() => !loading && setReleasing(null)} size="md">
-        <ModalHeader>Release withdrawal hold</ModalHeader>
+        <ModalHeader>Release payout hold</ModalHeader>
         <ModalBody>
           {releasing && (
             <div className="flex flex-col gap-3 text-sm">
               <p>
                 <span className="font-semibold">{releasing.user?.name || releasing.user?.username || "This user"}</span>{" "}
-                will be able to withdraw again.
+                will be paid out again from the next cycle.
               </p>
               <p className="text-darklink">
                 {num(releasing.shortfall)} coins from a refunded {PROVIDERS[releasing.provider] || releasing.provider}{" "}
@@ -189,4 +189,4 @@ const WithdrawalHoldsTable = ({
   );
 };
 
-export default WithdrawalHoldsTable;
+export default PayoutHoldsTable;

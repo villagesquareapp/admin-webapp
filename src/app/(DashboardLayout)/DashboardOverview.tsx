@@ -13,7 +13,7 @@ const fmt = (n: number) => new Intl.NumberFormat("en", { notation: "compact" }).
 const ngn = (n: number) => `₦${fmt(n)}`;
 
 export interface DashboardData {
-  needs_action: { pending_withdrawals: number; pending_verifications: number; open_reports: number; flagged_users: number; taken_down: number };
+  needs_action: { payouts_waiting: number; pending_verifications: number; open_reports: number; flagged_users: number; taken_down: number };
   modules: {
     users: { total: number; active: number; verified: number; suspended: number };
     posts: { total: number; active: number; open_reports: number; taken_down: number };
@@ -79,7 +79,7 @@ const DashboardOverview = ({ data }: { data: DashboardData }) => {
   ];
 
   const needCards = [
-    { label: "Pending withdrawals", value: needs_action.pending_withdrawals, icon: "solar:money-bag-linear", tone: "bg-lightwarning text-warning", href: "/dashboards/wallets" },
+    { label: "Payouts waiting", value: needs_action.payouts_waiting, icon: "solar:money-bag-linear", tone: "bg-lightwarning text-warning", href: "/dashboards/wallets" },
     { label: "Pending verifications", value: needs_action.pending_verifications, icon: "solar:verified-check-linear", tone: "bg-lightinfo text-info", href: "/dashboards/verified-users" },
     { label: "Open reports", value: needs_action.open_reports, icon: "solar:flag-2-linear", tone: "bg-lighterror text-error", href: "/dashboards/posts/reports" },
     { label: "Flagged users", value: needs_action.flagged_users, icon: "solar:user-block-linear", tone: "bg-lightwarning text-warning", href: "/dashboards/users/list?status=flagged" },

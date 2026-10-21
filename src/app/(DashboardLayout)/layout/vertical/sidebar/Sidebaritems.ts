@@ -172,7 +172,7 @@ const SidebarContent: MenuItem[] = [
               { name: "VS Coins", icon: "solar:dollar-minimalistic-line-duotone", id: uniqueId(), url: "/dashboards/coins" },
               { name: "Gifts", icon: "solar:gift-line-duotone", id: uniqueId(), url: "/dashboards/gifts" },
               { name: "Treasury & Wallets", icon: "solar:wallet-money-line-duotone", id: uniqueId(), url: "/dashboards/wallets" },
-              { name: "Withdrawal Holds", icon: "solar:shield-warning-line-duotone", id: uniqueId(), url: "/dashboards/withdrawal-holds" },
+              { name: "Payout Holds", icon: "solar:shield-warning-line-duotone", id: uniqueId(), url: "/dashboards/payout-holds" },
             ],
           },
           {

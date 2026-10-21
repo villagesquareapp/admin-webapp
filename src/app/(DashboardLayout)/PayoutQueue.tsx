@@ -9,23 +9,23 @@ import { useEffect, useState } from "react";
 import { IoMdCheckmark } from "react-icons/io";
 import { LiaTimesSolid } from "react-icons/lia";
 import { toast } from "sonner";
-import { approveWithdrawal, declineWithdrawal, getPendingWithdrawals } from "../api/wallet";
-import { batchFailureMessage, batchFailures } from "@/utils/withdrawalBatch";
+import { approvePayouts, declinePayouts, getPayoutQueue } from "../api/wallet";
+import { batchFailureMessage, batchFailures } from "@/utils/payoutBatch";
 import CardBox from "../components/shared/CardBox";
 import useSetSearchParams from "../hooks/useSetSearchParams";
-import UserPendingWithdrawalInfo from "./UserPendingWithdrawalInfo";
-import WithdrawalDialog from "./WithdrawalDialog";
+import PayoutDetailsDialog from "./PayoutDetailsDialog";
+import PayoutConfirmDialog from "./PayoutConfirmDialog";
 import { formatNumber } from "@/utils/formatNumber";
 
-const Withdrawals = ({
-  selectedWithdrawalID,
-  withdrawals,
+const PayoutQueue = ({
+  selectedPayoutID,
+  payouts,
   totalPages,
   currentPage,
   pageSize,
 }: {
-  selectedWithdrawalID: string;
-  withdrawals: IPendingWithdrawalsResponse | null;
+  selectedPayoutID: string;
+  payouts: IPayoutQueueResponse | null;
   totalPages: number;
   currentPage: number;
   pageSize: number;
@@ -34,8 +34,8 @@ const Withdrawals = ({
   const [sizeForPage, setSizeForPage] = useState(pageSize);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const [localWithdrawals, setLocalWithdrawals] = useState<IPendingWithdrawals[]>([]);
-  const [totalWithdrawals, setTotalWithdrawals] = useState(0);
+  const [localPayouts, setLocalPayouts] = useState<IQueuedPayout[]>([]);
+  const [totalPayouts, setTotalPayouts] = useState(0);
   const [currentLocalPage, setCurrentLocalPage] = useState(1);
   const [hasReachedEnd, setHasReachedEnd] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
@@ -43,14 +43,10 @@ const Withdrawals = ({
   const [isOpenDecline, setIsOpenDecline] = useState(false);
   const [isApproving, setIsApproving] = useState(false);
   const [isHovering, setIsHovering] = useState<string | null>(null);
-  const [selectedPendingWithdrawals, setSelectedPendingWithdrawals] = useState<string[]>([]);
-  const [openUserPendingWithdrawalInfo, setOpenUserPendingWithdrawalInfo] = useState<
-    string | null
-  >(null);
+  const [selectedPayoutIds, setSelectedPayoutIds] = useState<string[]>([]);
+  const [openPayoutDetails, setOpenPayoutDetails] = useState<string | null>(null);
   const [isDeclining, setIsDeclining] = useState(false);
-  const [selectedWithdrawal, setSelectedWithdrawal] = useState<IPendingWithdrawals | null>(
-    null
-  );
+  const [selectedPayout, setSelectedPayout] = useState<IQueuedPayout | null>(null);
   const [declineReason, setDeclineReason] = useState("");
   const router = useRouter();
 
@@ -59,32 +55,32 @@ const Withdrawals = ({
   }, [pageSize]);
 
   useEffect(() => {
-    if (withdrawals?.data && !isInitialized) {
-      const newData = withdrawals.data as unknown as IPendingWithdrawals[];
-      setLocalWithdrawals(newData);
-      setTotalWithdrawals(withdrawals.total || 0);
+    if (payouts?.data && !isInitialized) {
+      const newData = payouts.data as unknown as IQueuedPayout[];
+      setLocalPayouts(newData);
+      setTotalPayouts(payouts.total || 0);
       setCurrentLocalPage(currentPage);
       setHasReachedEnd(currentPage >= totalPages);
       setIsInitialized(true);
       setIsLoading(false);
     }
-  }, [withdrawals, currentPage, totalPages, isInitialized]);
+  }, [payouts, currentPage, totalPages, isInitialized]);
 
   const handlePageChange = async (page: number) => {
     if (page < 1 || page > totalPages || page === currentLocalPage) return;
 
     setIsLoadingMore(true);
     try {
-      const newWithdrawals = await getPendingWithdrawals(page, pageSize);
-      if (newWithdrawals?.data?.data) {
-        const newData = newWithdrawals.data.data as unknown as IPendingWithdrawals[];
-        setLocalWithdrawals(newData);
-        setTotalWithdrawals(newWithdrawals.data.total || 0);
+      const newPayouts = await getPayoutQueue(page, pageSize);
+      if (newPayouts?.data?.data) {
+        const newData = newPayouts.data.data as unknown as IQueuedPayout[];
+        setLocalPayouts(newData);
+        setTotalPayouts(newPayouts.data.total || 0);
         setCurrentLocalPage(page);
-        setHasReachedEnd(page >= (newWithdrawals.data.last_page || totalPages));
+        setHasReachedEnd(page >= (newPayouts.data.last_page || totalPages));
       }
     } catch (error) {
-      console.error("Error loading withdrawals:", error);
+      console.error("Error loading payouts:", error);
     } finally {
       setIsLoadingMore(false);
     }
@@ -167,103 +163,103 @@ const Withdrawals = ({
     return pages;
   };
 
-  const handleApproveWithdrawal = async () => {
-    if (!selectedWithdrawal?.uuid) return;
+  const handleApprovePayout = async () => {
+    if (!selectedPayout?.uuid) return;
 
     try {
       setIsApproving(true);
-      const response = await approveWithdrawal([selectedWithdrawal.uuid]);
+      const response = await approvePayouts([selectedPayout.uuid]);
       if (response?.status) {
         // Refetch the current page data
-        const newWithdrawals = await getPendingWithdrawals(currentLocalPage, pageSize);
-        if (newWithdrawals?.data?.data) {
-          const newData = newWithdrawals.data.data as unknown as IPendingWithdrawals[];
-          setLocalWithdrawals(newData);
-          setTotalWithdrawals(newWithdrawals.data.total || 0);
-          setHasReachedEnd(currentLocalPage >= (newWithdrawals.data.last_page || totalPages));
+        const newPayouts = await getPayoutQueue(currentLocalPage, pageSize);
+        if (newPayouts?.data?.data) {
+          const newData = newPayouts.data.data as unknown as IQueuedPayout[];
+          setLocalPayouts(newData);
+          setTotalPayouts(newPayouts.data.total || 0);
+          setHasReachedEnd(currentLocalPage >= (newPayouts.data.last_page || totalPages));
         }
         const failures = batchFailures(response);
         if (failures.length) {
           toast.error(batchFailureMessage(failures, 1));
         } else {
           setIsOpenApproval(false);
-          toast.success("Withdrawal request approved successfully");
+          toast.success("Payout approved and sent");
         }
       } else {
-        toast.error(response?.message || "Failed to approve withdrawal");
-        console.error("Failed to approve withdrawal:", response?.message);
+        toast.error(response?.message || "Failed to approve the payout");
+        console.error("Failed to approve payout:", response?.message);
       }
     } catch (error) {
-      console.error("Error approving withdrawal:", error);
-      toast.error("An error occurred while approving withdrawal");
+      console.error("Error approving payout:", error);
+      toast.error("An error occurred while approving the payout");
     } finally {
       setIsApproving(false);
     }
   };
 
-  const handleBulkApproveWithdrawals = async () => {
-    if (!selectedPendingWithdrawals.length) return;
+  const handleBulkApprovePayouts = async () => {
+    if (!selectedPayoutIds.length) return;
 
     try {
       setIsApproving(true);
-      const response = await approveWithdrawal(selectedPendingWithdrawals);
+      const response = await approvePayouts(selectedPayoutIds);
       if (response?.status) {
         // Refetch the current page data
-        const newWithdrawals = await getPendingWithdrawals(currentLocalPage, pageSize);
-        if (newWithdrawals?.data?.data) {
-          const newData = newWithdrawals.data.data as unknown as IPendingWithdrawals[];
-          setLocalWithdrawals(newData);
-          setTotalWithdrawals(newWithdrawals.data.total || 0);
-          setHasReachedEnd(currentLocalPage >= (newWithdrawals.data.last_page || totalPages));
+        const newPayouts = await getPayoutQueue(currentLocalPage, pageSize);
+        if (newPayouts?.data?.data) {
+          const newData = newPayouts.data.data as unknown as IQueuedPayout[];
+          setLocalPayouts(newData);
+          setTotalPayouts(newPayouts.data.total || 0);
+          setHasReachedEnd(currentLocalPage >= (newPayouts.data.last_page || totalPages));
         }
         const failures = batchFailures(response);
-        setSelectedPendingWithdrawals([]);
+        setSelectedPayoutIds([]);
         if (failures.length) {
-          toast.error(batchFailureMessage(failures, selectedPendingWithdrawals.length));
+          toast.error(batchFailureMessage(failures, selectedPayoutIds.length));
         } else {
-          toast.success("Withdrawal requests approved successfully");
+          toast.success("Payouts approved and sent");
         }
       } else {
-        toast.error(response?.message || "Failed to approve withdrawals");
-        console.error("Failed to approve withdrawals:", response?.message);
+        toast.error(response?.message || "Failed to approve the payouts");
+        console.error("Failed to approve payouts:", response?.message);
       }
     } catch (error) {
-      console.error("Error approving withdrawals:", error);
-      toast.error("An error occurred while approving withdrawals");
+      console.error("Error approving payouts:", error);
+      toast.error("An error occurred while approving the payouts");
     } finally {
       setIsApproving(false);
     }
   };
 
-  const handleDeclineWithdrawal = async () => {
-    if (!selectedWithdrawal?.uuid || !declineReason.trim()) return;
+  const handleDeclinePayout = async () => {
+    if (!selectedPayout?.uuid || !declineReason.trim()) return;
 
     try {
       setIsDeclining(true);
-      const response = await declineWithdrawal([selectedWithdrawal.uuid], declineReason);
+      const response = await declinePayouts([selectedPayout.uuid], declineReason);
       if (response?.status) {
         // Refetch the current page data
-        const newWithdrawals = await getPendingWithdrawals(currentLocalPage, pageSize);
-        if (newWithdrawals?.data?.data) {
-          const newData = newWithdrawals.data.data as unknown as IPendingWithdrawals[];
-          setLocalWithdrawals(newData);
-          setTotalWithdrawals(newWithdrawals.data.total || 0);
-          setHasReachedEnd(currentLocalPage >= (newWithdrawals.data.last_page || totalPages));
+        const newPayouts = await getPayoutQueue(currentLocalPage, pageSize);
+        if (newPayouts?.data?.data) {
+          const newData = newPayouts.data.data as unknown as IQueuedPayout[];
+          setLocalPayouts(newData);
+          setTotalPayouts(newPayouts.data.total || 0);
+          setHasReachedEnd(currentLocalPage >= (newPayouts.data.last_page || totalPages));
         }
         const failures = batchFailures(response);
         if (failures.length) {
           toast.error(batchFailureMessage(failures, 1));
         } else {
           setIsOpenDecline(false);
-          toast.success("Withdrawal request declined successfully");
+          toast.success("Payout declined; the money is back in their earnings");
         }
       } else {
-        toast.error(response?.message || "Failed to decline withdrawal");
-        console.error("Failed to decline withdrawal:", response?.message);
+        toast.error(response?.message || "Failed to decline the payout");
+        console.error("Failed to decline payout:", response?.message);
       }
     } catch (error) {
-      console.error("Error declining withdrawal:", error);
-      toast.error("An error occurred while declining withdrawal");
+      console.error("Error declining payout:", error);
+      toast.error("An error occurred while declining the payout");
     } finally {
       setIsDeclining(false);
       setDeclineReason("");
@@ -280,9 +276,9 @@ const Withdrawals = ({
     });
   }, []);
 
-  const handleWithdrawalSelection = (uuid: string, event?: React.MouseEvent) => {
+  const handlePayoutSelection = (uuid: string, event?: React.MouseEvent) => {
     event?.stopPropagation(); // Stop event propagation if event exists
-    setSelectedPendingWithdrawals((prev) => {
+    setSelectedPayoutIds((prev) => {
       if (prev.includes(uuid)) {
         return prev.filter((id) => id !== uuid);
       }
@@ -295,38 +291,38 @@ const Withdrawals = ({
       <CardBox>
         <div className="flex items-center justify-between flex-wrap gap-3">
           <div className="flex items-center gap-2 flex-nowrap">
-            {selectedPendingWithdrawals.length > 0 && (
+            {selectedPayoutIds.length > 0 && (
               <Checkbox
                 className="!size-6"
                 onChange={(e) => {
                   if (e.target.checked) {
-                    setSelectedPendingWithdrawals(localWithdrawals.map((w) => w.uuid));
+                    setSelectedPayoutIds(localPayouts.map((p) => p.uuid));
                   } else {
-                    setSelectedPendingWithdrawals([]);
+                    setSelectedPayoutIds([]);
                   }
                 }}
-                checked={selectedPendingWithdrawals.length === localWithdrawals.length}
+                checked={selectedPayoutIds.length === localPayouts.length}
               />
             )}
-            <h5 className="text-sm font-semibold text-dark dark:text-white whitespace-nowrap">Pending Withdrawals</h5>
+            <h5 className="text-sm font-semibold text-dark dark:text-white whitespace-nowrap">Payout queue</h5>
           </div>
 
           <div className="flex items-center gap-4 flex-nowrap">
-            {selectedPendingWithdrawals.length > 0 && (
+            {selectedPayoutIds.length > 0 && (
               <Button
                 size="sm"
                 color="success"
                 className="h-8"
-                onClick={handleBulkApproveWithdrawals}
+                onClick={handleBulkApprovePayouts}
                 disabled={isApproving}
               >
                 {isApproving ? (
                   <div className="flex items-center gap-2">
                     <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                    <span>Approving...</span>
+                    <span>Sending...</span>
                   </div>
                 ) : (
-                  <>Approve ({selectedPendingWithdrawals.length})</>
+                  <>Approve and send ({selectedPayoutIds.length})</>
                 )}
               </Button>
             )}
@@ -344,30 +340,30 @@ const Withdrawals = ({
             <div className="absolute inset-0 flex items-center justify-center bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm">
               <div className="flex flex-col items-center gap-2">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-                <p className="text-sm text-gray-500">Loading withdrawals...</p>
+                <p className="text-sm text-gray-500">Loading payouts...</p>
               </div>
             </div>
-          ) : !localWithdrawals.length ? (
+          ) : !localPayouts.length ? (
             <p className="text-center text-gray-500 font-semibold text-lg my-20">
-              No Pending Withdrawals!
+              No payouts waiting
             </p>
           ) : (
-            localWithdrawals.map((item) => (
+            localPayouts.map((item) => (
               <div
                 key={item.uuid}
                 onMouseEnter={() => setIsHovering(item.uuid)}
                 onMouseLeave={() => setIsHovering(null)}
-                onClick={() => setOpenUserPendingWithdrawalInfo(item.uuid)}
+                onClick={() => setOpenPayoutDetails(item.uuid)}
                 className={`flex cursor-pointer border-b border-ld gap-3 items-center w-full relative transition-all duration-300 !p-2 !py-2
                   ${
-                    isHovering === item.uuid || selectedPendingWithdrawals.includes(item.uuid)
+                    isHovering === item.uuid || selectedPayoutIds.includes(item.uuid)
                       ? "!pl-10 bg-gray-200 dark:bg-gray-700"
                       : "!pl-2"
                   }`}
               >
                 <div
                   className={`absolute left-2 transition-opacity duration-300 ${
-                    isHovering === item.uuid || selectedPendingWithdrawals.includes(item.uuid)
+                    isHovering === item.uuid || selectedPayoutIds.includes(item.uuid)
                       ? "opacity-100"
                       : "opacity-0"
                   }`}
@@ -375,8 +371,8 @@ const Withdrawals = ({
                 >
                   <Checkbox
                     className="!size-6"
-                    checked={selectedPendingWithdrawals.includes(item.uuid)}
-                    onChange={() => handleWithdrawalSelection(item.uuid)}
+                    checked={selectedPayoutIds.includes(item.uuid)}
+                    onChange={() => handlePayoutSelection(item.uuid)}
                   />
                 </div>
 
@@ -395,6 +391,16 @@ const Withdrawals = ({
                 <div className="flex flex-col min-w-0 shrink">
                   <h5 className="text-sm font-medium truncate">{item.user.name}</h5>
                   <p className="text-xs text-darklink truncate">@{item.user.username}</p>
+                  {item.metadata?.auto_payout ? (
+                    <p className="text-[11px] text-warning truncate">
+                      Automatic payout
+                      {item.metadata.auto_payout_review ? ` · ${item.metadata.auto_payout_review}` : ""}
+                    </p>
+                  ) : (
+                    <p className="text-[11px] text-darklink truncate">
+                      Requested before automatic payouts
+                    </p>
+                  )}
                 </div>
 
                 <div className="flex gap-2 items-center ml-auto">
@@ -402,13 +408,13 @@ const Withdrawals = ({
                     {item.wallet?.currency?.symbol}
                     {item.amount}
                   </div> */}
-                  {!selectedPendingWithdrawals?.length && (
+                  {!selectedPayoutIds?.length && (
                     <div className="flex gap-2 shrink-0">
                       <Button
                         onClick={(e) => {
                           e.stopPropagation();
                           setIsOpenDecline(true);
-                          setSelectedWithdrawal(item);
+                          setSelectedPayout(item);
                         }}
                         color={"red"}
                         className="!size-8 w-fit text-xs"
@@ -420,7 +426,7 @@ const Withdrawals = ({
                         onClick={(e) => {
                           e.stopPropagation();
                           setIsOpenApproval(true);
-                          setSelectedWithdrawal(item);
+                          setSelectedPayout(item);
                         }}
                         color={"success"}
                         className="!size-8 w-fit text-xs"
@@ -436,7 +442,7 @@ const Withdrawals = ({
         </div>
 
         <div className="border-t border-ld mt-6">
-          {localWithdrawals.length > 0 && (
+          {localPayouts.length > 0 && (
             <div className="flex flex-col items-center gap-4 mt-6">
               <div className="flex items-center gap-2">
                 <Button
@@ -478,47 +484,41 @@ const Withdrawals = ({
               </div>
 
               <p className="text-center text-gray-500 text-xs">
-                Page {currentLocalPage} of {totalPages} ({localWithdrawals.length} of{" "}
-                {totalWithdrawals} withdrawals)
+                Page {currentLocalPage} of {totalPages} ({localPayouts.length} of{" "}
+                {totalPayouts} payouts)
               </p>
             </div>
           )}
         </div>
       </CardBox>
 
-      {openUserPendingWithdrawalInfo && (
-        <UserPendingWithdrawalInfo
-          isOpen={openUserPendingWithdrawalInfo ? true : false}
-          setIsOpen={(isOpen) =>
-            setOpenUserPendingWithdrawalInfo(isOpen ? openUserPendingWithdrawalInfo : null)
-          }
-          withdrawal={
-            localWithdrawals?.find((w) => w.uuid === openUserPendingWithdrawalInfo) || null
-          }
-          onWithdrawalAction={(uuid) => {
-            setLocalWithdrawals((prevWithdrawals) =>
-              prevWithdrawals.filter((withdrawal) => withdrawal.uuid !== uuid)
-            );
+      {openPayoutDetails && (
+        <PayoutDetailsDialog
+          isOpen={openPayoutDetails ? true : false}
+          setIsOpen={(isOpen) => setOpenPayoutDetails(isOpen ? openPayoutDetails : null)}
+          payout={localPayouts?.find((p) => p.uuid === openPayoutDetails) || null}
+          onPayoutAction={(uuid) => {
+            setLocalPayouts((prevPayouts) => prevPayouts.filter((payout) => payout.uuid !== uuid));
           }}
         />
       )}
 
       {isOpenApproval && (
-        <WithdrawalDialog
+        <PayoutConfirmDialog
           isOpen={isOpenApproval}
           setIsOpen={setIsOpenApproval}
-          selectedWithdrawal={selectedWithdrawal || null}
+          payout={selectedPayout || null}
           content={
             <>
               <div className="flex flex-col gap-4">
-                <h3 className="text-xl font-semibold">Approve Withdrawal</h3>
+                <h3 className="text-xl font-semibold">Approve payout</h3>
                 <p className="text-gray-600 dark:text-gray-300">
-                  Are you sure you want to approve withdrawal request of{" "}
+                  Send the payout of{" "}
                   <span className="font-medium">
-                    {/* {selectedWithdrawal?.wallet?.currency?.symbol} */}
-                    {formatNumber(selectedWithdrawal?.amount || 0)}
+                    CWR {formatNumber(selectedPayout?.amount || 0)}
                   </span>{" "}
-                  for <span className="font-medium">{selectedWithdrawal?.user.name}</span>?
+                  to <span className="font-medium">{selectedPayout?.user.name}</span>? It goes out
+                  through Flutterwave right away.
                 </p>
               </div>
 
@@ -534,16 +534,16 @@ const Withdrawals = ({
                 <Button
                   color="success"
                   className="w-fit min-w-[100px]"
-                  onClick={handleApproveWithdrawal}
+                  onClick={handleApprovePayout}
                   disabled={isApproving}
                 >
                   {isApproving ? (
                     <div className="flex items-center gap-2">
                       <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                      Approving...
+                      Sending...
                     </div>
                   ) : (
-                    "Approve"
+                    "Approve and send"
                   )}
                 </Button>
               </div>
@@ -553,21 +553,21 @@ const Withdrawals = ({
       )}
 
       {isOpenDecline && (
-        <WithdrawalDialog
+        <PayoutConfirmDialog
           isOpen={isOpenDecline}
           setIsOpen={setIsOpenDecline}
-          selectedWithdrawal={selectedWithdrawal || null}
+          payout={selectedPayout || null}
           content={
             <>
               <div className="flex flex-col gap-4">
-                <h3 className="text-xl font-semibold">Decline Withdrawal</h3>
+                <h3 className="text-xl font-semibold">Decline payout</h3>
                 <p className="text-gray-600 dark:text-gray-300">
-                  Are you sure you want to decline withdrawal request of{" "}
+                  Decline the payout of{" "}
                   <span className="font-medium">
-                    {/* {selectedWithdrawal?.wallet?.currency?.symbol} */}
-                    {selectedWithdrawal?.amount}
+                    CWR {formatNumber(selectedPayout?.amount || 0)}
                   </span>{" "}
-                  for <span className="font-medium">{selectedWithdrawal?.user.name}</span>?
+                  for <span className="font-medium">{selectedPayout?.user.name}</span>? The money goes
+                  back to their earnings.
                 </p>
               </div>
 
@@ -599,7 +599,7 @@ const Withdrawals = ({
                 <Button
                   color="failure"
                   className="w-fit min-w-[100px]"
-                  onClick={handleDeclineWithdrawal}
+                  onClick={handleDeclinePayout}
                   disabled={isDeclining || !declineReason.trim()}
                 >
                   {isDeclining ? (
@@ -608,7 +608,7 @@ const Withdrawals = ({
                       Declining...
                     </div>
                   ) : (
-                    "Decline"
+                    "Decline and return the money"
                   )}
                 </Button>
               </div>
@@ -620,4 +620,4 @@ const Withdrawals = ({
   );
 };
 
-export default Withdrawals;
+export default PayoutQueue;

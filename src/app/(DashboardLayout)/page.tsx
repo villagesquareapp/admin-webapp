@@ -5,14 +5,14 @@ import { getMarketSquareStats } from "../api/market-square";
 import { getPendingVerification, getVerificationRequested } from "../api/pending-verification";
 import { getPostOverview } from "../api/post";
 import { getUserDetails, getUserOverview, getVerifiedUserStats } from "../api/user";
-import { getPendingWithdrawals } from "../api/wallet";
+import { getPayoutQueue } from "../api/wallet";
 import { getReportStats } from "../api/report";
 import { getEnforcementLog } from "../api/moderation";
 import { getVflixOverview } from "../api/vflix";
 import { getVflixMonetization } from "../api/vflix-insights";
 import DashboardOverview, { DashboardData } from "./DashboardOverview";
 import PendingVerifications from "./PendingVerifications";
-import Withdrawals from "./Withdrawals";
+import PayoutQueue from "./PayoutQueue";
 
 const num = (v: unknown) => Number(v) || 0;
 
@@ -28,7 +28,7 @@ const DashboardWrapper = async () => {
     verifiedStats,
     vflixMon,
     enforcement,
-    withdrawals,
+    payoutQueue,
     verifications,
   ] = await Promise.all([
     getUserOverview(),
@@ -41,7 +41,7 @@ const DashboardWrapper = async () => {
     getVerifiedUserStats(),
     getVflixMonetization(),
     getEnforcementLog(1, 6),
-    getPendingWithdrawals(1, 1),
+    getPayoutQueue(1, 1),
     getPendingVerification(1, 1),
   ]);
 
@@ -60,7 +60,7 @@ const DashboardWrapper = async () => {
 
   const data: DashboardData = {
     needs_action: {
-      pending_withdrawals: num(withdrawals?.data?.total),
+      payouts_waiting: num(payoutQueue?.data?.total),
       pending_verifications: num(verifications?.data?.total),
       open_reports: openReports,
       flagged_users: num(u?.kpis?.flagged),
@@ -180,21 +180,21 @@ const PendingVerificationsWrapper = async ({
   );
 };
 
-const WithdrawalsWrapper = async ({
-  selectedWithdrawalID,
+const PayoutQueueWrapper = async ({
+  selectedPayoutID,
   pWPage,
   pWLimit,
 }: {
-  selectedWithdrawalID: string;
+  selectedPayoutID: string;
   pWPage: number;
   pWLimit: number;
 }) => {
-  const pendingWithdrawals = await getPendingWithdrawals(pWPage, pWLimit);
+  const queue = await getPayoutQueue(pWPage, pWLimit);
   return (
-    <Withdrawals
-      selectedWithdrawalID={selectedWithdrawalID}
-      withdrawals={pendingWithdrawals?.data || null}
-      totalPages={pendingWithdrawals?.data?.last_page || 1}
+    <PayoutQueue
+      selectedPayoutID={selectedPayoutID}
+      payouts={queue?.data || null}
+      totalPages={queue?.data?.last_page || 1}
       currentPage={pWPage}
       pageSize={pWLimit}
     />
@@ -203,7 +203,7 @@ const WithdrawalsWrapper = async ({
 
 const Page = async (props: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) => {
   const searchParams = await props.searchParams;
-  const selectedWithdrawalID = searchParams.withdrawal as string;
+  const selectedPayoutID = searchParams.payout as string;
   const selectedPendingVerificationID = searchParams.pending_verification as string;
   const page = Number(searchParams.page) || 1;
   const limit = Number(searchParams.limit) || 20;
@@ -226,7 +226,7 @@ const Page = async (props: { searchParams: Promise<{ [key: string]: string | str
           </div>
           <div className="lg:col-span-5 col-span-12">
             <Suspense fallback={<div className="h-[400px] w-full animate-pulse bg-gray-100 dark:bg-gray-800 rounded-3xl" />}>
-              <WithdrawalsWrapper selectedWithdrawalID={selectedWithdrawalID} pWPage={pWPage} pWLimit={pWLimit} />
+              <PayoutQueueWrapper selectedPayoutID={selectedPayoutID} pWPage={pWPage} pWLimit={pWLimit} />
             </Suspense>
           </div>
         </div>

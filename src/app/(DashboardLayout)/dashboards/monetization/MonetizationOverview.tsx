@@ -12,7 +12,7 @@ export interface MonetizationData {
   treasury: { flutterwave_ngn: string; flutterwave_usd: string; cowry: string; cowry_ngn: string };
   kpis: {
     subscribers_total: number; greencheck: number; premium: number;
-    pending_withdrawals: number; coin_packages: number; coins_active: number;
+    payouts_waiting: number; coin_packages: number; coins_active: number;
     gifts_total: number; gifts_active: number; billing_plans: number;
     vflix_gifts: number; vflix_coin_value: number; vflix_paid_out: number;
   };
@@ -60,7 +60,7 @@ const MonetizationOverview = ({ data }: { data: MonetizationData }) => {
     { label: "Active subscribers", value: kpis.subscribers_total, icon: "solar:users-group-rounded-linear", tone: "bg-lightprimary text-primary" },
     { label: "Greencheck", value: kpis.greencheck, icon: "solar:verified-check-linear", tone: "bg-lightinfo text-info" },
     { label: "Premium", value: kpis.premium, icon: "solar:crown-star-linear", tone: "bg-lightwarning text-warning" },
-    { label: "Pending payouts", value: kpis.pending_withdrawals, icon: "solar:money-bag-linear", tone: "bg-lightwarning text-warning" },
+    { label: "Payouts waiting", value: kpis.payouts_waiting, icon: "solar:money-bag-linear", tone: "bg-lightwarning text-warning" },
     { label: "Coin packages", value: kpis.coin_packages, icon: "solar:dollar-minimalistic-linear", tone: "bg-lightsuccess text-success" },
     { label: "Gifts", value: kpis.gifts_total, icon: "solar:gift-linear", tone: "bg-lightsecondary text-secondary" },
     { label: "Billing plans", value: kpis.billing_plans, icon: "solar:card-linear", tone: "bg-lightprimary text-primary" },

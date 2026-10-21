@@ -4,17 +4,20 @@ import {
   getCowryBalance,
   getFlutterwaveBalance,
   getRecentTransfers,
-  getPendingWithdrawals,
-  getWithdrawalsNeedingAttention,
+  getPayoutQueue,
+  getPayoutsNeedingAttention,
   getMissingLegacyTransfers,
   getPayoutSettings,
+  getPayouts,
+  getPayoutCycles,
 } from "@/app/api/wallet";
 import TreasuryBalances from "./TreasuryBalances";
 import RecentTransfers from "./RecentTransfers";
 import PayoutsNeedingAttention from "./PayoutsNeedingAttention";
 import MissingLegacyTransfers from "./MissingLegacyTransfers";
 import PayoutRules from "./PayoutRules";
-import Withdrawals from "../../Withdrawals";
+import AutoPayouts from "./AutoPayouts";
+import PayoutQueue from "../../PayoutQueue";
 
 const skeleton = (h: string) => <div className={`${h} w-full animate-pulse bg-gray-100 dark:bg-gray-800 rounded-3xl`} />;
 
@@ -32,14 +35,14 @@ const BalancesWrapper = async ({ token }: { token: string }) => {
   );
 };
 
-const WithdrawalsWrapper = async ({
-  selectedWithdrawalID, page, limit,
-}: { selectedWithdrawalID: string; page: number; limit: number }) => {
-  const pending = await getPendingWithdrawals(page, limit);
+const PayoutQueueWrapper = async ({
+  selectedPayoutID, page, limit,
+}: { selectedPayoutID: string; page: number; limit: number }) => {
+  const pending = await getPayoutQueue(page, limit);
   return (
-    <Withdrawals
-      selectedWithdrawalID={selectedWithdrawalID}
-      withdrawals={pending?.data || null}
+    <PayoutQueue
+      selectedPayoutID={selectedPayoutID}
+      payouts={pending?.data || null}
       totalPages={pending?.data?.last_page || 1}
       currentPage={page}
       pageSize={limit}
@@ -48,7 +51,7 @@ const WithdrawalsWrapper = async ({
 };
 
 const AttentionWrapper = async () => {
-  const attention = await getWithdrawalsNeedingAttention();
+  const attention = await getPayoutsNeedingAttention();
   const items = Array.isArray(attention?.data?.data) ? attention.data.data : [];
   return <PayoutsNeedingAttention items={items} />;
 };
@@ -56,6 +59,17 @@ const AttentionWrapper = async () => {
 const LegacyTransfersWrapper = async () => {
   const report = await getMissingLegacyTransfers();
   return <MissingLegacyTransfers report={report?.data ?? null} />;
+};
+
+const AutoPayoutsWrapper = async () => {
+  const [payouts, cycles] = await Promise.all([getPayouts("review"), getPayoutCycles()]);
+  if (!payouts?.status) return null;
+  return (
+    <AutoPayouts
+      payouts={payouts.data ?? null}
+      cycles={Array.isArray(cycles?.data) ? cycles.data : []}
+    />
+  );
 };
 
 const PayoutRulesWrapper = async () => {
@@ -84,7 +98,7 @@ const Page = async (props: { searchParams: Promise<{ [key: string]: string | str
   const limit = Number(searchParams.limit) || 10;
   const wPage = Number(searchParams.wPage) || 1;
   const wLimit = Number(searchParams.wLimit) || 10;
-  const selectedWithdrawalID = (searchParams.withdrawal as string) || "";
+  const selectedPayoutID = (searchParams.payout as string) || "";
 
   return (
     <div className="flex flex-col gap-6">
@@ -97,9 +111,9 @@ const Page = async (props: { searchParams: Promise<{ [key: string]: string | str
       </Suspense>
 
       <div>
-        <h5 className="text-sm font-bold text-darklink uppercase tracking-wide mb-2.5">Pending withdrawals</h5>
+        <h5 className="text-sm font-bold text-darklink uppercase tracking-wide mb-2.5">Payout queue</h5>
         <Suspense key={`w-${wPage}-${wLimit}`} fallback={skeleton("h-[420px]")}>
-          <WithdrawalsWrapper selectedWithdrawalID={selectedWithdrawalID} page={wPage} limit={wLimit} />
+          <PayoutQueueWrapper selectedPayoutID={selectedPayoutID} page={wPage} limit={wLimit} />
         </Suspense>
       </div>
 
@@ -112,6 +126,10 @@ const Page = async (props: { searchParams: Promise<{ [key: string]: string | str
 
       <Suspense fallback={null}>
         <LegacyTransfersWrapper />
+      </Suspense>
+
+      <Suspense fallback={skeleton("h-[320px]")}>
+        <AutoPayoutsWrapper />
       </Suspense>
 
       <Suspense fallback={skeleton("h-[360px]")}>

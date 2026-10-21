@@ -1,13 +1,13 @@
 import { Suspense } from "react";
-import { getWithdrawalHolds } from "@/app/api/wallet";
-import WithdrawalHoldsTable from "./WithdrawalHoldsTable";
+import { getPayoutHolds } from "@/app/api/wallet";
+import PayoutHoldsTable from "./PayoutHoldsTable";
 
 type HoldStatus = "active" | "released" | "all";
 
 const HoldsWrapper = async ({ status, page, limit }: { status: HoldStatus; page: number; limit: number }) => {
-  const res = await getWithdrawalHolds(status, page, limit);
+  const res = await getPayoutHolds(status, page, limit);
   return (
-    <WithdrawalHoldsTable
+    <PayoutHoldsTable
       holds={res?.data || null}
       status={status}
       totalPages={res?.data?.last_page || 1}
@@ -27,10 +27,10 @@ const Page = async (props: { searchParams: Promise<{ [key: string]: string | str
   return (
     <div className="flex flex-col gap-4">
       <div>
-        <h4 className="text-lg font-bold">Withdrawal holds</h4>
+        <h4 className="text-lg font-bold">Payout holds</h4>
         <p className="text-sm text-darklink">
-          Accounts whose purchase was refunded after they had already spent the coins. Their withdrawals stay
-          blocked until you release the hold.
+          Accounts whose purchase was refunded after they had already spent the coins. Their payouts are held
+          until you release the hold; the earnings stay in their account.
         </p>
       </div>
       <Suspense

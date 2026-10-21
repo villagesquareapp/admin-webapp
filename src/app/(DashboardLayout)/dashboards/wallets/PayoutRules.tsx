@@ -44,6 +44,7 @@ const PayoutRules = ({ settings }: { settings: IPayoutSettings | null }) => {
     fx_spread_percent: String(settings?.fx_spread_percent ?? ""),
     fixed_fee_ngn: String(settings?.fixed_fee_ngn ?? ""),
     review_first_payout: settings?.review_first_payout ?? true,
+    review_above_usd: String(settings?.review_above_usd ?? ""),
     levels: (settings?.levels ?? []).map((l) => ({
       level: l.level,
       can_be_paid: l.can_be_paid,
@@ -53,7 +54,22 @@ const PayoutRules = ({ settings }: { settings: IPayoutSettings | null }) => {
     })),
   }));
   const [saving, setSaving] = useState(false);
+  const [switching, setSwitching] = useState<"confirm" | "busy" | null>(null);
   if (!settings) return null;
+
+  // Its own step: switching on starts sending money.
+  const setLive = async (on: boolean) => {
+    setSwitching("busy");
+    try {
+      const res = await updatePayoutSettings({ auto_payouts_enabled: on });
+      if (res?.status) toast.success(on ? "Automatic payouts are on" : "Automatic payouts are off");
+      else toast.error(res?.message || "Couldn't change automatic payouts");
+    } catch {
+      toast.error("Couldn't change automatic payouts");
+    } finally {
+      setSwitching(null);
+    }
+  };
 
   const set = (patch: Partial<typeof form>) => setForm((f) => ({ ...f, ...patch }));
   const setLevel = (i: number, patch: Partial<(typeof form.levels)[number]>) =>
@@ -79,6 +95,7 @@ const PayoutRules = ({ settings }: { settings: IPayoutSettings | null }) => {
         fx_spread_percent: numberOr(form.fx_spread_percent, settings.fx_spread_percent),
         fixed_fee_ngn: numberOr(form.fixed_fee_ngn, settings.fixed_fee_ngn),
         review_first_payout: form.review_first_payout,
+        review_above_usd: numberOr(form.review_above_usd, settings.review_above_usd),
         levels: form.levels.map((l) => ({
           level: l.level,
           can_be_paid: l.can_be_paid,
@@ -122,13 +139,54 @@ const PayoutRules = ({ settings }: { settings: IPayoutSettings | null }) => {
           <h5 className="text-sm font-semibold text-dark dark:text-white">Payout rules</h5>
           <p className="text-xs text-darklink mt-1">
             Earnings are paid automatically every cycle to people who meet these rules. Anyone
-            else keeps their earnings until they do. Automatic payouts:{" "}
-            <span className="font-semibold">{settings.auto_payouts_enabled ? "on" : "not live yet"}</span>.
+            else keeps their earnings until they do.
           </p>
         </div>
         <Button size="sm" color="primary" className="h-8" onClick={save} disabled={saving}>
           {saving ? "Saving…" : "Save rules"}
         </Button>
+      </div>
+
+      <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-ld p-3">
+        <div className="min-w-0">
+          <p className="text-sm font-semibold">
+            Automatic payouts:{" "}
+            <span className={settings.auto_payouts_enabled ? "text-success" : "text-darklink"}>
+              {settings.auto_payouts_enabled ? "on" : "off"}
+            </span>
+          </p>
+          <p className="text-xs text-darklink">
+            {settings.auto_payouts_enabled
+              ? "Payouts are sent when each level's cycle ends."
+              : "Nothing is sent until this is on. Earnings stay in users' wallets until then."}
+          </p>
+        </div>
+        {switching === "confirm" ? (
+          <div className="flex gap-2">
+            <Button size="sm" color="light" className="h-8" onClick={() => setSwitching(null)}>
+              Cancel
+            </Button>
+            <Button
+              size="sm"
+              color={settings.auto_payouts_enabled ? "failure" : "success"}
+              className="h-8"
+              onClick={() => setLive(!settings.auto_payouts_enabled)}
+            >
+              {settings.auto_payouts_enabled ? "Yes, switch off" : "Yes, start paying out"}
+            </Button>
+          </div>
+        ) : (
+          <Button
+            size="sm"
+            color="light"
+            className="h-8"
+            disabled={switching === "busy" || (!settings.auto_payouts_enabled && !settings.first_cycle_starts_at)}
+            title={!settings.first_cycle_starts_at ? "Save a first cycle date first" : undefined}
+            onClick={() => setSwitching("confirm")}
+          >
+            {settings.auto_payouts_enabled ? "Switch off" : "Switch on"}
+          </Button>
+        )}
       </div>
 
       <div className="mt-4 grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
@@ -147,6 +205,7 @@ const PayoutRules = ({ settings }: { settings: IPayoutSettings | null }) => {
         {field("min_payout_usd", "Smallest payout (USD)", "Less than this waits for the next cycle", { min: 0, step: 0.01 })}
         {field("fx_spread_percent", "FX spread (%)", "Taken from what's sent", { min: 0, max: 100, step: 0.01 })}
         {field("fixed_fee_ngn", "Flat fee (₦)", "Taken from what's sent", { min: 0, step: 0.01 })}
+        {field("review_above_usd", "Review payouts above (USD)", "Larger payouts wait for a person", { min: 1, step: 0.01 })}
       </div>
 
       <label className="mt-4 flex items-center gap-2 text-sm">

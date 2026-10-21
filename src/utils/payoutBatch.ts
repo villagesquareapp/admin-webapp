@@ -1,12 +1,12 @@
-// Approve and decline answer per withdrawal: the request succeeds even when
-// some (or all) of the withdrawals in it were refused.
-export type WithdrawalBatchResult = {
+// Approve and decline answer per payout: the request succeeds even when
+// some (or all) of the payouts in it were refused.
+export type PayoutBatchResult = {
     successful?: unknown[];
     failed?: { id: string; error: string }[];
 };
 
 export const batchFailures = (response?: ApiResponse<any>) =>
-    ((response?.data as WithdrawalBatchResult | undefined)?.failed ?? []);
+    ((response?.data as PayoutBatchResult | undefined)?.failed ?? []);
 
 export const batchFailureMessage = (
     failures: { error: string }[],

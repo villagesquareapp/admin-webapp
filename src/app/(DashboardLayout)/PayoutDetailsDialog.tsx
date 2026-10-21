@@ -9,20 +9,20 @@ import Image from "next/image";
 import { IoMdCheckmark } from "react-icons/io";
 import { LiaTimesSolid } from "react-icons/lia";
 import { useState } from "react";
-import { approveWithdrawal, declineWithdrawal } from "../api/wallet";
-import { batchFailureMessage, batchFailures } from "@/utils/withdrawalBatch";
+import { approvePayouts, declinePayouts } from "../api/wallet";
+import { batchFailureMessage, batchFailures } from "@/utils/payoutBatch";
 import { toast } from "sonner";
 
-const UserPendingWithdrawalInfo = ({
+const PayoutDetailsDialog = ({
     isOpen,
     setIsOpen,
-    withdrawal,
-    onWithdrawalAction
+    payout,
+    onPayoutAction
 }: {
     isOpen: boolean;
     setIsOpen: (isOpen: boolean) => void;
-    withdrawal: IPendingWithdrawals | null;
-    onWithdrawalAction?: (uuid: string, action: 'approved' | 'declined') => void;
+    payout: IQueuedPayout | null;
+    onPayoutAction?: (uuid: string, action: 'approved' | 'declined') => void;
 }) => {
     const [isDeclineDialogOpen, setIsDeclineDialogOpen] = useState(false);
     const [isApproveDialogOpen, setIsApproveDialogOpen] = useState(false);
@@ -30,54 +30,54 @@ const UserPendingWithdrawalInfo = ({
     const [isDeclining, setIsDeclining] = useState(false);
     const [isApproving, setIsApproving] = useState(false);
 
-    if (!withdrawal) return null;
+    if (!payout) return null;
 
-    const handleDeclineWithdrawal = async () => {
-        if (!withdrawal?.uuid || !declineReason.trim()) return;
+    const handleDeclinePayout = async () => {
+        if (!payout?.uuid || !declineReason.trim()) return;
 
         try {
             setIsDeclining(true);
-            const response = await declineWithdrawal([withdrawal.uuid], declineReason);
+            const response = await declinePayouts([payout.uuid], declineReason);
             const failures = batchFailures(response);
             if (response?.status && failures.length) {
                 toast.error(batchFailureMessage(failures, 1));
             } else if (response?.status) {
                 setIsDeclineDialogOpen(false);
                 setIsOpen(false);
-                onWithdrawalAction?.(withdrawal.uuid, 'declined');
-                toast.success("Withdrawal request declined successfully");
+                onPayoutAction?.(payout.uuid, 'declined');
+                toast.success("Payout declined; the money is back in their earnings");
             } else {
-                toast.error(response?.message || "Failed to decline withdrawal");
+                toast.error(response?.message || "Failed to decline the payout");
             }
         } catch (error) {
-            console.error("Error declining withdrawal:", error);
-            toast.error("An error occurred while declining withdrawal");
+            console.error("Error declining payout:", error);
+            toast.error("An error occurred while declining the payout");
         } finally {
             setIsDeclining(false);
             setDeclineReason("");
         }
     };
 
-    const handleApproveWithdrawal = async () => {
-        if (!withdrawal?.uuid) return;
+    const handleApprovePayout = async () => {
+        if (!payout?.uuid) return;
 
         try {
             setIsApproving(true);
-            const response = await approveWithdrawal([withdrawal.uuid]);
+            const response = await approvePayouts([payout.uuid]);
             const failures = batchFailures(response);
             if (response?.status && failures.length) {
                 toast.error(batchFailureMessage(failures, 1));
             } else if (response?.status) {
                 setIsApproveDialogOpen(false);
                 setIsOpen(false);
-                onWithdrawalAction?.(withdrawal.uuid, 'approved');
-                toast.success("Withdrawal request approved successfully");
+                onPayoutAction?.(payout.uuid, 'approved');
+                toast.success("Payout approved and sent");
             } else {
-                toast.error(response?.message || "Failed to approve withdrawal");
+                toast.error(response?.message || "Failed to approve the payout");
             }
         } catch (error) {
-            console.error("Error approving withdrawal:", error);
-            toast.error("An error occurred while approving withdrawal");
+            console.error("Error approving payout:", error);
+            toast.error("An error occurred while approving the payout");
         } finally {
             setIsApproving(false);
         }
@@ -86,6 +86,7 @@ const UserPendingWithdrawalInfo = ({
     return (
         <AnimatePresence>
             <Dialog
+                key="details"
                 onClose={() => {
                     setIsOpen(false);
                 }}
@@ -110,7 +111,7 @@ const UserPendingWithdrawalInfo = ({
                         {/* Header */}
                         <div className="flex items-center justify-between">
                             <DialogTitle className="text-xl lg:text-2xl font-semibold">
-                                Withdrawal Request Details
+                                Payout details
                             </DialogTitle>
 
                             <Icon
@@ -125,10 +126,10 @@ const UserPendingWithdrawalInfo = ({
                             {/* Profile Section */}
                             <div className="flex items-center gap-4 lg:gap-6">
                                 <div className="relative h-16 w-16 lg:h-20 lg:w-20 rounded-full overflow-hidden">
-                                    {withdrawal.user.profile_picture ? (
+                                    {payout.user.profile_picture ? (
                                         <Image
-                                            src={withdrawal.user.profile_picture}
-                                            alt={withdrawal.user.name}
+                                            src={payout.user.profile_picture}
+                                            alt={payout.user.name}
                                             fill
                                             className="object-cover"
                                         />
@@ -139,39 +140,36 @@ const UserPendingWithdrawalInfo = ({
                                     )}
                                 </div>
                                 <div>
-                                    <h3 className="text-lg lg:text-xl font-semibold">{withdrawal.user.name}</h3>
-                                    <p className="text-gray-500 lg:text-lg">@{withdrawal.user.username}</p>
-                                    <p className="text-sm lg:text-base text-gray-500">{withdrawal.user.email}</p>
+                                    <h3 className="text-lg lg:text-xl font-semibold">{payout.user.name}</h3>
+                                    <p className="text-gray-500 lg:text-lg">@{payout.user.username}</p>
+                                    <p className="text-sm lg:text-base text-gray-500">{payout.user.email}</p>
                                 </div>
                             </div>
 
-                            {/* Withdrawal Details */}
+                            {/* Payout details */}
                             <div className="grid grid-cols-2 gap-4 lg:gap-6 p-4 lg:p-6 bg-gray-50 dark:bg-gray-800 rounded-lg">
                                 <div>
                                     <p className="text-sm lg:text-base text-gray-500">Current Balance</p>
                                     <p className="text-lg lg:text-xl font-semibold">
-                                        {/* {withdrawal.wallet?.currency?.symbol} */}
-                                        {formatNumber(withdrawal.cowry_balance)}
+                                        CWR {formatNumber(payout.cowry_balance)}
                                     </p>
                                 </div>
                                 <div>
-                                    <p className="text-sm lg:text-base text-gray-500">Withdrawal Amount</p>
+                                    <p className="text-sm lg:text-base text-gray-500">Payout Amount</p>
                                     <p className="text-lg lg:text-xl font-semibold text-primary">
-                                        {/* {withdrawal.wallet?.currency?.symbol} */}
-                                        {formatNumber(withdrawal.amount)}
+                                        CWR {formatNumber(payout.amount)}
                                     </p>
                                 </div>
                                 <div>
-                                    <p className="text-sm lg:text-base text-gray-500">Last Withdrawal</p>
+                                    <p className="text-sm lg:text-base text-gray-500">Last Payout</p>
                                     <p className="text-lg lg:text-xl font-semibold">
-                                        {/* {withdrawal.wallet?.currency?.symbol} */}
-                                        {withdrawal.last_withdrawal === null ? 'N/A' : formatNumber(withdrawal.last_withdrawal.amount)}
+                                        {payout.last_payout === null ? 'N/A' : `CWR ${formatNumber(payout.last_payout.amount)}`}
                                     </p>
                                 </div>
                                 <div>
-                                    <p className="text-sm lg:text-base text-gray-500">Request Date</p>
+                                    <p className="text-sm lg:text-base text-gray-500">Queued On</p>
                                     <p className="text-lg lg:text-xl font-semibold">
-                                        {formatDate(withdrawal.created_at)}
+                                        {formatDate(payout.created_at)}
                                     </p>
                                 </div>
                             </div>
@@ -204,6 +202,7 @@ const UserPendingWithdrawalInfo = ({
 
             {/* Decline Dialog */}
             <Dialog
+                key="decline"
                 open={isDeclineDialogOpen}
                 onClose={() => setIsDeclineDialogOpen(false)}
                 className="relative z-50"
@@ -223,14 +222,14 @@ const UserPendingWithdrawalInfo = ({
                         className="w-full max-w-[500px] flex flex-col p-6 gap-6 rounded-lg bg-white dark:bg-darkgray shadow-md"
                     >
                         <div className="flex flex-col gap-4">
-                            <h3 className="text-xl font-semibold">Decline Withdrawal</h3>
+                            <h3 className="text-xl font-semibold">Decline payout</h3>
                             <p className="text-gray-600 dark:text-gray-300">
-                                Are you sure you want to decline withdrawal request of{" "}
+                                Decline the payout of{" "}
                                 <span className="font-medium">
-                                    {/* {withdrawal.wallet?.currency?.symbol} */}
-                                    {formatNumber(withdrawal.amount)}
+                                    CWR {formatNumber(payout.amount)}
                                 </span>{" "}
-                                for <span className="font-medium">{withdrawal.user.name}</span>?
+                                for <span className="font-medium">{payout.user.name}</span>? The money goes
+                                back to their earnings.
                             </p>
                         </div>
 
@@ -261,7 +260,7 @@ const UserPendingWithdrawalInfo = ({
                             <Button
                                 color="failure"
                                 className="w-fit min-w-[100px]"
-                                onClick={handleDeclineWithdrawal}
+                                onClick={handleDeclinePayout}
                                 disabled={isDeclining || !declineReason.trim()}
                             >
                                 {isDeclining ? (
@@ -270,7 +269,7 @@ const UserPendingWithdrawalInfo = ({
                                         Declining...
                                     </div>
                                 ) : (
-                                    "Decline"
+                                    "Decline and return the money"
                                 )}
                             </Button>
                         </div>
@@ -280,6 +279,7 @@ const UserPendingWithdrawalInfo = ({
 
             {/* Approve Dialog */}
             <Dialog
+                key="approve"
                 open={isApproveDialogOpen}
                 onClose={() => setIsApproveDialogOpen(false)}
                 className="relative z-50"
@@ -299,14 +299,14 @@ const UserPendingWithdrawalInfo = ({
                         className="w-full max-w-[500px] flex flex-col p-6 gap-6 rounded-lg bg-white dark:bg-darkgray shadow-md"
                     >
                         <div className="flex flex-col gap-4">
-                            <h3 className="text-xl font-semibold">Approve Withdrawal</h3>
+                            <h3 className="text-xl font-semibold">Approve payout</h3>
                             <p className="text-gray-600 dark:text-gray-300">
-                                Are you sure you want to approve withdrawal request of{" "}
+                                Send the payout of{" "}
                                 <span className="font-medium">
-                                    {/* {withdrawal.wallet?.currency?.symbol} */}
-                                    {formatNumber(withdrawal.amount)}
+                                    CWR {formatNumber(payout.amount)}
                                 </span>{" "}
-                                for <span className="font-medium">{withdrawal.user.name}</span>?
+                                to <span className="font-medium">{payout.user.name}</span>? It goes out
+                                through Flutterwave right away.
                             </p>
                         </div>
 
@@ -322,16 +322,16 @@ const UserPendingWithdrawalInfo = ({
                             <Button
                                 color="success"
                                 className="w-fit min-w-[100px]"
-                                onClick={handleApproveWithdrawal}
+                                onClick={handleApprovePayout}
                                 disabled={isApproving}
                             >
                                 {isApproving ? (
                                     <div className="flex items-center gap-2">
                                         <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                                        Approving...
+                                        Sending...
                                     </div>
                                 ) : (
-                                    "Approve"
+                                    "Approve and send"
                                 )}
                             </Button>
                         </div>
@@ -342,4 +342,4 @@ const UserPendingWithdrawalInfo = ({
     );
 };
 
-export default UserPendingWithdrawalInfo;
+export default PayoutDetailsDialog;

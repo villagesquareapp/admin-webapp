@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { getFlutterwaveBalance, getCowryBalance, getPendingWithdrawals } from "@/app/api/wallet";
+import { getFlutterwaveBalance, getCowryBalance, getPayoutQueue } from "@/app/api/wallet";
 import { getCoins } from "@/app/api/coin";
 import { getGifts } from "@/app/api/gift";
 import { getBillingPlans, getBillingOverview } from "@/app/api/billing";
@@ -11,12 +11,12 @@ const num = (v: unknown) => Number(v) || 0;
 const arr = <T,>(v: unknown): T[] => (Array.isArray(v) ? (v as T[]) : []);
 
 const OverviewWrapper = async () => {
-  const [flutterwave, cowry, coinsRes, giftsRes, withdrawals, plansRes, verified, vflixMon, billing] = await Promise.all([
+  const [flutterwave, cowry, coinsRes, giftsRes, payoutQueue, plansRes, verified, vflixMon, billing] = await Promise.all([
     getFlutterwaveBalance(),
     getCowryBalance(),
     getCoins(),
     getGifts(),
-    getPendingWithdrawals(1, 1),
+    getPayoutQueue(1, 1),
     getBillingPlans(),
     getVerifiedUserStats(),
     getVflixMonetization(),
@@ -40,7 +40,7 @@ const OverviewWrapper = async () => {
       subscribers_total: num(vs?.total_active_subscribers),
       greencheck: num(vs?.greencheck_active_subscribers),
       premium: num(vs?.premium_active_subscribers),
-      pending_withdrawals: num(withdrawals?.data?.total),
+      payouts_waiting: num(payoutQueue?.data?.total),
       coin_packages: coins.length,
       coins_active: coins.filter((c) => c.status).length,
       gifts_total: gifts.length,

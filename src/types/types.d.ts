@@ -1447,7 +1447,7 @@ interface IReportDetail extends IReport {
 
 interface IReportResponse extends IPaginatedResponse<IReport> {}
 
-interface IWithdrawalUser {
+interface IPayoutUser {
   uuid: string;
   name: string;
   username: string;
@@ -1455,8 +1455,8 @@ interface IWithdrawalUser {
   profile_picture: string;
 }
 
-// Withdrawals held after a refund couldn't be fully taken back.
-interface IWithdrawalHold {
+// Payouts held after a refund couldn't be fully taken back.
+interface IPayoutHold {
   uuid: string;
   user: {
     uuid: string;
@@ -1476,7 +1476,7 @@ interface IWithdrawalHold {
   released_by: { uuid: string; name: string | null; email: string | null } | null;
 }
 
-interface IWithdrawalHoldsResponse extends IPaginatedResponse<IWithdrawalHold> {}
+interface IPayoutHoldsResponse extends IPaginatedResponse<IPayoutHold> {}
 
 interface ICowryBalance {
   cowry_value: {
@@ -1513,7 +1513,7 @@ interface IRecentTransfer {
 
 interface IRecentTransferResponse extends IPaginatedResponse<IRecentTransfer> {}
 
-interface IPendingWithdrawals {
+interface IQueuedPayout {
   uuid: string;
   amount: number;
   transaction_type: string;
@@ -1530,6 +1530,9 @@ interface IPendingWithdrawals {
     withdrawal_id: string;
     payment_provider: string;
     withdrawal_method: string;
+    // Set on automatic payouts waiting for review.
+    auto_payout?: { payout_id: string; number: number; cycle_id: string; level: string };
+    auto_payout_review?: string;
     withdrawal_init_data: {
       payout_kobo: number;
       naira_amount: string;
@@ -1555,15 +1558,15 @@ interface IPendingWithdrawals {
     name: string;
   };
   cowry_balance: number;
-  last_withdrawal: {
+  last_payout: {
     amount: number;
     date: string;
-  };
+  } | null;
 }
 
-interface IPendingWithdrawalsResponse extends IPaginatedResponse<IPendingWithdrawals> {}
+interface IPayoutQueueResponse extends IPaginatedResponse<IQueuedPayout> {}
 
-interface IWithdrawalAttention {
+interface IPayoutAttention {
   uuid: string;
   reference_id: string;
   transaction_status: "pending" | "failed" | string;
@@ -1588,7 +1591,7 @@ interface IWithdrawalAttention {
   };
 }
 
-interface IWithdrawalAttentionResponse extends IPaginatedResponse<IWithdrawalAttention> {}
+interface IPayoutAttentionResponse extends IPaginatedResponse<IPayoutAttention> {}
 
 type PayoutVerificationLevel = "none" | "checkmark" | "premium";
 
@@ -1606,6 +1609,7 @@ interface IPayoutSettings {
   fx_spread_percent: number;
   fixed_fee_ngn: number;
   review_first_payout: boolean;
+  review_above_usd: number;
   auto_payouts_enabled: boolean;
   updated_at: string;
   updated_by: string | null;
@@ -1613,8 +1617,49 @@ interface IPayoutSettings {
 }
 
 type IPayoutSettingsUpdate = Partial<
-  Omit<IPayoutSettings, "auto_payouts_enabled" | "updated_at" | "updated_by">
+  Omit<IPayoutSettings, "updated_at" | "updated_by">
 >;
+
+type PayoutStatus = "pending" | "review" | "processing" | "paid" | "failed" | "cancelled";
+
+interface IPayout {
+  uuid: string;
+  number: number;
+  status: PayoutStatus;
+  verification_level: PayoutVerificationLevel;
+  amount_usd: number;
+  fee_usd: number;
+  payout_ngn: number | null;
+  method: { bank_name?: string; account_number?: string; account_name?: string } | null;
+  review_reason: string | null;
+  failure_reason: string | null;
+  provider_reference: string;
+  provider_transfer_id: string | null;
+  ledger_transaction_id: string | null;
+  cycle: { uuid: string; number: number; ends_at: string };
+  user: { uuid: string; name: string; username: string; email: string; profile_picture: string | null };
+  created_at: string;
+  sent_at: string | null;
+  paid_at: string | null;
+  failed_at: string | null;
+}
+
+interface IPayoutsResponse extends IPaginatedResponse<IPayout> {}
+
+interface IPayoutCycle {
+  uuid: string;
+  level: PayoutVerificationLevel;
+  number: number;
+  starts_at: string;
+  ends_at: string;
+  status: "scheduled" | "running" | "completed" | "cancelled";
+  payouts: number;
+  paid: number;
+  review: number;
+  in_progress: number;
+  not_paid: number;
+  paid_usd: number;
+}
 
 interface ILegacyTransferReport {
   opening_balances_copied: number;
