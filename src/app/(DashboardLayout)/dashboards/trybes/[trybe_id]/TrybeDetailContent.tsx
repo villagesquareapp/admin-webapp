@@ -4,7 +4,8 @@ import { useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Icon } from "@iconify/react";
-import { Button, Modal, Tabs, Textarea } from "flowbite-react";
+import { Modal, ModalBody, ModalFooter, ModalHeader, TabItem, Tabs, Textarea, Spinner } from "flowbite-react";
+import { Button } from "@/app/components/shared/Button";
 import { toast } from "sonner";
 import CardBox from "@/app/components/shared/CardBox";
 import { formatDate } from "@/utils/dateUtils";
@@ -107,7 +108,8 @@ const ImagePicker = ({ trybe, kind }: { trybe: ITrybeDetail; kind: "avatar" | "c
         onChange={(e) => upload(e.target.files?.[0])}
       />
       <div className="flex gap-2">
-        <Button size="xs" color="light" className="w-fit" onClick={() => input.current?.click()} isProcessing={busy} disabled={busy}>
+        <Button size="xs" color="light" className="w-fit" onClick={() => input.current?.click()} disabled={busy}>
+          {busy && <Spinner size="sm" light />}
           {current ? "Replace" : "Upload"}
         </Button>
         {current && (
@@ -251,10 +253,10 @@ const TrybeDetailContent = ({
       )}
 
       <Tabs aria-label="Trybe" variant="underline" onActiveTabChange={changeTab}>
-        <Tabs.Item active={tab === "overview"} title="Overview" icon={() => <Icon icon="solar:chart-2-line-duotone" height={18} className="me-2" />}>
+        <TabItem active={tab === "overview"} title="Overview" icon={() => <Icon icon="solar:chart-2-line-duotone" height={18} className="me-2" />}>
           {tab === "overview" && <TrybeOverview trybe={trybe} onTab={openTab} />}
-        </Tabs.Item>
-        <Tabs.Item active={tab === "profile"} title="Profile" icon={() => <Icon icon="solar:document-text-line-duotone" height={18} className="me-2" />}>
+        </TabItem>
+        <TabItem active={tab === "profile"} title="Profile" icon={() => <Icon icon="solar:document-text-line-duotone" height={18} className="me-2" />}>
           <div className="grid grid-cols-12 gap-30">
             <div className="col-span-12 lg:col-span-4">
               <CardBox>
@@ -274,58 +276,59 @@ const TrybeDetailContent = ({
               </CardBox>
             </div>
           </div>
-        </Tabs.Item>
-        <Tabs.Item active={tab === "people"} title="Admins & members" icon={() => <Icon icon="solar:users-group-rounded-line-duotone" height={18} className="me-2" />}>
+        </TabItem>
+        <TabItem active={tab === "people"} title="Admins & members" icon={() => <Icon icon="solar:users-group-rounded-line-duotone" height={18} className="me-2" />}>
           <TrybePeople trybe={trybe} members={members} totalPages={membersPages} page={page} limit={limit} />
-        </Tabs.Item>
-        <Tabs.Item active={tab === "announcement"} title="Announcement" icon={() => <Icon icon="solar:speaker-minimalistic-line-duotone" height={18} className="me-2" />}>
+        </TabItem>
+        <TabItem active={tab === "announcement"} title="Announcement" icon={() => <Icon icon="solar:speaker-minimalistic-line-duotone" height={18} className="me-2" />}>
           <TrybeAnnouncement trybe={trybe} />
-        </Tabs.Item>
-        <Tabs.Item active={tab === "posts"} title="Posts" icon={() => <Icon icon="solar:document-text-line-duotone" height={18} className="me-2" />}>
+        </TabItem>
+        <TabItem active={tab === "posts"} title="Posts" icon={() => <Icon icon="solar:document-text-line-duotone" height={18} className="me-2" />}>
           {tab === "posts" && <TrybeModeration trybeId={trybe.uuid} kind="posts" />}
-        </Tabs.Item>
-        <Tabs.Item active={tab === "videos"} title="Videos" icon={() => <Icon icon="solar:videocamera-record-line-duotone" height={18} className="me-2" />}>
+        </TabItem>
+        <TabItem active={tab === "videos"} title="Videos" icon={() => <Icon icon="solar:videocamera-record-line-duotone" height={18} className="me-2" />}>
           {tab === "videos" && <TrybeModeration trybeId={trybe.uuid} kind="videos" />}
-        </Tabs.Item>
-        <Tabs.Item active={tab === "live"} title="Live" icon={() => <Icon icon="solar:microphone-3-line-duotone" height={18} className="me-2" />}>
+        </TabItem>
+        <TabItem active={tab === "live"} title="Live" icon={() => <Icon icon="solar:microphone-3-line-duotone" height={18} className="me-2" />}>
           {tab === "live" && <TrybeModeration trybeId={trybe.uuid} kind="live" />}
-        </Tabs.Item>
-        <Tabs.Item active={tab === "market"} title="Market" icon={() => <Icon icon="solar:shop-2-line-duotone" height={18} className="me-2" />}>
+        </TabItem>
+        <TabItem active={tab === "market"} title="Market" icon={() => <Icon icon="solar:shop-2-line-duotone" height={18} className="me-2" />}>
           {tab === "market" && <TrybeModeration trybeId={trybe.uuid} kind="products" />}
-        </Tabs.Item>
-        <Tabs.Item active={tab === "events"} title="Events" icon={() => <Icon icon="solar:calendar-line-duotone" height={18} className="me-2" />}>
+        </TabItem>
+        <TabItem active={tab === "events"} title="Events" icon={() => <Icon icon="solar:calendar-line-duotone" height={18} className="me-2" />}>
           {tab === "events" && <TrybeContent trybeId={trybe.uuid} kind="events" />}
-        </Tabs.Item>
-        <Tabs.Item active={tab === "files"} title="Files" icon={() => <Icon icon="solar:folder-with-files-line-duotone" height={18} className="me-2" />}>
+        </TabItem>
+        <TabItem active={tab === "files"} title="Files" icon={() => <Icon icon="solar:folder-with-files-line-duotone" height={18} className="me-2" />}>
           {tab === "files" && <TrybeContent trybeId={trybe.uuid} kind="files" />}
-        </Tabs.Item>
-        <Tabs.Item active={tab === "polls"} title={trybe.type?.poll_label || "Polls"} icon={() => <Icon icon="solar:chart-square-line-duotone" height={18} className="me-2" />}>
+        </TabItem>
+        <TabItem active={tab === "polls"} title={trybe.type?.poll_label || "Polls"} icon={() => <Icon icon="solar:chart-square-line-duotone" height={18} className="me-2" />}>
           {tab === "polls" && <TrybeContent trybeId={trybe.uuid} kind="polls" />}
-        </Tabs.Item>
-        <Tabs.Item active={tab === "reports"} title="Reports" icon={() => <Icon icon="solar:danger-triangle-line-duotone" height={18} className="me-2" />}>
+        </TabItem>
+        <TabItem active={tab === "reports"} title="Reports" icon={() => <Icon icon="solar:danger-triangle-line-duotone" height={18} className="me-2" />}>
           {tab === "reports" && <TrybeReports trybeId={trybe.uuid} />}
-        </Tabs.Item>
-        <Tabs.Item active={tab === "audit"} title="Audit" icon={() => <Icon icon="solar:history-line-duotone" height={18} className="me-2" />}>
+        </TabItem>
+        <TabItem active={tab === "audit"} title="Audit" icon={() => <Icon icon="solar:history-line-duotone" height={18} className="me-2" />}>
           {tab === "audit" && <TrybeAudit trybeId={trybe.uuid} />}
-        </Tabs.Item>
+        </TabItem>
       </Tabs>
 
       <Modal show={!!action} onClose={() => !busy && setAction(null)} size="md">
-        <Modal.Header>{copy?.title}</Modal.Header>
-        <Modal.Body>
+        <ModalHeader>{copy?.title}</ModalHeader>
+        <ModalBody>
           <div className="flex flex-col gap-3">
             <p className="text-sm">{copy?.body}</p>
             <Textarea rows={2} maxLength={500} value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Reason (kept in the audit log)" />
           </div>
-        </Modal.Body>
-        <Modal.Footer>
+        </ModalBody>
+        <ModalFooter>
           <Button color="gray" onClick={() => setAction(null)} disabled={busy}>
             Cancel
           </Button>
-          <Button color={copy?.color} onClick={runAction} isProcessing={busy} disabled={busy}>
+          <Button color={copy?.color} onClick={runAction} disabled={busy}>
+            {busy && <Spinner size="sm" light />}
             {copy?.button}
           </Button>
-        </Modal.Footer>
+        </ModalFooter>
       </Modal>
     </div>
   );

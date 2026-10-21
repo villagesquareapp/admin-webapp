@@ -73,11 +73,13 @@ export const getUserStatus = async () => {
     return await apiGet<IUserStatusList[]>(`users/user-status-list`, token);
 }
 
-export const updateUserStatus = async (userId: string, status: string) => {
+// Goes through the moderation engine: ban and suspend sign the user out and
+// notify them; suspensions lift after duration_days (7 by default).
+export const updateUserStatus = async (userId: string, status: string, reason: string, durationDays?: number) => {
     const token = await getToken();
     const response = await apiPost(
         `users/${userId}/update-status`,
-        { status },
+        { status, reason, ...(status === "suspended" && durationDays ? { duration_days: durationDays } : {}) },
         token
     );
 

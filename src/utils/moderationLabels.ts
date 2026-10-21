@@ -14,6 +14,24 @@ const LABELS: Record<string, string> = {
   ban_user: "Banned author",
   reinstate_user: "Reinstated author",
   force_logout: "Forced logout",
+  change_status: "Changed status",
+  feature_content: "Featured content",
+  trend_override: "Changed trending",
+  force_end: "Ended live session",
+  approve_template: "Approved template",
+  reject_template: "Rejected template",
+  remove_template: "Removed template",
+  approve_verification: "Approved verification",
+  reject_verification: "Rejected verification",
+  send_push: "Sent a push",
+  resend_push: "Resent a push",
+  broadcast_push: "Pushed to all users",
+  delete_push: "Deleted a push",
+  add_setting: "Added a setting",
+  change_setting: "Changed a setting",
+  delete_setting: "Deleted a setting",
+  create_staff_account: "Added a staff member",
+  change_staff_account: "Changed a staff member",
 };
 
 // error = destructive, warning = limiting, success = restorative, info = other
@@ -30,6 +48,14 @@ const TONE_KIND: Record<string, "error" | "warning" | "success" | "info"> = {
   shadowban_user: "warning",
   restore_content: "success",
   reinstate_user: "success",
+  approve_template: "success",
+  approve_verification: "success",
+  force_end: "error",
+  remove_template: "error",
+  reject_template: "warning",
+  reject_verification: "warning",
+  delete_push: "warning",
+  delete_setting: "warning",
 };
 
 const TONE_CLASS: Record<string, string> = {

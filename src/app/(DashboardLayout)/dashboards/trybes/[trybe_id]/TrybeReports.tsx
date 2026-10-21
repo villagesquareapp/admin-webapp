@@ -2,7 +2,8 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-import { Badge, Button, Select, Spinner } from "flowbite-react";
+import { Badge, Select, Spinner } from "flowbite-react";
+import { Button } from "@/app/components/shared/Button";
 import { toast } from "sonner";
 import CardBox from "@/app/components/shared/CardBox";
 import ResolveReportModal, { ReportAction } from "@/app/components/shared/ResolveReportModal";

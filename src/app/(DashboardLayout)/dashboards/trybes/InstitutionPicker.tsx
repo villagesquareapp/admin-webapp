@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Button, TextInput } from "flowbite-react";
+import { TextInput } from "flowbite-react";
+import { Button } from "@/app/components/shared/Button";
 import { HiOutlineSearch } from "react-icons/hi";
 import { useDebouncedCallback } from "use-debounce";
 import { getInstitutions } from "@/app/api/trybeCampus";

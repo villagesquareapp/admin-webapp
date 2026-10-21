@@ -7,14 +7,10 @@ import {
   IconChevronsRight,
   IconDatabaseOff,
 } from "@tabler/icons-react";
-import {
-  flexRender,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getSortedRowModel,
-  useReactTable,
-} from "@tanstack/react-table";
-import { Button, Dropdown, Select } from "flowbite-react";
+import { flexRender, useTable } from "@tanstack/react-table";
+import { appTableFeatures } from "@/utils/table";
+import { Dropdown, DropdownItem, Select } from "flowbite-react";
+import { Button } from "@/app/components/shared/Button";
 import { useRouter, useSearchParams } from "next/navigation";
 import React from "react";
 import { HiOutlineDotsVertical } from "react-icons/hi";
@@ -93,21 +89,11 @@ function ReusableTable({
     });
   };
 
-  const table = useReactTable({
+  // Paging is server-side: the controls below use currentPage and totalPages.
+  const table = useTable({
+    features: appTableFeatures,
     data: tableData,
     columns,
-    filterFns: {},
-    state: {
-      pagination: {
-        pageIndex: currentPage - 1,
-        pageSize: pageSize,
-      },
-    },
-    manualPagination: true,
-    pageCount: totalPages,
-    getCoreRowModel: getCoreRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    getSortedRowModel: getSortedRowModel(),
   });
 
   const handlePageChange = (newPage: number) => {
@@ -197,7 +183,7 @@ function ReusableTable({
                   )}
                 >
                   {dropdownItems?.map((items, index) => {
-                    return <Dropdown.Item key={index}>{items}</Dropdown.Item>;
+                    return <DropdownItem key={index}>{items}</DropdownItem>;
                   })}
                 </Dropdown>
               </div>
@@ -234,7 +220,7 @@ function ReusableTable({
                     className="transition-colors cursor-pointer hover:bg-gray-800/10 dark:hover:bg-gray-50/10"
                     onClick={() => onRowClick?.(row.original)}
                   >
-                    {row.getVisibleCells().map((cell) => (
+                    {row.getAllCells().map((cell) => (
                       <td key={cell.id} className={`whitespace-nowrap ${dense ? "py-1.5 px-3" : "py-2 px-4"}`}>
                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                       </td>

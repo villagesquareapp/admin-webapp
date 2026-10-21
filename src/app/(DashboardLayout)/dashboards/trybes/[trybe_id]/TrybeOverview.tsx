@@ -2,7 +2,8 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-import { Badge, Button, Label, Modal, Spinner, TextInput, Textarea } from "flowbite-react";
+import { Badge, Label, Modal, ModalBody, ModalFooter, ModalHeader, Spinner, Textarea, TextInput } from "flowbite-react";
+import { Button } from "@/app/components/shared/Button";
 import { formatDistanceToNow, parseISO } from "date-fns";
 import { toast } from "sonner";
 import CardBox from "@/app/components/shared/CardBox";
@@ -80,11 +81,11 @@ const MessageMembers = ({ trybe }: { trybe: ITrybeDetail }) => {
       ) : (
         <div className="flex flex-col gap-3">
           <div>
-            <Label htmlFor="push-title" value="Title" />
+            <Label htmlFor="push-title">Title</Label>
             <TextInput id="push-title" sizing="sm" value={title} maxLength={60} onChange={(e) => setTitle(e.target.value)} className="mt-1" />
           </div>
           <div>
-            <Label htmlFor="push-body" value="Message" />
+            <Label htmlFor="push-body">Message</Label>
             <Textarea id="push-body" rows={3} value={body} maxLength={300} onChange={(e) => setBody(e.target.value)} className="mt-1" />
             <p className="text-[11px] text-darklink text-right">{body.length}/300</p>
           </div>
@@ -127,8 +128,8 @@ const MessageMembers = ({ trybe }: { trybe: ITrybeDetail }) => {
       )}
 
       <Modal show={confirming} onClose={() => !busy && setConfirming(false)} size="md" dismissible>
-        <Modal.Header>Send this push?</Modal.Header>
-        <Modal.Body>
+        <ModalHeader>Send this push?</ModalHeader>
+        <ModalBody>
           <div className="rounded-lg border border-border dark:border-darkborder p-3">
             <p className="text-sm font-semibold">{title.trim()}</p>
             <p className="text-sm mt-1 whitespace-pre-line">{body.trim()}</p>
@@ -136,15 +137,16 @@ const MessageMembers = ({ trybe }: { trybe: ITrybeDetail }) => {
           <p className="text-sm mt-3">
             It goes to {count(info?.recipients, "member", "members")} of {trybe.name} now and can&apos;t be taken back.
           </p>
-        </Modal.Body>
-        <Modal.Footer>
+        </ModalBody>
+        <ModalFooter>
           <Button color="gray" onClick={() => setConfirming(false)} disabled={busy}>
             Back
           </Button>
-          <Button color="primary" onClick={send} isProcessing={busy} disabled={busy}>
+          <Button color="primary" onClick={send} disabled={busy}>
+            {busy && <Spinner size="sm" light />}
             Send
           </Button>
-        </Modal.Footer>
+        </ModalFooter>
       </Modal>
     </CardBox>
   );

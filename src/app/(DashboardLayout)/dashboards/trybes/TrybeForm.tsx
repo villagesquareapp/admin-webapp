@@ -3,7 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Button, Label, Select, TextInput, Textarea } from "flowbite-react";
+import { Label, Select, TextInput, Textarea, Spinner } from "flowbite-react";
+import { Button } from "@/app/components/shared/Button";
 import { toast } from "sonner";
 import { createTrybe, updateTrybe } from "@/app/api/trybes";
 import InstitutionPicker from "./InstitutionPicker";
@@ -76,7 +77,7 @@ const TrybeForm = ({ types, trybe }: { types: ITrybeType[]; trybe?: ITrybeDetail
     <div className="flex flex-col gap-4">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <Label htmlFor="type" value="Type" />
+          <Label htmlFor="type">Type</Label>
           <Select id="type" value={typeId} onChange={(e) => setTypeId(e.target.value)} className="mt-1">
             {types.map((t) => (
               <option key={t.uuid} value={t.uuid}>
@@ -87,12 +88,12 @@ const TrybeForm = ({ types, trybe }: { types: ITrybeType[]; trybe?: ITrybeDetail
           </Select>
         </div>
         <div>
-          <Label htmlFor="name" value="Name" />
+          <Label htmlFor="name">Name</Label>
           <TextInput id="name" value={name} maxLength={80} onChange={(e) => setName(e.target.value)} placeholder="Unilag Trybe" className="mt-1" />
         </div>
         {campus && (
           <div className="md:col-span-2">
-            <Label value="Institution" />
+            <Label>Institution</Label>
             <div className="mt-1">
               <InstitutionPicker value={institution} trybeId={trybe?.uuid} onChange={pickInstitution} />
             </div>
@@ -106,7 +107,7 @@ const TrybeForm = ({ types, trybe }: { types: ITrybeType[]; trybe?: ITrybeDetail
           </div>
         )}
         <div>
-          <Label htmlFor="subtitle" value={campus ? "School" : "Subtitle"} />
+          <Label htmlFor="subtitle">{campus ? "School" : "Subtitle"}</Label>
           <TextInput
             id="subtitle"
             value={subtitle}
@@ -117,7 +118,7 @@ const TrybeForm = ({ types, trybe }: { types: ITrybeType[]; trybe?: ITrybeDetail
           />
         </div>
         <div>
-          <Label htmlFor="tagline" value="Tagline" />
+          <Label htmlFor="tagline">Tagline</Label>
           <TextInput
             id="tagline"
             value={tagline}
@@ -129,23 +130,23 @@ const TrybeForm = ({ types, trybe }: { types: ITrybeType[]; trybe?: ITrybeDetail
         </div>
       </div>
       <div>
-        <Label htmlFor="about" value="About" />
+        <Label htmlFor="about">About</Label>
         <Textarea id="about" rows={4} maxLength={2000} value={about} onChange={(e) => setAbout(e.target.value)} className="mt-1" />
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <Label htmlFor="topics" value="Topics covered (comma separated)" />
+          <Label htmlFor="topics">Topics covered (comma separated)</Label>
           <TextInput id="topics" value={topics} onChange={(e) => setTopics(e.target.value)} placeholder="Campus events, Academics, Activities" className="mt-1" />
         </div>
         {campus && !institution && (
           <div>
-            <Label htmlFor="levels" value="Levels students can pick (comma separated)" />
+            <Label htmlFor="levels">Levels students can pick (comma separated)</Label>
             <TextInput id="levels" value={levels} onChange={(e) => setLevels(e.target.value)} className="mt-1" />
           </div>
         )}
         {campus && institution && (
           <div>
-            <Label value="Levels students can pick" />
+            <Label>Levels students can pick</Label>
             <div className="flex flex-wrap gap-1.5 mt-2">
               {!institutionChanged && trybe?.levels_offered?.length ? (
                 trybe.levels_offered.map((l) => (
@@ -164,7 +165,7 @@ const TrybeForm = ({ types, trybe }: { types: ITrybeType[]; trybe?: ITrybeDetail
         )}
       </div>
       <div>
-        <Label htmlFor="rules" value="Admin rules (one per line, shown under the Trybe Code)" />
+        <Label htmlFor="rules">Admin rules (one per line, shown under the Trybe Code)</Label>
         <Textarea
           id="rules"
           rows={4}
@@ -178,9 +179,9 @@ const TrybeForm = ({ types, trybe }: { types: ITrybeType[]; trybe?: ITrybeDetail
         <Button
           color="primary"
           onClick={save}
-          isProcessing={saving}
           disabled={saving || name.trim().length < 2 || !typeId || (campus && !trybe && !institution)}
         >
+          {saving && <Spinner size="sm" light />}
           {trybe ? "Save changes" : "Create Trybe"}
         </Button>
       </div>

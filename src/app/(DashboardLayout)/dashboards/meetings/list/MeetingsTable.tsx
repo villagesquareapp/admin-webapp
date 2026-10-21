@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { createColumnHelper } from "@tanstack/react-table";
+import { createColumnHelper } from "@/utils/table";
 import ReusableTable from "@/app/components/shared/ReusableTable";
 import PostSearch from "../../posts/PostSearch";
 import { fmtDuration, fmtTime, PersonCell, StatusChip } from "../meetingsUi";

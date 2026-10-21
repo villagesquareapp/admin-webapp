@@ -14,7 +14,8 @@ const ShopsWrapper = async ({ page, limit }: { page: number; limit: number }) =>
   );
 };
 
-const Page = async ({ searchParams }: { searchParams: { [key: string]: string | string[] | undefined } }) => {
+const Page = async (props: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) => {
+  const searchParams = await props.searchParams;
   const page = Number(searchParams.page) || 1;
   const limit = Number(searchParams.limit) || 20;
   return (

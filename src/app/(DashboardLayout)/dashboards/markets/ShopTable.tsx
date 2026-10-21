@@ -2,8 +2,8 @@
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { createColumnHelper } from "@tanstack/react-table";
-import { Dropdown } from "flowbite-react";
+import { createColumnHelper } from "@/utils/table";
+import { Dropdown, DropdownItem } from "flowbite-react";
 import { HiOutlineDotsVertical } from "react-icons/hi";
 import { toast } from "sonner";
 import ReusableTable from "@/app/components/shared/ReusableTable";
@@ -89,16 +89,16 @@ const ShopTable = ({
                 <button className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"><HiOutlineDotsVertical /></button>
               )}
             >
-              <Dropdown.Item onClick={() => router.push(`/dashboards/markets/shops/${s.uuid}`)}>View shop</Dropdown.Item>
+              <DropdownItem onClick={() => router.push(`/dashboards/markets/shops/${s.uuid}`)}>View shop</DropdownItem>
               {s.status !== "banned" ? (
-                <Dropdown.Item onClick={() => setStatus(s.uuid, "banned", "Shop banned")}>Ban shop</Dropdown.Item>
+                <DropdownItem onClick={() => setStatus(s.uuid, "banned", "Shop banned")}>Ban shop</DropdownItem>
               ) : (
-                <Dropdown.Item onClick={() => setStatus(s.uuid, "active", "Shop reinstated")}>Reinstate</Dropdown.Item>
+                <DropdownItem onClick={() => setStatus(s.uuid, "active", "Shop reinstated")}>Reinstate</DropdownItem>
               )}
               {s.status === "active" ? (
-                <Dropdown.Item onClick={() => setStatus(s.uuid, "inactive", "Shop deactivated")}>Deactivate</Dropdown.Item>
+                <DropdownItem onClick={() => setStatus(s.uuid, "inactive", "Shop deactivated")}>Deactivate</DropdownItem>
               ) : s.status === "inactive" ? (
-                <Dropdown.Item onClick={() => setStatus(s.uuid, "active", "Shop activated")}>Activate</Dropdown.Item>
+                <DropdownItem onClick={() => setStatus(s.uuid, "active", "Shop activated")}>Activate</DropdownItem>
               ) : null}
             </Dropdown>
           </div>

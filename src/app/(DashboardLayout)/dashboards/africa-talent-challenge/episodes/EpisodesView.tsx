@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { createColumnHelper } from "@tanstack/react-table";
-import { Button, Dropdown, Label, TextInput, Textarea, Select } from "flowbite-react";
+import { createColumnHelper } from "@/utils/table";
+import { Dropdown, DropdownItem, Label, Select, Textarea, TextInput, Spinner } from "flowbite-react";
+import { Button } from "@/app/components/shared/Button";
 import { Dialog, DialogPanel } from "@headlessui/react";
 import { HiOutlineDotsVertical } from "react-icons/hi";
 import { FaPlus } from "react-icons/fa";
@@ -83,8 +84,8 @@ const EpisodesView = ({
             <Dropdown label="" inline dismissOnClick renderTrigger={() => (
               <button className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"><HiOutlineDotsVertical /></button>
             )}>
-              <Dropdown.Item onClick={() => openEdit(e)}>Edit</Dropdown.Item>
-              <Dropdown.Item onClick={() => remove(e)}>Delete</Dropdown.Item>
+              <DropdownItem onClick={() => openEdit(e)}>Edit</DropdownItem>
+              <DropdownItem onClick={() => remove(e)}>Delete</DropdownItem>
             </Dropdown>
           </div>
         );
@@ -114,25 +115,25 @@ const EpisodesView = ({
             <h5 className="text-base font-semibold mb-4">{modal?.mode === "edit" ? "Edit episode" : "New episode"}</h5>
             <div className="flex flex-col gap-3">
               <div>
-                <Label htmlFor="ep-name" value="Name" />
+                <Label htmlFor="ep-name">Name</Label>
                 <TextInput id="ep-name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="e.g. Season 1 — Episode 3" />
               </div>
               <div>
-                <Label htmlFor="ep-desc" value="Description" />
+                <Label htmlFor="ep-desc">Description</Label>
                 <Textarea id="ep-desc" rows={3} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <Label htmlFor="ep-start" value="Start date" />
+                  <Label htmlFor="ep-start">Start date</Label>
                   <TextInput id="ep-start" type="date" value={form.start_date} onChange={(e) => setForm({ ...form, start_date: e.target.value })} />
                 </div>
                 <div>
-                  <Label htmlFor="ep-end" value="End date" />
+                  <Label htmlFor="ep-end">End date</Label>
                   <TextInput id="ep-end" type="date" value={form.end_date} onChange={(e) => setForm({ ...form, end_date: e.target.value })} />
                 </div>
               </div>
               <div>
-                <Label htmlFor="ep-status" value="Status" />
+                <Label htmlFor="ep-status">Status</Label>
                 <Select id="ep-status" value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value as ATCEpisodeStatus })}>
                   {STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
                 </Select>
@@ -140,7 +141,7 @@ const EpisodesView = ({
             </div>
             <div className="flex justify-end gap-3 mt-6">
               <Button color="gray" onClick={() => setModal(null)}>Cancel</Button>
-              <Button color="primary" onClick={save} isProcessing={saving} disabled={saving}>{modal?.mode === "edit" ? "Save" : "Create"}</Button>
+              <Button color="primary" onClick={save} disabled={saving}>{(saving) && <Spinner size="sm" light />}{modal?.mode === "edit" ? "Save" : "Create"}</Button>
             </div>
           </DialogPanel>
         </div>

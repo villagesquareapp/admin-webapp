@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Modal, Spinner } from "flowbite-react";
+import { Modal, ModalBody, ModalHeader, Spinner } from "flowbite-react";
 import { getTrybeMember } from "@/app/api/trybes";
 import { formatDate } from "@/utils/dateUtils";
 import { Chip, KV, Person, label } from "../trybeUi";
@@ -40,8 +40,8 @@ const MemberDetailModal = ({
 
   return (
     <Modal show={!!userId} onClose={onClose} size="3xl" dismissible>
-      <Modal.Header>{member ? member.name || member.username : "Member"}</Modal.Header>
-      <Modal.Body>
+      <ModalHeader>{member ? member.name || member.username : "Member"}</ModalHeader>
+      <ModalBody>
         {!member && !failed && (
           <div className="py-10 grid place-items-center">
             <Spinner />
@@ -140,7 +140,7 @@ const MemberDetailModal = ({
             </div>
           </div>
         )}
-      </Modal.Body>
+      </ModalBody>
     </Modal>
   );
 };

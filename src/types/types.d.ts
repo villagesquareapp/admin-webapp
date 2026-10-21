@@ -619,6 +619,8 @@ interface IAdminUsers {
   name: string;
   is_active: boolean;
   is_super_admin: boolean;
+  must_change_password?: boolean;
+  totp_enabled_at?: string | null;
   role: string;
   status:
     | "active"
@@ -1433,7 +1435,7 @@ interface IReportTarget {
   created_at?: string;
   deleted_at?: string | null;
   author?: IReportPerson | null;
-  owner?: IReportPerson | null;
+  admins?: IReportPerson[];
   media?: { uuid: string; media_type: string; url: string | null; thumbnail: string | null; has_private_original: boolean }[];
 }
 
@@ -1815,6 +1817,8 @@ interface IPushNotifications {
   category: string;
   target: string[];
   status: string;
+  sent_by?: string | null;
+  sent_by_name?: string | null;
   created_at: string;
   updated_at: string;
   deleted_at: string | null;

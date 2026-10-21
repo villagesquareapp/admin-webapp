@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { Button, Label, TextInput, ToggleSwitch } from "flowbite-react";
+import { Label, TextInput, ToggleSwitch, Spinner } from "flowbite-react";
+import { Button } from "@/app/components/shared/Button";
 import { Icon } from "@iconify/react";
 import { toast } from "sonner";
 import CardBox from "@/app/components/shared/CardBox";
@@ -89,7 +90,7 @@ const SettingsForm = ({ settings }: { settings: IVflixSettings | null }) => {
             />
             <div className="py-3 border-b border-ld last:border-0">
               <div className="mb-1.5 block">
-                <Label htmlFor="max-duration" value="Max video duration (seconds)" />
+                <Label htmlFor="max-duration">Max video duration (seconds)</Label>
               </div>
               <TextInput
                 id="max-duration"
@@ -115,7 +116,7 @@ const SettingsForm = ({ settings }: { settings: IVflixSettings | null }) => {
             />
             <div className="py-3">
               <div className="mb-1.5 block">
-                <Label htmlFor="auto-flag" value="Auto-flag after N reports" />
+                <Label htmlFor="auto-flag">Auto-flag after N reports</Label>
               </div>
               <TextInput
                 id="auto-flag"
@@ -149,7 +150,8 @@ const SettingsForm = ({ settings }: { settings: IVflixSettings | null }) => {
       </div>
 
       <div className="col-span-12 flex justify-end">
-        <Button color="primary" onClick={save} disabled={pending} isProcessing={pending}>
+        <Button color="primary" onClick={save} disabled={pending}>
+          {pending && <Spinner size="sm" light />}
           <Icon icon="solar:diskette-bold" height={18} className="mr-2" /> Save settings
         </Button>
       </div>

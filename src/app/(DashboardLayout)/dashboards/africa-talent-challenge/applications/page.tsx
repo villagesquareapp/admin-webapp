@@ -29,7 +29,8 @@ const Wrapper = async ({
   );
 };
 
-const Page = async ({ searchParams }: { searchParams: { [key: string]: string | string[] | undefined } }) => {
+const Page = async (props: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) => {
+  const searchParams = await props.searchParams;
   const period = (searchParams.period as string) || "";
   const status = (searchParams.status as string) || "";
   const search = (searchParams.search as string) || "";

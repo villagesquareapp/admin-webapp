@@ -7,13 +7,16 @@ const Wrapper = async ({ id }: { id: string }) => {
   return <PostDetailContent detail={res?.data?.post_details ?? null} postId={id} />;
 };
 
-const Page = ({ params }: { params: { post_id: string } }) => (
-  <Suspense
-    key={params.post_id}
-    fallback={<div className="h-[640px] w-full animate-pulse bg-gray-100 dark:bg-gray-800 rounded-3xl" />}
-  >
-    <Wrapper id={params.post_id} />
-  </Suspense>
-);
+const Page = async (props: { params: Promise<{ post_id: string }> }) => {
+  const params = await props.params;
+  return (
+    <Suspense
+      key={params.post_id}
+      fallback={<div className="h-[640px] w-full animate-pulse bg-gray-100 dark:bg-gray-800 rounded-3xl" />}
+    >
+      <Wrapper id={params.post_id} />
+    </Suspense>
+  );
+};
 
 export default Page;

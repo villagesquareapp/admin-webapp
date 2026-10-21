@@ -1,6 +1,7 @@
 "use client";
 
-import { Modal, Button } from "flowbite-react";
+import { Modal, ModalBody, ModalHeader } from "flowbite-react";
+import { Button } from "@/app/components/shared/Button";
 import React from "react";
 
 type Props = {
@@ -14,8 +15,8 @@ type Props = {
 const TransferCowryModal = ({ isOpen, setIsOpen, onConfirm, selectedCount, isLoading }: Props) => {
   return (
     <Modal show={isOpen} size="md" onClose={() => setIsOpen(false)} popup>
-      <Modal.Header />
-      <Modal.Body>
+      <ModalHeader />
+      <ModalBody>
         <div className="text-center space-y-4">
           <h3 className="text-lg font-medium text-gray-900 dark:text-white">
             Confirm Transfer
@@ -33,7 +34,7 @@ const TransferCowryModal = ({ isOpen, setIsOpen, onConfirm, selectedCount, isLoa
             </Button>
           </div>
         </div>
-      </Modal.Body>
+      </ModalBody>
     </Modal>
   );
 };

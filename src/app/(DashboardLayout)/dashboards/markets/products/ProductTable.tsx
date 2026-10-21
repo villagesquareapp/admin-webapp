@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { createColumnHelper } from "@tanstack/react-table";
+import { createColumnHelper } from "@/utils/table";
 import { Icon } from "@iconify/react";
 import ReusableTable from "@/app/components/shared/ReusableTable";
 import { formatDate } from "@/utils/dateUtils";

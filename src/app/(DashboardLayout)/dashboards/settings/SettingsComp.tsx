@@ -1,7 +1,7 @@
 "use client";
 
 import CardBox from "@/app/components/shared/CardBox";
-import { Button } from "flowbite-react";
+import { Button } from "@/app/components/shared/Button";
 import { useState } from "react";
 import { FaPlus } from "react-icons/fa6";
 import { PiEmpty } from "react-icons/pi";

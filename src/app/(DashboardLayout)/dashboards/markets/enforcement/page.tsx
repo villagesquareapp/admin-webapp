@@ -32,7 +32,8 @@ const Wrapper = async ({ page, limit, action, target_id }: { page: number; limit
   );
 };
 
-const Page = async ({ searchParams }: { searchParams: { [key: string]: string | string[] | undefined } }) => {
+const Page = async (props: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) => {
+  const searchParams = await props.searchParams;
   const page = Number(searchParams.page) || 1;
   const limit = Number(searchParams.limit) || 20;
   const action = searchParams.action as string | undefined;

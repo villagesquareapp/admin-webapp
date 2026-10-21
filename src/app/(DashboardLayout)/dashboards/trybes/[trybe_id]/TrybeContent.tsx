@@ -1,7 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Badge, Button, Modal, Select, Spinner, TextInput, Textarea } from "flowbite-react";
+import { Badge, Modal, ModalBody, ModalFooter, ModalHeader, Select, Spinner, Textarea, TextInput } from "flowbite-react";
+import { Button } from "@/app/components/shared/Button";
 import { Icon } from "@iconify/react";
 import { toast } from "sonner";
 import CardBox from "@/app/components/shared/CardBox";
@@ -321,21 +322,22 @@ const TrybeContent = ({ trybeId, kind }: { trybeId: string; kind: Kind }) => {
       )}
 
       <Modal show={!!target} onClose={() => !busy && setTarget(null)} size="md">
-        <Modal.Header>{action === "remove" ? copy.action : ACTION_COPY[action].title}</Modal.Header>
-        <Modal.Body>
+        <ModalHeader>{action === "remove" ? copy.action : ACTION_COPY[action].title}</ModalHeader>
+        <ModalBody>
           <div className="flex flex-col gap-3">
             <p className="text-sm">{action === "remove" ? copy.confirm : ACTION_COPY[action].confirm}</p>
             <Textarea rows={2} maxLength={500} value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Reason (kept in the audit log)" autoFocus />
           </div>
-        </Modal.Body>
-        <Modal.Footer>
+        </ModalBody>
+        <ModalFooter>
           <Button color="gray" onClick={() => setTarget(null)} disabled={busy}>
             Back
           </Button>
-          <Button color={action === "remove" ? "failure" : "primary"} onClick={takeDown} isProcessing={busy} disabled={busy}>
+          <Button color={action === "remove" ? "failure" : "primary"} onClick={takeDown} disabled={busy}>
+            {busy && <Spinner size="sm" light />}
             {action === "remove" ? copy.action : ACTION_COPY[action].title}
           </Button>
-        </Modal.Footer>
+        </ModalFooter>
       </Modal>
     </CardBox>
   );

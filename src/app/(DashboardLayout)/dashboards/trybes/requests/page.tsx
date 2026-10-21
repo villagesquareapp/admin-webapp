@@ -33,7 +33,8 @@ const Wrapper = async ({
   );
 };
 
-const Page = ({ searchParams }: { searchParams: { [key: string]: string | string[] | undefined } }) => {
+const Page = async (props: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) => {
+  const searchParams = await props.searchParams;
   const raw = searchParams.status as string;
   const status = STATUSES.includes(raw) ? raw : "pending";
   const trybeId = (searchParams.trybe_id as string) || undefined;

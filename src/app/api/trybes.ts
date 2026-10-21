@@ -131,22 +131,6 @@ export const getTrybeMember = async (uuid: string, userId: string) => {
   );
 };
 
-// The only way to change who owns a Trybe; the current owner stays on as
-// previous_owner_role.
-export const transferTrybeOwner = async (
-  uuid: string,
-  body: { username?: string; user_id?: string; previous_owner_role?: string; reason?: string }
-) => {
-  const token = await getToken();
-  return mutated(
-    await apiPost<{ owner: string; previous_owner: string | null; previous_owner_role: string | null }>(
-      `trybes/${encodeURIComponent(uuid)}/owner`,
-      body,
-      token
-    )
-  );
-};
-
 export const setTrybeIntro = async (uuid: string, userId: string, intro: string) => {
   const token = await getToken();
   return mutated(

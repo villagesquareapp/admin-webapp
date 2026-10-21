@@ -1,4 +1,4 @@
-import { Button } from "flowbite-react";
+import { Button } from "@/app/components/shared/Button";
 import { useState } from "react";
 import { CgEyeAlt } from "react-icons/cg";
 import ReactPlayer from "react-player";
@@ -43,14 +43,13 @@ const PostVideo = ({
         </>
       )}
       <ReactPlayer
-        url={src}
+        src={src}
         width="100%"
         height="100%"
         controls={true}
         playing={isPlaying}
-        playsinline={true}
+        playsInline={true}
         pip={true}
-        stopOnUnmount={true}
         volume={0.8}
         className="react-player"
         style={{ borderRadius: "12px" }}

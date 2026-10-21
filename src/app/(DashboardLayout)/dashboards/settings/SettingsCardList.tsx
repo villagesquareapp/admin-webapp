@@ -8,7 +8,7 @@ import {
   IconPlus,
   IconTrash,
 } from "@tabler/icons-react";
-import { Dropdown } from "flowbite-react";
+import { Dropdown, DropdownItem } from "flowbite-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { formatDate } from "@/utils/dateUtils";
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
@@ -471,8 +471,8 @@ function SettingsCard({
                 </button>
               )}
             >
-              <Dropdown.Item onClick={handleEdit}>Edit</Dropdown.Item>
-              <Dropdown.Item onClick={handleDelete}>Delete</Dropdown.Item>
+              <DropdownItem onClick={handleEdit}>Edit</DropdownItem>
+              <DropdownItem onClick={handleDelete}>Delete</DropdownItem>
             </Dropdown>
           )}
         </div>

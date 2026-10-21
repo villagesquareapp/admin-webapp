@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Icon } from "@iconify/react";
-import { Button } from "flowbite-react";
+import { Button } from "@/app/components/shared/Button";
 import CardBox from "@/app/components/shared/CardBox";
 import { getCowryBalance, getFlutterwaveBalance } from "@/app/api/wallet";
 import TopUpCowryComp from "./TopUpCowryComp";

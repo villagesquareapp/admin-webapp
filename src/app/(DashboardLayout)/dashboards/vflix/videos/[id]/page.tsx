@@ -7,12 +7,15 @@ const Wrapper = async ({ id }: { id: string }) => {
   return <VideoDetailContent video={res?.data ?? null} />;
 };
 
-const Page = ({ params }: { params: { id: string } }) => (
-  <Suspense
-    fallback={<div className="h-[640px] w-full animate-pulse bg-gray-100 dark:bg-gray-800 rounded-3xl" />}
-  >
-    <Wrapper id={params.id} />
-  </Suspense>
-);
+const Page = async (props: { params: Promise<{ id: string }> }) => {
+  const params = await props.params;
+  return (
+    <Suspense
+      fallback={<div className="h-[640px] w-full animate-pulse bg-gray-100 dark:bg-gray-800 rounded-3xl" />}
+    >
+      <Wrapper id={params.id} />
+    </Suspense>
+  );
+};
 
 export default Page;

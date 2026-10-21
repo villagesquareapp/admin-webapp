@@ -153,11 +153,11 @@ interface MessageType {
   time: string;
 }
 
-import avatar1 from "/public/images/profile/user-6.jpg";
-import avatar2 from "/public/images/profile/user-2.jpg";
-import avatar3 from "/public/images/profile/user-3.jpg";
-import avatar4 from "/public/images/profile/user-4.jpg";
-import avatar5 from "/public/images/profile/user-5.jpg";
+import avatar1 from "../../../../../../public/images/profile/user-6.jpg";
+import avatar2 from "../../../../../../public/images/profile/user-2.jpg";
+import avatar3 from "../../../../../../public/images/profile/user-3.jpg";
+import avatar4 from "../../../../../../public/images/profile/user-4.jpg";
+import avatar5 from "../../../../../../public/images/profile/user-5.jpg";
 
 const MessagesLink: MessageType[] = [
   {

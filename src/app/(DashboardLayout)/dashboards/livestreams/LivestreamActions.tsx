@@ -1,6 +1,6 @@
 "use client";
 
-import { Dropdown } from "flowbite-react";
+import { Dropdown, DropdownItem } from "flowbite-react";
 import { HiOutlineDotsVertical } from "react-icons/hi";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -40,12 +40,12 @@ const LivestreamActions = ({ stream }: { stream: ILivestreams }) => {
           </button>
         )}
       >
-        <Dropdown.Item onClick={() => router.push(`/dashboards/livestreams/${stream.uuid}`)}>View details</Dropdown.Item>
+        <DropdownItem onClick={() => router.push(`/dashboards/livestreams/${stream.uuid}`)}>View details</DropdownItem>
         {(stream.status === "live" || stream.status === "scheduled") && (
-          <Dropdown.Item onClick={end}>End stream now</Dropdown.Item>
+          <DropdownItem onClick={end}>End stream now</DropdownItem>
         )}
-        <Dropdown.Item onClick={() => moderate("remove_content", "Stream taken down", true)}>Take down</Dropdown.Item>
-        <Dropdown.Item onClick={() => moderate("restore_content", "Stream restored")}>Restore</Dropdown.Item>
+        <DropdownItem onClick={() => moderate("remove_content", "Stream taken down", true)}>Take down</DropdownItem>
+        <DropdownItem onClick={() => moderate("restore_content", "Stream restored")}>Restore</DropdownItem>
       </Dropdown>
     </div>
   );

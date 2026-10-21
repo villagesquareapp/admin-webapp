@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { createColumnHelper } from "@tanstack/react-table";
-import { Button, Label, Modal, Select, TextInput, ToggleSwitch } from "flowbite-react";
+import { createColumnHelper } from "@/utils/table";
+import { Label, Modal, ModalBody, ModalFooter, ModalHeader, Select, TextInput, ToggleSwitch, Spinner } from "flowbite-react";
+import { Button } from "@/app/components/shared/Button";
 import { Icon } from "@iconify/react";
 import { toast } from "sonner";
 import ReusableTable from "@/app/components/shared/ReusableTable";
@@ -41,16 +42,16 @@ const LevelModal = ({ draft, onClose }: { draft: Draft | null; onClose: () => vo
 
   return (
     <Modal show={!!v} onClose={() => !busy && onClose()} size="lg">
-      <Modal.Header>{v?.uuid ? "Edit level" : "Add a level"}</Modal.Header>
-      <Modal.Body>
+      <ModalHeader>{v?.uuid ? "Edit level" : "Add a level"}</ModalHeader>
+      <ModalBody>
         {v && (
           <div className="flex flex-col gap-4">
             <div>
-              <Label htmlFor="level-name" value="Name students pick" />
+              <Label htmlFor="level-name">Name students pick</Label>
               <TextInput id="level-name" value={v.name} maxLength={30} onChange={(e) => setV({ ...v, name: e.target.value })} placeholder="100 lvl" className="mt-1" />
             </div>
             <div>
-              <Label htmlFor="level-group" value="Group" />
+              <Label htmlFor="level-group">Group</Label>
               <Select id="level-group" value={v.group} onChange={(e) => setV({ ...v, group: e.target.value })} className="mt-1">
                 {Array.from(new Set([...LEVEL_GROUPS, v.group])).map((g) => (
                   <option key={g} value={g}>
@@ -60,7 +61,7 @@ const LevelModal = ({ draft, onClose }: { draft: Draft | null; onClose: () => vo
               </Select>
             </div>
             <div>
-              <Label value="Offered at" />
+              <Label>Offered at</Label>
               <div className="mt-2">
                 <KindPicker value={v.applies_to} onChange={(applies_to) => setV({ ...v, applies_to })} />
               </div>
@@ -70,15 +71,16 @@ const LevelModal = ({ draft, onClose }: { draft: Draft | null; onClose: () => vo
             )}
           </div>
         )}
-      </Modal.Body>
-      <Modal.Footer>
+      </ModalBody>
+      <ModalFooter>
         <Button color="gray" onClick={onClose} disabled={busy}>
           Cancel
         </Button>
-        <Button color="primary" onClick={save} isProcessing={busy} disabled={busy || !v || !v.name.trim()}>
+        <Button color="primary" onClick={save} disabled={busy || !v || !v.name.trim()}>
+          {busy && <Spinner size="sm" light />}
           Save
         </Button>
-      </Modal.Footer>
+      </ModalFooter>
     </Modal>
   );
 };

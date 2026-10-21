@@ -7,7 +7,8 @@ const Wrapper = async ({ kind }: { kind?: string }) => {
   return <LevelsContent levels={res?.data || []} kind={kind} />;
 };
 
-const Page = ({ searchParams }: { searchParams: { [key: string]: string | string[] | undefined } }) => {
+const Page = async (props: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) => {
+  const searchParams = await props.searchParams;
   const kind = (searchParams.kind as string) || undefined;
   return (
     <div className="flex flex-col gap-4">

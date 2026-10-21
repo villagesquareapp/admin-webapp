@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Button } from "flowbite-react";
+import { Spinner } from "flowbite-react";
+import { Button } from "@/app/components/shared/Button";
 import { toast } from "sonner";
 import { getPostOriginals } from "@/app/api/report";
 
@@ -73,7 +74,8 @@ export const PostOriginals = ({ postId }: { postId: string }) => {
         {links.data ? (
           <span className="text-xs text-darklink">Links expire in {links.secondsLeft}s</span>
         ) : (
-          <Button size="xs" color="light" onClick={links.open} isProcessing={links.loading} disabled={links.loading}>
+          <Button size="xs" color="light" onClick={links.open} disabled={links.loading}>
+            {links.loading && <Spinner size="sm" light />}
             Open originals
           </Button>
         )}

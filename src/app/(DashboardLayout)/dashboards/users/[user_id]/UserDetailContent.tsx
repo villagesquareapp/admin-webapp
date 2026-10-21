@@ -39,6 +39,8 @@ const UserDetailContent = ({ detail, userId }: { detail: Detail | null; userId: 
   const [reportModal, setReportModal] = useState<{ id: string; action: ReportAction } | null>(null);
   const [statuses, setStatuses] = useState<IUserStatusList[]>([]);
   const [statusVal, setStatusVal] = useState("");
+  const [statusReason, setStatusReason] = useState("");
+  const [suspendDays, setSuspendDays] = useState(7);
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
@@ -63,10 +65,11 @@ const UserDetailContent = ({ detail, userId }: { detail: Detail | null; userId: 
 
   const applyStatus = async () => {
     if (!statusVal) return;
+    if (!statusReason.trim()) return toast.error("Please give a reason");
     setBusy(true);
     try {
-      const res = await updateUserStatus(userId, statusVal);
-      if (res?.status) { toast.success("Status updated"); setStatusVal(""); router.refresh(); }
+      const res = await updateUserStatus(userId, statusVal, statusReason.trim(), suspendDays);
+      if (res?.status) { toast.success("Status updated"); setStatusVal(""); setStatusReason(""); router.refresh(); }
       else toast.error(res?.message || "Failed to update status");
     } finally { setBusy(false); }
   };
@@ -181,8 +184,30 @@ const UserDetailContent = ({ detail, userId }: { detail: Detail | null; userId: 
                   {statuses.map((s) => <option key={s.value} value={s.value}>{s.name}</option>)}
                 </Select>
               </div>
-              <button onClick={applyStatus} disabled={busy || !statusVal} className="text-sm font-semibold bg-primary text-white px-4 py-2.5 rounded-md disabled:opacity-50">Apply</button>
+              <button onClick={applyStatus} disabled={busy || !statusVal || !statusReason.trim()} className="text-sm font-semibold bg-primary text-white px-4 py-2.5 rounded-md disabled:opacity-50">Apply</button>
             </div>
+            {statusVal && (
+              <div className="flex gap-2 mt-2">
+                <input
+                  value={statusReason}
+                  onChange={(e) => setStatusReason(e.target.value)}
+                  maxLength={1000}
+                  placeholder="Reason (required, shown to the user on ban or suspend)"
+                  className="flex-1 text-sm rounded-md border border-ld bg-transparent px-3 py-2"
+                />
+                {statusVal === "suspended" && (
+                  <input
+                    type="number"
+                    min={1}
+                    max={365}
+                    value={suspendDays}
+                    onChange={(e) => setSuspendDays(Math.max(1, Math.min(365, Number(e.target.value) || 7)))}
+                    title="Days"
+                    className="w-20 text-sm rounded-md border border-ld bg-transparent px-3 py-2"
+                  />
+                )}
+              </div>
+            )}
           </CardBox>
 
           {/* reports */}

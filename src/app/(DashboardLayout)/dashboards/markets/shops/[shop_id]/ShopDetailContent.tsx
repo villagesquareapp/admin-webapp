@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Dropdown } from "flowbite-react";
+import { Dropdown, DropdownItem } from "flowbite-react";
 import { HiOutlineDotsVertical } from "react-icons/hi";
 import { Icon } from "@iconify/react";
 import { toast } from "sonner";
@@ -59,14 +59,14 @@ const ShopDetailContent = ({ shop }: { shop: IMarketShopDetail | null }) => {
             )}
           >
             {shop.status !== "banned" ? (
-              <Dropdown.Item onClick={() => setStatus("banned", "Shop banned")}>Ban shop</Dropdown.Item>
+              <DropdownItem onClick={() => setStatus("banned", "Shop banned")}>Ban shop</DropdownItem>
             ) : (
-              <Dropdown.Item onClick={() => setStatus("active", "Shop reinstated")}>Reinstate</Dropdown.Item>
+              <DropdownItem onClick={() => setStatus("active", "Shop reinstated")}>Reinstate</DropdownItem>
             )}
             {shop.status === "active" ? (
-              <Dropdown.Item onClick={() => setStatus("inactive", "Shop deactivated")}>Deactivate</Dropdown.Item>
+              <DropdownItem onClick={() => setStatus("inactive", "Shop deactivated")}>Deactivate</DropdownItem>
             ) : shop.status === "inactive" ? (
-              <Dropdown.Item onClick={() => setStatus("active", "Shop activated")}>Activate</Dropdown.Item>
+              <DropdownItem onClick={() => setStatus("active", "Shop activated")}>Activate</DropdownItem>
             ) : null}
           </Dropdown>
         </div>

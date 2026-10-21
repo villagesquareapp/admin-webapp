@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Dropdown } from "flowbite-react";
+import { Dropdown, DropdownItem } from "flowbite-react";
 import { HiOutlineDotsVertical } from "react-icons/hi";
 import { Icon } from "@iconify/react";
 import { toast } from "sonner";
@@ -72,12 +72,12 @@ const ProductDetailContent = ({ product }: { product: IMarketProductDetail | nul
             )}
           >
             {product.taken_down ? (
-              <Dropdown.Item onClick={() => moderate("restore_content", "Product restored")}>Restore</Dropdown.Item>
+              <DropdownItem onClick={() => moderate("restore_content", "Product restored")}>Restore</DropdownItem>
             ) : (
-              <Dropdown.Item onClick={() => moderate("remove_content", "Product taken down")}>Take down</Dropdown.Item>
+              <DropdownItem onClick={() => moderate("remove_content", "Product taken down")}>Take down</DropdownItem>
             )}
             {product.featured && (
-              <Dropdown.Item onClick={() => moderate("unfeature_content", "Product unfeatured")}>Unfeature</Dropdown.Item>
+              <DropdownItem onClick={() => moderate("unfeature_content", "Product unfeatured")}>Unfeature</DropdownItem>
             )}
           </Dropdown>
         </div>

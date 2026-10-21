@@ -6,13 +6,8 @@ import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
 import { formatDate } from "@/utils/dateUtils";
 import { stringCleanup } from "@/utils/stringCleanup";
-import {
-  Badge,
-  Button as FlowbiteButton,
-  Label,
-  Spinner,
-  Textarea,
-} from "flowbite-react";
+import { Badge, Label, Spinner, Textarea } from "flowbite-react";
+import { Button as FlowbiteButton } from "@/app/components/shared/Button";
 import { useEffect, useState } from "react";
 import {
   approvePendingVerification,

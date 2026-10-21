@@ -3,8 +3,9 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { createColumnHelper } from "@tanstack/react-table";
-import { Button, Modal } from "flowbite-react";
+import { createColumnHelper } from "@/utils/table";
+import { Modal, ModalBody, ModalHeader } from "flowbite-react";
+import { Button } from "@/app/components/shared/Button";
 import ReusableTable from "@/app/components/shared/ReusableTable";
 import KpiCard from "@/app/components/shared/KpiCard";
 import PostSearch from "../../posts/PostSearch";
@@ -171,8 +172,8 @@ const InstitutionsTable = ({
       />
 
       <Modal show={adding} onClose={() => setAdding(false)} size="3xl">
-        <Modal.Header>Add an institution</Modal.Header>
-        <Modal.Body>
+        <ModalHeader>Add an institution</ModalHeader>
+        <ModalBody>
           {adding && (
             <InstitutionForm
               onSaved={(saved) => {
@@ -181,7 +182,7 @@ const InstitutionsTable = ({
               }}
             />
           )}
-        </Modal.Body>
+        </ModalBody>
       </Modal>
     </>
   );

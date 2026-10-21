@@ -2,9 +2,9 @@ import { Suspense } from "react";
 import { getAllReports, getReportStats } from "@/app/api/report";
 import SmallCards from "@/app/components/dashboards/ecommerce/smallCards";
 import ReportTable from "./ReportTable";
-import shape1 from "/public/images/shapes/danger-card-shape.png";
-import shape2 from "/public/images/shapes/secondary-card-shape.png";
-import shape3 from "/public/images/shapes/success-card-shape.png";
+import shape1 from "../../../../../public/images/shapes/danger-card-shape.png";
+import shape2 from "../../../../../public/images/shapes/secondary-card-shape.png";
+import shape3 from "../../../../../public/images/shapes/success-card-shape.png";
 
 const ReportStatsWrapper = async () => {
   const reportStats = await getReportStats();
@@ -133,11 +133,8 @@ const ReportTableWrapper = async ({
   );
 };
 
-const Page = async ({
-  searchParams,
-}: {
-  searchParams: { [key: string]: string | string[] | undefined };
-}) => {
+const Page = async (props: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) => {
+  const searchParams = await props.searchParams;
   const page = Number(searchParams.page) || 1;
   const limit = Number(searchParams.limit) || 20;
   const service = searchParams.service?.toString();

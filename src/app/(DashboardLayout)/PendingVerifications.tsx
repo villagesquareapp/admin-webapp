@@ -10,8 +10,9 @@ import { stringCleanup } from "@/utils/stringCleanup";
 import { Dialog, DialogPanel } from "@headlessui/react";
 import { Icon } from "@iconify/react";
 import { IconDotsVertical } from "@tabler/icons-react";
-import { createColumnHelper } from "@tanstack/react-table";
-import { Button, Dropdown, Label, Textarea } from "flowbite-react";
+import { createColumnHelper } from "@/utils/table";
+import { Dropdown, DropdownItem, Label, Textarea } from "flowbite-react";
+import { Button } from "@/app/components/shared/Button";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -253,14 +254,14 @@ const PendingVerifications = ({
                 onClick: () => handleDeclineClick(info.row.original),
               },
             ].map((item, index) => (
-              <Dropdown.Item
+              <DropdownItem
                 key={index + item.listtitle}
                 className="flex gap-3"
                 onClick={item.onClick}
               >
                 <Icon icon={item.icon} height={20} />
                 <span>{item.listtitle}</span>
-              </Dropdown.Item>
+              </DropdownItem>
             ))}
           </Dropdown>
         </div>

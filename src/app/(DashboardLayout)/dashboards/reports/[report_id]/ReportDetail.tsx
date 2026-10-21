@@ -3,7 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Badge, Button } from "flowbite-react";
+import { Badge, Spinner } from "flowbite-react";
+import { Button } from "@/app/components/shared/Button";
 import { Icon } from "@iconify/react";
 import { toast } from "sonner";
 import CardBox from "@/app/components/shared/CardBox";
@@ -29,7 +30,8 @@ const Screenshots = ({ report }: { report: IReportDetail }) => {
         {links.data ? (
           <span className="text-xs text-darklink">Links expire in {links.secondsLeft}s</span>
         ) : (
-          <Button size="xs" color="light" onClick={links.open} isProcessing={links.loading} disabled={links.loading}>
+          <Button size="xs" color="light" onClick={links.open} disabled={links.loading}>
+            {links.loading && <Spinner size="sm" light />}
             <Icon icon="solar:eye-linear" height={16} className="me-1" />
             Show screenshots
           </Button>
@@ -101,12 +103,22 @@ const Target = ({ target }: { target: IReportTarget | null }) => {
         </div>
       )}
 
-      {(target.author || target.owner) && (
+      {target.author && (
         <div>
           <p className="text-xs text-darklink mb-1">
-            {target.kind === "trybe" ? "Owner" : target.is_anonymous ? "Real author (hidden in the app)" : "Author"}
+            {target.is_anonymous ? "Real author (hidden in the app)" : "Author"}
           </p>
-          <Person user={(target.author ?? target.owner)!} />
+          <Person user={target.author} />
+        </div>
+      )}
+      {target.kind === "trybe" && !!target.admins?.length && (
+        <div>
+          <p className="text-xs text-darklink mb-1">Admins</p>
+          <div className="flex flex-wrap gap-4">
+            {target.admins.map((a) => (
+              <Person key={a.uuid} user={a} />
+            ))}
+          </div>
         </div>
       )}
 

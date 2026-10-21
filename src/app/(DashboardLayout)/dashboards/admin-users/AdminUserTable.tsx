@@ -6,10 +6,10 @@ import {
   UserDetailsComp,
 } from "@/app/components/shared/TableSnippets";
 import { formatDate } from "@/utils/dateUtils";
-import { createColumnHelper } from "@tanstack/react-table";
+import { createColumnHelper } from "@/utils/table";
 import { useRouter, useSearchParams } from "next/navigation";
-import { getUserStatus } from "@/app/api/user";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense } from "react";
+import { staffRoleLabel } from "@/utils/permissions";
 import AdminUserActions from "./AdminUserActions";
 
 const AdminUserTable = ({
@@ -32,25 +32,6 @@ const AdminUserTable = ({
     router.replace(`?${params.toString()}`);
   };
 
-  const [statuses, setStatuses] = useState<IUserStatusList[]>([]);
-  const [statusLoading, setStatusLoading] = useState<boolean>(false);
-
-  useEffect(() => {
-    const fetchStatuses = async () => {
-      setStatusLoading(true);
-      try {
-        const res = await getUserStatus();
-        setStatuses(res?.data || []);
-        setStatusLoading(false);
-      } catch (error) {
-        console.error("Failed to load user statuses:", error);
-      } finally {
-        setStatusLoading(false);
-      }
-    };
-    fetchStatuses();
-  }, []);
-
   const columnHelper = createColumnHelper<IAdminUsers>();
 
   const columns = [
@@ -69,7 +50,9 @@ const AdminUserTable = ({
     columnHelper.accessor("role", {
       cell: (info) => (
         <p className="text-darklink dark:text-bodytext text-sm">
-          {info.getValue()}
+          {staffRoleLabel(info.row.original.is_super_admin ? "super_admin" : info.getValue())}
+          {info.row.original.is_active === false ? " · access off" : ""}
+          {info.row.original.is_active !== false && !info.row.original.totp_enabled_at ? " · authenticator not set up" : ""}
         </p>
       ),
       header: () => <span>Role</span>,
@@ -112,11 +95,7 @@ const AdminUserTable = ({
       cell: (info) => {
         const user = info.row.original;
         return (
-          <AdminUserActions
-            user={user}
-            statuses={statuses}
-            statusLoading={statusLoading}
-          />
+          <AdminUserActions user={user} />
         );
       },
     }),

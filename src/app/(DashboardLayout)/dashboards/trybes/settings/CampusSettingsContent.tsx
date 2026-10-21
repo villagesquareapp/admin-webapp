@@ -3,7 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Icon } from "@iconify/react";
-import { Button, Modal, TextInput, Textarea } from "flowbite-react";
+import { Modal, ModalBody, ModalFooter, ModalHeader, Textarea, TextInput, Spinner } from "flowbite-react";
+import { Button } from "@/app/components/shared/Button";
 import { toast } from "sonner";
 import CardBox from "@/app/components/shared/CardBox";
 import { formatDate } from "@/utils/dateUtils";
@@ -102,24 +103,26 @@ const TrybeCodeEditor = ({ code }: { code: ITrybeCode | null }) => {
         <Button color="light" size="sm" disabled={items.length >= MAX_ITEMS} onClick={() => setItems([...items, { title: "", body: "" }])}>
           Add a rule
         </Button>
-        <Button color="primary" onClick={save} isProcessing={saving} disabled={saving || !valid || !dirty}>
+        <Button color="primary" onClick={save} disabled={saving || !valid || !dirty}>
+          {saving && <Spinner size="sm" light />}
           Save Trybe Code
         </Button>
       </div>
 
       <Modal show={confirmReset} onClose={() => !saving && setConfirmReset(false)} size="md">
-        <Modal.Header>Reset the Trybe Code</Modal.Header>
-        <Modal.Body>
+        <ModalHeader>Reset the Trybe Code</ModalHeader>
+        <ModalBody>
           <p className="text-sm">The apps go back to the default Code. Your current list is not kept.</p>
-        </Modal.Body>
-        <Modal.Footer>
+        </ModalBody>
+        <ModalFooter>
           <Button color="gray" onClick={() => setConfirmReset(false)} disabled={saving}>
             Cancel
           </Button>
-          <Button color="failure" onClick={reset} isProcessing={saving} disabled={saving}>
+          <Button color="failure" onClick={reset} disabled={saving}>
+            {saving && <Spinner size="sm" light />}
             Reset
           </Button>
-        </Modal.Footer>
+        </ModalFooter>
       </Modal>
     </CardBox>
   );

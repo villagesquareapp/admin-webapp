@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { createColumnHelper } from "@tanstack/react-table";
+import { createColumnHelper } from "@/utils/table";
 import { Icon } from "@iconify/react";
-import { Dropdown } from "flowbite-react";
+import { Dropdown, DropdownItem } from "flowbite-react";
 import { HiOutlineDotsVertical } from "react-icons/hi";
 import ReusableTable from "@/app/components/shared/ReusableTable";
 import ResolveReportModal, { ReportAction } from "@/app/components/shared/ResolveReportModal";
@@ -113,11 +113,11 @@ const MarketReportsView = ({
             <Dropdown label="" inline renderTrigger={() => (
               <button className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"><HiOutlineDotsVertical /></button>
             )}>
-              <Dropdown.Item onClick={() => router.push(`/dashboards/reports/${r.id}`)}>View report</Dropdown.Item>
+              <DropdownItem onClick={() => router.push(`/dashboards/reports/${r.id}`)}>View report</DropdownItem>
               {ACTIONABLE(r.status) && (
                 <>
-                  <Dropdown.Item onClick={() => setModal({ id: r.id, action: "resolve" })}>Resolve</Dropdown.Item>
-                  <Dropdown.Item onClick={() => setModal({ id: r.id, action: "dismiss" })}>Dismiss</Dropdown.Item>
+                  <DropdownItem onClick={() => setModal({ id: r.id, action: "resolve" })}>Resolve</DropdownItem>
+                  <DropdownItem onClick={() => setModal({ id: r.id, action: "dismiss" })}>Dismiss</DropdownItem>
                 </>
               )}
             </Dropdown>

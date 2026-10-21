@@ -3,9 +3,9 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { createColumnHelper } from "@tanstack/react-table";
+import { createColumnHelper } from "@/utils/table";
 import { Icon } from "@iconify/react";
-import { Dropdown } from "flowbite-react";
+import { Dropdown, DropdownItem } from "flowbite-react";
 import { HiOutlineDotsVertical } from "react-icons/hi";
 import ReusableTable from "@/app/components/shared/ReusableTable";
 import ResolveReportModal, { ReportAction } from "@/app/components/shared/ResolveReportModal";
@@ -111,12 +111,12 @@ const ReportsView = ({
                 </button>
               )}
             >
-              <Dropdown.Item onClick={() => openVideo(r)}>View video</Dropdown.Item>
+              <DropdownItem onClick={() => openVideo(r)}>View video</DropdownItem>
               {ACTIONABLE(r.status) && (
-                <Dropdown.Item onClick={() => setModal({ id: r.id, action: "resolve" })}>Resolve</Dropdown.Item>
+                <DropdownItem onClick={() => setModal({ id: r.id, action: "resolve" })}>Resolve</DropdownItem>
               )}
               {ACTIONABLE(r.status) && (
-                <Dropdown.Item onClick={() => setModal({ id: r.id, action: "dismiss" })}>Dismiss</Dropdown.Item>
+                <DropdownItem onClick={() => setModal({ id: r.id, action: "dismiss" })}>Dismiss</DropdownItem>
               )}
             </Dropdown>
           </div>

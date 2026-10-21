@@ -13,9 +13,7 @@ const CHIP: Record<string, string> = {
   withdrawn: "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300",
   left: "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300",
   removed: "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300",
-  owner: "bg-lightsecondary text-secondary",
   admin: "bg-lightprimary text-primary",
-  moderator: "bg-lightinfo text-info",
   member: "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300",
 };
 

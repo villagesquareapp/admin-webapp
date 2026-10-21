@@ -1,13 +1,14 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { Button, Checkbox, Label, Modal, TextInput, Textarea } from "flowbite-react";
+import { Checkbox, Label, Modal, ModalBody, ModalFooter, ModalHeader, Textarea, TextInput, Spinner } from "flowbite-react";
+import { Button } from "@/app/components/shared/Button";
 import { toast } from "sonner";
 import CardBox from "@/app/components/shared/CardBox";
 import { formatDate } from "@/utils/dateUtils";
 import { clearTrybeFeatured, setTrybeFeatured } from "@/app/api/trybes";
 
-// The Highlights tab's announcement. The Trybe's owner and admins set it in
+// The Highlights tab's announcement. The Trybe's admins set it in
 // the app (members with the bell on get a push); staff can replace or remove
 // it here, and push it to members if they choose.
 const TrybeAnnouncement = ({ trybe }: { trybe: ITrybeDetail }) => {
@@ -100,15 +101,15 @@ const TrybeAnnouncement = ({ trybe }: { trybe: ITrybeDetail }) => {
           </p>
           <div className="flex flex-col gap-4">
             <div>
-              <Label htmlFor="featured-title" value="Title" />
+              <Label htmlFor="featured-title">Title</Label>
               <TextInput id="featured-title" value={title} maxLength={100} onChange={(e) => setTitle(e.target.value)} className="mt-1" />
             </div>
             <div>
-              <Label htmlFor="featured-body" value="Text (optional)" />
+              <Label htmlFor="featured-body">Text (optional)</Label>
               <Textarea id="featured-body" rows={4} maxLength={500} value={body} onChange={(e) => setBody(e.target.value)} className="mt-1" />
             </div>
             <div>
-              <Label htmlFor="featured-image" value="Image (optional, JPG, PNG or WebP up to 5 MB)" />
+              <Label htmlFor="featured-image">Image (optional, JPG, PNG or WebP up to 5 MB)</Label>
               <input
                 ref={image}
                 id="featured-image"
@@ -134,7 +135,8 @@ const TrybeAnnouncement = ({ trybe }: { trybe: ITrybeDetail }) => {
                   : "Members with the bell on get “New announcement” with its title. It counts towards the Trybe's push limit (1 an hour, 5 a day); when the limit is reached nothing is saved."}
               </p>
             </div>
-            <Button color="primary" className="w-fit" onClick={save} isProcessing={busy} disabled={busy || !title.trim()}>
+            <Button color="primary" className="w-fit" onClick={save} disabled={busy || !title.trim()}>
+              {busy && <Spinner size="sm" light />}
               Save announcement
             </Button>
           </div>
@@ -142,18 +144,19 @@ const TrybeAnnouncement = ({ trybe }: { trybe: ITrybeDetail }) => {
       </div>
 
       <Modal show={removing} onClose={() => !busy && setRemoving(false)} size="md">
-        <Modal.Header>Remove the announcement</Modal.Header>
-        <Modal.Body>
+        <ModalHeader>Remove the announcement</ModalHeader>
+        <ModalBody>
           <Textarea rows={2} maxLength={500} value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Reason (kept in the audit log)" />
-        </Modal.Body>
-        <Modal.Footer>
+        </ModalBody>
+        <ModalFooter>
           <Button color="gray" onClick={() => setRemoving(false)} disabled={busy}>
             Cancel
           </Button>
-          <Button color="failure" onClick={remove} isProcessing={busy} disabled={busy}>
+          <Button color="failure" onClick={remove} disabled={busy}>
+            {busy && <Spinner size="sm" light />}
             Remove
           </Button>
-        </Modal.Footer>
+        </ModalFooter>
       </Modal>
     </div>
   );

@@ -16,13 +16,9 @@ const CreatorWrapper = async ({
   return <CreatorView data={res?.data || null} page={page} limit={limit} />;
 };
 
-const Page = async ({
-  params,
-  searchParams,
-}: {
-  params: { user_id: string };
-  searchParams: { [key: string]: string | string[] | undefined };
-}) => {
+const Page = async (props: { params: Promise<{ user_id: string }>; searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) => {
+  const params = await props.params;
+  const searchParams = await props.searchParams;
   const userId = params.user_id;
   const page = Number(searchParams.page) || 1;
   const limit = Number(searchParams.limit) || 20;

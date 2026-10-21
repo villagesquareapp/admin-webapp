@@ -7,7 +7,8 @@ const Wrapper = async ({ period }: { period: string }) => {
   return <LeaderboardView data={lb?.data || null} periods={periods?.data?.periods || []} period={period} />;
 };
 
-const Page = async ({ searchParams }: { searchParams: { [key: string]: string | string[] | undefined } }) => {
+const Page = async (props: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) => {
+  const searchParams = await props.searchParams;
   const period = (searchParams.period as string) || "";
   return (
     <Suspense key={period} fallback={<div className="h-[500px] w-full animate-pulse bg-gray-100 dark:bg-gray-800 rounded-3xl" />}>

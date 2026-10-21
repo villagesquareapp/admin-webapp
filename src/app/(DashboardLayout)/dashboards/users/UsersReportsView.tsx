@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { createColumnHelper } from "@tanstack/react-table";
+import { createColumnHelper } from "@/utils/table";
 import { Icon } from "@iconify/react";
 import ReusableTable from "@/app/components/shared/ReusableTable";
 import ResolveReportModal, { ReportAction } from "@/app/components/shared/ResolveReportModal";

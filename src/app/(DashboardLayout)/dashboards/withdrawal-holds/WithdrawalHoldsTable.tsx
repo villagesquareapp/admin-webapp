@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { createColumnHelper } from "@tanstack/react-table";
-import { Badge, Button, Modal } from "flowbite-react";
+import { createColumnHelper } from "@/utils/table";
+import { Badge, Modal, ModalBody, ModalFooter, ModalHeader, Spinner } from "flowbite-react";
+import { Button } from "@/app/components/shared/Button";
 import { toast } from "sonner";
 import ReusableTable from "@/app/components/shared/ReusableTable";
 import { releaseWithdrawalHold } from "@/app/api/wallet";
@@ -158,8 +159,8 @@ const WithdrawalHoldsTable = ({
       />
 
       <Modal show={!!releasing} onClose={() => !loading && setReleasing(null)} size="md">
-        <Modal.Header>Release withdrawal hold</Modal.Header>
-        <Modal.Body>
+        <ModalHeader>Release withdrawal hold</ModalHeader>
+        <ModalBody>
           {releasing && (
             <div className="flex flex-col gap-3 text-sm">
               <p>
@@ -173,15 +174,16 @@ const WithdrawalHoldsTable = ({
               </p>
             </div>
           )}
-        </Modal.Body>
-        <Modal.Footer>
+        </ModalBody>
+        <ModalFooter>
           <Button color="gray" onClick={() => setReleasing(null)} disabled={loading}>
             Cancel
           </Button>
-          <Button color="primary" onClick={release} isProcessing={loading} disabled={loading}>
+          <Button color="primary" onClick={release} disabled={loading}>
+            {loading && <Spinner size="sm" light />}
             Release hold
           </Button>
-        </Modal.Footer>
+        </ModalFooter>
       </Modal>
     </>
   );

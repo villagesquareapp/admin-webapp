@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { createColumnHelper } from "@tanstack/react-table";
-import { Button, Checkbox, Label, Modal, Select, TextInput, Textarea, ToggleSwitch } from "flowbite-react";
+import { createColumnHelper } from "@/utils/table";
+import { Checkbox, Label, Modal, ModalBody, ModalFooter, ModalHeader, Select, Textarea, TextInput, ToggleSwitch, Spinner, HelperText } from "flowbite-react";
+import { Button } from "@/app/components/shared/Button";
 import { toast } from "sonner";
 import ReusableTable from "@/app/components/shared/ReusableTable";
 import { createTrybeType, updateTrybeType } from "@/app/api/trybes";
@@ -132,20 +133,20 @@ const TrybeTypesContent = ({ types }: { types: ITrybeType[] }) => {
       />
 
       <Modal show={!!draft} onClose={() => !busy && setDraft(null)} size="lg">
-        <Modal.Header>{draft?.uuid ? "Edit type" : "New type"}</Modal.Header>
-        <Modal.Body>
+        <ModalHeader>{draft?.uuid ? "Edit type" : "New type"}</ModalHeader>
+        <ModalBody>
           {draft && (
             <div className="flex flex-col gap-4">
               <div>
-                <Label htmlFor="type-name" value="Name" />
+                <Label htmlFor="type-name">Name</Label>
                 <TextInput id="type-name" value={draft.name} maxLength={60} onChange={(e) => setDraft({ ...draft, name: e.target.value })} className="mt-1" />
               </div>
               <div>
-                <Label htmlFor="type-description" value="Description" />
+                <Label htmlFor="type-description">Description</Label>
                 <Textarea id="type-description" rows={2} maxLength={500} value={draft.description ?? ""} onChange={(e) => setDraft({ ...draft, description: e.target.value })} className="mt-1" />
               </div>
               <div>
-                <Label htmlFor="type-join" value="How people join" />
+                <Label htmlFor="type-join">How people join</Label>
                 <Select id="type-join" value={draft.join_form} onChange={(e) => setDraft({ ...draft, join_form: e.target.value as Draft["join_form"] })} className="mt-1">
                   <option value="campus">Request with the Campus form (name, matric no, department, level)</option>
                   <option value="none">Not open for requests (staff add people)</option>
@@ -153,7 +154,7 @@ const TrybeTypesContent = ({ types }: { types: ITrybeType[] }) => {
               </div>
               {draft.join_form === "campus" && (
                 <div className="flex flex-col gap-2">
-                  <Label value="Photos required with the request" />
+                  <Label>Photos required with the request</Label>
                   {DOCUMENTS.map((d) => (
                     <label key={d.value} className="flex items-center gap-2 text-sm">
                       <Checkbox
@@ -173,29 +174,30 @@ const TrybeTypesContent = ({ types }: { types: ITrybeType[] }) => {
                 </div>
               )}
               <div>
-                <Label htmlFor="type-poll-label" value="What polls are called" />
+                <Label htmlFor="type-poll-label">What polls are called</Label>
                 <TextInput
                   id="type-poll-label"
                   value={draft.poll_label}
                   maxLength={40}
                   placeholder="Poll"
-                  helperText='Shown on the Highlights tab and in poll notifications, e.g. "Campus Pulse". Empty means "Poll".'
                   onChange={(e) => setDraft({ ...draft, poll_label: e.target.value })}
                   className="mt-1"
                 />
+                <HelperText>Shown on the Highlights tab and in poll notifications, e.g. &quot;Campus Pulse&quot;. Empty means &quot;Poll&quot;.</HelperText>
               </div>
               <ToggleSwitch checked={draft.is_enabled} label="Enabled in the app" onChange={(v) => setDraft({ ...draft, is_enabled: v })} />
             </div>
           )}
-        </Modal.Body>
-        <Modal.Footer>
+        </ModalBody>
+        <ModalFooter>
           <Button color="gray" onClick={() => setDraft(null)} disabled={busy}>
             Cancel
           </Button>
-          <Button color="primary" onClick={() => draft && save(draft)} isProcessing={busy} disabled={busy || !draft || draft.name.trim().length < 2}>
+          <Button color="primary" onClick={() => draft && save(draft)} disabled={busy || !draft || draft.name.trim().length < 2}>
+            {busy && <Spinner size="sm" light />}
             Save
           </Button>
-        </Modal.Footer>
+        </ModalFooter>
       </Modal>
     </>
   );

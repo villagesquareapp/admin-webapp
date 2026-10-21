@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Button, Label, TextInput } from "flowbite-react";
+import { Label, TextInput, Spinner } from "flowbite-react";
+import { Button } from "@/app/components/shared/Button";
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Icon } from "@iconify/react";
@@ -66,7 +67,7 @@ const EchoCategoryFormModal = ({
               </div>
               <form onSubmit={submit}>
                 <div className="mb-4">
-                  <Label value="Select icon" />
+                  <Label>Select icon</Label>
                   {icon && (
                     <div className="mt-2 mb-3 flex items-center gap-3 p-2.5 rounded-lg bg-primary/10 border border-primary/20">
                       <Icon icon={icon} width={28} className="text-primary" />
@@ -83,12 +84,12 @@ const EchoCategoryFormModal = ({
                   </div>
                 </div>
                 <div className="mb-4">
-                  <Label htmlFor="echo-cat-name" value="Name" />
+                  <Label htmlFor="echo-cat-name">Name</Label>
                   <TextInput id="echo-cat-name" value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Talk shows, Music" required className="mt-1" />
                 </div>
                 <div className="flex justify-end gap-3">
                   <Button color="gray" type="button" onClick={onClose} disabled={loading}>Cancel</Button>
-                  <Button color="success" type="submit" isProcessing={loading} disabled={loading || !name.trim() || !icon}>{submitText}</Button>
+                  <Button color="success" type="submit" disabled={loading || !name.trim() || !icon}>{(loading) && <Spinner size="sm" light />}{submitText}</Button>
                 </div>
               </form>
             </DialogPanel>

@@ -3,7 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Button, Modal, TextInput } from "flowbite-react";
+import { Modal, ModalBody, ModalFooter, ModalHeader, TextInput, Spinner } from "flowbite-react";
+import { Button } from "@/app/components/shared/Button";
 import { Icon } from "@iconify/react";
 import { toast } from "sonner";
 import { grantMeetingHosting, revokeMeetingHosting } from "@/app/api/meetings";
@@ -119,7 +120,8 @@ const HostsContent = ({ hosts, message }: { hosts: IMeetingHost[]; message?: str
             onChange={(e) => setSearch(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && void find()}
           />
-          <Button color="primary" onClick={() => void find()} isProcessing={busy === "search"} disabled={!search.trim()}>
+          <Button color="primary" onClick={() => void find()} disabled={!search.trim()}>
+            {(busy === "search") && <Spinner size="sm" light />}
             <Icon icon="solar:magnifer-linear" height={16} />
           </Button>
         </div>
@@ -134,7 +136,8 @@ const HostsContent = ({ hosts, message }: { hosts: IMeetingHost[]; message?: str
                 {isHost.has(u.id) ? (
                   <span className="text-xs text-darklink">Host</span>
                 ) : (
-                  <Button size="xs" color="primary" onClick={() => void grant(u)} isProcessing={busy === u.id} disabled={!!busy}>
+                  <Button size="xs" color="primary" onClick={() => void grant(u)} disabled={!!busy}>
+                    {(busy === u.id) && <Spinner size="sm" light />}
                     Add
                   </Button>
                 )}
@@ -145,21 +148,22 @@ const HostsContent = ({ hosts, message }: { hosts: IMeetingHost[]; message?: str
       </CardBox>
 
       <Modal show={!!revoking} onClose={() => !busy && setRevoking(null)} size="md">
-        <Modal.Header>Remove this host?</Modal.Header>
-        <Modal.Body>
+        <ModalHeader>Remove this host?</ModalHeader>
+        <ModalBody>
           <p className="text-sm">
             <b>{revoking?.user?.name || revoking?.user?.username}</b> won&apos;t be able to start new meetings. A meeting
             they&apos;re hosting right now carries on.
           </p>
-        </Modal.Body>
-        <Modal.Footer>
+        </ModalBody>
+        <ModalFooter>
           <Button color="gray" onClick={() => setRevoking(null)} disabled={!!busy}>
             Cancel
           </Button>
-          <Button color="failure" onClick={() => void revoke()} isProcessing={!!busy} disabled={!!busy}>
+          <Button color="failure" onClick={() => void revoke()} disabled={!!busy}>
+            {!!busy && <Spinner size="sm" light />}
             Remove
           </Button>
-        </Modal.Footer>
+        </ModalFooter>
       </Modal>
     </div>
   );

@@ -1,9 +1,9 @@
 "use client";
 
 import { useTransition } from "react";
-import { createColumnHelper } from "@tanstack/react-table";
+import { createColumnHelper } from "@/utils/table";
 import { Icon } from "@iconify/react";
-import { Dropdown } from "flowbite-react";
+import { Dropdown, DropdownItem } from "flowbite-react";
 import { HiOutlineDotsVertical } from "react-icons/hi";
 import { toast } from "sonner";
 import ReusableTable from "@/app/components/shared/ReusableTable";
@@ -104,18 +104,18 @@ const SoundsView = ({
             </button>
           )}
         >
-          <Dropdown.Item onClick={() => feature(info.row.original)}>
+          <DropdownItem onClick={() => feature(info.row.original)}>
             {info.row.original.is_featured ? "Unfeature" : "Feature"}
-          </Dropdown.Item>
-          <Dropdown.Item onClick={() => toast.info("Edit category — coming with backend")}>
+          </DropdownItem>
+          <DropdownItem onClick={() => toast.info("Edit category — coming with backend")}>
             Edit category
-          </Dropdown.Item>
-          <Dropdown.Item onClick={() => toast.info("Mood tags — coming with backend")}>
+          </DropdownItem>
+          <DropdownItem onClick={() => toast.info("Mood tags — coming with backend")}>
             Edit mood tags
-          </Dropdown.Item>
-          <Dropdown.Item onClick={() => toast.warning("Remove — coming with backend")}>
+          </DropdownItem>
+          <DropdownItem onClick={() => toast.warning("Remove — coming with backend")}>
             Remove
-          </Dropdown.Item>
+          </DropdownItem>
         </Dropdown>
       ),
     }),

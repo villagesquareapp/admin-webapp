@@ -2,7 +2,8 @@
 
 import React, { useMemo, useState } from "react";
 import Image from "next/image";
-import { Button, Dropdown } from "flowbite-react";
+import { Dropdown, DropdownItem } from "flowbite-react";
+import { Button } from "@/app/components/shared/Button";
 import { Icon } from "@iconify/react";
 import { HiOutlineDotsVertical } from "react-icons/hi";
 import { FaPlus } from "react-icons/fa";
@@ -136,8 +137,8 @@ const GiftCard = ({ overview, token }: { overview: IGiftOverview; token: string 
                 <Dropdown label="" inline dismissOnClick renderTrigger={() => (
                   <button className="size-7 grid place-items-center rounded-full bg-white/90 dark:bg-dark/90 shadow"><HiOutlineDotsVertical size={15} /></button>
                 )}>
-                  <Dropdown.Item disabled={!g.status} onClick={() => { setEditingGift(toGift(g)); setEditModalOpen(true); }}>Edit</Dropdown.Item>
-                  <Dropdown.Item onClick={() => { setStatusGift(toGift(g)); setStatusModalOpen(true); }}>{g.status ? "Disable" : "Enable"}</Dropdown.Item>
+                  <DropdownItem disabled={!g.status} onClick={() => { setEditingGift(toGift(g)); setEditModalOpen(true); }}>Edit</DropdownItem>
+                  <DropdownItem onClick={() => { setStatusGift(toGift(g)); setStatusModalOpen(true); }}>{g.status ? "Disable" : "Enable"}</DropdownItem>
                 </Dropdown>
               </div>
               <div className={`pt-5 pb-3 px-3 flex flex-col items-center text-center bg-gradient-to-b ${tier.glow} to-transparent`}>

@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Button } from "flowbite-react";
+import { Spinner } from "flowbite-react";
+import { Button } from "@/app/components/shared/Button";
 import { Icon } from "@iconify/react";
 import { toast } from "sonner";
 import CardBox from "@/app/components/shared/CardBox";
@@ -70,8 +71,9 @@ const SuggestionsView = ({ data }: { data: IATCData | null }) => {
                 <Icon icon="solar:trash-bin-trash-linear" height={16} className="mr-1.5" /> Clear all
               </Button>
             )}
-            <Button color="secondary" size="sm" className="h-10" disabled={busy === "gen"} isProcessing={busy === "gen"}
+            <Button color="secondary" size="sm" className="h-10" disabled={busy === "gen"}
               onClick={hasAny ? regenerate : () => run("gen", () => generateATCSuggestions(month?.value), "Suggestions generated")}>
+              {(busy === "gen") && <Spinner size="sm" light />}
               <Icon icon="solar:magic-stick-3-bold" height={16} className="mr-1.5" /> {hasAny ? "Regenerate" : "Generate"}
             </Button>
           </div>
@@ -100,12 +102,14 @@ const SuggestionsView = ({ data }: { data: IATCData | null }) => {
               <p className="text-xs text-darklink line-clamp-3 mt-2.5 break-words">{s.description}</p>
               {s.status === "pending" && (
                 <div className="flex items-center gap-2 mt-3 pt-3 border-t border-ld">
-                  <Button color="success" size="xs" disabled={!!busy} isProcessing={busy === `app-${s.uuid}`}
+                  <Button color="success" size="xs" disabled={!!busy}
                     onClick={() => run(`app-${s.uuid}`, () => approveATCSuggestion(s.uuid), "Approved — episode created")}>
+                    {(busy === `app-${s.uuid}`) && <Spinner size="sm" light />}
                     <Icon icon="solar:check-circle-bold" height={14} className="mr-1" /> Approve & create
                   </Button>
-                  <Button color="light" size="xs" disabled={!!busy} isProcessing={busy === `rej-${s.uuid}`}
+                  <Button color="light" size="xs" disabled={!!busy}
                     onClick={() => run(`rej-${s.uuid}`, () => rejectATCSuggestion(s.uuid), "Rejected")}>
+                    {(busy === `rej-${s.uuid}`) && <Spinner size="sm" light />}
                     Reject
                   </Button>
                 </div>

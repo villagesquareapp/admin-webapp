@@ -1,62 +1,75 @@
-import { NextAuthOptions } from 'next-auth';
+import { NextAuthOptions, User } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { messageHandler } from '@/lib/messageHandler';
+import { endApiSession, renewAccessToken, tokenIsFresh } from '@/lib/staffSession';
+
+// Staff sign-ins last at most 12 hours (the Admin API ends its session then).
+const SESSION_SECONDS = 12 * 60 * 60;
 
 export const authOptions: NextAuthOptions = {
     secret: process.env.NEXTAUTH_SECRET,
     providers: [
         CredentialsProvider({
             name: 'Credentials',
+            // The last sign-in step: the challenge from the earlier steps and,
+            // unless an authenticator was just set up, a code.
             credentials: {
-                email: { label: 'Email', type: 'text' },
-                password: { label: 'Password', type: 'password' },
+                challenge: { label: 'Challenge', type: 'text' },
+                code: { label: 'Code', type: 'text' },
             },
-            async authorize(credentials, _req) {
-                try {
-                    const response = await fetch(`${process.env.API_URL}/auth/login`, {
-                        method: "POST",
-                        headers: {
-                            'Content-Type': 'application/json',
-                            "Accept": "application/json",
-                        },
-                        body: JSON.stringify({
-                            email: credentials?.email,
-                            password: credentials?.password,
-                        }),
-                    });
-                    const data = await response.json();
-
-                    console.log("API STATUS:", response.status);
-                    console.log("API RESPONSE:", data);
-
-                    if (!response.ok) {
-                        throw new Error(messageHandler(data.message) || "Authentication failed");
-                    }
-                    
-                    return {
-                        id: data?.data?.user?.id,
-                        email: data?.data?.user?.email,
-                        token: data?.data?.access_token,
-                    };
-                    
-                } catch (error: any) {
-                    throw new Error(messageHandler(error.message) || "Authentication failed");
+            async authorize(credentials) {
+                const response = await fetch(`${process.env.API_URL}/auth/token`, {
+                    method: "POST",
+                    headers: { 'Content-Type': 'application/json', "Accept": "application/json" },
+                    body: JSON.stringify({
+                        challenge: credentials?.challenge,
+                        ...(credentials?.code ? { code: credentials.code } : {}),
+                    }),
+                }).catch(() => null);
+                const data = await response?.json().catch(() => null);
+                // Never log the body: it carries the tokens.
+                if (!response?.ok || !data?.data?.access_token) {
+                    throw new Error(messageHandler(data?.message) || "Sign-in failed");
                 }
+                const d = data.data;
+                return {
+                    id: d.user.id,
+                    email: d.user.email,
+                    name: d.user.name,
+                    role: d.user.role,
+                    permissions: d.user.permissions,
+                    accessToken: d.access_token,
+                    refreshToken: d.refresh_token,
+                    accessTokenExpires: Date.now() + d.expires_in * 1000,
+                };
             }
         })
     ],
     callbacks: {
         async jwt({ token, user }) {
             if (user) {
-                token.token = user.token;
-                token.user = { id: user.id, email: user.email };
+                const u = user as User;
+                return {
+                    ...token,
+                    accessToken: u.accessToken,
+                    refreshToken: u.refreshToken,
+                    accessTokenExpires: u.accessTokenExpires,
+                    user: { id: u.id, email: u.email ?? '', name: u.name ?? undefined, role: u.role, permissions: u.permissions },
+                };
             }
-            return token;
+            if (token.error || tokenIsFresh(token)) return token;
+            return renewAccessToken(token);
         },
+        // What the browser gets: who is signed in, never the API token.
         async session({ session, token }) {
             session.user = token.user;
-            session.token = token.token;
+            session.error = token.error;
             return session;
+        },
+    },
+    events: {
+        async signOut({ token }) {
+            await endApiSession(token);
         },
     },
     pages: {
@@ -65,7 +78,6 @@ export const authOptions: NextAuthOptions = {
     },
     session: {
         strategy: 'jwt',
-        maxAge: 24 * 60 * 60,
+        maxAge: SESSION_SECONDS,
     },
 }
-

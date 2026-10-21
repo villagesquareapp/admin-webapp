@@ -270,7 +270,7 @@ const VideoDetailContent = ({ video }: { video: IVflixVideoDetail | null }) => {
               <div className="mt-4 pt-4 border-t border-ld grid sm:grid-cols-[190px_1fr_auto] gap-3 items-end">
                 <div>
                   <div className="mb-1.5 block">
-                    <Label htmlFor="set-status" value="Set a specific status" />
+                    <Label htmlFor="set-status">Set a specific status</Label>
                   </div>
                   <Select id="set-status" value={selected} onChange={(e) => setSelected(e.target.value)}>
                     <option value="">Choose status…</option>
@@ -281,7 +281,7 @@ const VideoDetailContent = ({ video }: { video: IVflixVideoDetail | null }) => {
                 </div>
                 <div>
                   <div className="mb-1.5 block">
-                    <Label htmlFor="reason" value="Reason (optional — audit trail)" />
+                    <Label htmlFor="reason">Reason (optional — audit trail)</Label>
                   </div>
                   <Textarea id="reason" rows={1} value={reason} onChange={(e) => setReason(e.target.value)} placeholder="e.g. nudity — policy 3.2" />
                 </div>

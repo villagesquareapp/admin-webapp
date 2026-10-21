@@ -1,6 +1,6 @@
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import { Icon } from "@iconify/react";
-import { Button } from "flowbite-react";
+import { Button } from "@/app/components/shared/Button";
 import { AnimatePresence, motion } from "framer-motion";
 
 const WithdrawalDialog = ({

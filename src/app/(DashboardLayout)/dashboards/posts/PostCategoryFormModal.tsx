@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Button, Checkbox, Label, TextInput, Textarea } from "flowbite-react";
+import { Checkbox, Label, TextInput, Textarea, Spinner, HelperText } from "flowbite-react";
+import { Button } from "@/app/components/shared/Button";
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Icon } from "@iconify/react";
@@ -92,12 +93,12 @@ const PostCategoryFormModal = ({
               </div>
               <form onSubmit={submit}>
                 <div className="mb-4">
-                  <Label htmlFor="post-cat-name" value="Name" />
+                  <Label htmlFor="post-cat-name">Name</Label>
                   <TextInput id="post-cat-name" value={form.name} maxLength={40} onChange={(e) => set("name", e.target.value)} placeholder="e.g. AskTheTrybe, Confessions" required className="mt-1" />
                 </div>
                 {!category && (
                   <div className="mb-4">
-                    <Label htmlFor="post-cat-slug" value="Slug (optional)" />
+                    <Label htmlFor="post-cat-slug">Slug (optional)</Label>
                     <TextInput
                       id="post-cat-slug"
                       value={form.slug}
@@ -105,17 +106,19 @@ const PostCategoryFormModal = ({
                       onChange={(e) => set("slug", e.target.value.toLowerCase())}
                       placeholder="made from the name"
                       color={slugValid ? undefined : "failure"}
-                      helperText="The tab's key: lower-case letters, numbers and -. Made from the name if empty. It can't change later."
                       className="mt-1"
                     />
+                    <HelperText color={slugValid ? undefined : "failure"}>
+                      The tab&apos;s key: lower-case letters, numbers and -. Made from the name if empty. It can&apos;t change later.
+                    </HelperText>
                   </div>
                 )}
                 <div className="mb-4">
-                  <Label htmlFor="post-cat-description" value="Description (optional)" />
+                  <Label htmlFor="post-cat-description">Description (optional)</Label>
                   <Textarea id="post-cat-description" value={form.description} maxLength={300} onChange={(e) => set("description", e.target.value)} placeholder="Shown under the tab" rows={2} className="mt-1" />
                 </div>
                 <div className="mb-4">
-                  <Label value="Icon (optional)" />
+                  <Label>Icon (optional)</Label>
                   {form.icon && (
                     <div className="mt-2 mb-3 flex items-center gap-3 p-2.5 rounded-lg bg-primary/10 border border-primary/20">
                       <Icon icon={form.icon} width={28} className="text-primary" />
@@ -136,17 +139,17 @@ const PostCategoryFormModal = ({
                 <div className="mb-3 flex items-start gap-2">
                   <Checkbox id="post-cat-anonymous" checked={form.is_anonymous} onChange={(e) => set("is_anonymous", e.target.checked)} className="mt-0.5" />
                   <div>
-                    <Label htmlFor="post-cat-anonymous" value="Anonymous" />
+                    <Label htmlFor="post-cat-anonymous">Anonymous</Label>
                     <p className="text-xs text-darklink">Posts here hide the author&apos;s name. Changing this only affects new posts.</p>
                   </div>
                 </div>
                 <div className="mb-5 flex items-center gap-2">
                   <Checkbox id="post-cat-enabled" checked={form.is_enabled} onChange={(e) => set("is_enabled", e.target.checked)} />
-                  <Label htmlFor="post-cat-enabled" value="Enabled" />
+                  <Label htmlFor="post-cat-enabled">Enabled</Label>
                 </div>
                 <div className="flex justify-end gap-3">
                   <Button color="gray" type="button" onClick={onClose} disabled={loading}>Cancel</Button>
-                  <Button color="success" type="submit" isProcessing={loading} disabled={loading || !form.name.trim() || !slugValid}>{submitText}</Button>
+                  <Button color="success" type="submit" disabled={loading || !form.name.trim() || !slugValid}>{(loading) && <Spinner size="sm" light />}{submitText}</Button>
                 </div>
               </form>
             </DialogPanel>

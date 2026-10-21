@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Button, Label, TextInput, Select } from "flowbite-react";
+import { Label, TextInput, Select, Spinner } from "flowbite-react";
+import { Button } from "@/app/components/shared/Button";
 import { Icon } from "@iconify/react";
 import { toast } from "sonner";
 import CardBox from "@/app/components/shared/CardBox";
@@ -106,7 +107,7 @@ const ATCSettingsForm = ({ settings }: { settings: IATCSettings | null }) => {
           <h4 className="text-lg font-bold">ATC Settings</h4>
           <p className="text-sm text-darklink">Timeline windows & challenge content</p>
         </div>
-        <Button color="primary" size="sm" className="h-10" onClick={save} isProcessing={saving} disabled={saving}>Save settings</Button>
+        <Button color="primary" size="sm" className="h-10" onClick={save} disabled={saving}>{(saving) && <Spinner size="sm" light />}Save settings</Button>
       </div>
 
       <CardBox>

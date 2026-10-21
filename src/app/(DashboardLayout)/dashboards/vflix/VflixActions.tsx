@@ -2,7 +2,8 @@
 
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Button, Dropdown, Label, Select, Textarea } from "flowbite-react";
+import { Dropdown, DropdownItem, Label, Select, Textarea, Spinner } from "flowbite-react";
+import { Button } from "@/app/components/shared/Button";
 import { useState } from "react";
 import { HiOutlineDotsVertical } from "react-icons/hi";
 import { toast } from "sonner";
@@ -11,14 +12,14 @@ import {
   unfeatureVflixVideo,
   updateVflixStatus,
 } from "@/app/api/vflix";
-import { can } from "@/utils/permissions";
+import { usePermissions } from "@/utils/permissions";
 
 /**
  * Row-level moderation actions for a VFlix video.
  * - Update status (§4.6) is the takedown/restore mechanism; captures an
  *   optional reason for the audit trail.
  * - Feature / unfeature (§4.7).
- * Buttons are wrapped in can() so they can be permission-gated later (§7).
+ * Buttons show only to staff whose role allows the action.
  */
 const VflixActions = ({
   video,
@@ -37,6 +38,7 @@ const VflixActions = ({
 
   const stop = (e: React.MouseEvent) => e.stopPropagation();
 
+  const { can } = usePermissions();
   const canModerate = can("vflix.moderate");
   const canFeature = can("vflix.feature");
 
@@ -94,14 +96,14 @@ const VflixActions = ({
         )}
       >
         {canModerate && (
-          <Dropdown.Item onClick={() => setShowModal(true)}>
+          <DropdownItem onClick={() => setShowModal(true)}>
             Update status
-          </Dropdown.Item>
+          </DropdownItem>
         )}
         {canFeature && (
-          <Dropdown.Item onClick={handleToggleFeature} disabled={featuring}>
+          <DropdownItem onClick={handleToggleFeature} disabled={featuring}>
             {video.is_featured ? "Unfeature" : "Feature"}
-          </Dropdown.Item>
+          </DropdownItem>
         )}
       </Dropdown>
 
@@ -141,7 +143,7 @@ const VflixActions = ({
                 <form onSubmit={handleSubmit} className="flex flex-col gap-4">
                   <div>
                     <div className="mb-2 block">
-                      <Label htmlFor="vflix-status" value="Status" />
+                      <Label htmlFor="vflix-status">Status</Label>
                     </div>
                     <Select
                       id="vflix-status"
@@ -162,7 +164,7 @@ const VflixActions = ({
 
                   <div>
                     <div className="mb-2 block">
-                      <Label htmlFor="vflix-reason" value="Reason (optional)" />
+                      <Label htmlFor="vflix-reason">Reason (optional)</Label>
                     </div>
                     <Textarea
                       id="vflix-reason"
@@ -190,8 +192,8 @@ const VflixActions = ({
                       color="success"
                       type="submit"
                       disabled={loading || statusLoading}
-                      isProcessing={loading}
                     >
+                      {loading && <Spinner size="sm" light />}
                       {loading ? "Updating..." : "Update"}
                     </Button>
                   </div>

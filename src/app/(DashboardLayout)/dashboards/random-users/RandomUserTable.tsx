@@ -6,7 +6,7 @@ import {
   UserDetailsComp,
 } from "@/app/components/shared/TableSnippets";
 import { formatDate } from "@/utils/dateUtils";
-import { createColumnHelper } from "@tanstack/react-table";
+import { createColumnHelper } from "@/utils/table";
 import { useRouter, useSearchParams } from "next/navigation";
 import CustomizedReusableTable from "./CustomizedReusuableTable";
 import { useEffect, useState, Suspense } from "react";

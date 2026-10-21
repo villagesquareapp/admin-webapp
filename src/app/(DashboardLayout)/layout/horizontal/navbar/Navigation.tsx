@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { Navbar } from 'flowbite-react';
+import { Navbar, NavbarCollapse } from 'flowbite-react';
 import Link from 'next/link';
 import Menuitems from '@/app/(DashboardLayout)/layout/horizontal/MenuData';
 import { IconChevronDown } from '@tabler/icons-react';
 import ChildComponent from './ChildComponent';
 import { Icon } from "@iconify/react";
 import { useTranslation } from 'react-i18next';
+import { usePermissions } from '@/utils/permissions';
 
 
 const Navigation = () => {
@@ -25,9 +26,10 @@ const Navigation = () => {
     setActive(parentId);
   };
   const { t } = useTranslation();
+  const { can } = usePermissions();
   return (
     <Navbar fluid={true} rounded={true} className="horizontal-nav bg-transparent dark:bg-transparent sm:px-0 xl:py-2.5 py-0">
-      <Navbar.Collapse className="xl:block">
+      <NavbarCollapse className="xl:block">
         <ul className="flex items-center space-x-3">
           {Menuitems.map((item) => (
             <li key={item.id} className="relative group">
@@ -57,7 +59,7 @@ const Navigation = () => {
                       onMouseLeave={handleDropdownLeave}
                     >
                       <ul className={`p-3 text-sm  gap-2  ${item.column == 4 ? 'two-cols' : 'flex flex-col'} `}>
-                        {item.children.map((child) => (
+                        {item.children.filter((child) => !child.permission || can(child.permission)).map((child) => (
                           <li key={child.id} className={` ${item.column == 4 ? 'mb-2' : ''} `}>
                             <ChildComponent
                               item={child}
@@ -83,7 +85,7 @@ const Navigation = () => {
             </li>
           ))}
         </ul>
-      </Navbar.Collapse>
+      </NavbarCollapse>
     </Navbar>
   );
 };

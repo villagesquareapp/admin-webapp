@@ -1,10 +1,11 @@
 "use client";
-import { Dropdown, Select } from "flowbite-react";
+import { Dropdown, DropdownItem, Select, Spinner } from "flowbite-react";
 import { HiOutlineDotsVertical } from "react-icons/hi";
 import { useState, useEffect } from "react";
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Button, Label, TextInput, FileInput } from "flowbite-react";
+import { Label, TextInput, FileInput } from "flowbite-react";
+import { Button } from "@/app/components/shared/Button";
 import { updatePostStatus } from "@/app/api/post";
 import { executeModeration } from "@/app/api/moderation";
 import { toast } from "sonner";
@@ -72,22 +73,22 @@ const PostActions = ({
           </button>
         )}
       >
-        <Dropdown.Item onClick={() => setShowModal(true)}>Update status</Dropdown.Item>
+        <DropdownItem onClick={() => setShowModal(true)}>Update status</DropdownItem>
         {post.is_duplicate ? (
-          <Dropdown.Item onClick={() => moderate("restore_content", "Post restored")}>
+          <DropdownItem onClick={() => moderate("restore_content", "Post restored")}>
             Restore reach
-          </Dropdown.Item>
+          </DropdownItem>
         ) : (
-          <Dropdown.Item onClick={() => moderate("limit_visibility", "Reach limited")}>
+          <DropdownItem onClick={() => moderate("limit_visibility", "Reach limited")}>
             Limit reach
-          </Dropdown.Item>
+          </DropdownItem>
         )}
-        <Dropdown.Item onClick={() => moderate("remove_content", "Post taken down")}>
+        <DropdownItem onClick={() => moderate("remove_content", "Post taken down")}>
           Take down
-        </Dropdown.Item>
-        <Dropdown.Item onClick={() => moderate("restore_content", "Post restored")}>
+        </DropdownItem>
+        <DropdownItem onClick={() => moderate("restore_content", "Post restored")}>
           Restore
-        </Dropdown.Item>
+        </DropdownItem>
       </Dropdown>
 
       <AnimatePresence>
@@ -152,8 +153,8 @@ const PostActions = ({
                       color="success"
                       type="submit"
                       disabled={loading || statusLoading}
-                      isProcessing={loading}
                     >
+                      {loading && <Spinner size="sm" light />}
                       {loading ? "Updating..." : "Update"}
                     </Button>
                   </div>

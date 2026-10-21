@@ -1,5 +1,6 @@
 "use client";
-import { Button, Modal, TextInput } from "flowbite-react";
+import { Modal, ModalBody, TextInput } from "flowbite-react";
+import { Button } from "@/app/components/shared/Button";
 import React, { useState } from "react";
 import { Icon } from "@iconify/react";
 import Link from "next/link";
@@ -24,7 +25,7 @@ const Search = () => {
         <div className="p-6 border-b border-ld">
           <TextInput placeholder="Search here" className="form-control" sizing="md" required />
         </div>
-        <Modal.Body className="pt-0 "  >
+        <ModalBody className="pt-0 "  >
           <SimpleBar className="max-h-72">
             <h5 className="text-lg pt-5">Quick Page Links</h5>
             {SearchData.SearchLinks.map((links, index) => (
@@ -38,7 +39,7 @@ const Search = () => {
               </Link>
             ))}
           </SimpleBar>
-        </Modal.Body>
+        </ModalBody>
       </Modal>
     </div>
   );

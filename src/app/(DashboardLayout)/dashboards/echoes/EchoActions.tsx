@@ -1,6 +1,6 @@
 "use client";
 
-import { Dropdown } from "flowbite-react";
+import { Dropdown, DropdownItem } from "flowbite-react";
 import { HiOutlineDotsVertical } from "react-icons/hi";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -41,13 +41,13 @@ const EchoActions = ({ echo }: { echo: IEchoes }) => {
           </button>
         )}
       >
-        <Dropdown.Item onClick={() => router.push(`/dashboards/echoes/${echo.uuid}`)}>View details</Dropdown.Item>
+        <DropdownItem onClick={() => router.push(`/dashboards/echoes/${echo.uuid}`)}>View details</DropdownItem>
         {(echo.status === "live" || echo.status === "scheduled") && (
-          <Dropdown.Item onClick={end}>End echo now</Dropdown.Item>
+          <DropdownItem onClick={end}>End echo now</DropdownItem>
         )}
-        <Dropdown.Item onClick={() => moderate("limit_visibility", "Reach limited")}>Limit reach</Dropdown.Item>
-        <Dropdown.Item onClick={() => moderate("remove_content", "Echo taken down", true)}>Take down</Dropdown.Item>
-        <Dropdown.Item onClick={() => moderate("restore_content", "Echo restored")}>Restore</Dropdown.Item>
+        <DropdownItem onClick={() => moderate("limit_visibility", "Reach limited")}>Limit reach</DropdownItem>
+        <DropdownItem onClick={() => moderate("remove_content", "Echo taken down", true)}>Take down</DropdownItem>
+        <DropdownItem onClick={() => moderate("restore_content", "Echo restored")}>Restore</DropdownItem>
       </Dropdown>
     </div>
   );

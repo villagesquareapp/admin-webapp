@@ -17,7 +17,8 @@ const HoldsWrapper = async ({ status, page, limit }: { status: HoldStatus; page:
   );
 };
 
-const Page = async ({ searchParams }: { searchParams: { [key: string]: string | string[] | undefined } }) => {
+const Page = async (props: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) => {
+  const searchParams = await props.searchParams;
   const raw = searchParams.status as string;
   const status: HoldStatus = raw === "released" || raw === "all" ? raw : "active";
   const page = Number(searchParams.page) || 1;

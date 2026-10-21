@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Dropdown } from "flowbite-react";
+import { Dropdown, DropdownItem } from "flowbite-react";
 import { HiOutlineDotsVertical } from "react-icons/hi";
 import { Icon } from "@iconify/react";
 import { toast } from "sonner";
@@ -69,9 +69,9 @@ const ATCApplicationDetail = ({ application }: { application: IATCApplication | 
           <Dropdown label="" inline dismissOnClick renderTrigger={() => (
             <button className="p-2 rounded-full border border-ld hover:bg-gray-100 dark:hover:bg-gray-700" disabled={busy}><HiOutlineDotsVertical /></button>
           )}>
-            <Dropdown.Item disabled={busy || a.status === "in_review"} onClick={() => act(reviewATCApplication, "Moved to review")}>Move to review</Dropdown.Item>
-            <Dropdown.Item disabled={busy || a.status === "approved"} onClick={() => act(approveATCApplication, "Application approved")}>Approve</Dropdown.Item>
-            <Dropdown.Item disabled={busy || a.status === "declined"} onClick={() => act(declineATCApplication, "Application declined")}>Decline</Dropdown.Item>
+            <DropdownItem disabled={busy || a.status === "in_review"} onClick={() => act(reviewATCApplication, "Moved to review")}>Move to review</DropdownItem>
+            <DropdownItem disabled={busy || a.status === "approved"} onClick={() => act(approveATCApplication, "Application approved")}>Approve</DropdownItem>
+            <DropdownItem disabled={busy || a.status === "declined"} onClick={() => act(declineATCApplication, "Application declined")}>Decline</DropdownItem>
           </Dropdown>
         </div>
       </div>

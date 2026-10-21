@@ -37,23 +37,26 @@ const Wrapper = async ({ searchParams }: { searchParams: Params }) => {
   );
 };
 
-const Page = ({ searchParams }: { searchParams: Params }) => (
-  <div className="flex flex-col gap-4">
-    <div>
-      <h4 className="text-lg font-bold">Departments</h4>
-      <p className="text-sm text-darklink">
-        One list for every institution. Students type their department when they ask to join a Campus Trybe; an answer
-        matching a name or another spelling (ignoring case, punctuation and spacing) is linked to it, and the rest wait
-        under Unmatched until you add them.
-      </p>
+const Page = async (props: { searchParams: Promise<Params> }) => {
+  const searchParams = await props.searchParams;
+  return (
+    <div className="flex flex-col gap-4">
+      <div>
+        <h4 className="text-lg font-bold">Departments</h4>
+        <p className="text-sm text-darklink">
+          One list for every institution. Students type their department when they ask to join a Campus Trybe; an answer
+          matching a name or another spelling (ignoring case, punctuation and spacing) is linked to it, and the rest wait
+          under Unmatched until you add them.
+        </p>
+      </div>
+      <Suspense
+        key={JSON.stringify(searchParams)}
+        fallback={<div className="h-[520px] w-full animate-pulse bg-gray-100 dark:bg-gray-800 rounded-3xl" />}
+      >
+        <Wrapper searchParams={searchParams} />
+      </Suspense>
     </div>
-    <Suspense
-      key={JSON.stringify(searchParams)}
-      fallback={<div className="h-[520px] w-full animate-pulse bg-gray-100 dark:bg-gray-800 rounded-3xl" />}
-    >
-      <Wrapper searchParams={searchParams} />
-    </Suspense>
-  </div>
-);
+  );
+};
 
 export default Page;

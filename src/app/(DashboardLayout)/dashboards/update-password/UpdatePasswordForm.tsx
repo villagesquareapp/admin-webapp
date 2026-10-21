@@ -7,7 +7,8 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { Button, Label, TextInput } from "flowbite-react";
+import { Label, TextInput } from "flowbite-react";
+import { Button } from "@/app/components/shared/Button";
 import React from "react";
 import { HiEye, HiEyeOff } from "react-icons/hi";
 import { signOut } from "next-auth/react";
@@ -67,7 +68,7 @@ const UpdatePasswordForm = () => {
           </center> */}
       <div className="mb-4">
         <div className="mb-2 block">
-          <Label htmlFor="currentPassword" value="Current Password" />
+          <Label htmlFor="currentPassword">Current Password</Label>
         </div>
         <div className="relative">
           <TextInput
@@ -98,7 +99,7 @@ const UpdatePasswordForm = () => {
       </div>
       <div className="mb-4">
         <div className="mb-2 block">
-          <Label htmlFor="newPassword" value="New Password" />
+          <Label htmlFor="newPassword">New Password</Label>
         </div>
         <div className="relative">
           <TextInput
@@ -129,7 +130,7 @@ const UpdatePasswordForm = () => {
       </div>
       <div className="mb-4">
         <div className="mb-2 block">
-          <Label htmlFor="confirmPassword" value="Confirm Password" />
+          <Label htmlFor="confirmPassword">Confirm Password</Label>
         </div>
         <div className="relative">
           <TextInput

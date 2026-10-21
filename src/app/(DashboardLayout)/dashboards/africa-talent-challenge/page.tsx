@@ -24,7 +24,8 @@ const OverviewWrapper = async ({ period }: { period: string }) => {
   return <ATCOverviewContent data={data} />;
 };
 
-const Page = async ({ searchParams }: { searchParams: { [key: string]: string | string[] | undefined } }) => {
+const Page = async (props: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) => {
+  const searchParams = await props.searchParams;
   const period = (searchParams.period as string) || "";
   return (
     <Suspense key={period} fallback={<div className="h-[600px] w-full animate-pulse bg-gray-100 dark:bg-gray-800 rounded-3xl" />}>

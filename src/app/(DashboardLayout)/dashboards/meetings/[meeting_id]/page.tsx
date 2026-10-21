@@ -2,7 +2,8 @@ import { getMeeting } from "@/app/api/meetings";
 import CardBox from "@/app/components/shared/CardBox";
 import MeetingDetail from "./MeetingDetail";
 
-const Page = async ({ params }: { params: { meeting_id: string } }) => {
+const Page = async (props: { params: Promise<{ meeting_id: string }> }) => {
+  const params = await props.params;
   const res = await getMeeting(params.meeting_id);
   if (!res?.data) {
     return (

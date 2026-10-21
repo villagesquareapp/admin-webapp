@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import { Button, TextInput, Label, Textarea } from "flowbite-react";
+import { TextInput, Label, Textarea, Spinner } from "flowbite-react";
+import { Button } from "@/app/components/shared/Button";
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Icon } from "@iconify/react";
@@ -302,9 +303,9 @@ const ManageCategoriesModal: React.FC<Props> = ({ isOpen, onClose, initialCatego
                     color="failure"
                     size="sm"
                     onClick={handleDelete}
-                    isProcessing={loading}
                     disabled={loading}
                   >
+                    {loading && <Spinner size="sm" light />}
                     {loading ? "Deleting..." : "Delete"}
                   </Button>
                 </div>
@@ -440,7 +441,7 @@ export function CategoryFormModal({
               <form onSubmit={handleSubmit}>
                 {/* Icon Picker */}
                 <div className="mb-4">
-                  <Label value="Select Icon" />
+                  <Label>Select Icon</Label>
                   
                   {/* Selected icon preview */}
                   {selectedIcon && (
@@ -489,7 +490,7 @@ export function CategoryFormModal({
 
                 {/* Name */}
                 <div className="mb-4">
-                  <Label htmlFor="category-name" value="Title" />
+                  <Label htmlFor="category-name">Title</Label>
                   <TextInput
                     id="category-name"
                     type="text"
@@ -504,7 +505,7 @@ export function CategoryFormModal({
 
                 {/* Description */}
                 <div className="mb-4">
-                  <Label htmlFor="category-description" value="Description" />
+                  <Label htmlFor="category-description">Description</Label>
                   <Textarea
                     id="category-description"
                     placeholder="e.g. Chatting, Q&A, updates"
@@ -523,9 +524,9 @@ export function CategoryFormModal({
                   <Button
                     color="success"
                     type="submit"
-                    isProcessing={loading}
                     disabled={loading || !name.trim() || !description.trim() || !selectedIcon}
                   >
+                    {loading && <Spinner size="sm" light />}
                     {loading ? "Processing..." : submitText}
                   </Button>
                 </div>

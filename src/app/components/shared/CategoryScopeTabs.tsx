@@ -89,7 +89,7 @@ const CategoryScopeTabs = ({
         <>
           {tab === "trybes" && (
             <div className="flex flex-wrap items-center gap-3">
-              <Label htmlFor="category-trybe-type" value="Trybe type" />
+              <Label htmlFor="category-trybe-type">Trybe type</Label>
               <div className="min-w-[220px]">
                 <Select
                   id="category-trybe-type"

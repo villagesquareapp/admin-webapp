@@ -1,6 +1,7 @@
 "use client";
 
-import { Button, Checkbox, Label, Textarea } from "flowbite-react";
+import { Checkbox, Label, Textarea } from "flowbite-react";
+import { Button } from "@/app/components/shared/Button";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -375,7 +376,7 @@ const Withdrawals = ({
                     />
                   )}
                 </div>
-                <div className="flex flex-col min-w-0 flex-shrink">
+                <div className="flex flex-col min-w-0 shrink">
                   <h5 className="text-sm font-medium truncate">{item.user.name}</h5>
                   <p className="text-xs text-darklink truncate">@{item.user.username}</p>
                 </div>

@@ -43,7 +43,7 @@ interface ITrybeAdminMember {
   name: string | null;
   username: string | null;
   profile_picture: string | null;
-  role: "owner" | "admin" | "moderator" | "member";
+  role: "admin" | "member";
   joined_at: string;
   intro: string | null;
 }

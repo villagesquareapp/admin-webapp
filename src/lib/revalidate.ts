@@ -11,10 +11,10 @@ function warnOnce(context: string, error: unknown) {
     console.warn(`[revalidate] ${context} failed (further warnings suppressed):`, error)
 }
 
-/** Revalidate the page the current server action was invoked from (via middleware's x-pathname). */
+/** Revalidate the page the current server action was invoked from (via the proxy's x-pathname). */
 export async function revalidateCurrentPath() {
     try {
-        const pathname = headers().get('x-pathname') || '/'
+        const pathname = (await headers()).get('x-pathname') || '/'
         revalidatePath(pathname)
         // Keep the dashboard/withdrawals summaries in sync after any mutation.
         revalidatePath('/dashboards')

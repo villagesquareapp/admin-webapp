@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Icon } from "@iconify/react";
-import { Button, Modal, Textarea } from "flowbite-react";
+import { Modal, ModalBody, ModalFooter, ModalHeader, Textarea, Spinner } from "flowbite-react";
+import { Button } from "@/app/components/shared/Button";
 import { toast } from "sonner";
 import CardBox from "@/app/components/shared/CardBox";
 import { approveJoinRequest, getJoinRequestDocuments, rejectJoinRequest } from "@/app/api/trybes";
@@ -271,9 +272,9 @@ const JoinRequestReview = ({ request }: { request: ITrybeJoinRequestDetail | nul
                 size="sm"
                 color="primary"
                 onClick={showDocuments}
-                isProcessing={loadingDocs}
                 disabled={loadingDocs || !request.has_documents}
               >
+                {loadingDocs && <Spinner size="sm" light />}
                 {request.has_documents ? "Show photos" : "Photos deleted"}
               </Button>
             )}
@@ -334,27 +335,28 @@ const JoinRequestReview = ({ request }: { request: ITrybeJoinRequestDetail | nul
       </div>
 
       <Modal show={approving} onClose={() => !busy && setApproving(false)} size="md">
-        <Modal.Header>Approve join request</Modal.Header>
-        <Modal.Body>
+        <ModalHeader>Approve join request</ModalHeader>
+        <ModalBody>
           <p className="text-sm">
             <span className="font-semibold">{a.full_name}</span> joins{" "}
             <span className="font-semibold">{request.trybe.name}</span> as a member and gets a notification. Their ID
             photos are kept while they are a member.
           </p>
-        </Modal.Body>
-        <Modal.Footer>
+        </ModalBody>
+        <ModalFooter>
           <Button color="gray" onClick={() => setApproving(false)} disabled={busy}>
             Cancel
           </Button>
-          <Button color="primary" onClick={approve} isProcessing={busy} disabled={busy}>
+          <Button color="primary" onClick={approve} disabled={busy}>
+            {busy && <Spinner size="sm" light />}
             Approve
           </Button>
-        </Modal.Footer>
+        </ModalFooter>
       </Modal>
 
       <Modal show={rejecting} onClose={() => !busy && setRejecting(false)} size="lg">
-        <Modal.Header>Reject join request</Modal.Header>
-        <Modal.Body>
+        <ModalHeader>Reject join request</ModalHeader>
+        <ModalBody>
           <div className="flex flex-col gap-3">
             <p className="text-sm text-darklink">
               The student sees this reason and can apply again. Their photos are deleted after 30 days.
@@ -379,20 +381,20 @@ const JoinRequestReview = ({ request }: { request: ITrybeJoinRequestDetail | nul
               placeholder="Reason the student will see"
             />
           </div>
-        </Modal.Body>
-        <Modal.Footer>
+        </ModalBody>
+        <ModalFooter>
           <Button color="gray" onClick={() => setRejecting(false)} disabled={busy}>
             Cancel
           </Button>
           <Button
             color="failure"
             onClick={reject}
-            isProcessing={busy}
             disabled={busy || reason.trim().length < 3}
           >
+            {busy && <Spinner size="sm" light />}
             Reject
           </Button>
-        </Modal.Footer>
+        </ModalFooter>
       </Modal>
     </div>
   );

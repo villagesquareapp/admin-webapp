@@ -4,7 +4,7 @@ import LoadingComponent from "@/app/components/shared/LoadingComponent";
 import ReusableTable from "@/app/components/shared/ReusableTable";
 import ResolveReportModal, { ReportAction } from "@/app/components/shared/ResolveReportModal";
 import { formatDate } from "@/utils/dateUtils";
-import { createColumnHelper } from "@tanstack/react-table";
+import { createColumnHelper } from "@/utils/table";
 import { Icon } from "@iconify/react";
 import Image from "next/image";
 import Link from "next/link";

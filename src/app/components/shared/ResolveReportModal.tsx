@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Button, Checkbox, Label, Modal, Textarea } from "flowbite-react";
+import { Checkbox, Label, Modal, ModalBody, ModalFooter, ModalHeader, Textarea, Spinner } from "flowbite-react";
+import { Button } from "@/app/components/shared/Button";
 import { toast } from "sonner";
 import { resolveReport, dismissReport } from "@/app/api/report";
 
@@ -97,12 +98,12 @@ const ResolveReportModal = ({
 
   return (
     <Modal show={!!reportId} onClose={close} size="md">
-      <Modal.Header>{action === "resolve" ? "Resolve report" : "Dismiss report"}</Modal.Header>
-      <Modal.Body>
+      <ModalHeader>{action === "resolve" ? "Resolve report" : "Dismiss report"}</ModalHeader>
+      <ModalBody>
         <div className="flex flex-col gap-4">
           {action === "resolve" ? (
             <div>
-              <Label value="What are you resolving to?" />
+              <Label>What are you resolving to?</Label>
               <div className="grid grid-cols-2 gap-2 mt-2">
                 {METHODS.map((m) => (
                   <label key={m.value} className="flex items-center gap-2 text-sm cursor-pointer">
@@ -121,7 +122,7 @@ const ResolveReportModal = ({
             </p>
           )}
           <div>
-            <Label value={action === "resolve" ? "Note (optional)" : "Reason (required)"} />
+            <Label>{action === "resolve" ? "Note (optional)" : "Reason (required)"}</Label>
             <Textarea
               className="mt-2"
               rows={3}
@@ -136,20 +137,20 @@ const ResolveReportModal = ({
             />
           </div>
         </div>
-      </Modal.Body>
-      <Modal.Footer>
+      </ModalBody>
+      <ModalFooter>
         <Button color="gray" onClick={close} disabled={loading}>
           Cancel
         </Button>
         <Button
           color={action === "resolve" ? "success" : "warning"}
           onClick={submit}
-          isProcessing={loading}
           disabled={loading}
         >
+          {loading && <Spinner size="sm" light />}
           {action === "resolve" ? "Resolve report" : "Dismiss report"}
         </Button>
-      </Modal.Footer>
+      </ModalFooter>
     </Modal>
   );
 };

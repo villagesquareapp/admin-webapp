@@ -7,14 +7,10 @@ import {
   IconChevronsRight,
   IconDatabaseOff,
 } from "@tabler/icons-react";
-import {
-  flexRender,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getSortedRowModel,
-  useReactTable,
-} from "@tanstack/react-table";
-import { Button, Checkbox, Dropdown, Select, TextInput } from "flowbite-react";
+import { flexRender, useTable } from "@tanstack/react-table";
+import { appTableFeatures } from "@/utils/table";
+import { Checkbox, Dropdown, DropdownItem, Select, TextInput } from "flowbite-react";
+import { Button } from "@/app/components/shared/Button";
 import { useRouter, useSearchParams } from "next/navigation";
 import React from "react";
 import { HiOutlineDotsVertical } from "react-icons/hi";
@@ -158,21 +154,11 @@ function CustomizedReusableTable({
     }
   };
 
-  const table = useReactTable({
+  // Paging is server-side: the controls below use currentPage and totalPages.
+  const table = useTable({
+    features: appTableFeatures,
     data: tableDataState,
     columns,
-    filterFns: {},
-    state: {
-      pagination: {
-        pageIndex: currentPage - 1,
-        pageSize: pageSize,
-      },
-    },
-    manualPagination: true,
-    pageCount: totalPages,
-    getCoreRowModel: getCoreRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    getSortedRowModel: getSortedRowModel(),
   });
 
   const handlePageChange = (newPage: number) => {
@@ -255,7 +241,7 @@ function CustomizedReusableTable({
                   )}
                 >
                   {dropdownItems?.map((items, index) => (
-                    <Dropdown.Item key={index}>{items}</Dropdown.Item>
+                    <DropdownItem key={index}>{items}</DropdownItem>
                   ))}
                 </Dropdown>
               </div>
@@ -272,7 +258,7 @@ function CustomizedReusableTable({
               icon={FaSearch}
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              className="flex-grow"
+              className="grow"
             />
 
             {/* Search Button */}
@@ -362,7 +348,7 @@ function CustomizedReusableTable({
                         />
                       </div>
                     </td>
-                    {row.getVisibleCells().map((cell) => (
+                    {row.getAllCells().map((cell) => (
                       <td key={cell.id} className="whitespace-nowrap py-3">
                         {flexRender(
                           cell.column.columnDef.cell,

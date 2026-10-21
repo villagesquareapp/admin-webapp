@@ -1,6 +1,7 @@
 "use client";
 import { CustomizerContext } from "@/app/context/customizerContext";
-import { Card, Button } from "flowbite-react";
+import { Card } from "flowbite-react";
+import { Button } from "@/app/components/shared/Button";
 import React, { useContext } from "react";
 import { Icon } from "@iconify/react";
 

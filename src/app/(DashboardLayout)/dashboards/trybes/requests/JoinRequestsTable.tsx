@@ -3,9 +3,10 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { createColumnHelper } from "@tanstack/react-table";
+import { createColumnHelper } from "@/utils/table";
 import { formatDistanceToNow } from "date-fns";
-import { Button, Checkbox, Modal, Textarea } from "flowbite-react";
+import { Checkbox, Modal, ModalBody, ModalFooter, ModalHeader, Textarea, Spinner } from "flowbite-react";
+import { Button } from "@/app/components/shared/Button";
 import { toast } from "sonner";
 import ReusableTable from "@/app/components/shared/ReusableTable";
 import { decideJoinRequests } from "@/app/api/trybes";
@@ -172,7 +173,8 @@ const JoinRequestsTable = ({
       {pending && selected.length > 0 && (
         <div className="flex flex-wrap items-center gap-3 rounded-lg bg-lightprimary px-3 py-2 text-sm">
           <span className="font-semibold">{selected.length} selected</span>
-          <Button size="xs" color="primary" onClick={() => decide("approve")} isProcessing={busy} disabled={busy}>
+          <Button size="xs" color="primary" onClick={() => decide("approve")} disabled={busy}>
+            {busy && <Spinner size="sm" light />}
             Approve {selected.length}
           </Button>
           <Button size="xs" color="failure" onClick={() => setRejecting(true)} disabled={busy}>
@@ -197,10 +199,10 @@ const JoinRequestsTable = ({
         onRowClick={(row: ITrybeJoinRequest) => router.push(`/dashboards/trybes/requests/${row.uuid}`)}
       />
       <Modal show={rejecting} onClose={() => !busy && setRejecting(false)} size="md">
-        <Modal.Header>
+        <ModalHeader>
           Reject {selected.length} {selected.length === 1 ? "request" : "requests"}
-        </Modal.Header>
-        <Modal.Body>
+        </ModalHeader>
+        <ModalBody>
           <div className="flex flex-col gap-3">
             <p className="text-sm text-darklink">Every student sees this reason, so keep it general.</p>
             <div className="flex flex-col gap-1">
@@ -212,15 +214,16 @@ const JoinRequestsTable = ({
             </div>
             <Textarea rows={3} maxLength={500} value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Reason the students will see" />
           </div>
-        </Modal.Body>
-        <Modal.Footer>
+        </ModalBody>
+        <ModalFooter>
           <Button color="gray" onClick={() => setRejecting(false)} disabled={busy}>
             Cancel
           </Button>
-          <Button color="failure" onClick={() => decide("reject")} isProcessing={busy} disabled={busy || reason.trim().length < 3}>
+          <Button color="failure" onClick={() => decide("reject")} disabled={busy || reason.trim().length < 3}>
+            {busy && <Spinner size="sm" light />}
             Reject {selected.length}
           </Button>
-        </Modal.Footer>
+        </ModalFooter>
       </Modal>
       {rows.length === 0 && status === "pending" && (
         <p className="text-sm text-darklink">

@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { createColumnHelper } from "@tanstack/react-table";
+import { createColumnHelper } from "@/utils/table";
 import { Icon } from "@iconify/react";
-import { Badge, Button, ToggleSwitch } from "flowbite-react";
+import { Badge, ToggleSwitch } from "flowbite-react";
+import { Button } from "@/app/components/shared/Button";
 import { FaPlus } from "react-icons/fa";
 import { toast } from "sonner";
 import ReusableTable from "@/app/components/shared/ReusableTable";

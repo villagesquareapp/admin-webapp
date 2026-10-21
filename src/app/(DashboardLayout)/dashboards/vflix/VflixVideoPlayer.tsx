@@ -42,13 +42,12 @@ const VflixVideoPlayer = ({ media }: { media?: IVflixMedia | null }) => {
       </div>
 
       <ReactPlayer
-        url={src}
+        src={src}
         width="100%"
         height="100%"
         controls
         playing={isPlaying}
-        playsinline
-        stopOnUnmount
+        playsInline
         volume={0.8}
         light={media.thumbnail || false}
         className="react-player"

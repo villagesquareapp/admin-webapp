@@ -26,7 +26,8 @@ const Wrapper = async ({ filters, page, limit }: { filters: Filters; page: numbe
   );
 };
 
-const Page = ({ searchParams }: { searchParams: { [key: string]: string | string[] | undefined } }) => {
+const Page = async (props: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) => {
+  const searchParams = await props.searchParams;
   const pick = (key: string) => (searchParams[key] as string) || undefined;
   const filters: Filters = {
     search: pick("search"),

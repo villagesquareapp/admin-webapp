@@ -4,7 +4,8 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Icon } from "@iconify/react";
-import { Button, Modal } from "flowbite-react";
+import { Modal, ModalBody, ModalFooter, ModalHeader, Spinner } from "flowbite-react";
+import { Button } from "@/app/components/shared/Button";
 import { toast } from "sonner";
 import { endMeeting } from "@/app/api/meetings";
 import CardBox from "@/app/components/shared/CardBox";
@@ -137,21 +138,22 @@ const MeetingDetail = ({ meeting: m }: { meeting: IMeetingDetail }) => {
       </CardBox>
 
       <Modal show={confirm} onClose={() => !ending && setConfirm(false)} size="md">
-        <Modal.Header>End this meeting?</Modal.Header>
-        <Modal.Body>
+        <ModalHeader>End this meeting?</ModalHeader>
+        <ModalBody>
           <p className="text-sm">
             Everyone in <b>{m.title}</b> is disconnected and the room closes. The host can start a new meeting
             afterwards.
           </p>
-        </Modal.Body>
-        <Modal.Footer>
+        </ModalBody>
+        <ModalFooter>
           <Button color="gray" onClick={() => setConfirm(false)} disabled={ending}>
             Cancel
           </Button>
-          <Button color="failure" onClick={end} isProcessing={ending} disabled={ending}>
+          <Button color="failure" onClick={end} disabled={ending}>
+            {ending && <Spinner size="sm" light />}
             End meeting
           </Button>
-        </Modal.Footer>
+        </ModalFooter>
       </Modal>
     </div>
   );

@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { createColumnHelper } from "@tanstack/react-table";
-import { Button } from "flowbite-react";
+import { createColumnHelper } from "@/utils/table";
+import { Button } from "@/app/components/shared/Button";
 import { Icon } from "@iconify/react";
 import ReusableTable from "@/app/components/shared/ReusableTable";
 import PostSearch from "../../posts/PostSearch";

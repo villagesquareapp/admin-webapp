@@ -4,7 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Icon } from "@iconify/react";
-import { Button, Label, Modal, TextInput, Textarea } from "flowbite-react";
+import { Label, Modal, ModalBody, ModalFooter, ModalHeader, Textarea, TextInput, Spinner } from "flowbite-react";
+import { Button } from "@/app/components/shared/Button";
 import { useDebouncedCallback } from "use-debounce";
 import { toast } from "sonner";
 import CardBox from "@/app/components/shared/CardBox";
@@ -38,7 +39,8 @@ const LogoPicker = ({ institution }: { institution: IInstitutionDetail }) => {
       <p className="text-sm font-semibold">Logo</p>
       <InstitutionLogo src={institution.logo} size={96} />
       <input ref={input} type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={(e) => upload(e.target.files?.[0])} />
-      <Button size="xs" color="light" className="w-fit" onClick={() => input.current?.click()} isProcessing={busy} disabled={busy}>
+      <Button size="xs" color="light" className="w-fit" onClick={() => input.current?.click()} disabled={busy}>
+        {busy && <Spinner size="sm" light />}
         {institution.logo ? "Replace" : "Upload"}
       </Button>
     </div>
@@ -130,40 +132,41 @@ const TrybeCard = ({ institution }: { institution: IInstitutionDetail }) => {
       )}
 
       <Modal show={creating} onClose={() => !busy && setCreating(false)} size="lg">
-        <Modal.Header>Create the Trybe for {institution.short_name ?? institution.name}</Modal.Header>
-        <Modal.Body>
+        <ModalHeader>Create the Trybe for {institution.short_name ?? institution.name}</ModalHeader>
+        <ModalBody>
           <div className="flex flex-col gap-4">
             <p className="text-sm text-darklink">
               A Campus Trybe with &ldquo;{institution.name}&rdquo; as its school
               {institution.logo ? " and the institution's logo as its avatar" : ""}. You can add a cover and admins next.
             </p>
             <div>
-              <Label htmlFor="new-trybe-name" value="Name" />
+              <Label htmlFor="new-trybe-name">Name</Label>
               <TextInput id="new-trybe-name" value={name} maxLength={80} onChange={(e) => setName(e.target.value)} className="mt-1" />
             </div>
             <div>
-              <Label htmlFor="new-trybe-tagline" value="Tagline" />
+              <Label htmlFor="new-trybe-tagline">Tagline</Label>
               <TextInput id="new-trybe-tagline" value={tagline} maxLength={160} onChange={(e) => setTagline(e.target.value)} placeholder="Network and build your business" className="mt-1" />
             </div>
             <div>
-              <Label htmlFor="new-trybe-about" value="About" />
+              <Label htmlFor="new-trybe-about">About</Label>
               <Textarea id="new-trybe-about" rows={3} maxLength={2000} value={about} onChange={(e) => setAbout(e.target.value)} className="mt-1" />
             </div>
           </div>
-        </Modal.Body>
-        <Modal.Footer>
+        </ModalBody>
+        <ModalFooter>
           <Button color="gray" onClick={() => setCreating(false)} disabled={busy}>
             Cancel
           </Button>
-          <Button color="primary" onClick={create} isProcessing={busy} disabled={busy || name.trim().length < 2}>
+          <Button color="primary" onClick={create} disabled={busy || name.trim().length < 2}>
+            {busy && <Spinner size="sm" light />}
             Create Trybe
           </Button>
-        </Modal.Footer>
+        </ModalFooter>
       </Modal>
 
       <Modal show={linking} onClose={() => !busy && setLinking(false)} size="lg">
-        <Modal.Header>Link a Campus Trybe</Modal.Header>
-        <Modal.Body>
+        <ModalHeader>Link a Campus Trybe</ModalHeader>
+        <ModalBody>
           <div className="flex flex-col gap-3">
             <p className="text-sm text-darklink">
               Campus Trybes that don&apos;t belong to an institution yet. Linking one sets its school to &ldquo;
@@ -188,7 +191,7 @@ const TrybeCard = ({ institution }: { institution: IInstitutionDetail }) => {
               ))}
             </div>
           </div>
-        </Modal.Body>
+        </ModalBody>
       </Modal>
     </CardBox>
   );

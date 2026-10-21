@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Button, Label, Select, TextInput, ToggleSwitch } from "flowbite-react";
+import { Label, Select, TextInput, ToggleSwitch, Spinner, HelperText } from "flowbite-react";
+import { Button } from "@/app/components/shared/Button";
 import { toast } from "sonner";
 import { createInstitution, updateInstitution } from "@/app/api/trybeCampus";
 import { INSTITUTION_KINDS, NIGERIAN_STATES, OWNERSHIP, REGULATORS, splitList } from "../campusUi";
@@ -77,25 +78,27 @@ const InstitutionForm = ({
     <div className="flex flex-col gap-4">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="md:col-span-2">
-          <Label htmlFor="inst-name" value="Name" />
+          <Label htmlFor="inst-name">Name</Label>
           <TextInput id="inst-name" value={v.name} maxLength={200} onChange={(e) => set("name")(e.target.value)} placeholder="University of Lagos" className="mt-1" />
         </div>
         <div>
-          <Label htmlFor="inst-short" value="Short name" />
-          <TextInput id="inst-short" value={v.short_name} maxLength={30} onChange={(e) => set("short_name")(e.target.value)} placeholder="UNILAG" className="mt-1" helperText="Students can search for it" />
+          <Label htmlFor="inst-short">Short name</Label>
+          <TextInput id="inst-short" value={v.short_name} maxLength={30} onChange={(e) => set("short_name")(e.target.value)} placeholder="UNILAG" className="mt-1" />
+          <HelperText>Students can search for it</HelperText>
         </div>
         <div>
-          <Label htmlFor="inst-kind" value="Kind" />
-          <Select id="inst-kind" value={v.kind} onChange={(e) => set("kind")(e.target.value)} className="mt-1" helperText="Decides the levels its Trybe offers">
+          <Label htmlFor="inst-kind">Kind</Label>
+          <Select id="inst-kind" value={v.kind} onChange={(e) => set("kind")(e.target.value)} className="mt-1">
             {INSTITUTION_KINDS.map((k) => (
               <option key={k.value} value={k.value}>
                 {k.label}
               </option>
             ))}
           </Select>
+          <HelperText>Decides the levels its Trybe offers</HelperText>
         </div>
         <div>
-          <Label htmlFor="inst-owner" value="Ownership" />
+          <Label htmlFor="inst-owner">Ownership</Label>
           <Select id="inst-owner" value={v.ownership} onChange={(e) => set("ownership")(e.target.value)} className="mt-1">
             <option value="">Not known</option>
             {OWNERSHIP.map((o) => (
@@ -106,7 +109,7 @@ const InstitutionForm = ({
           </Select>
         </div>
         <div>
-          <Label htmlFor="inst-regulator" value="Listed by" />
+          <Label htmlFor="inst-regulator">Listed by</Label>
           <Select id="inst-regulator" value={v.regulator} onChange={(e) => set("regulator")(e.target.value)} className="mt-1">
             <option value="">—</option>
             {REGULATORS.map((r) => (
@@ -117,11 +120,11 @@ const InstitutionForm = ({
           </Select>
         </div>
         <div>
-          <Label htmlFor="inst-country" value="Country" />
+          <Label htmlFor="inst-country">Country</Label>
           <TextInput id="inst-country" value={v.country} maxLength={100} onChange={(e) => set("country")(e.target.value)} className="mt-1" />
         </div>
         <div>
-          <Label htmlFor="inst-state" value="State" />
+          <Label htmlFor="inst-state">State</Label>
           {inNigeria ? (
             <Select id="inst-state" value={v.state} onChange={(e) => set("state")(e.target.value)} className="mt-1">
               <option value="">Not known</option>
@@ -136,35 +139,35 @@ const InstitutionForm = ({
           )}
         </div>
         <div>
-          <Label htmlFor="inst-city" value="Town or city" />
+          <Label htmlFor="inst-city">Town or city</Label>
           <TextInput id="inst-city" value={v.city} maxLength={100} onChange={(e) => set("city")(e.target.value)} placeholder="Akoka" className="mt-1" />
         </div>
         <div>
-          <Label htmlFor="inst-lga" value="LGA" />
+          <Label htmlFor="inst-lga">LGA</Label>
           <TextInput id="inst-lga" value={v.lga} maxLength={100} onChange={(e) => set("lga")(e.target.value)} className="mt-1" />
         </div>
         <div className="md:col-span-2">
-          <Label htmlFor="inst-address" value="Address" />
+          <Label htmlFor="inst-address">Address</Label>
           <TextInput id="inst-address" value={v.address} maxLength={300} onChange={(e) => set("address")(e.target.value)} className="mt-1" />
         </div>
         <div>
-          <Label htmlFor="inst-website" value="Website" />
+          <Label htmlFor="inst-website">Website</Label>
           <TextInput id="inst-website" value={v.website} maxLength={300} onChange={(e) => set("website")(e.target.value)} placeholder="https://unilag.edu.ng" className="mt-1" />
         </div>
         <div>
-          <Label htmlFor="inst-year" value="Year founded" />
+          <Label htmlFor="inst-year">Year founded</Label>
           <TextInput id="inst-year" type="number" value={v.year_founded} onChange={(e) => set("year_founded")(e.target.value)} className="mt-1" />
         </div>
         <div className="md:col-span-2">
-          <Label htmlFor="inst-domains" value="School email domains (comma separated)" />
+          <Label htmlFor="inst-domains">School email domains (comma separated)</Label>
           <TextInput id="inst-domains" value={v.email_domains} onChange={(e) => set("email_domains")(e.target.value)} placeholder="unilag.edu.ng, live.unilag.edu.ng" className="mt-1" />
         </div>
         <div>
-          <Label htmlFor="inst-matric-example" value="Matric number example" />
+          <Label htmlFor="inst-matric-example">Matric number example</Label>
           <TextInput id="inst-matric-example" value={v.matric_example} maxLength={40} onChange={(e) => set("matric_example")(e.target.value)} placeholder="190401023" className="mt-1" />
         </div>
         <div>
-          <Label htmlFor="inst-matric-pattern" value="Matric number pattern" />
+          <Label htmlFor="inst-matric-pattern">Matric number pattern</Label>
           <TextInput
             id="inst-matric-pattern"
             value={v.matric_pattern}
@@ -172,8 +175,8 @@ const InstitutionForm = ({
             onChange={(e) => set("matric_pattern")(e.target.value)}
             placeholder="^\d{9}$"
             className="mt-1"
-            helperText="A regular expression. Numbers that don't fit are only flagged to reviewers."
           />
+          <HelperText>A regular expression. Numbers that don&apos;t fit are only flagged to reviewers.</HelperText>
         </div>
       </div>
       {institution && (
@@ -184,7 +187,8 @@ const InstitutionForm = ({
         />
       )}
       <div className="flex justify-end">
-        <Button color="primary" onClick={save} isProcessing={saving} disabled={saving || v.name.trim().length < 2}>
+        <Button color="primary" onClick={save} disabled={saving || v.name.trim().length < 2}>
+          {saving && <Spinner size="sm" light />}
           {institution ? "Save changes" : "Add institution"}
         </Button>
       </div>

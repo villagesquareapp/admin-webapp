@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Button, Label, TextInput, Textarea } from "flowbite-react";
+import { Label, TextInput, Textarea, Spinner } from "flowbite-react";
+import { Button } from "@/app/components/shared/Button";
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Icon } from "@iconify/react";
@@ -106,7 +107,7 @@ const MarketCategoryFormModal = ({
               </div>
               <form onSubmit={submit}>
                 <div className="mb-4">
-                  <Label value="Select icon" />
+                  <Label>Select icon</Label>
                   {(icon || currentIconUrl) && (
                     <div className="mt-2 mb-3 flex items-center gap-3 p-2.5 rounded-lg bg-primary/10 border border-primary/20">
                       {icon ? (
@@ -128,15 +129,15 @@ const MarketCategoryFormModal = ({
                   </div>
                 </div>
                 <div className="mb-4">
-                  <Label htmlFor="market-cat-name" value="Name" />
+                  <Label htmlFor="market-cat-name">Name</Label>
                   <TextInput id="market-cat-name" value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Sneakers, Phones" required className="mt-1" />
                 </div>
                 <div className="mb-4">
-                  <Label htmlFor="market-cat-description" value="Description (optional)" />
+                  <Label htmlFor="market-cat-description">Description (optional)</Label>
                   <Textarea id="market-cat-description" value={description} onChange={(e) => setDescription(e.target.value)} placeholder="What sellers list here" rows={3} className="mt-1" />
                 </div>
                 <div className="mb-4">
-                  <Label htmlFor="market-cat-color" value="Color" />
+                  <Label htmlFor="market-cat-color">Color</Label>
                   <div className="mt-1 flex items-center gap-3">
                     <input type="color" aria-label="Pick a color" value={color.toLowerCase()} onChange={(e) => pickColor(e.target.value)} className="h-10 w-12 shrink-0 cursor-pointer rounded-lg border border-gray-300 dark:border-gray-600 bg-transparent p-1" />
                     <TextInput id="market-cat-color" value={colorText} onChange={(e) => changeColorText(e.target.value)} placeholder={DEFAULT_CATEGORY_COLOR} maxLength={7} className="flex-1" />
@@ -144,7 +145,7 @@ const MarketCategoryFormModal = ({
                 </div>
                 <div className="flex justify-end gap-3">
                   <Button color="gray" type="button" onClick={onClose} disabled={loading}>Cancel</Button>
-                  <Button color="success" type="submit" isProcessing={loading} disabled={loading || !name.trim() || !hasIcon}>{submitText}</Button>
+                  <Button color="success" type="submit" disabled={loading || !name.trim() || !hasIcon}>{(loading) && <Spinner size="sm" light />}{submitText}</Button>
                 </div>
               </form>
             </DialogPanel>

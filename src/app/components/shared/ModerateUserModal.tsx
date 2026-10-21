@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Button, Label, Modal, Select, Textarea, TextInput } from "flowbite-react";
+import { Label, Modal, ModalBody, ModalFooter, ModalHeader, Select, Textarea, TextInput, Spinner } from "flowbite-react";
+import { Button } from "@/app/components/shared/Button";
 import { toast } from "sonner";
 import { executeModeration } from "@/app/api/moderation";
 
@@ -71,11 +72,11 @@ const ModerateUserModal = ({
 
   return (
     <Modal show={open} onClose={close} size="md">
-      <Modal.Header>Moderate user</Modal.Header>
-      <Modal.Body>
+      <ModalHeader>Moderate user</ModalHeader>
+      <ModalBody>
         <div className="flex flex-col gap-4">
           <div>
-            <Label value="Action" />
+            <Label>Action</Label>
             <Select className="mt-2" value={action} onChange={(e) => setAction(e.target.value)} required>
               <option value="">Select an action</option>
               {USER_ACTIONS.map((a) => (
@@ -87,7 +88,7 @@ const ModerateUserModal = ({
           </div>
           {action === "suspend_user" && (
             <div>
-              <Label value="Duration (days)" />
+              <Label>Duration (days)</Label>
               <TextInput
                 className="mt-2"
                 type="number"
@@ -98,7 +99,7 @@ const ModerateUserModal = ({
             </div>
           )}
           <div>
-            <Label value="Reason (optional)" />
+            <Label>Reason (optional)</Label>
             <Textarea
               className="mt-2"
               rows={3}
@@ -108,15 +109,16 @@ const ModerateUserModal = ({
             />
           </div>
         </div>
-      </Modal.Body>
-      <Modal.Footer>
+      </ModalBody>
+      <ModalFooter>
         <Button color="gray" onClick={close} disabled={loading}>
           Cancel
         </Button>
-        <Button color="failure" onClick={submit} isProcessing={loading} disabled={loading}>
+        <Button color="failure" onClick={submit} disabled={loading}>
+          {loading && <Spinner size="sm" light />}
           Apply
         </Button>
-      </Modal.Footer>
+      </ModalFooter>
     </Modal>
   );
 };

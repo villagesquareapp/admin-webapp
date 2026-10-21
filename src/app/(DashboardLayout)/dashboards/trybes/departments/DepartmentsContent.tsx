@@ -3,8 +3,9 @@
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Icon } from "@iconify/react";
-import { createColumnHelper } from "@tanstack/react-table";
-import { Badge, Button, Label, Modal, Tabs, TextInput, Textarea, ToggleSwitch } from "flowbite-react";
+import { createColumnHelper } from "@/utils/table";
+import { Badge, Label, Modal, ModalBody, ModalFooter, ModalHeader, TabItem, Tabs, Textarea, TextInput, ToggleSwitch, Spinner } from "flowbite-react";
+import { Button } from "@/app/components/shared/Button";
 import { useDebouncedCallback } from "use-debounce";
 import { toast } from "sonner";
 import ReusableTable from "@/app/components/shared/ReusableTable";
@@ -70,16 +71,16 @@ const DepartmentModal = ({
 
   return (
     <Modal show={!!v} onClose={() => !busy && onClose()} size="lg">
-      <Modal.Header>{v?.uuid ? "Edit department" : "Add a department"}</Modal.Header>
-      <Modal.Body>
+      <ModalHeader>{v?.uuid ? "Edit department" : "Add a department"}</ModalHeader>
+      <ModalBody>
         {v && (
           <div className="flex flex-col gap-4">
             <div>
-              <Label htmlFor="dept-name" value="Name" />
+              <Label htmlFor="dept-name">Name</Label>
               <TextInput id="dept-name" value={v.name} maxLength={150} onChange={(e) => setV({ ...v, name: e.target.value })} placeholder="Computer Science" className="mt-1" />
             </div>
             <div>
-              <Label htmlFor="dept-field" value="Field" />
+              <Label htmlFor="dept-field">Field</Label>
               <TextInput id="dept-field" list="dept-fields" value={v.field} maxLength={60} onChange={(e) => setV({ ...v, field: e.target.value })} placeholder="Computing" className="mt-1" />
               <datalist id="dept-fields">
                 {fields.map((f) => (
@@ -88,12 +89,12 @@ const DepartmentModal = ({
               </datalist>
             </div>
             <div>
-              <Label htmlFor="dept-aliases" value="Other spellings students type (comma or one per line)" />
+              <Label htmlFor="dept-aliases">Other spellings students type (comma or one per line)</Label>
               <Textarea id="dept-aliases" rows={3} value={v.aliases} onChange={(e) => setV({ ...v, aliases: e.target.value })} placeholder="CSC, Comp Sci" className="mt-1" />
               <p className="text-xs text-darklink mt-1">Each spelling can belong to one department only.</p>
             </div>
             <div>
-              <Label value="Taught at (for pickers; never used to turn an answer down)" />
+              <Label>Taught at (for pickers; never used to turn an answer down)</Label>
               <div className="mt-2">
                 <KindPicker value={v.applies_to} onChange={(applies_to) => setV({ ...v, applies_to })} />
               </div>
@@ -107,15 +108,16 @@ const DepartmentModal = ({
             )}
           </div>
         )}
-      </Modal.Body>
-      <Modal.Footer>
+      </ModalBody>
+      <ModalFooter>
         <Button color="gray" onClick={onClose} disabled={busy}>
           Cancel
         </Button>
-        <Button color="primary" onClick={save} isProcessing={busy} disabled={busy || !v || v.name.trim().length < 2}>
+        <Button color="primary" onClick={save} disabled={busy || !v || v.name.trim().length < 2}>
+          {busy && <Spinner size="sm" light />}
           Save
         </Button>
-      </Modal.Footer>
+      </ModalFooter>
     </Modal>
   );
 };
@@ -155,16 +157,16 @@ const PasteModal = ({ show, fields, onClose }: { show: boolean; fields: string[]
 
   return (
     <Modal show={show} onClose={() => !busy && close()} size="lg">
-      <Modal.Header>Paste a list of departments</Modal.Header>
-      <Modal.Body>
+      <ModalHeader>Paste a list of departments</ModalHeader>
+      <ModalBody>
         <div className="flex flex-col gap-4">
           <div>
-            <Label htmlFor="paste-names" value="One department per line" />
+            <Label htmlFor="paste-names">One department per line</Label>
             <Textarea id="paste-names" rows={8} value={names} onChange={(e) => setNames(e.target.value)} className="mt-1" />
             <p className="text-xs text-darklink mt-1">Names already on the list (or one of its spellings) are skipped.</p>
           </div>
           <div>
-            <Label htmlFor="paste-field" value="Field for all of them (optional)" />
+            <Label htmlFor="paste-field">Field for all of them (optional)</Label>
             <TextInput id="paste-field" list="paste-fields" value={field} maxLength={60} onChange={(e) => setField(e.target.value)} className="mt-1" />
             <datalist id="paste-fields">
               {fields.map((f) => (
@@ -173,7 +175,7 @@ const PasteModal = ({ show, fields, onClose }: { show: boolean; fields: string[]
             </datalist>
           </div>
           <div>
-            <Label value="Taught at (optional)" />
+            <Label>Taught at (optional)</Label>
             <div className="mt-2">
               <KindPicker value={kinds} onChange={setKinds} />
             </div>
@@ -184,15 +186,16 @@ const PasteModal = ({ show, fields, onClose }: { show: boolean; fields: string[]
             </div>
           )}
         </div>
-      </Modal.Body>
-      <Modal.Footer>
+      </ModalBody>
+      <ModalFooter>
         <Button color="gray" onClick={close} disabled={busy}>
           Close
         </Button>
-        <Button color="primary" onClick={save} isProcessing={busy} disabled={busy || !names.trim()}>
+        <Button color="primary" onClick={save} disabled={busy || !names.trim()}>
+          {busy && <Spinner size="sm" light />}
           Add
         </Button>
-      </Modal.Footer>
+      </ModalFooter>
     </Modal>
   );
 };
@@ -229,8 +232,8 @@ const AliasModal = ({ answer, onClose }: { answer: IUnmatchedDepartment | null; 
 
   return (
     <Modal show={!!answer} onClose={() => !busy && onClose()} size="lg">
-      <Modal.Header>Which department is &ldquo;{answer?.answer}&rdquo;?</Modal.Header>
-      <Modal.Body>
+      <ModalHeader>Which department is &ldquo;{answer?.answer}&rdquo;?</ModalHeader>
+      <ModalBody>
         <div className="flex flex-col gap-3">
           <TextInput value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search departments..." autoFocus />
           <div className="flex flex-col divide-y divide-border dark:divide-darkborder max-h-80 overflow-y-auto">
@@ -248,7 +251,7 @@ const AliasModal = ({ answer, onClose }: { answer: IUnmatchedDepartment | null; 
             ))}
           </div>
         </div>
-      </Modal.Body>
+      </ModalBody>
     </Modal>
   );
 };
@@ -426,7 +429,7 @@ const DepartmentsContent = ({
   return (
     <>
       <Tabs aria-label="Departments" variant="underline" onActiveTabChange={changeTab}>
-        <Tabs.Item active={tab === "list"} title="All departments" icon={() => <Icon icon="solar:list-check-line-duotone" height={18} className="me-2" />}>
+        <TabItem active={tab === "list"} title="All departments" icon={() => <Icon icon="solar:list-check-line-duotone" height={18} className="me-2" />}>
           {tab === "list" && (
             <div className="flex flex-col gap-4">
               <FilterBar
@@ -469,8 +472,8 @@ const DepartmentsContent = ({
               />
             </div>
           )}
-        </Tabs.Item>
-        <Tabs.Item
+        </TabItem>
+        <TabItem
           active={tab === "unmatched"}
           title={
             <span className="flex items-center gap-2">
@@ -503,7 +506,7 @@ const DepartmentsContent = ({
               />
             </div>
           )}
-        </Tabs.Item>
+        </TabItem>
       </Tabs>
 
       <DepartmentModal draft={draft} fields={fields} onClose={() => setDraft(null)} />

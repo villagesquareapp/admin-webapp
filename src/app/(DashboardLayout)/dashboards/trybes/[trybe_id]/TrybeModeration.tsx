@@ -2,7 +2,8 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-import { Badge, Button, Modal, Select, Spinner, TextInput, Textarea } from "flowbite-react";
+import { Badge, Modal, ModalBody, ModalFooter, ModalHeader, Select, Spinner, Textarea, TextInput } from "flowbite-react";
+import { Button } from "@/app/components/shared/Button";
 import { Icon } from "@iconify/react";
 import { toast } from "sonner";
 import CardBox from "@/app/components/shared/CardBox";
@@ -272,8 +273,8 @@ const TrybeModeration = ({ trybeId, kind }: { trybeId: string; kind: ModerationK
       )}
 
       <Modal show={!!pending} onClose={() => !busy && setPending(null)} size="md">
-        <Modal.Header>{pending?.action === "restore_content" ? "Restore" : "Take down"}</Modal.Header>
-        <Modal.Body>
+        <ModalHeader>{pending?.action === "restore_content" ? "Restore" : "Take down"}</ModalHeader>
+        <ModalBody>
           <div className="flex flex-col gap-3">
             <p className="text-sm">
               {pending?.action === "restore_content"
@@ -284,15 +285,16 @@ const TrybeModeration = ({ trybeId, kind }: { trybeId: string; kind: ModerationK
             </p>
             <Textarea rows={2} maxLength={500} value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Reason (kept in the audit log)" autoFocus />
           </div>
-        </Modal.Body>
-        <Modal.Footer>
+        </ModalBody>
+        <ModalFooter>
           <Button color="gray" onClick={() => setPending(null)} disabled={busy}>
             Back
           </Button>
-          <Button color={pending?.action === "restore_content" ? "primary" : "failure"} onClick={act} isProcessing={busy} disabled={busy}>
+          <Button color={pending?.action === "restore_content" ? "primary" : "failure"} onClick={act} disabled={busy}>
+            {busy && <Spinner size="sm" light />}
             {pending?.action === "restore_content" ? "Restore" : "Take down"}
           </Button>
-        </Modal.Footer>
+        </ModalFooter>
       </Modal>
     </CardBox>
   );

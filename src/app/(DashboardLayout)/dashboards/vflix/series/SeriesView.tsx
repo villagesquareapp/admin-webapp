@@ -2,9 +2,9 @@
 
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import Image from "next/image";
-import { createColumnHelper } from "@tanstack/react-table";
+import { createColumnHelper } from "@/utils/table";
 import { Icon } from "@iconify/react";
-import { Dropdown } from "flowbite-react";
+import { Dropdown, DropdownItem } from "flowbite-react";
 import { HiOutlineDotsVertical } from "react-icons/hi";
 import { useDebouncedCallback } from "use-debounce";
 import { toast } from "sonner";
@@ -73,9 +73,9 @@ const SeriesView = ({
             </button>
           )}
         >
-          <Dropdown.Item onClick={() => toast.info("View episodes — coming with backend")}>View episodes</Dropdown.Item>
-          <Dropdown.Item onClick={() => toast.info("Reorder — coming with backend")}>Reorder episodes</Dropdown.Item>
-          <Dropdown.Item onClick={() => toast.warning("Unpublish — coming with backend")}>Unpublish</Dropdown.Item>
+          <DropdownItem onClick={() => toast.info("View episodes — coming with backend")}>View episodes</DropdownItem>
+          <DropdownItem onClick={() => toast.info("Reorder — coming with backend")}>Reorder episodes</DropdownItem>
+          <DropdownItem onClick={() => toast.warning("Unpublish — coming with backend")}>Unpublish</DropdownItem>
         </Dropdown>
       ),
     }),

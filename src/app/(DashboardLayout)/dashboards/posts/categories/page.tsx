@@ -9,7 +9,8 @@ const NOTES = {
   trybes: "Shown as tabs inside Trybes of this type after For you and Trending.",
 };
 
-const Page = async ({ searchParams }: { searchParams: { [key: string]: string | string[] | undefined } }) => {
+const Page = async (props: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) => {
+  const searchParams = await props.searchParams;
   const { trybeTypes, scope, categories } = await loadCategoryScope(searchParams.type, getTrybeTypes, getPostCategories);
   return (
     <CategoryScopeTabs trybeTypes={trybeTypes} type={scope.type} notes={NOTES}>

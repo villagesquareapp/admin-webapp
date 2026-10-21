@@ -2,7 +2,8 @@
 
 import React, { useMemo, useState } from "react";
 import Image from "next/image";
-import { Button, Dropdown } from "flowbite-react";
+import { Dropdown, DropdownItem } from "flowbite-react";
+import { Button } from "@/app/components/shared/Button";
 import { Icon } from "@iconify/react";
 import { HiOutlineDotsVertical } from "react-icons/hi";
 import { FaPlus } from "react-icons/fa";
@@ -84,8 +85,8 @@ const CoinCard = ({ overview, token }: { overview: ICoinOverview; token: string 
                 <Dropdown label="" inline dismissOnClick renderTrigger={() => (
                   <button className="size-7 grid place-items-center rounded-full hover:bg-lightgray dark:hover:bg-dark"><HiOutlineDotsVertical size={15} /></button>
                 )}>
-                  <Dropdown.Item disabled={!c.status} onClick={() => { setEditingCoin(toCoin(c)); setEditModalOpen(true); }}>Edit</Dropdown.Item>
-                  <Dropdown.Item onClick={() => { setStatusCoin(toCoin(c)); setStatusModalOpen(true); }}>{c.status ? "Disable" : "Enable"}</Dropdown.Item>
+                  <DropdownItem disabled={!c.status} onClick={() => { setEditingCoin(toCoin(c)); setEditModalOpen(true); }}>Edit</DropdownItem>
+                  <DropdownItem onClick={() => { setStatusCoin(toCoin(c)); setStatusModalOpen(true); }}>{c.status ? "Disable" : "Enable"}</DropdownItem>
                 </Dropdown>
               </div>
 

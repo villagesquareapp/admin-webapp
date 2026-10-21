@@ -1,7 +1,7 @@
 "use client";
 
 import ReusableTable from "@/app/components/shared/ReusableTable";
-import { createColumnHelper } from "@tanstack/react-table";
+import { createColumnHelper } from "@/utils/table";
 import { Icon } from "@iconify/react";
 import { formatDistanceToNow } from "date-fns";
 import { actionIcon, actionLabel, actionTone } from "@/utils/moderationLabels";

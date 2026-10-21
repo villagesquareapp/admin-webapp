@@ -1,7 +1,8 @@
 import { getMeetingAssistant, getMeetingAssistantUsage } from "@/app/api/meetings";
 import AssistantContent from "./AssistantContent";
 
-const Page = async ({ searchParams }: { searchParams: { [key: string]: string | string[] | undefined } }) => {
+const Page = async (props: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) => {
+  const searchParams = await props.searchParams;
   const days = [7, 30, 90].includes(Number(searchParams.days)) ? Number(searchParams.days) : 30;
   const [settings, usage] = await Promise.all([getMeetingAssistant(), getMeetingAssistantUsage(days)]);
   return (

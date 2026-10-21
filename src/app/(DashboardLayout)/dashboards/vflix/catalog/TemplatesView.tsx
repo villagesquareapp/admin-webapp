@@ -2,9 +2,9 @@
 
 import { useTransition } from "react";
 import Image from "next/image";
-import { createColumnHelper } from "@tanstack/react-table";
+import { createColumnHelper } from "@/utils/table";
 import { Icon } from "@iconify/react";
-import { Dropdown } from "flowbite-react";
+import { Dropdown, DropdownItem } from "flowbite-react";
 import { HiOutlineDotsVertical } from "react-icons/hi";
 import { toast } from "sonner";
 import ReusableTable from "@/app/components/shared/ReusableTable";
@@ -103,10 +103,10 @@ const TemplatesView = ({
                 </button>
               )}
             >
-              <Dropdown.Item onClick={() => toast.info("Preview — coming with backend")}>Preview</Dropdown.Item>
-              {t.status !== "approved" && <Dropdown.Item onClick={() => act(t, "approve")}>Approve</Dropdown.Item>}
-              {t.status !== "rejected" && <Dropdown.Item onClick={() => act(t, "reject")}>Reject</Dropdown.Item>}
-              <Dropdown.Item onClick={() => act(t, "remove")}>Remove</Dropdown.Item>
+              <DropdownItem onClick={() => toast.info("Preview — coming with backend")}>Preview</DropdownItem>
+              {t.status !== "approved" && <DropdownItem onClick={() => act(t, "approve")}>Approve</DropdownItem>}
+              {t.status !== "rejected" && <DropdownItem onClick={() => act(t, "reject")}>Reject</DropdownItem>}
+              <DropdownItem onClick={() => act(t, "remove")}>Remove</DropdownItem>
             </Dropdown>
           </div>
         );

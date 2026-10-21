@@ -30,13 +30,17 @@ const Wrapper = async ({ id, searchParams }: { id: string; searchParams: Params 
   );
 };
 
-const Page = ({ params, searchParams }: { params: { trybe_id: string }; searchParams: Params }) => (
-  <Suspense
-    key={`${params.trybe_id}-${JSON.stringify(searchParams)}`}
-    fallback={<div className="h-[600px] w-full animate-pulse bg-gray-100 dark:bg-gray-800 rounded-3xl" />}
-  >
-    <Wrapper id={params.trybe_id} searchParams={searchParams} />
-  </Suspense>
-);
+const Page = async (props: { params: Promise<{ trybe_id: string }>; searchParams: Promise<Params> }) => {
+  const params = await props.params;
+  const searchParams = await props.searchParams;
+  return (
+    <Suspense
+      key={`${params.trybe_id}-${JSON.stringify(searchParams)}`}
+      fallback={<div className="h-[600px] w-full animate-pulse bg-gray-100 dark:bg-gray-800 rounded-3xl" />}
+    >
+      <Wrapper id={params.trybe_id} searchParams={searchParams} />
+    </Suspense>
+  );
+};
 
 export default Page;

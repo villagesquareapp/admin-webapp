@@ -1,7 +1,7 @@
 "use client";
 
 import CardBox from "@/app/components/shared/CardBox";
-import { Badge, Breadcrumb } from "flowbite-react";
+import { Badge, Breadcrumb, BreadcrumbItem } from "flowbite-react";
 import { Icon } from "@iconify/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -57,12 +57,12 @@ const VflixBreadcrumb = ({
           {items.map((item) => (
             <div key={item.title}>
               {item.to ? (
-                <Breadcrumb.Item>
+                <BreadcrumbItem>
                   <Link href={item.to} className="flex items-center">
                     <Icon icon="solar:home-2-line-duotone" height={20} />
                     <span className="ms-3">/</span>
                   </Link>
-                </Breadcrumb.Item>
+                </BreadcrumbItem>
               ) : (
                 <Badge color="lightprimary">{item.title}</Badge>
               )}

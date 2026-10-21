@@ -6,7 +6,8 @@ import React from "react";
 import Image from "next/image";
 import SimpleBar from "simplebar-react";
 import "simplebar-react/dist/simplebar.min.css";
-import { Badge, Button, Dropdown } from "flowbite-react";
+import { Badge, Dropdown, DropdownItem } from "flowbite-react";
+import { Button } from "@/app/components/shared/Button";
 
 const Messages = () => {
   return (
@@ -32,14 +33,14 @@ const Messages = () => {
         </div>
         <SimpleBar className="max-h-80 mt-3">
           {MessagesData.MessagesLink.map((links, index) => (
-            <Dropdown.Item
+            <DropdownItem
               as={Link}
               href="#"
               className="px-6 py-3 flex justify-between items-center bg-hover group/link w-full"
               key={index}
             >
               <div className="flex items-center">
-                <span className="flex-shrink-0 relative">
+                <span className="shrink-0 relative">
                   <Image
                     src={links.avatar}
                     width={45}
@@ -63,7 +64,7 @@ const Messages = () => {
               <span className="text-xs block self-start pt-1.5">
                 {links.time}
               </span>
-            </Dropdown.Item>
+            </DropdownItem>
           ))}
         </SimpleBar>
         <div className="pt-5 px-6">

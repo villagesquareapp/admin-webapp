@@ -1,6 +1,7 @@
 
 import { Icon } from "@iconify/react";
-import { Badge, Button, Dropdown } from "flowbite-react";
+import { Badge, Dropdown, DropdownItem } from "flowbite-react";
+import { Button } from "@/app/components/shared/Button";
 import React from "react";
 import * as Notification from "./Data";
 import SimpleBar from "simplebar-react";
@@ -32,7 +33,7 @@ const Notifications = () => {
 
         <SimpleBar className="max-h-80 mt-3">
           {Notification.Notification.map((links, index) => (
-            <Dropdown.Item
+            <DropdownItem
               as={Link}
               href="#"
               className="px-6 py-3 flex justify-between items-center bg-hover group/link w-full"
@@ -40,7 +41,7 @@ const Notifications = () => {
             >
               <div className="flex items-center w-full">
                 <div
-                  className={`h-11 w-11 flex-shrink-0 rounded-full flex justify-center items-center ${links.bgcolor} `}
+                  className={`h-11 w-11 shrink-0 rounded-full flex justify-center items-center ${links.bgcolor} `}
                 >
                   <Icon icon={links.icon} height={20} className={links.color} />
                 </div>
@@ -59,7 +60,7 @@ const Notifications = () => {
                   </div>
                 </div>
               </div>
-            </Dropdown.Item>
+            </DropdownItem>
           ))}
         </SimpleBar>
         <div className="pt-5 px-6">

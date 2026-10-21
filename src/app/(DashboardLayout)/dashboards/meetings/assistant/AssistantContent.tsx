@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Button, Select, ToggleSwitch } from "flowbite-react";
+import { Select, ToggleSwitch, Spinner } from "flowbite-react";
+import { Button } from "@/app/components/shared/Button";
 import { toast } from "sonner";
 import { updateMeetingAssistant } from "@/app/api/meetings";
 import CardBox from "@/app/components/shared/CardBox";
@@ -71,7 +72,8 @@ const AssistantContent = ({
               </Select>
             </div>
             <div>
-              <Button color="primary" onClick={() => void save()} isProcessing={saving} disabled={saving || !dirty}>
+              <Button color="primary" onClick={() => void save()} disabled={saving || !dirty}>
+                {saving && <Spinner size="sm" light />}
                 Save
               </Button>
             </div>

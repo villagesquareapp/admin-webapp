@@ -3,9 +3,9 @@
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useTransition } from "react";
 import Image from "next/image";
-import { createColumnHelper } from "@tanstack/react-table";
+import { createColumnHelper } from "@/utils/table";
 import { Icon } from "@iconify/react";
-import { Dropdown } from "flowbite-react";
+import { Dropdown, DropdownItem } from "flowbite-react";
 import { HiOutlineDotsVertical } from "react-icons/hi";
 import { useDebouncedCallback } from "use-debounce";
 import { toast } from "sonner";
@@ -105,11 +105,11 @@ const CreatorsView = ({
                 </button>
               )}
             >
-              <Dropdown.Item onClick={() => router.push(`/dashboards/vflix/creator/${c.creator.uuid}`)}>
+              <DropdownItem onClick={() => router.push(`/dashboards/vflix/creator/${c.creator.uuid}`)}>
                 View creator
-              </Dropdown.Item>
-              <Dropdown.Item onClick={() => accountAction(c, "Suspend")}>Suspend account</Dropdown.Item>
-              <Dropdown.Item onClick={() => accountAction(c, "Ban")}>Ban account</Dropdown.Item>
+              </DropdownItem>
+              <DropdownItem onClick={() => accountAction(c, "Suspend")}>Suspend account</DropdownItem>
+              <DropdownItem onClick={() => accountAction(c, "Ban")}>Ban account</DropdownItem>
             </Dropdown>
           </div>
         );

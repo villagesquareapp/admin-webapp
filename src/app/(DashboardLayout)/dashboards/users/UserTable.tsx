@@ -1,7 +1,7 @@
 "use client";
 
 import ReusableTable from "@/app/components/shared/ReusableTable";
-import { createColumnHelper } from "@tanstack/react-table";
+import { createColumnHelper } from "@/utils/table";
 import Image from "next/image";
 import { Icon } from "@iconify/react";
 import { useEffect, useState } from "react";

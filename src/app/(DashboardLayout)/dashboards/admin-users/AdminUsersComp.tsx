@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "flowbite-react";
+import { Button } from "@/app/components/shared/Button";
 import React, { Suspense, useEffect, useState } from "react";
 import { FaPlus } from "react-icons/fa";
 import UserTable from "../users/UserTable";

@@ -1,4 +1,4 @@
-import { Button } from 'flowbite-react';
+import { Button } from '@/app/components/shared/Button';
 import { AnimatePresence, motion } from 'framer-motion';
 import React, { useState, useEffect } from 'react';
 import { FaUser, FaFile, FaEye, FaTimes, FaCheck } from 'react-icons/fa';
