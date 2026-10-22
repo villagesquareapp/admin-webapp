@@ -4,8 +4,8 @@
 // import { getPosts, getPostStats } from "@/app/api/post";
 // import SmallCards from "@/app/components/dashboards/ecommerce/smallCards";
 // import PostTable from "./PostTable";
-// import shape1 from "/public/images/shapes/danger-card-shape.png";
-// import shape3 from "/public/images/shapes/success-card-shape.png";
+// import shape1 from "../../../../../public/images/shapes/danger-card-shape.png";
+// import shape3 from "../../../../../public/images/shapes/success-card-shape.png";
 
 // const ClientPostPage = () => {
 //   const [posts, setPosts] = useState<IPostResponse | null>(null);

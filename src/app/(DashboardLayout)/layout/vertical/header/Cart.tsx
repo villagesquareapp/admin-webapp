@@ -1,7 +1,7 @@
 "use client";
 import React, { useContext } from "react";
 import { Icon } from "@iconify/react";
-import { Drawer } from "flowbite-react";
+import { Drawer, DrawerHeader } from "flowbite-react";
 import { useState } from "react";
 import { CustomizerContext } from "@/app/context/customizerContext";
 
@@ -29,7 +29,7 @@ export const Cart = () => {
         <div className="border-ld  border-b">
           <div className="flex justify-between items-center p-4">
             <h5 className="text-xl">Shopping Cart</h5>
-            <Drawer.Header title="" titleIcon={() => <></>} />
+            <DrawerHeader title="" titleIcon={() => <></>} />
           </div>
         </div>
       </Drawer>

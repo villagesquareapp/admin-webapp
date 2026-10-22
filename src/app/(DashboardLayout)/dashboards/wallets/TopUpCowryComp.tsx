@@ -3,7 +3,8 @@
 import React, { useState, useEffect } from "react";
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Button, Label, TextInput } from "flowbite-react";
+import { Label, TextInput } from "flowbite-react";
+import { Button } from "@/app/components/shared/Button";
 import { toast } from "sonner";
 import { getCowryTopupMetadata, getExchangeRate, verifyCowryTransaction } from "@/app/api/wallet";
 import Script from "next/script";
@@ -185,7 +186,7 @@ const TopUpCowryComp: React.FC<TopUpModalProps> = ({
                 <form className="mt-3">
                   <div className="mb-4">
                     <div className="mb-2 block">
-                      <Label htmlFor="naira" value="Amount In Naira" />
+                      <Label htmlFor="naira">Amount In Naira</Label>
                     </div>
                     <TextInput
                       id="naira"
@@ -200,7 +201,7 @@ const TopUpCowryComp: React.FC<TopUpModalProps> = ({
                   <div className="flex items-center justify-between gap-2">
                     <div className="mb-4 flex-1">
                       <div className="mb-2 block">
-                        <Label htmlFor="dollar" value="Dollar Value" />
+                        <Label htmlFor="dollar">Dollar Value</Label>
                       </div>
                       <TextInput
                         id="dollar"
@@ -212,7 +213,7 @@ const TopUpCowryComp: React.FC<TopUpModalProps> = ({
                     </div>
                     <div className="mb-4 flex-1">
                       <div className="mb-2 block">
-                        <Label htmlFor="cowry" value="Cowry Value" />
+                        <Label htmlFor="cowry">Cowry Value</Label>
                       </div>
                       <TextInput
                         id="cowry"

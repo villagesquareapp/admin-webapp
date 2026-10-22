@@ -1,6 +1,6 @@
 
 
-import { Sidebar } from "flowbite-react";
+import { Sidebar, SidebarCollapse, SidebarItemGroup } from "flowbite-react";
 import React from "react";
 import { ChildItem } from "../Sidebaritems";
 import NavItems from "../NavItems";
@@ -20,7 +20,7 @@ const NavCollapse: React.FC<NavCollapseProps> = ({ item }: any) => {
   const { t } = useTranslation();
   return (
     <>
-      <Sidebar.Collapse
+      <SidebarCollapse
         label={t(`${item.name}`)}
         open={activeDD ? true : false}
         icon={() => <Icon icon={item.icon} height={18} />}
@@ -39,7 +39,7 @@ const NavCollapse: React.FC<NavCollapseProps> = ({ item }: any) => {
       >
         {/* Render child items */}
         {item.children && (
-          <Sidebar.ItemGroup className="sidebar-dropdown">
+          <SidebarItemGroup className="sidebar-dropdown">
             {item.children.map((child: any) => (
               <React.Fragment key={child.id}>
                 {/* Render NavItems for child items */}
@@ -50,9 +50,9 @@ const NavCollapse: React.FC<NavCollapseProps> = ({ item }: any) => {
                 )}
               </React.Fragment>
             ))}
-          </Sidebar.ItemGroup>
+          </SidebarItemGroup>
         )}
-      </Sidebar.Collapse>
+      </SidebarCollapse>
     </>
   );
 };

@@ -1,7 +1,7 @@
 "use client";
 
 import { CustomizerContext } from "@/app/context/customizerContext";
-import { Sidebar } from "flowbite-react";
+import { Sidebar, SidebarItemGroup, SidebarItems } from "flowbite-react";
 import { usePathname } from "next/navigation";
 import React, { useContext, useEffect } from "react";
 import SimpleBar from "simplebar-react";
@@ -9,8 +9,10 @@ import Logo from "../../shared/logo/Logo";
 import NavCollapse from "./NavCollapse";
 import NavItems from "./NavItems";
 import SidebarContent from "./Sidebaritems";
+import { usePermissions } from "@/utils/permissions";
 
 const SidebarLayout = () => {
+  const { can } = usePermissions();
   const { selectedIconId, setSelectedIconId } = useContext(CustomizerContext) || {};
   const selectedContent = SidebarContent.find((data) => data.id === selectedIconId);
 
@@ -62,8 +64,8 @@ const SidebarLayout = () => {
           aria-label="Sidebar with multi-level dropdown example"
         >
           <SimpleBar className="h-[calc(100vh_-_85px)]">
-            <Sidebar.Items className="pe-4 rtl:pe-0 rtl:ps-4">
-              <Sidebar.ItemGroup className="sidebar-nav hide-menu">
+            <SidebarItems className="pe-4 rtl:pe-0 rtl:ps-4">
+              <SidebarItemGroup className="sidebar-nav hide-menu">
                 <div className="flex items-center gap-3">
                   <Logo size={40} />{" "}
                   <p className="text-lg font-bold text-black dark:text-white">
@@ -76,7 +78,7 @@ const SidebarLayout = () => {
                       <h5 className="text-link font-semibold text-sm caption">
                         {item.heading}
                       </h5>
-                      {item.children?.map((child, index) => (
+                      {item.children?.filter((child) => !child.permission || can(child.permission)).map((child, index) => (
                         <React.Fragment key={child.id && index}>
                           {child.children ? (
                             <NavCollapse item={child} />
@@ -87,8 +89,8 @@ const SidebarLayout = () => {
                       ))}
                     </React.Fragment>
                   ))}
-              </Sidebar.ItemGroup>
-            </Sidebar.Items>
+              </SidebarItemGroup>
+            </SidebarItems>
           </SimpleBar>
         </Sidebar>
       </div>

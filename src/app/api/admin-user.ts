@@ -1,6 +1,6 @@
 "use server";
 
-import { apiGet, apiPost, apiPut} from "@/lib/api";
+import { apiGet, apiPatch, apiPost, apiPut} from "@/lib/api";
 import { getToken } from "@/lib/getToken";
 import { revalidateCurrentPath } from "@/lib/revalidate";
 
@@ -12,7 +12,8 @@ export const getAdminUsers = async (page: number = 1, limit: number = 10) => {
     );
 }
 
-export const createAdminUser = async (name: string, email: string, role: string, password: string = '12345678') => {
+// The Admin API generates the first password and emails it.
+export const createAdminUser = async (name: string, email: string, role: string) => {
     const token = await getToken();
     const response = await apiPost(
     `admin-users/create`,
@@ -20,7 +21,6 @@ export const createAdminUser = async (name: string, email: string, role: string,
       email,
       name,
       role,
-      password,
     },
     token
   );
@@ -29,4 +29,31 @@ export const createAdminUser = async (name: string, email: string, role: string,
     await revalidateCurrentPath();
   }
   return response;
+}
+
+// Super admins only: change a staff member's role or turn their access off/on.
+export const updateStaffMember = async (uuid: string, change: { role?: string; is_active?: boolean }) => {
+    const token = await getToken();
+    const response = await apiPatch(`admin-users/${uuid}`, change, token);
+    if (response?.status) {
+        await revalidateCurrentPath();
+    }
+    return response;
+}
+
+// Super admins: email a new temporary password (changed at their next sign-in).
+export const resetStaffPassword = async (uuid: string) => {
+    const token = await getToken();
+    return await apiPost(`admin-users/${uuid}/reset-password`, {}, token);
+}
+
+// Super admins, for staff who lost every sign-in method: all of them go and
+// they set up a new one at their next sign-in. The reason is audited.
+export const resetStaffAuthenticator = async (uuid: string, reason: string) => {
+    const token = await getToken();
+    const response = await apiPost(`admin-users/${uuid}/reset-authenticator`, { reason }, token);
+    if (response?.status) {
+        await revalidateCurrentPath();
+    }
+    return response;
 }

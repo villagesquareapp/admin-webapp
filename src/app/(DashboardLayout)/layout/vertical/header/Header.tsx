@@ -1,7 +1,6 @@
 "use client";
-import "flowbite";
 import React, { useState, useEffect, useContext } from "react";
-import { DarkThemeToggle, Navbar } from "flowbite-react";
+import { DrawerItems, Navbar, NavbarCollapse } from "flowbite-react";
 import Search from "./Search";
 import { Icon } from "@iconify/react";
 import AppLinks from "./AppLinks";
@@ -45,7 +44,6 @@ const Header = ({ layoutType }: HeaderPropsType) => {
     isCollapse,
     isLayout,
     setActiveMode,
-    activeMode,
     isMobileSidebar,
     setIsMobileSidebar,
   } = useContext(CustomizerContext);
@@ -83,12 +81,12 @@ const Header = ({ layoutType }: HeaderPropsType) => {
           {/* Mobile Toggle Icon */}
           <span
             onClick={() => setIsMobileSidebar(true)}
-            className="h-10 w-10 flex text-black dark:text-white text-opacity-65 xl:hidden hover:text-primary hover:bg-lightprimary rounded-full justify-center items-center cursor-pointer"
+            className="h-10 w-10 flex text-black/65 dark:text-white/65 xl:hidden hover:text-primary hover:bg-lightprimary rounded-full justify-center items-center cursor-pointer"
           >
             <Icon icon="solar:hamburger-menu-line-duotone" height={21} />
           </span>
           {/* Toggle Icon   */}
-          <Navbar.Collapse className="xl:block ">
+          <NavbarCollapse className="xl:block ">
             <div className="flex gap-3 items-center relative">
               {layoutType == "horizontal" ? (
                 <div className="me-3">
@@ -116,36 +114,27 @@ const Header = ({ layoutType }: HeaderPropsType) => {
 
               <Search />
             </div>
-          </Navbar.Collapse>
+          </NavbarCollapse>
 
           {/* mobile-logo */}
           <div className="block xl:hidden">
             <FullLogo />
           </div>
 
-          <Navbar.Collapse className="xl:block hidden">
+          <NavbarCollapse className="xl:block hidden">
             <div className="flex gap-3 items-center">
-              {/* Theme Toggle */}
-              {activeMode === "light" ? (
-                <div
-                  className="h-10 w-10 hover:text-primary hover:bg-lightprimary dark:hover:bg-darkminisidebar  dark:hover:text-primary focus:ring-0 rounded-full flex justify-center items-center cursor-pointer text-darklink  dark:text-white"
-                  onClick={toggleMode}
-                >
-                  <span className="flex items-center">
-                    <Icon icon="solar:moon-line-duotone" width="20" />
-                  </span>
-                </div>
-              ) : (
-                // Dark Mode Button
-                <div
-                  className="h-10 w-10 hover:text-primary hover:bg-lightprimary dark:hover:bg-darkminisidebar  dark:hover:text-primary focus:ring-0 rounded-full flex justify-center items-center cursor-pointer text-darklink  dark:text-white"
-                  onClick={toggleMode}
-                >
-                  <span className="flex items-center">
-                    <Icon icon="solar:sun-bold-duotone" width="20" />
-                  </span>
-                </div>
-              )}
+              {/* Theme Toggle: the icon follows the dark class, so it's right before hydration. */}
+              <div
+                className="h-10 w-10 hover:text-primary hover:bg-lightprimary dark:hover:bg-darkminisidebar  dark:hover:text-primary focus:ring-0 rounded-full flex justify-center items-center cursor-pointer text-darklink  dark:text-white"
+                onClick={toggleMode}
+              >
+                <span className="flex items-center dark:hidden">
+                  <Icon icon="solar:moon-line-duotone" width="20" />
+                </span>
+                <span className="hidden items-center dark:flex">
+                  <Icon icon="solar:sun-bold-duotone" width="20" />
+                </span>
+              </div>
               {/* Language Dropdown*/}
               {/* <Language /> */}
 
@@ -158,7 +147,7 @@ const Header = ({ layoutType }: HeaderPropsType) => {
               {/* Profile Dropdown */}
               <Profile />
             </div>
-          </Navbar.Collapse>
+          </NavbarCollapse>
           {/* Mobile Toggle Icon */}
           <span
             className="h-10 w-10 flex xl:hidden hover:text-primary hover:bg-lightprimary rounded-full justify-center items-center cursor-pointer"
@@ -183,9 +172,9 @@ const Header = ({ layoutType }: HeaderPropsType) => {
 
       {/* Mobile Sidebar */}
       <Drawer open={isMobileSidebar} onClose={handleClose} className="w-130">
-        <Drawer.Items>
+        <DrawerItems>
           <MobileSidebar />
-        </Drawer.Items>
+        </DrawerItems>
       </Drawer>
     </>
   );

@@ -1,13 +1,14 @@
 "use client";
 
-import { Badge, Button } from "flowbite-react";
+import { Badge } from "flowbite-react";
+import { Button } from "@/app/components/shared/Button";
 import React, { useState } from "react";
 import { FaPlus } from "react-icons/fa";
 import { Icon } from "@iconify/react";
 import { useRouter } from "next/navigation";
 import AdminAddPushNotification from "./AdminAddPushNotification";
 import ReusableTable from "@/app/components/shared/ReusableTable";
-import { createColumnHelper } from "@tanstack/react-table";
+import { createColumnHelper } from "@/utils/table";
 import Image from "next/image";
 import { formatDate } from "@/utils/dateUtils";
 import { DetailComp } from "@/app/components/shared/TableSnippets";
@@ -61,10 +62,22 @@ const PushNotification = ({
       header: () => <span>Category Type</span>,
     }),
     columnHelper.accessor("uuid", {
-      cell: (info) => (
-        <p className="text-darklink dark:text-bodytext text-sm">All users</p>
-      ),
+      cell: (info) => {
+        const target = info.row.original.target ?? [];
+        const all = target.includes("00000000-0000-0000-0000-000000000000");
+        return (
+          <p className="text-darklink dark:text-bodytext text-sm">
+            {all ? "All users" : `${target.length} ${target.length === 1 ? "user" : "users"}`}
+          </p>
+        );
+      },
       header: () => <span>Targeted Users</span>,
+    }),
+    columnHelper.accessor("sent_by_name", {
+      cell: (info) => (
+        <p className="text-darklink dark:text-bodytext text-sm">{info.getValue() || "—"}</p>
+      ),
+      header: () => <span>Sent by</span>,
     }),
     columnHelper.accessor("created_at", {
       cell: (info) => (

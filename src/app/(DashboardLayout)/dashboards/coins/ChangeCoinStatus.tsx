@@ -2,7 +2,8 @@
 
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Button, Label, TextInput, FileInput } from "flowbite-react";
+import { Label, TextInput, FileInput, Spinner } from "flowbite-react";
+import { Button } from "@/app/components/shared/Button";
 import React, { useState, useEffect, FormEvent } from "react";
 import { toast } from "sonner";
 import { disableCoin, enableCoin } from "@/app/api/coin";
@@ -96,8 +97,8 @@ const ChangeCoinStatus: React.FC<Props> = ({ isOpen, onClose, coin, refreshCoins
                 <Button
                   color={buttonColor}
                   onClick={handleStatusChange}
-                  isProcessing={loading}
                 >
+                  {loading && <Spinner size="sm" light />}
                   {loading
                     ? `${action.charAt(0).toUpperCase() + action.slice(1)}...`
                     : action.charAt(0).toUpperCase() + action.slice(1)}

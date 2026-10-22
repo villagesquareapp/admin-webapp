@@ -6,13 +6,13 @@ import {
   UserDetailsComp,
 } from "@/app/components/shared/TableSnippets";
 import { formatDate } from "@/utils/dateUtils";
-import { createColumnHelper } from "@tanstack/react-table";
+import { createColumnHelper } from "@/utils/table";
 import { useRouter, useSearchParams } from "next/navigation";
 // import UserActions from "./UserActions";
 import { getUserDetails, getUserStatus } from "@/app/api/user";
 import { useEffect, useState } from "react";
 import { HiOutlineDotsVertical } from "react-icons/hi";
-import { Button } from "flowbite-react";
+import { Button } from "@/app/components/shared/Button";
 import { FaPlus } from "react-icons/fa";
 import AdminAddGift from "../gifts/AdminAddGift";
 import AdminAddVerifiedUser from "./AdminAddVerifiedUser";

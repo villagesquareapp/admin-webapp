@@ -3,7 +3,8 @@
 import React, { ChangeEvent, FormEvent, useState } from "react";
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Button, Label, TextInput, FileInput } from "flowbite-react";
+import { Label, TextInput, FileInput, Spinner } from "flowbite-react";
+import { Button } from "@/app/components/shared/Button";
 import { toast } from "sonner";
 import { addGifts } from "@/app/api/addGiftClient";
 // import { addGiftClient } from "@/app/api/addGiftClient";
@@ -116,7 +117,7 @@ const AdminAddGift: React.FC<AddGiftModalProps> = ({
               <form className="mt-6" onSubmit={handleSubmit}>
                 <div className="mb-4">
                   <div className="mb-2 block">
-                    <Label htmlFor="name" value="Name" />
+                    <Label htmlFor="name">Name</Label>
                   </div>
                   <TextInput
                     id="name"
@@ -139,7 +140,7 @@ const AdminAddGift: React.FC<AddGiftModalProps> = ({
                 </div>
                 <div className="mb-4">
                   <div className="mb-2 block">
-                    <Label htmlFor="value" value="Value" />
+                    <Label htmlFor="value">Value</Label>
                   </div>
                   <TextInput
                     id="value"
@@ -153,7 +154,7 @@ const AdminAddGift: React.FC<AddGiftModalProps> = ({
                 </div>
                 <div className="mb-4">
                   <div className="mb-2 block">
-                    <Label htmlFor="icon" value="Icon" />
+                    <Label htmlFor="icon">Icon</Label>
                   </div>
                   <FileInput
                     id="gift-icon"
@@ -179,9 +180,9 @@ const AdminAddGift: React.FC<AddGiftModalProps> = ({
                   <Button
                     color="success"
                     type="submit"
-                    isProcessing={loading}
                     disabled={loading}
                   >
+                    {loading && <Spinner size="sm" light />}
                     {loading ? "Submitting..." : "Submit"}
                   </Button>
                 </div>

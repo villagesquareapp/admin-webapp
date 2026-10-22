@@ -5,7 +5,8 @@ import Miniicons from "./MiniSidebar";
 import SimpleBar from "simplebar-react";
 import { CustomizerContext } from '@/app/context/customizerContext'
 import Logo from "../../shared/logo/Logo";
-import { Button, Tooltip } from "flowbite-react";
+import { Tooltip } from "flowbite-react";
+import { Button } from "@/app/components/shared/Button";
 
 export const IconSidebar = () => {
   const { selectedIconId, setSelectedIconId, setIsCollapse } = useContext(CustomizerContext) || {};

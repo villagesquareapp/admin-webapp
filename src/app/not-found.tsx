@@ -1,8 +1,7 @@
 import Image from "next/image";
 import React from "react";
-import ErrorImg from "/public/images/backgrounds/errorimg.svg";
-import { Button } from "flowbite-react";
-import Link from "next/link";
+import ErrorImg from "../../public/images/backgrounds/errorimg.svg";
+import { LinkButton } from "@/app/components/shared/Button";
 import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Error-404",
@@ -18,14 +17,13 @@ const Error = () => {
           <h6 className="text-xl text-ld">
             This page you are looking for could not be found.
           </h6>
-          <Button
+          <LinkButton
             color={"primary"}
-            as={Link}
             href="/"
             className="w-fit mt-6 mx-auto"
           >
             Go Back to Home
-          </Button>
+          </LinkButton>
         </div>
       </div>
     </>

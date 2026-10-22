@@ -3,7 +3,7 @@ import React, { useContext, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { CustomizerContext } from "@/app/context/customizerContext";
 import Image from "next/image";
-import { Dropdown } from "flowbite-react";
+import { Dropdown, DropdownItem } from "flowbite-react";
 
 const Languages = [
   {
@@ -59,7 +59,7 @@ export const Language = () => {
           )}
         >
           {Languages.map((item, index) => (
-            <Dropdown.Item
+            <DropdownItem
               className="flex gap-3 items-center py-3 w-full"
               key={index}
               onClick={() => setIsLanguage(item.value)}
@@ -72,7 +72,7 @@ export const Language = () => {
                 className="rounded-full object-cover h-6 w-6"
               />
               <span>{item.flagname}</span>
-            </Dropdown.Item>
+            </DropdownItem>
           ))}
         </Dropdown>
       </div>

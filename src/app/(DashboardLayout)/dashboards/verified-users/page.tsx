@@ -5,9 +5,9 @@ import {
 } from "@/app/api/user";
 import SmallCards from "@/app/components/dashboards/ecommerce/smallCards";
 import VerifiedUserTable from "./VerifiedUserTable";
-import shape1 from "/public/images/shapes/danger-card-shape.png";
-import shape2 from "/public/images/shapes/secondary-card-shape.png";
-import shape3 from "/public/images/shapes/success-card-shape.png";
+import shape1 from "../../../../../public/images/shapes/danger-card-shape.png";
+import shape2 from "../../../../../public/images/shapes/secondary-card-shape.png";
+import shape3 from "../../../../../public/images/shapes/success-card-shape.png";
 
 const VerifiedUserStatsWrapper = async () => {
   const userStats = await getVerifiedUserStats();
@@ -57,11 +57,8 @@ const VerifiedUserTableWrapper = async ({ page, limit }: { page: number; limit: 
   );
 };
 
-const Page = async ({
-  searchParams,
-}: {
-  searchParams: { [key: string]: string | string[] | undefined };
-}) => {
+const Page = async (props: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) => {
+  const searchParams = await props.searchParams;
   const page = Number(searchParams.page) || 1;
   const limit = Number(searchParams.limit) || 20;
 

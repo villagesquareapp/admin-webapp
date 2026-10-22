@@ -6,7 +6,8 @@ import * as AppsData from "./Data";
 import Link from "next/link";
 import Quicklinks from "./Quicklinks";
 import { IconHelp } from "@tabler/icons-react";
-import { Button, Drawer } from "flowbite-react";
+import { Drawer } from "flowbite-react";
+import { Button } from "@/app/components/shared/Button";
 import SimpleBar from "simplebar-react";
 
 const AppLinks = () => {

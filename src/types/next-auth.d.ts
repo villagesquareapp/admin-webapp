@@ -1,28 +1,34 @@
 import NextAuth from 'next-auth'
 
+type StaffUser = {
+    id: string
+    email: string
+    name?: string
+    role?: string
+    permissions?: string[]
+}
+
 declare module 'next-auth' {
+    // Sent to the browser: no API token.
     interface Session {
-        user: {
-            id: string
-            email: string
-        }
-        token: string
+        user: StaffUser
+        error?: string
     }
 
-    interface User {
-        id: string
-        email: string
-        token: string
+    interface User extends StaffUser {
+        accessToken: string
+        refreshToken: string
+        accessTokenExpires: number
     }
 }
 
 declare module 'next-auth/jwt' {
+    // Lives only in the encrypted session cookie, read on the server.
     interface JWT {
-        token: string
-        user: {
-            id: string
-            email: string
-        }
+        accessToken?: string
+        refreshToken?: string
+        accessTokenExpires?: number
+        user: StaffUser
+        error?: string
     }
 }
-

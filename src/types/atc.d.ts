@@ -17,6 +17,8 @@ interface IATCApplication {
     likes_count: number;
     comments_count: number;
     gifts_count: number;
+    shares_count?: number;
+    profile_visits_count?: number;
     user_id: string;
     user: {
         uuid: string;
@@ -30,6 +32,7 @@ interface IATCApplication {
         status: string;
     };
     created_at: string;
+    updated_at?: string;
 }
 
 
@@ -83,4 +86,54 @@ interface IATCPeriod {
 
 interface IATCPeriodsResponse {
     periods: IATCPeriod[];
+}
+
+type ATCEpisodeStatus = "draft" | "active" | "completed" | "cancelled";
+
+interface IATCEpisode {
+    uuid: string;
+    name: string;
+    description: string | null;
+    start_date: string;
+    end_date: string;
+    status: ATCEpisodeStatus;
+    winner_id: string | null;
+    applications_count?: number;
+    created_at: string;
+    updated_at?: string;
+    deleted_at?: string | null;
+}
+
+interface IATCEpisodesResponse {
+    current_page: number;
+    data: IATCEpisode[];
+    per_page: number;
+    total: number;
+    last_page: number;
+}
+
+interface IATCEpisodePayload {
+    name: string;
+    description?: string;
+    start_date: string;
+    end_date: string;
+    status?: ATCEpisodeStatus;
+}
+
+interface IATCSettingsItem {
+    icon: string;
+    text: string;
+}
+
+interface IATCSettings {
+    uuid?: string;
+    setting_key?: string | null;
+    key_information: IATCSettingsItem[];
+    requirements: IATCSettingsItem[];
+    application_start_day: number | null;
+    application_end_day: number | null;
+    selection_start_day: number | null;
+    selection_end_day: number | null;
+    voting_start_day: number | null;
+    voting_end_day: number | null;
 }

@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import { Dropdown, Modal, Button } from "flowbite-react";
+import { Dropdown, DropdownItem, Modal, ModalBody, ModalHeader, Spinner } from "flowbite-react";
+import { Button } from "@/app/components/shared/Button";
 import { HiOutlineDotsVertical, HiOutlineExclamationCircle } from "react-icons/hi";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation"; 
@@ -70,15 +71,15 @@ const Actions = ({ notification, onResend, onDelete }: ActionsProps) => {
           </button>
         )}
       >
-        <Dropdown.Item onClick={() => setShowResendModal(true)}>
+        <DropdownItem onClick={() => setShowResendModal(true)}>
           Resend
-        </Dropdown.Item>
-        <Dropdown.Item
+        </DropdownItem>
+        <DropdownItem
           onClick={() => setShowDeleteModal(true)}
           className="text-red-600 hover:!bg-red-50 dark:hover:!bg-red-900/20 focus:!bg-red-50"
         >
           Delete
-        </Dropdown.Item>
+        </DropdownItem>
       </Dropdown>
 
       <Modal
@@ -87,8 +88,8 @@ const Actions = ({ notification, onResend, onDelete }: ActionsProps) => {
         onClose={() => !isLoading && setShowResendModal(false)}
         popup
       >
-        <Modal.Header />
-        <Modal.Body>
+        <ModalHeader />
+        <ModalBody>
           <div className="text-center">
             <HiOutlineExclamationCircle className="mx-auto mb-4 h-14 w-14 text-gray-400 dark:text-gray-200" />
             <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
@@ -106,13 +107,13 @@ const Actions = ({ notification, onResend, onDelete }: ActionsProps) => {
                 color="success"
                 onClick={handleResend}
                 disabled={isLoading}
-                isProcessing={isLoading}
               >
+                {isLoading && <Spinner size="sm" light />}
                 Yes, Resend
               </Button>
             </div>
           </div>
-        </Modal.Body>
+        </ModalBody>
       </Modal>
 
       <Modal
@@ -121,8 +122,8 @@ const Actions = ({ notification, onResend, onDelete }: ActionsProps) => {
         onClose={() => !isLoading && setShowDeleteModal(false)}
         popup
       >
-        <Modal.Header />
-        <Modal.Body>
+        <ModalHeader />
+        <ModalBody>
           <div className="text-center">
             <HiOutlineExclamationCircle className="mx-auto mb-4 h-14 w-14 text-red-400 dark:text-red-300" />
             <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
@@ -143,13 +144,13 @@ const Actions = ({ notification, onResend, onDelete }: ActionsProps) => {
                 color="failure"
                 onClick={handleDelete}
                 disabled={isLoading}
-                isProcessing={isLoading}
               >
+                {isLoading && <Spinner size="sm" light />}
                 Yes, Delete
               </Button>
             </div>
           </div>
-        </Modal.Body>
+        </ModalBody>
       </Modal>
     </>
   );

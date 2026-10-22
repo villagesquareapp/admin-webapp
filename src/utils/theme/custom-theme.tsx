@@ -220,14 +220,12 @@ const customTheme = {
   },
 
   checkbox: {
-    root: {
-      base: "rounded border-2 cursor-pointer ",
-      color: {
-        default: "text-primary",
-        primary: "text-primary",
-        secondary: "text-secondary",
-        error: "text-error",
-      },
+    base: "rounded border-2 cursor-pointer ",
+    color: {
+      default: "text-primary",
+      primary: "text-primary",
+      secondary: "text-secondary",
+      error: "text-error",
     },
   },
 

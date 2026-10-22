@@ -3,7 +3,8 @@
 import React, { ChangeEvent, FormEvent, useState } from "react";
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Button, Label, TextInput, FileInput } from "flowbite-react";
+import { Label, TextInput, FileInput, Spinner } from "flowbite-react";
+import { Button } from "@/app/components/shared/Button";
 import { toast } from "sonner";
 import { addCoin } from "@/app/api/coin";
 
@@ -98,7 +99,7 @@ const AddCoin: React.FC<AddCoinModalProps> = ({
               <form className="mt-6" onSubmit={handleSubmit}>
                 <div className="mb-4">
                   <div className="mb-2 block">
-                    <Label htmlFor="amount" value="Amount" />
+                    <Label htmlFor="amount">Amount</Label>
                   </div>
                   <TextInput
                     id="amount"
@@ -121,7 +122,7 @@ const AddCoin: React.FC<AddCoinModalProps> = ({
                 </div>
                 <div className="mb-4">
                   <div className="mb-2 block">
-                    <Label htmlFor="price" value="Price" />
+                    <Label htmlFor="price">Price</Label>
                   </div>
                   <TextInput
                     id="price"
@@ -146,9 +147,9 @@ const AddCoin: React.FC<AddCoinModalProps> = ({
                   <Button
                     color="success"
                     type="submit"
-                    isProcessing={loading}
                     disabled={loading}
                   >
+                    {loading && <Spinner size="sm" light />}
                     {loading ? "Submitting..." : "Submit"}
                   </Button>
                 </div>

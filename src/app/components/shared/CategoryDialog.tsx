@@ -2,7 +2,8 @@
 
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import { Icon } from "@iconify/react";
-import { Button, Label, TextInput } from "flowbite-react";
+import { Label, TextInput } from "flowbite-react";
+import { Button } from "@/app/components/shared/Button";
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
 import { FaTrash } from "react-icons/fa6";
@@ -53,7 +54,7 @@ const CategoryDialog = ({
 
                 <div className="p-6">
                   <div className="mb-4">
-                    <Label htmlFor="categoryName" value="Name" />
+                    <Label htmlFor="categoryName">Name</Label>
                     <div className="flex items-center mt-1 gap-2 w-full">
                       <TextInput
                         id="categoryName"

@@ -1,14 +1,15 @@
 import { CustomizerContextProvider } from "@/app/context/customizerContext";
+import { themeModeScript } from "@/app/context/themeMode";
 import customTheme from "@/utils/theme/custom-theme";
-import { Flowbite, ThemeModeScript } from "flowbite-react";
+import { flowbite010Props, withFlowbite010Look } from "@/utils/theme/flowbite-0.10-look";
+import { ThemeProvider } from "flowbite-react";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import React from "react";
 import "../utils/i18n";
-import "./api/index";
 import "./css/globals.css";
 import { Providers } from "./Providers";
-import CustomToaster from "./(DashboardLayout)/ui-components/custom/custom-toaster";
+import CustomToaster from "./components/shared/CustomToaster";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,19 +20,21 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-        <ThemeModeScript />
+        {/* Sets <html>'s dark class before the first paint (hence suppressHydrationWarning). */}
+        <script dangerouslySetInnerHTML={{ __html: themeModeScript }} />
       </head>
       <body className={`${inter.className}`}>
         <Providers>
-          <Flowbite theme={{ theme: customTheme }}>
+          {/* "replace": theme strings replace flowbite's defaults, as they did in 0.10. */}
+          <ThemeProvider theme={withFlowbite010Look(customTheme)} props={flowbite010Props} applyTheme="replace">
             <CustomizerContextProvider>
               {children}
               <CustomToaster />
             </CustomizerContextProvider>
-          </Flowbite>
+          </ThemeProvider>
         </Providers>
       </body>
     </html>

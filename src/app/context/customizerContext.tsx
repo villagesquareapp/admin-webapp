@@ -1,6 +1,7 @@
 "use client";
-import React, { createContext, useState, ReactNode, useEffect } from "react";
+import React, { createContext, useState, ReactNode, useEffect, useCallback, useSyncExternalStore } from "react";
 import config from "./config";
+import { getServerThemeMode, getThemeMode, setThemeMode, subscribeThemeMode } from "./themeMode";
 
 // Define the shape of the context state
 interface CustomizerContextState {
@@ -11,7 +12,7 @@ interface CustomizerContextState {
   activeDir: string;
   setActiveDir: (dir: string) => void;
   activeMode: string;
-  setActiveMode: (mode: string) => void;
+  setActiveMode: (mode: string | ((prevMode: string) => string)) => void;
   activeTheme: string;
   setActiveTheme: (theme: string) => void;
   activeLayout: string;
@@ -38,7 +39,11 @@ export const CustomizerContextProvider: React.FC<CustomizerContextProps> = ({ ch
   const [isMobileSidebar, setIsMobileSidebar] = useState<boolean>(false);
   const [selectedIconId, setSelectedIconId] = useState<number>(1);
   const [activeDir, setActiveDir] = useState<string>(config.activeDir);
-  const [activeMode, setActiveMode] = useState<string>(config.activeMode);
+  const activeMode = useSyncExternalStore(subscribeThemeMode, getThemeMode, getServerThemeMode);
+  const setActiveMode = useCallback((mode: string | ((prevMode: string) => string)) => {
+    const next = typeof mode === "function" ? mode(getThemeMode()) : mode;
+    setThemeMode(next === "light" ? "light" : "dark");
+  }, []);
   const [activeTheme, setActiveTheme] = useState<string>(config.activeTheme);
   const [activeLayout, setActiveLayout] = useState<string>(config.activeLayout);
   const [isCardShadow, setIsCardShadow] = useState<boolean>(config.isCardShadow);
@@ -49,13 +54,12 @@ export const CustomizerContextProvider: React.FC<CustomizerContextProps> = ({ ch
 
   // Set attributes immediately
   useEffect(() => {
-    document.documentElement.setAttribute("class", activeMode);
     document.documentElement.setAttribute("dir", activeDir);
     document.documentElement.setAttribute("data-color-theme", activeTheme);
     document.documentElement.setAttribute("data-layout", activeLayout);
     document.documentElement.setAttribute("data-boxed-layout", isLayout);
     document.documentElement.setAttribute("data-sidebar-type", isCollapse);
-  }, [activeMode, activeDir, activeTheme, activeLayout, isLayout, isCollapse]);
+  }, [activeDir, activeTheme, activeLayout, isLayout, isCollapse]);
 
   return (
     <CustomizerContext.Provider

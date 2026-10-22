@@ -1,7 +1,7 @@
 import React from "react";
 import StatsCard from "./StatsCard";
 
-const BusinessSuiteCard = ({ token }: { token: string }) => {
+const BusinessSuiteCard = () => {
   return (
     <div>
       <h5 className="text-2xl flex gap-3 items-center my-4">

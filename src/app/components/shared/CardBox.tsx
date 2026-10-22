@@ -14,6 +14,7 @@ const CardBox: React.FC<MyAppProps> = ({ children, className }) => {
   const { activeMode, isCardShadow, isBorderRadius } = useContext(CustomizerContext);
   return (
     <Card className={`card ${className} ${isCardShadow ? 'dark:shadow-dark-md shadow-md ' : 'shadow-none border border-ld'} `}
+      theme={{ root: { children: 'flex h-full flex-col gap-2.5 p-3' } }}
       style={{
         borderRadius: `${isBorderRadius}px`,
       }}
