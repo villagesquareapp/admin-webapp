@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { toast } from "sonner";
-import { Label, TextInput } from "flowbite-react";
+import { Label, Select, TextInput } from "flowbite-react";
 import CardBox from "@/app/components/shared/CardBox";
 import { Button } from "@/app/components/shared/Button";
 import { formatDate } from "@/utils/dateUtils";
@@ -24,15 +24,24 @@ const toDay = (iso: string | null) =>
 const numberOr = (value: string, fallback: number) =>
   value.trim() === "" || Number.isNaN(Number(value)) ? fallback : Number(value);
 
-const cadence = (days: string) => {
+const validDays = (days: string) => {
   const n = Number(days);
-  if (!Number.isInteger(n) || n < 1) return "";
-  if (n === 1) return "daily";
-  if (n === 7) return "weekly";
-  if (n % 7 === 0) return `every ${n / 7} weeks`;
-  if (n === 30) return "monthly";
-  return `every ${n} days`;
+  return Number.isInteger(n) && n >= 1 && n <= 90;
 };
+
+// What the app shows for the cycle (the API sends the same text).
+const cycleLabel = (days: string) => {
+  const n = Number(days);
+  if (!validDays(days)) return "";
+  if (n === 1) return "Daily";
+  if (n === 7) return "Weekly";
+  if (n === 14) return "Bi-weekly";
+  return `Every ${n} days`;
+};
+
+type Cadence = "weekly" | "biweekly" | "custom";
+const CADENCE_DAYS: Record<Exclude<Cadence, "custom">, string> = { weekly: "7", biweekly: "14" };
+const cadenceOf = (days: number): Cadence => (days === 7 ? "weekly" : days === 14 ? "biweekly" : "custom");
 
 // Who is paid out every cycle and how much. Edited by finance; the app picks
 // a change up within a minute.
@@ -48,6 +57,7 @@ const PayoutRules = ({ settings }: { settings: IPayoutSettings | null }) => {
     levels: (settings?.levels ?? []).map((l) => ({
       level: l.level,
       can_be_paid: l.can_be_paid,
+      cadence: cadenceOf(l.cycle_days),
       cycle_days: String(l.cycle_days),
       no_limit: l.cycle_limit_usd === null,
       limit: l.cycle_limit_usd === null ? "" : String(l.cycle_limit_usd),
@@ -81,7 +91,7 @@ const PayoutRules = ({ settings }: { settings: IPayoutSettings | null }) => {
       toast.error(`Set a limit above $0 for ${LEVEL_LABELS[badLimit.level]}, or tick "No limit"`);
       return;
     }
-    const badCycle = form.levels.find((l) => !cadence(l.cycle_days) || Number(l.cycle_days) > 90);
+    const badCycle = form.levels.find((l) => !validDays(l.cycle_days));
     if (badCycle) {
       toast.error(`Pay ${LEVEL_LABELS[badCycle.level]} every 1 to 90 days`);
       return;
@@ -218,12 +228,12 @@ const PayoutRules = ({ settings }: { settings: IPayoutSettings | null }) => {
       </label>
 
       <div className="mt-5 overflow-x-auto">
-        <table className="w-full text-sm min-w-[620px]">
+        <table className="w-full text-sm min-w-[760px]">
           <thead>
             <tr className="text-left text-xs text-darklink">
               <th className="py-2 pr-4 font-medium">Verification</th>
               <th className="py-2 pr-4 font-medium">Can be paid</th>
-              <th className="py-2 pr-4 font-medium">Paid every (days)</th>
+              <th className="py-2 pr-4 font-medium">Paid</th>
               <th className="py-2 font-medium">Limit per cycle (USD)</th>
             </tr>
           </thead>
@@ -241,20 +251,48 @@ const PayoutRules = ({ settings }: { settings: IPayoutSettings | null }) => {
                 </td>
                 <td className="py-2 pr-4">
                   <div className="flex items-center gap-2">
-                    <TextInput
-                      type="number"
+                    <Select
                       sizing="sm"
-                      className="w-20"
-                      min={1}
-                      max={90}
-                      step={1}
-                      value={l.cycle_days}
-                      onChange={(e) => setLevel(i, { cycle_days: e.target.value })}
-                      aria-label={`${LEVEL_LABELS[l.level]} paid every so many days`}
-                    />
-                    <span className="text-xs text-darklink whitespace-nowrap">
-                      {cadence(l.cycle_days)}
-                    </span>
+                      className="w-32"
+                      value={l.cadence}
+                      onChange={(e) => {
+                        const next = e.target.value as Cadence;
+                        setLevel(
+                          i,
+                          next === "custom"
+                            ? { cadence: next }
+                            : { cadence: next, cycle_days: CADENCE_DAYS[next] },
+                        );
+                      }}
+                      aria-label={`How often ${LEVEL_LABELS[l.level]} is paid`}
+                    >
+                      <option value="weekly">Weekly</option>
+                      <option value="biweekly">Bi-weekly</option>
+                      <option value="custom">Custom</option>
+                    </Select>
+                    {l.cadence === "custom" ? (
+                      <>
+                        <span className="text-xs text-darklink whitespace-nowrap">every</span>
+                        <TextInput
+                          type="number"
+                          sizing="sm"
+                          className="w-20"
+                          min={1}
+                          max={90}
+                          step={1}
+                          value={l.cycle_days}
+                          onChange={(e) => setLevel(i, { cycle_days: e.target.value })}
+                          aria-label={`${LEVEL_LABELS[l.level]} paid every so many days`}
+                        />
+                        <span className="text-xs text-darklink whitespace-nowrap">
+                          days{cycleLabel(l.cycle_days) ? ` · app shows “${cycleLabel(l.cycle_days)}”` : ""}
+                        </span>
+                      </>
+                    ) : (
+                      <span className="text-xs text-darklink whitespace-nowrap">
+                        every {l.cycle_days} days
+                      </span>
+                    )}
                   </div>
                 </td>
                 <td className="py-2">
