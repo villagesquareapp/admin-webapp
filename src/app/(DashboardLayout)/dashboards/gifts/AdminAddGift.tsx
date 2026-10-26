@@ -6,20 +6,21 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Label, TextInput, FileInput, Spinner } from "flowbite-react";
 import { Button } from "@/app/components/shared/Button";
 import { toast } from "sonner";
-import { addGifts } from "@/app/api/addGiftClient";
-// import { addGiftClient } from "@/app/api/addGiftClient";
+import { addGift } from "@/app/api/gift";
+
+// Server actions take up to 5 MB (next.config.mjs); Vercel takes 4.5 MB.
+const MAX_ICON_BYTES = 4 * 1024 * 1024;
+const ICON_TYPES = "image/png,image/jpeg,image/gif,image/webp";
 
 interface AddGiftModalProps {
   isOpen: boolean;
   onClose: () => void;
-  token: string;
   onGiftAdded: () => void;
 }
 
 const AdminAddGift: React.FC<AddGiftModalProps> = ({
   isOpen,
   onClose,
-  token,
   onGiftAdded,
 }) => {
   const [name, setName] = useState<string>("");
@@ -42,15 +43,18 @@ const AdminAddGift: React.FC<AddGiftModalProps> = ({
       toast.error("Please select an icon image");
       return;
     }
+    if (icon.size > MAX_ICON_BYTES) {
+      toast.error("The icon can be up to 4 MB");
+      return;
+    }
 
-    console.log(name, value, icon);
-
-    // Submit logic here (e.g., API call)
     setLoading(true);
     try {
-      const response = await addGifts(name, value, icon as File, token);
-
-      console.log(response);
+      const form = new FormData();
+      form.append("name", name);
+      form.append("value", value);
+      form.append("icon", icon);
+      const response = await addGift(form);
 
       if (response.status) {
         toast.success("Gift added successfully");
@@ -161,10 +165,9 @@ const AdminAddGift: React.FC<AddGiftModalProps> = ({
                     // onChange={handleIconChange}
                     onChange={(e) => {
                       const file = e.target.files?.[0];
-                      console.log("Selected File:", file);
                       setIcon(file ?? null);
                     }}
-                    accept="image/*"
+                    accept={ICON_TYPES}
                     required
                   />
                 </div>

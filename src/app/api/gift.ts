@@ -14,20 +14,21 @@ export const getGiftingOverview = async () => {
   return await apiGet<IGiftOverview>(`gifting/overview`, token);
 };
 
-export const addGifts = async (
-  name: string,
-  value: string | number,
-  icon: File
-): Promise<ApiResponse<IGifting>> => {
+// The icon goes from the browser to this server action and on to the Admin
+// API, which checks its type and size; the browser never holds the API token
+// (VS-ADM-009).
+export const addGift = async (form: FormData): Promise<ApiResponse<IGifting>> => {
   const token = await getToken();
-  if (!token) throw new Error("Token not found");
+  if (!token) return { status: false, message: "Your session has ended. Sign in again." };
 
-  const response = await apiUploadFile<IGifting>("gifting/add", icon, token, {
-    name,
-    value,
+  const icon = form.get("icon");
+  if (!(icon instanceof File) || !icon.size) {
+    return { status: false, message: "Please select an icon image" };
+  }
+  return await apiUploadFile<IGifting>("gifting/add", icon, token, {
+    name: String(form.get("name") ?? ""),
+    value: String(form.get("value") ?? ""),
   });
-
-  return response;
 };
 
 export const editGift = async (

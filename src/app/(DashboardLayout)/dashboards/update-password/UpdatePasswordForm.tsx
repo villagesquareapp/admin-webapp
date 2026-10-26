@@ -12,7 +12,6 @@ import { Button } from "@/app/components/shared/Button";
 import React from "react";
 import { HiEye, HiEyeOff } from "react-icons/hi";
 import { signOut } from "next-auth/react";
-import { apiPost } from "@/lib/api";
 import { updatePassword } from "../../../api/setting";
 import { useSession } from "next-auth/react";
 

@@ -1576,6 +1576,14 @@ interface IQueuedPayout {
     name: string;
   };
   cowry_balance: number;
+  // A frozen account or an unreleased payout hold: the payout can't be sent.
+  account_frozen?: boolean;
+  payout_hold?: {
+    count: number;
+    shortfall: number;
+    reason: string;
+    since: string;
+  } | null;
   last_payout: {
     amount: number;
     date: string;

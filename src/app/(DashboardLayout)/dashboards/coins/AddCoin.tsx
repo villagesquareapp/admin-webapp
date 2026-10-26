@@ -11,14 +11,12 @@ import { addCoin } from "@/app/api/coin";
 interface AddCoinModalProps {
   isOpen: boolean;
   onClose: () => void;
-  token: string;
   onCoinAdded: () => void;
 }
 
 const AddCoin: React.FC<AddCoinModalProps> = ({
   isOpen,
   onClose,
-  token,
   onCoinAdded,
 }) => {
   const [amountValue, setAmountValue] = useState<number>();

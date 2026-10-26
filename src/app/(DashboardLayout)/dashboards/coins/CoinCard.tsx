@@ -24,7 +24,7 @@ const toCoin = (c: ICoinStat): ICoins => ({
   status: c.status, created_at: c.created_at, updated_at: c.updated_at || c.created_at, deleted_at: null,
 });
 
-const CoinCard = ({ overview, token }: { overview: ICoinOverview; token: string }) => {
+const CoinCard = ({ overview }: { overview: ICoinOverview }) => {
   const [data, setData] = useState<ICoinOverview>(overview);
   const [isOpen, setIsOpen] = useState(false);
   const [editingCoin, setEditingCoin] = useState<ICoins | null>(null);
@@ -136,7 +136,7 @@ const CoinCard = ({ overview, token }: { overview: ICoinOverview; token: string 
         })}
       </div>
 
-      {isOpen && <AddCoin isOpen={isOpen} onClose={() => setIsOpen(false)} token={token} onCoinAdded={refresh} />}
+      {isOpen && <AddCoin isOpen={isOpen} onClose={() => setIsOpen(false)} onCoinAdded={refresh} />}
       {editModalOpen && editingCoin && (
         <EditCoin isOpen={editModalOpen} onClose={() => { setEditModalOpen(false); setEditingCoin(null); }} coin={editingCoin} onCoinUpdated={refresh} />
       )}

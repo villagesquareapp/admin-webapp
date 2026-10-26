@@ -3,7 +3,7 @@ import { getGifts, getGiftingOverview } from "@/app/api/gift";
 import GiftCard from "./GiftCard";
 import { getToken } from "@/lib/getToken";
 
-const GiftsWrapper = async ({ token }: { token: string }) => {
+const GiftsWrapper = async () => {
   // Prefer the analytics overview; fall back to the plain catalog if it isn't deployed yet.
   const overviewRes = await getGiftingOverview();
   let overview = overviewRes?.data || null;
@@ -23,16 +23,17 @@ const GiftsWrapper = async ({ token }: { token: string }) => {
     };
   }
 
-  return <GiftCard overview={overview} token={token} />;
+  return <GiftCard overview={overview} />;
 };
 
+// The Admin API token stays on the server: the client components call
+// server actions, the gift upload included (VS-ADM-009).
 const Page = async () => {
-  const token = await getToken();
-  if (!token) throw new Error("No token found");
+  if (!(await getToken())) throw new Error("No token found");
 
   return (
     <Suspense fallback={<div className="h-[600px] w-full animate-pulse bg-gray-100 dark:bg-gray-800 rounded-3xl" />}>
-      <GiftsWrapper token={token} />
+      <GiftsWrapper />
     </Suspense>
   );
 };

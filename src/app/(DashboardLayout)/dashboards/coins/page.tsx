@@ -3,7 +3,7 @@ import CoinCard from "./CoinCard";
 import { getToken } from "@/lib/getToken";
 import { getCoins, getCoinOverview } from "@/app/api/coin";
 
-const CoinsWrapper = async ({ token }: { token: string }) => {
+const CoinsWrapper = async () => {
   // Prefer the analytics overview; fall back to the plain catalog if it isn't deployed yet.
   const overviewRes = await getCoinOverview();
   let overview = overviewRes?.data || null;
@@ -26,16 +26,17 @@ const CoinsWrapper = async ({ token }: { token: string }) => {
     };
   }
 
-  return <CoinCard overview={overview} token={token} />;
+  return <CoinCard overview={overview} />;
 };
 
+// The Admin API token stays on the server: the client components call
+// server actions (VS-ADM-009).
 const Page = async () => {
-  const token = await getToken();
-  if (!token) throw new Error("No token found");
+  if (!(await getToken())) throw new Error("No token found");
 
   return (
     <Suspense fallback={<div className="h-[600px] w-full animate-pulse bg-gray-100 dark:bg-gray-800 rounded-3xl" />}>
-      <CoinsWrapper token={token} />
+      <CoinsWrapper />
     </Suspense>
   );
 };

@@ -46,7 +46,7 @@ const toGift = (g: IGiftStat): IGifting => ({
   status: g.status, created_at: g.created_at, updated_at: g.updated_at || g.created_at, deleted_at: null,
 });
 
-const GiftCard = ({ overview, token }: { overview: IGiftOverview; token: string }) => {
+const GiftCard = ({ overview }: { overview: IGiftOverview }) => {
   const [data, setData] = useState<IGiftOverview>(overview);
   const [isOpen, setIsOpen] = useState(false);
   const [editingGift, setEditingGift] = useState<IGifting | null>(null);
@@ -164,7 +164,7 @@ const GiftCard = ({ overview, token }: { overview: IGiftOverview; token: string 
         })}
       </div>
 
-      {isOpen && <AdminAddGift isOpen={isOpen} onClose={() => setIsOpen(false)} token={token} onGiftAdded={refresh} />}
+      {isOpen && <AdminAddGift isOpen={isOpen} onClose={() => setIsOpen(false)} onGiftAdded={refresh} />}
       {editModalOpen && editingGift && (
         <EditGiftModal isOpen={editModalOpen} onClose={() => { setEditModalOpen(false); setEditingGift(null); }} gift={editingGift} onGiftUpdated={refresh} />
       )}

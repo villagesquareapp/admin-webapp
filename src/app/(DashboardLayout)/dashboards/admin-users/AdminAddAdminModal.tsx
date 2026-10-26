@@ -6,10 +6,8 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Label, TextInput, FileInput, Select, Spinner } from "flowbite-react";
 import { Button } from "@/app/components/shared/Button";
 import { toast } from "sonner";
-import { addGifts } from "@/app/api/addGiftClient";
 import { createAdminUser } from "@/app/api/admin-user";
 import { STAFF_ROLES } from "@/utils/permissions";
-// import { addGiftClient } from "@/app/api/addGiftClient";
 
 interface AddGiftModalProps {
   isOpen: boolean;
