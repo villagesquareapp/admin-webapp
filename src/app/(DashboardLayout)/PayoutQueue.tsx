@@ -10,7 +10,7 @@ import { IoMdCheckmark } from "react-icons/io";
 import { LiaTimesSolid } from "react-icons/lia";
 import { toast } from "sonner";
 import { approvePayouts, declinePayouts, getPayoutQueue } from "../api/wallet";
-import { batchFailureMessage, batchFailures } from "@/utils/payoutBatch";
+import { batchFailureMessage, batchFailures, payoutBlock } from "@/utils/payoutBatch";
 import CardBox from "../components/shared/CardBox";
 import useSetSearchParams from "../hooks/useSetSearchParams";
 import PayoutDetailsDialog from "./PayoutDetailsDialog";
@@ -401,6 +401,11 @@ const PayoutQueue = ({
                       Requested before automatic payouts
                     </p>
                   )}
+                  {payoutBlock(item) && (
+                    <p className="text-[11px] font-semibold text-error truncate">
+                      {payoutBlock(item)}
+                    </p>
+                  )}
                 </div>
 
                 <div className="flex gap-2 items-center ml-auto">
@@ -430,6 +435,8 @@ const PayoutQueue = ({
                         }}
                         color={"success"}
                         className="!size-8 w-fit text-xs"
+                        disabled={!!payoutBlock(item)}
+                        title={payoutBlock(item) ?? undefined}
                       >
                         <IoMdCheckmark size={16} />
                       </Button>

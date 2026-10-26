@@ -12,7 +12,6 @@ import Script from "next/script";
 interface FundModalProps {
   isOpen: boolean;
   onClose: () => void;
-  token?: string;
   onGiftAdded?: () => void;
   onSuccess?: () => void;
 }

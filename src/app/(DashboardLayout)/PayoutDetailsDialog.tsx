@@ -10,7 +10,7 @@ import { IoMdCheckmark } from "react-icons/io";
 import { LiaTimesSolid } from "react-icons/lia";
 import { useState } from "react";
 import { approvePayouts, declinePayouts } from "../api/wallet";
-import { batchFailureMessage, batchFailures } from "@/utils/payoutBatch";
+import { batchFailureMessage, batchFailures, payoutBlock } from "@/utils/payoutBatch";
 import { toast } from "sonner";
 
 const PayoutDetailsDialog = ({
@@ -174,6 +174,12 @@ const PayoutDetailsDialog = ({
                                 </div>
                             </div>
 
+                            {payoutBlock(payout) && (
+                                <p className="text-sm font-semibold text-error bg-lighterror rounded-lg px-4 py-2.5">
+                                    {payoutBlock(payout)}. It can&apos;t be sent until that is cleared.
+                                </p>
+                            )}
+
                             {/* Action Buttons */}
                             <div className="flex justify-end gap-3 mt-4">
                                 <Button
@@ -190,6 +196,7 @@ const PayoutDetailsDialog = ({
                                     size="sm"
                                     className="w-32 lg:w-36 lg:h-10 lg:text-base"
                                     onClick={() => setIsApproveDialogOpen(true)}
+                                    disabled={!!payoutBlock(payout)}
                                 >
                                     <IoMdCheckmark size={16} className="mr-2" />
                                     Approve

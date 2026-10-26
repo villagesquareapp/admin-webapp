@@ -45,11 +45,10 @@ const BalanceCard = ({
 );
 
 const TreasuryBalances = ({
-  cowry: c0, flutterwave: f0, token,
+  cowry: c0, flutterwave: f0,
 }: {
   cowry: ICowryBalance | null;
   flutterwave: IFlutterwaveBalance | null;
-  token: string;
 }) => {
   const [cowry, setCowry] = useState(c0);
   const [flutterwave, setFlutterwave] = useState(f0);
@@ -103,8 +102,8 @@ const TreasuryBalances = ({
         />
       </div>
 
-      {topUpOpen && <TopUpCowryComp isOpen={topUpOpen} onClose={() => setTopUpOpen(false)} token={token} onSuccess={refreshCowry} />}
-      {fundOpen && <FundFlutterwaveComp isOpen={fundOpen} onClose={() => setFundOpen(false)} token={token} onSuccess={refreshFlutter} />}
+      {topUpOpen && <TopUpCowryComp isOpen={topUpOpen} onClose={() => setTopUpOpen(false)} onSuccess={refreshCowry} />}
+      {fundOpen && <FundFlutterwaveComp isOpen={fundOpen} onClose={() => setFundOpen(false)} onSuccess={refreshFlutter} />}
     </div>
   );
 };
