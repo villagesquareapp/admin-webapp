@@ -3,23 +3,23 @@
 import React, { ChangeEvent, FormEvent, useState } from "react";
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Button, Label, TextInput, FileInput, Select } from "flowbite-react";
+import { Label, TextInput, FileInput, Select, Spinner } from "flowbite-react";
+import { Button } from "@/app/components/shared/Button";
 import { toast } from "sonner";
 import { addGifts } from "@/app/api/addGiftClient";
 import { createAdminUser } from "@/app/api/admin-user";
+import { STAFF_ROLES } from "@/utils/permissions";
 // import { addGiftClient } from "@/app/api/addGiftClient";
 
 interface AddGiftModalProps {
   isOpen: boolean;
   onClose: () => void;
-  token?: string;
   onRefresh?: (() => void) | undefined;
 }
 
 const AdminAddAdminModal: React.FC<AddGiftModalProps> = ({
   isOpen,
   onClose,
-  token,
   onRefresh,
 }) => {
   const [name, setName] = useState<string>("");
@@ -47,8 +47,6 @@ const AdminAddAdminModal: React.FC<AddGiftModalProps> = ({
     setLoading(true);
     try {
       const response = await createAdminUser(name, email, selected);
-
-      console.log(response);
 
       if (response.status) {
         toast.success(response?.message);
@@ -115,7 +113,7 @@ const AdminAddAdminModal: React.FC<AddGiftModalProps> = ({
               <form className="mt-6" onSubmit={handleSubmit}>
                 <div className="mb-4">
                   <div className="mb-2 block">
-                    <Label htmlFor="name" value="Name" />
+                    <Label htmlFor="name">Name</Label>
                   </div>
                   <TextInput
                     id="name"
@@ -138,7 +136,7 @@ const AdminAddAdminModal: React.FC<AddGiftModalProps> = ({
                 </div>
                 <div className="mb-4">
                   <div className="mb-2 block">
-                    <Label htmlFor="email" value="Email" />
+                    <Label htmlFor="email">Email</Label>
                   </div>
                   <TextInput
                     id="email"
@@ -152,7 +150,7 @@ const AdminAddAdminModal: React.FC<AddGiftModalProps> = ({
                 </div>
                 {/* <div className="mb-4">
                   <div className="mb-2 block">
-                    <Label htmlFor="icon" value="Icon" />
+                    <Label htmlFor="icon">Icon</Label>
                   </div>
                   <FileInput
                     id="gift-icon"
@@ -168,7 +166,7 @@ const AdminAddAdminModal: React.FC<AddGiftModalProps> = ({
                 </div> */}
                 <div className="mb-4">
                   <div className="mb-2 block">
-                    <Label htmlFor="role" value="Role" />
+                    <Label htmlFor="role">Role</Label>
                   </div>
                   <div className="w-full">
                     <Select
@@ -178,9 +176,12 @@ const AdminAddAdminModal: React.FC<AddGiftModalProps> = ({
                       sizing={"md"}
                       className="w-full"
                     >
-                      <option value="">Select a user status</option>
-                      <option value="super_admin">Super Admin</option>
-                      <option value="admin">Admin</option>
+                      <option value="">Select a role</option>
+                      {STAFF_ROLES.map((role) => (
+                        <option key={role.value} value={role.value}>
+                          {role.label}
+                        </option>
+                      ))}
                       {/* {statuses.map((status) => (
                       <option key={status.value} value={status.value}>
                         {status.name}
@@ -201,9 +202,9 @@ const AdminAddAdminModal: React.FC<AddGiftModalProps> = ({
                   <Button
                     color="success"
                     type="submit"
-                    isProcessing={loading}
                     disabled={loading}
                   >
+                    {loading && <Spinner size="sm" light />}
                     {loading ? "Submitting..." : "Submit"}
                   </Button>
                 </div>

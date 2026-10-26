@@ -1,4 +1,5 @@
-import { Button, Label, Select, TextInput } from "flowbite-react";
+import { Label, Select, TextInput } from "flowbite-react";
+import { Button } from "@/app/components/shared/Button";
 import { AnimatePresence, motion } from "framer-motion";
 import React, { useState, useEffect } from "react";
 import { FaSearch, FaUser } from "react-icons/fa";

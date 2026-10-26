@@ -3,7 +3,7 @@
 import ReusableTable from "@/app/components/shared/ReusableTable";
 import { Icon } from "@iconify/react";
 import { IconDotsVertical } from "@tabler/icons-react";
-import { createColumnHelper } from "@tanstack/react-table";
+import { createColumnHelper } from "@/utils/table";
 import { Dropdown } from "flowbite-react";
 import Image from "next/image";
 

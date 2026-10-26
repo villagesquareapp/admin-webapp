@@ -2,7 +2,8 @@
 
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Button, Label, TextInput, FileInput } from "flowbite-react";
+import { Label, TextInput, FileInput, Spinner } from "flowbite-react";
+import { Button } from "@/app/components/shared/Button";
 import React, { useState, useEffect, FormEvent } from "react";
 import { toast } from "sonner";
 import { editGift } from "@/app/api/gift";
@@ -97,7 +98,7 @@ const EditCoin: React.FC<Props> = ({ isOpen, onClose, coin, onCoinUpdated }) => 
 
               <form onSubmit={handleSubmit}>
                 <div className="mb-4">
-                  <Label htmlFor="amount" value="Amount" />
+                  <Label htmlFor="amount">Amount</Label>
                   <TextInput
                     id="amount"
                     type="number"
@@ -108,7 +109,7 @@ const EditCoin: React.FC<Props> = ({ isOpen, onClose, coin, onCoinUpdated }) => 
                 </div>
 
                 <div className="mb-4">
-                  <Label htmlFor="price" value="Price" />
+                  <Label htmlFor="price">Price</Label>
                   <TextInput
                     id="price"
                     type="number"
@@ -119,7 +120,7 @@ const EditCoin: React.FC<Props> = ({ isOpen, onClose, coin, onCoinUpdated }) => 
                 </div>
 
                 {/* <div className="mb-4">
-                  <Label htmlFor="icon" value="Icon" />
+                  <Label htmlFor="icon">Icon</Label>
                   <FileInput
                     id="icon"
                     accept="image/*"
@@ -131,7 +132,8 @@ const EditCoin: React.FC<Props> = ({ isOpen, onClose, coin, onCoinUpdated }) => 
                   <Button color="gray" type="button" onClick={onClose} disabled={loading}>
                     Cancel
                   </Button>
-                  <Button color="success" type="submit" isProcessing={loading}>
+                  <Button color="success" type="submit">
+                    {loading && <Spinner size="sm" light />}
                     {loading ? "Saving..." : "Save"}
                   </Button>
                 </div>

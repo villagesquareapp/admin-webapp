@@ -20,11 +20,15 @@ export const getVerifiedUserStats = async () => {
     );
 };
 
+export const getUserOverview = async () => {
+    const token = await getToken();
+    return await apiGet<IUserOverview>(`users/overview`, token);
+};
+
 export const getUsers = async (
     page: number = 1,
     limit: number = 20,
-    search?: string,
-    status?: string
+    filters: { search?: string; status?: string; account_type?: string } = {}
 ) => {
     const token = await getToken();
     const queryParams = new URLSearchParams({
@@ -32,8 +36,9 @@ export const getUsers = async (
         limit: limit.toString(),
     });
 
-    if (search) queryParams.append("search", search);
-    if (status) queryParams.append("status", status);
+    if (filters.search) queryParams.append("search", filters.search);
+    if (filters.status) queryParams.append("status", filters.status);
+    if (filters.account_type) queryParams.append("account_type", filters.account_type);
 
     return await apiGet<IUsersResponse>(
         `users?${queryParams.toString()}`,
@@ -44,7 +49,7 @@ export const getUsers = async (
 
 export const getUserDetails = async (id: string) => {
     const token = await getToken();
-    return await apiGet<IUsersResponse>(
+    return await apiGet<IUserDetail>(
         `users/${id}`,
         token
     );
@@ -68,11 +73,13 @@ export const getUserStatus = async () => {
     return await apiGet<IUserStatusList[]>(`users/user-status-list`, token);
 }
 
-export const updateUserStatus = async (userId: string, status: string) => {
+// Goes through the moderation engine: ban and suspend sign the user out and
+// notify them; suspensions lift after duration_days (7 by default).
+export const updateUserStatus = async (userId: string, status: string, reason: string, durationDays?: number) => {
     const token = await getToken();
     const response = await apiPost(
         `users/${userId}/update-status`,
-        { status },
+        { status, reason, ...(status === "suspended" && durationDays ? { duration_days: durationDays } : {}) },
         token
     );
 

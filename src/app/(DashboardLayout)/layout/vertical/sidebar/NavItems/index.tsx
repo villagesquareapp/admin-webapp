@@ -1,7 +1,7 @@
 "use client";
 import React, { useContext } from "react";
 import { ChildItem } from "../Sidebaritems";
-import { Sidebar } from "flowbite-react";
+import { Sidebar, SidebarItem } from "flowbite-react";
 import { Icon } from "@iconify/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -22,10 +22,11 @@ const NavItems: React.FC<NavItemsProps> = ({ item }) => {
   };
   return (
     <>
-      <Sidebar.Item
+      <SidebarItem
         href={item.url}
         as={Link}
-        prefetch={true}
+        // Passed through to next/link; SidebarItem's props don't list it.
+        {...{ prefetch: true }}
         className={`${item.url == pathname
             ? "!text-primary bg-lightprimary "
             : "text-link bg-transparent group/link "
@@ -44,7 +45,7 @@ const NavItems: React.FC<NavItemsProps> = ({ item }) => {
           )}
           <span className="max-w-38 overflow-hidden">{t(`${item.name}`)}</span>
         </span>
-      </Sidebar.Item>
+      </SidebarItem>
     </>
   );
 };

@@ -1,16 +1,21 @@
 "use client";
-import { Dropdown } from "flowbite-react";
+import { Dropdown, DropdownItem, Spinner } from "flowbite-react";
 import { HiOutlineDotsVertical } from "react-icons/hi";
 import { useState, useEffect } from "react";
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Button, Label, TextInput, FileInput, Select } from "flowbite-react";
+import { Label, TextInput, FileInput, Select } from "flowbite-react";
+import { Button } from "@/app/components/shared/Button";
 import { toast } from "sonner";
 import { getUsers, getUserStatus, updateUserStatus } from "@/app/api/user";
+import ModerateUserModal from "@/app/components/shared/ModerateUserModal";
 
 const UserActions = ({ user, statuses, statusLoading }: { user: IUser, statuses: IUserStatusList[], statusLoading: boolean }) => {
   const [showModal, setShowModal] = useState<boolean>(false);
+  const [showModerate, setShowModerate] = useState<boolean>(false);
   const [selected, setSelected] = useState("");
+  const [reason, setReason] = useState("");
+  const [days, setDays] = useState(7);
   const [loading, setLoading] = useState<boolean>(false);
   
   const handleClick = (e: React.MouseEvent) => {
@@ -21,9 +26,10 @@ const UserActions = ({ user, statuses, statusLoading }: { user: IUser, statuses:
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selected) return toast.error("Please select a status");
+    if (!reason.trim()) return toast.error("Please give a reason");
     setLoading(true);
     try {
-      const res = await updateUserStatus(user.user_details.profile.id, selected);
+      const res = await updateUserStatus(user.user_details.profile.id, selected, reason.trim(), days);
       if (res?.status) {
         toast.success("User status updated");
         setShowModal(false);
@@ -51,8 +57,15 @@ const UserActions = ({ user, statuses, statusLoading }: { user: IUser, statuses:
           </button>
         )}
       >
-        <Dropdown.Item onClick={() => setShowModal(true)}>Update</Dropdown.Item>
+        <DropdownItem onClick={() => setShowModal(true)}>Update status</DropdownItem>
+        <DropdownItem onClick={() => setShowModerate(true)}>Moderate</DropdownItem>
       </Dropdown>
+
+      <ModerateUserModal
+        userId={showModerate ? user.user_details.profile.id : null}
+        open={showModerate}
+        onClose={() => setShowModerate(false)}
+      />
 
       {/* Modal */}
       {/* {showModal && (
@@ -126,6 +139,35 @@ const UserActions = ({ user, statuses, statusLoading }: { user: IUser, statuses:
                       ))}
                     </Select>
                   </div>
+                  {selected === "suspended" && (
+                    <div className="w-full mt-4">
+                      <Label htmlFor="suspend-days">Suspend for (days)</Label>
+                      <TextInput
+                        id="suspend-days"
+                        type="number"
+                        min={1}
+                        max={365}
+                        value={days}
+                        onChange={(e) => setDays(Math.max(1, Math.min(365, Number(e.target.value) || 7)))}
+                        className="mt-1"
+                      />
+                    </div>
+                  )}
+                  <div className="w-full mt-4">
+                    <Label htmlFor="status-reason">Reason</Label>
+                    <TextInput
+                      id="status-reason"
+                      value={reason}
+                      onChange={(e) => setReason(e.target.value)}
+                      maxLength={1000}
+                      required
+                      placeholder="Shown in the enforcement log"
+                      className="mt-1"
+                    />
+                    <p className="text-xs text-darklink mt-2">
+                      Ban and suspend sign the user out and send them a notice with this reason.
+                    </p>
+                  </div>
                   <div className="flex justify-end gap-4 mt-8">
                     <Button
                       color="gray"
@@ -139,8 +181,8 @@ const UserActions = ({ user, statuses, statusLoading }: { user: IUser, statuses:
                       color="success"
                       type="submit"
                       disabled={loading || statusLoading}
-                      isProcessing={loading}
                     >
+                      {loading && <Spinner size="sm" light />}
                       {loading ? "Updating..." : "Update"}
                     </Button>
                   </div>

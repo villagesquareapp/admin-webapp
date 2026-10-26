@@ -1,254 +1,171 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* Tailwind 3 put the imported stylesheets first, then its base, components and
+   utilities, all in one cascade. Here the app's stylesheets and its component
+   classes share the utilities layer, ahead of Tailwind's utilities, so
+   specificity and then order decide between them as before. */
+@layer theme, base, components, utilities;
+@import './layouts/container.css' layer(utilities);
+@import './layouts/sidebar.css' layer(utilities);
+@import './layouts/horizontal.css' layer(utilities);
+@import './layouts/header.css' layer(utilities);
+@import './pages/dashboards.css' layer(utilities);
+@import './pages/widgets.css' layer(utilities);
+@import './pages/landingpage.css' layer(utilities);
+@import './pages/auth.css' layer(utilities);
+@import './pages/app.css' layer(utilities);
+@import './theme/default-colors.css' layer(utilities);
+@import './theme/dark.css' layer(utilities);
+@import './override/reboot.css' layer(utilities);
+@import './layouts/rtl.css' layer(utilities);
+@import './pages/frontpages.css' layer(utilities);
+@import './flowbite-base.css' layer(utilities);
+@import './components.css' layer(utilities);
 
+@import "tailwindcss" source(none);
+@import "flowbite-react/plugin/tailwindcss";
 
+/* What Tailwind 3 scanned (src/app and flowbite-react), and nothing else:
+   classes that only appear in src/utils or src/lib were never generated. */
+@source "..";
+@source "../../../node_modules/flowbite-react/dist/components";
+@source "../../utils/theme/flowbite-0.10-look.ts";
 
-@import './layouts/container.css';
-@import './layouts/sidebar.css';
-@import './layouts/horizontal.css';
-@import './layouts/header.css';
-@import './pages/dashboards.css';
-@import './pages/widgets.css';
-@import './pages/landingpage.css';
-@import './pages/auth.css';
-@import './pages/app.css';
-@import './theme/default-colors.css';
-@import './theme/dark.css';
-@import './override/reboot.css';
-@import './layouts/rtl.css';
-@import './pages/frontpages.css';
+/* Tailwind 3.4's "class" dark mode: :is() keeps the .dark class's specificity. */
+@custom-variant dark (&:is(.dark *));
+/* Tailwind 3 applied hover on every device. */
+@custom-variant hover (&:hover);
 
-@layer components {
-  .container {
-    @apply max-w-[1200px];
-  }
-
-  .landingpage .container {
-    @apply max-w-[1320px];
-  }
-
-  body {
-    @apply text-sm overflow-x-hidden dark:bg-dark;
-  }
-
-  .dropdown {
-    @apply shadow-md bg-white dark:bg-dark relative rounded-sm dark:shadow-dark-md;
-  }
-
-  .card-title {
-    @apply text-lg font-semibold text-dark dark:text-white
-  }
-
-  .card-subtitle {
-    @apply text-sm dark:text-darklink font-medium
-  }
-
-  body {
-    @apply text-darklink;
-  }
-
-  /*heading text color*/
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    @apply text-dark dark:text-white font-semibold;
-  }
-
-  .border-ld {
-    @apply border-border dark:border-darkborder;
-  }
-
-  .bg-hover {
-    @apply hover:bg-lighthover hover:dark:bg-darkmuted
-  }
-
-  .form-control input {
-    @apply border border-border dark:border-darkborder bg-transparent dark:bg-transparent w-full text-sm;
-  }
-
-  .form-control-chat input {
-    @apply rounded-md border-0 bg-transparent dark:bg-transparent w-full text-sm;
-  }
-
-  .form-control-chat input:focus {
-    @apply !border-0 bg-transparent dark:bg-transparent w-full text-sm ring-transparent dark:ring-transparent;
-  }
-
-  .form-control-rounded input {
-    @apply rounded-full border border-border dark:border-darkborder bg-transparent dark:bg-transparent w-full text-sm;
-  }
-
-  .form-control-rounded input:focus {
-    @apply border-primary dark:border-primary outline-none shadow-none ring-offset-0 ring-transparent;
-  }
-
-  .form-control-textarea {
-    @apply rounded-full border border-border dark:border-darkborder bg-transparent dark:bg-transparent w-full text-sm p-4;
-  }
-
-  .form-control-textarea:focus {
-    @apply border-primary dark:border-primary outline-none shadow-none ring-offset-0 ring-transparent;
-  }
-
-  .form-control input:focus {
-    @apply border-primary dark:border-primary outline-none shadow-none ring-offset-0 ring-transparent;
-  }
-
-  .form-control-input {
-    @apply rounded-md border border-border dark:border-darkborder bg-transparent dark:bg-transparent w-full text-sm;
-  }
-
-  .form-control-input:focus {
-    @apply border-primary dark:border-primary outline-none shadow-none ring-offset-0 ring-transparent;
-  }
-
-  .form-rounded-md input {
-    @apply rounded-md border border-border dark:border-darkborder bg-transparent dark:bg-transparent w-full text-sm;
-  }
-
-  .form-rounded-md input:focus {
-    @apply border-primary dark:border-primary outline-none shadow-none ring-offset-0 ring-transparent;
-  }
-
-  .form-rounded input {
-    @apply rounded-full
-  }
-
-
-  .input-center input {
-    @apply text-center;
-  }
-
-  .elipse {
-    @apply w-[18px] h-[10px]
-  }
-
-  input::placeholder {
-    @apply text-darklink dark:text-darklink
-  }
-
-  .select-option select {
-    @apply bg-muted border-0 text-darklink dark:text-white/80 py-2 ps-4 pe-9 w-auto focus:border-0 focus:ring-0 font-medium;
-  }
-
-  .select-md select {
-    @apply border-ld bg-transparent dark:bg-darkgray w-full text-sm rounded-md focus:border-primary dark:focus:border-primary focus:ring-0;
-  }
-
-  .select-rounded select {
-    @apply border-ld bg-transparent dark:bg-darkgray w-full text-sm rounded-full focus:border-primary dark:focus:border-primary focus:ring-0;
-  }
-
-  .select-md-transparent select {
-    @apply border-ld bg-transparent dark:bg-gray-800/70 w-full text-sm rounded-md focus:border-primary dark:focus:border-primary focus:ring-0;
-  }
-
-  .select-rounded-transparent select {
-    @apply border-ld bg-transparent dark:bg-gray-800/70 w-full text-sm rounded-full focus:border-primary dark:focus:border-primary focus:ring-0;
-  }
-
-  .checkbox {
-    @apply h-[18px] w-[18px] border border-bordergray dark:border-darkborder bg-transparent focus:ring-0 focus:ring-offset-0
-  }
-
-  .text-primary-ld {
-    @apply hover:text-primary dark:hover:text-primary;
-  }
-
-  /* Apps */
-  .left-part {
-    @apply w-80 border-e border-ld p-6;
-  }
-
-  .btn-circle {
-    @apply h-8 w-8 rounded-full flex justify-center items-center p-0 text-ld;
-  }
-
-  .btn-circle-hover {
-    @apply h-9 w-9 flex justify-center items-center rounded-full hover:bg-lightprimary hover:text-primary cursor-pointer bg-transparent
-  }
-
-  .text-ld {
-    @apply text-dark dark:text-white;
-  }
-
-  .avatar-full img {
-    @apply w-full h-full;
-  }
-
-  .sorting button {
-    @apply bg-transparent text-dark dark:text-white p-0
-  }
-
-  .sorting button:hover {
-    @apply bg-transparent
-  }
-
-  .sorting button span {
-    @apply p-0
-  }
-
-  .sorting ul li {
-    @apply px-4 py-2
-  }
-
-  .sorting ul li button:hover {
-    @apply hover:text-primary
-  }
-
-  /* Button Hover Color Set */
-  button.bg-primary {
-    @apply hover:bg-primaryemphasis
-  }
-
-  button.bg-secondary {
-    @apply hover:bg-secondaryemphasis
-  }
-
-  button.bg-info {
-    @apply hover:bg-infoemphasis
-  }
-
-  button.bg-error {
-    @apply hover:bg-erroremphasis
-  }
-
-  button.bg-success {
-    @apply hover:bg-successemphasis
-  }
-
-  button.bg-warning {
-    @apply hover:bg-warningemphasis
-  }
-
-  /* Headlessui */
-  .ui-button{
-    @apply flex items-stretch justify-between text-center py-2.5 px-5 text-white text-center font-medium rounded-full 
-  }
-  .ui-button-small{
-    @apply flex items-stretch justify-between text-center py-2 px-6 text-white text-center font-medium rounded-full 
-  }
-  .ui-dropdown{
-    @apply text-ld  w-full !max-w-56 bg-white dark:bg-dark  shadow-md dark:shadow-dark-md text-start rounded-sm py-3
-  }
-  .ui-dropdown-item{
-    @apply flex w-full gap-3 cursor-pointer items-center justify-start px-4 py-2 text-sm text-ld hover:text-primary bg-hover  focus:bg-hover focus:outline-none
-  }
-  .ui-dropdown-animation{
-    @apply origin-top-right transition duration-100 ease-out [--anchor-gap:var(--spacing-1)] focus:outline-none data-[closed]:scale-95 data-[closed]:opacity-0
-  }
-  .ui-form-control {
-    @apply border border-border dark:border-darkborder bg-transparent dark:bg-transparent w-full text-sm ;
-  }
-  .ui-form-control:focus {
-    @apply border-primary dark:border-primary outline-none shadow-none ring-offset-0 ring-transparent dark:ring-transparent focus:dark:ring-0;
-  } 
-  .ui-checkbox{
-    @apply h-[18px] w-[18px] border border-bordergray dark:border-darkborder bg-white dark:bg-transparent data-[checked]:bg-primary dark:data-[checked]:bg-primary rounded cursor-pointer focus:ring-0 focus:ring-offset-0 outline-none
-  }
-   
+@utility container {
+  margin-inline: auto;
+  padding-inline: 30px;
+  max-width: 1200px;
 }
+
+/* Values come from theme/default-colors.css and theme/dark.css at runtime;
+   these defaults only register the colour names. */
+@theme {
+  --color-primary: #00a1ff;
+  --color-secondary: #8965e5;
+  --color-info: #46caeb;
+  --color-success: #00ceb6;
+  --color-warning: #ffb900;
+  --color-error: #ff6692;
+  --color-lightprimary: #00a1ff20;
+  --color-lightsecondary: #8965e520;
+  --color-lightsuccess: #00ceb625;
+  --color-lighterror: #ff669230;
+  --color-lightinfo: #46caeb25;
+  --color-lightwarning: #ffb90025;
+  --color-border: #e0e6eb;
+  --color-bordergray: #cfd6db;
+  --color-lightgray: #f8fafd;
+  --color-muted: #eff4fa;
+  --color-lighthover: #f6f9fc;
+  --color-dark: #111c2d;
+  --color-link: #2a3547;
+  --color-darklink: #7b8893;
+  --color-darkborder: #333f55;
+  --color-darkgray: #1a2537;
+  --color-darkmuted: #2a3851;
+
+  --shadow-md: 0px 1px 4px 0px rgba(133, 146, 173, 0.2);
+  --shadow-lg: 0 1rem 3rem rgba(0, 0, 0, 0.175);
+  --shadow-dark-md: rgba(145, 158, 171, 0.3) 0px 0px 2px 0px, rgba(145, 158, 171, 0.02) 0px 12px 24px -4px;
+  --shadow-sm: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  --shadow-tw: rgba(175, 182, 201, 0.2) 0px 2px 4px -1px;
+  --shadow-btnshdw: 0 17px 20px -8px rgba(77, 91, 236, 0.231372549);
+  --shadow-elevation1: 0px 12px 30px -2px rgba(58, 75, 116, 0.14);
+  --shadow-elevation2: 0px 24px 24px -12px rgba(0, 0, 0, 0.05);
+  --shadow-elevation3: 0px 24px 24px -12px rgba(99, 91, 255, 0.15);
+  --shadow-elevation4: 0px 12px 12px -6px rgba(0, 0, 0, 0.15);
+
+  --radius-sm: 7px;
+  --radius-md: 9px;
+  --radius-lg: 24px;
+  --radius-tw: 12px;
+
+  --tracking-tightest: -0.075em;
+  --tracking-tighter: -0.05em;
+  --tracking-tight: -0.025em;
+  --tracking-normal: 0;
+  --tracking-wide: 0.025em;
+  --tracking-wider: 0.05em;
+  --tracking-widest: 1.5px;
+
+  --text-13: 13px;
+  --text-15: 15px;
+  --text-17: 17px;
+  --text-22: 22px;
+  --text-28: 28px;
+  --text-34: 34px;
+  --text-40: 40px;
+  --text-44: 44px;
+  --text-50: 50px;
+  --text-56: 56px;
+  --text-64: 64px;
+
+  --spacing-30: 30px;
+
+  /* Tailwind 3's line heights were absolute, so they didn't scale with a
+     child's own font size. */
+  --text-xs--line-height: 1rem;
+  --text-sm--line-height: 1.25rem;
+  --text-base--line-height: 1.5rem;
+  --text-lg--line-height: 1.75rem;
+  --text-xl--line-height: 1.75rem;
+  --text-2xl--line-height: 2rem;
+  --text-3xl--line-height: 2.25rem;
+  --text-4xl--line-height: 2.5rem;
+}
+
+/* Colours that read a differently named variable. Flowbite's cyan stays the
+   app's primary, as before. */
+@theme inline {
+  --color-surface: var(--color-surface-ld);
+  --color-primaryemphasis: var(--color-primary-emphasis);
+  --color-secondaryemphasis: var(--color-secondary-emphasis);
+  --color-warningemphasis: var(--color-warning-emphasis);
+  --color-erroremphasis: var(--color-error-emphasis);
+  --color-successemphasis: var(--color-success-emphasis);
+  --color-infoemphasis: var(--color-info-emphasis);
+  --color-cyan-500: var(--color-primary);
+  --color-cyan-600: var(--color-primary);
+  --color-cyan-700: var(--color-primary);
+}
+
+/* Tailwind 3 defaults that Tailwind 4 changed. */
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--color-gray-400);
+  }
+
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+
+  /* Tailwind 3 left form fields' browser background and corners alone. */
+  input,
+  select,
+  optgroup,
+  textarea {
+    background-color: revert;
+    border-radius: revert;
+  }
+
+  /* Tailwind 4's preflight zeroes all padding; Tailwind 3 kept the browser's
+     1px on table cells. */
+  td,
+  th {
+    padding: 1px;
+  }
+}
+

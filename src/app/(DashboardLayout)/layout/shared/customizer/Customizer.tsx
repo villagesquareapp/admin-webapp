@@ -1,6 +1,7 @@
 "use client";
 import React, { useContext } from "react";
-import { Button, Drawer, RangeSlider, Tooltip } from "flowbite-react";
+import { Drawer, RangeSlider, Tooltip } from "flowbite-react";
+import { Button } from "@/app/components/shared/Button";
 import { Icon } from "@iconify/react";
 import { CustomizerContext } from "@/app/context/customizerContext";
 

@@ -1,16 +1,12 @@
 import React, { useState } from 'react';
-import {
-  useReactTable,
-  getCoreRowModel,
-  flexRender,
-  ColumnDef,
-} from '@tanstack/react-table';
+import { flexRender, useTable, type RowData } from '@tanstack/react-table';
+import { appTableFeatures, type AppColumnDef } from '@/utils/table';
 import { HiChevronLeft, HiChevronRight, HiChevronDoubleLeft, HiChevronDoubleRight } from 'react-icons/hi';
 import { MdDataset } from 'react-icons/md';
 
-interface DataTableProps<TData> {
+interface DataTableProps<TData extends RowData> {
   data: TData[];
-  columns: ColumnDef<TData, any>[];
+  columns: AppColumnDef<TData>[];
   totalPages: number;
   currentPage: number;
   pageSize: number;
@@ -19,7 +15,7 @@ interface DataTableProps<TData> {
   onRowClick?: (row: TData) => void;
 }
 
-function DataTable<TData>({
+function DataTable<TData extends RowData>({
   data,
   columns,
   totalPages,
@@ -31,12 +27,11 @@ function DataTable<TData>({
 }: DataTableProps<TData>) {
   const [goToPage, setGoToPage] = useState<string>('');
 
-  const table = useReactTable({
+  // Paging is server-side: the controls below use currentPage and totalPages.
+  const table = useTable({
+    features: appTableFeatures,
     data,
     columns,
-    getCoreRowModel: getCoreRowModel(),
-    manualPagination: true,
-    pageCount: totalPages,
   });
 
   const handleGoToPage = () => {
@@ -89,7 +84,7 @@ function DataTable<TData>({
                       : ''
                   } transition-colors`}
                 >
-                  {row.getVisibleCells().map((cell) => (
+                  {row.getAllCells().map((cell) => (
                     <td
                       key={cell.id}
                       className="px-6 py-4 text-sm text-gray-900 dark:text-gray-100"

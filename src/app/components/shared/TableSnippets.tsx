@@ -1,6 +1,6 @@
 import Image from "next/image";
-import PremiumIcon from "/public/images/svgs/vs-svgs/premium.svg";
-import CheckBadgeIcon from "/public/images/svgs/vs-svgs/check-badge.svg";
+import PremiumIcon from "../../../../public/images/svgs/vs-svgs/premium.svg";
+import CheckBadgeIcon from "../../../../public/images/svgs/vs-svgs/check-badge.svg";
 
 export const DetailComp = ({ detail }: { detail: string }) => {
   return (

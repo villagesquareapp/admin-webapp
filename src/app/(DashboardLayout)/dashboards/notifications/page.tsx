@@ -21,11 +21,8 @@ const NotificationsWrapper = async ({
   );
 };
 
-const Page = async ({
-  searchParams,
-}: {
-  searchParams: { [key: string]: string | string[] | undefined };
-}) => {
+const Page = async (props: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) => {
+  const searchParams = await props.searchParams;
   const token = await getToken();
   const page = Number(searchParams.page) || 1;
   const limit = Number(searchParams.limit) || 20;

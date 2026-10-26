@@ -1,0 +1,34 @@
+import { withAuth } from "next-auth/middleware";
+import { NextResponse } from "next/server";
+
+export default withAuth(
+    function proxy(req) {
+        // Expose the current path so server actions can revalidate the page they run on.
+        const requestHeaders = new Headers(req.headers);
+        requestHeaders.set("x-pathname", req.nextUrl.pathname);
+        return NextResponse.next({ request: { headers: requestHeaders } });
+    },
+    {
+        callbacks: {
+            // An ended session (see Providers) counts as signed out.
+            authorized: ({ token }) => !!token && !token.error,
+        },
+        pages: {
+            signIn: "/auth/auth2/login",
+        },
+    }
+);
+
+export const config = {
+    matcher: [
+        /*
+         * Match all request paths except for the ones starting with:
+         * - auth/auth2/login (login page)
+         * - api (API routes)
+         * - _next/static (static files)
+         * - _next/image (image optimization files)
+         * - favicon.ico (favicon file)
+         */
+        "/((?!auth/auth2/login|api|_next/static|_next/image|images|vs_images|favicon.ico).*)",
+    ],
+};

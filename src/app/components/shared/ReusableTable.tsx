@@ -1,19 +1,16 @@
 "use client";
 import {
+  IconArrowLeft,
   IconChevronLeft,
   IconChevronRight,
   IconChevronsLeft,
   IconChevronsRight,
   IconDatabaseOff,
 } from "@tabler/icons-react";
-import {
-  flexRender,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getSortedRowModel,
-  useReactTable,
-} from "@tanstack/react-table";
-import { Button, Dropdown, Select } from "flowbite-react";
+import { flexRender, useTable } from "@tanstack/react-table";
+import { appTableFeatures } from "@/utils/table";
+import { Dropdown, DropdownItem, Select } from "flowbite-react";
+import { Button } from "@/app/components/shared/Button";
 import { useRouter, useSearchParams } from "next/navigation";
 import React from "react";
 import { HiOutlineDotsVertical } from "react-icons/hi";
@@ -35,9 +32,12 @@ function ReusableTable({
   pageSize = 20,
   dropdownItems,
   tableTitle,
+  backTo,
   onRowClick,
   filterDropdowns,
   extraButtons,
+  dense = false,
+  compactTitle = false,
 }: {
   tableData: any[];
   columns: any[];
@@ -46,9 +46,12 @@ function ReusableTable({
   pageSize?: number;
   dropdownItems?: string[];
   tableTitle?: string;
+  backTo?: string;
   extraButtons?: React.ReactNode;
   onRowClick?: (row: any) => void;
   filterDropdowns?: FilterDropdown[];
+  dense?: boolean;
+  compactTitle?: boolean;
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -86,21 +89,11 @@ function ReusableTable({
     });
   };
 
-  const table = useReactTable({
+  // Paging is server-side: the controls below use currentPage and totalPages.
+  const table = useTable({
+    features: appTableFeatures,
     data: tableData,
     columns,
-    filterFns: {},
-    state: {
-      pagination: {
-        pageIndex: currentPage - 1,
-        pageSize: pageSize,
-      },
-    },
-    manualPagination: true,
-    pageCount: totalPages,
-    getCoreRowModel: getCoreRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    getSortedRowModel: getSortedRowModel(),
   });
 
   const handlePageChange = (newPage: number) => {
@@ -126,9 +119,23 @@ function ReusableTable({
   return (
     <>
       <CardBox className="border rounded-md md:rounded-3xl  shadow-md border-ld overflow-hidden">
-        <div className="flex md:items-center md:justify-between mb-4">
+        {(backTo || tableTitle || filterDropdowns || extraButtons || dropdownItems) && (
+        <div className="flex md:items-center md:justify-between mb-2.5">
           <div className="flex items-center gap-4 w-full justify-between flex-col md:flex-row">
-            {tableTitle && <h5 className="card-title">{tableTitle}</h5>}
+            {(backTo || tableTitle) && (
+              <div className="flex items-center gap-2 shrink-0">
+                {backTo && (
+                  <button
+                    onClick={() => router.push(backTo)}
+                    className="p-1.5 -ml-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 text-darklink"
+                    aria-label="Back"
+                  >
+                    <IconArrowLeft size={20} />
+                  </button>
+                )}
+                {tableTitle && <h5 className={compactTitle ? "text-sm font-semibold text-dark dark:text-white" : "card-title"}>{tableTitle}</h5>}
+              </div>
+            )}
             <div className="flex items-center gap-3 flex-col md:flex-row ml-auto justify-end">
               {/* Add the filter dropdowns */}
               {filterDropdowns && (
@@ -176,13 +183,14 @@ function ReusableTable({
                   )}
                 >
                   {dropdownItems?.map((items, index) => {
-                    return <Dropdown.Item key={index}>{items}</Dropdown.Item>;
+                    return <DropdownItem key={index}>{items}</DropdownItem>;
                   })}
                 </Dropdown>
               </div>
             )}
           </div>
         </div>
+        )}
 
         <div className="overflow-x-auto">
           <table className="min-w-full">
@@ -192,7 +200,9 @@ function ReusableTable({
                   {headerGroup.headers.map((header) => (
                     <th
                       key={header.id}
-                      className="text-base text-ld font-semibold text-left border-b border-ld px-4 py-3"
+                      className={`text-ld font-semibold text-left border-b border-ld ${
+                        dense ? "text-[13px] px-3 py-1.5" : "text-[15px] px-4 py-2.5"
+                      }`}
                     >
                       {header.isPlaceholder
                         ? null
@@ -210,8 +220,8 @@ function ReusableTable({
                     className="transition-colors cursor-pointer hover:bg-gray-800/10 dark:hover:bg-gray-50/10"
                     onClick={() => onRowClick?.(row.original)}
                   >
-                    {row.getVisibleCells().map((cell) => (
-                      <td key={cell.id} className="whitespace-nowrap py-3 px-4">
+                    {row.getAllCells().map((cell) => (
+                      <td key={cell.id} className={`whitespace-nowrap ${dense ? "py-1.5 px-3" : "py-2 px-4"}`}>
                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                       </td>
                     ))}
@@ -233,7 +243,7 @@ function ReusableTable({
             </tbody>
           </table>
         </div>
-        <div className="sm:flex gap-2 p-3 items-center justify-between">
+        <div className="sm:flex gap-2 pt-3 items-center justify-between">
           <div className="flex items-center gap-2">
             <h1 className="text-gray-700">{tableData.length} Rows</h1>
           </div>

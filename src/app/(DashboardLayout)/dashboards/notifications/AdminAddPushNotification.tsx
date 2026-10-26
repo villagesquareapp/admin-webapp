@@ -3,7 +3,8 @@
 import { sendBroadcastPushNotification } from "@/app/api/push-notification";
 import { getSearchUser } from "@/app/api/user";
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
-import { Button, Label, Select, Textarea, TextInput } from "flowbite-react";
+import { Label, Select, Textarea, TextInput, Spinner } from "flowbite-react";
+import { Button } from "@/app/components/shared/Button";
 import { AnimatePresence, motion } from "framer-motion";
 import React, { useEffect, useState } from "react";
 import { FaSearch, FaUser } from "react-icons/fa";
@@ -29,6 +30,9 @@ const AdminAddPushNotification = ({
   const [isSearching, setIsSearching] = useState(false);
 
   const [loading, setLoading] = useState(false);
+  // Pushes to every user need the sender to type SEND first.
+  const [confirmText, setConfirmText] = useState("");
+  const broadcastConfirmed = target !== "all_users" || confirmText.trim() === "SEND";
 
   // Debounced search
   useEffect(() => {
@@ -89,6 +93,10 @@ const AdminAddPushNotification = ({
   const handleFinalSubmit = async () => {
     if (target === "specific_users" && selectedUsers.length === 0) {
       toast.error("Please select at least one user");
+      return;
+    }
+    if (!broadcastConfirmed) {
+      toast.error("Type SEND to send this to every user");
       return;
     }
 
@@ -161,6 +169,7 @@ const AdminAddPushNotification = ({
     setSearchQuery("");
     setSearchResults([]);
     setSelectedUsers([]);
+    setConfirmText("");
     onClose();
   };
 
@@ -214,7 +223,7 @@ const AdminAddPushNotification = ({
                     >
                       <div className="mb-4">
                         <div className="mb-2 block">
-                          <Label htmlFor="title" value="Title" />
+                          <Label htmlFor="title">Title</Label>
                         </div>
                         <TextInput
                           id="title"
@@ -234,7 +243,7 @@ const AdminAddPushNotification = ({
 
                       <div className="mb-4">
                         <div className="mb-2 block">
-                          <Label htmlFor="body" value="Body" />
+                          <Label htmlFor="body">Body</Label>
                         </div>
                         <Textarea
                           id="body"
@@ -257,9 +266,7 @@ const AdminAddPushNotification = ({
                         <div className="flex-1 w-full">
                           <Label
                             htmlFor="category"
-                            value="Select Category"
-                            className="mb-2 block"
-                          />
+                            className="mb-2 block">Select Category</Label>
 
                           <Select
                             id="category"
@@ -278,9 +285,7 @@ const AdminAddPushNotification = ({
                         <div className="flex-1 w-full">
                           <Label
                             htmlFor="target"
-                            value="Select Target"
-                            className="mb-2 block"
-                          />
+                            className="mb-2 block">Select Target</Label>
 
                           <Select
                             id="target"
@@ -297,6 +302,25 @@ const AdminAddPushNotification = ({
                         </div>
                       </div>
 
+                      {target === "all_users" && (
+                        <div className="mb-6">
+                          <Label
+                            htmlFor="confirm-broadcast"
+                            className="mb-2 block">This goes to every user. Type SEND to confirm.</Label>
+                          <TextInput
+                            id="confirm-broadcast"
+                            value={confirmText}
+                            onChange={(e) => setConfirmText(e.target.value)}
+                            placeholder="SEND"
+                            autoComplete="off"
+                            disabled={loading}
+                          />
+                          <p className="text-xs text-gray-500 mt-1">
+                            At most 3 pushes to all users can go out in 24 hours.
+                          </p>
+                        </div>
+                      )}
+
                       <div className="flex justify-between gap-4">
                         <Button
                           color="gray"
@@ -310,11 +334,11 @@ const AdminAddPushNotification = ({
                         <Button
                           color="success"
                           type="button"
-                          isProcessing={loading}
-                          disabled={loading}
+                          disabled={loading || !broadcastConfirmed}
                           onClick={(e) => handleSubmit(e as any)}
                           className="px-6"
                         >
+                          {loading && <Spinner size="sm" light />}
                           {loading
                             ? "Sending..."
                             : target === "specific_users"
@@ -456,8 +480,8 @@ const AdminAddPushNotification = ({
                           color="success"
                           onClick={handleFinalSubmit}
                           disabled={loading || selectedUsers.length === 0}
-                          isProcessing={loading}
                         >
+                          {loading && <Spinner size="sm" light />}
                           {loading ? "Sending..." : "Submit"}
                         </Button>
                       </div>

@@ -2,9 +2,9 @@ import { Suspense } from "react";
 import { getAllReports, getReportStats } from "@/app/api/report";
 import SmallCards from "@/app/components/dashboards/ecommerce/smallCards";
 import ReportTable from "./ReportTable";
-import shape1 from "/public/images/shapes/danger-card-shape.png";
-import shape2 from "/public/images/shapes/secondary-card-shape.png";
-import shape3 from "/public/images/shapes/success-card-shape.png";
+import shape1 from "../../../../../public/images/shapes/danger-card-shape.png";
+import shape2 from "../../../../../public/images/shapes/secondary-card-shape.png";
+import shape3 from "../../../../../public/images/shapes/success-card-shape.png";
 
 const ReportStatsWrapper = async () => {
   const reportStats = await getReportStats();
@@ -54,15 +54,31 @@ const ReportStatsWrapper = async () => {
       total: reportStats?.data?.total_marketplace_reports || 0,
       icon: "mdi:store",
       bgcolor: "primary",
-      title: "Marketplace Reports",
+      title: "MarketSquare Reports",
       shape: shape3,
       link: "",
     },
     {
-      total: reportStats?.data?.total_comment_reports || 0,
-      icon: "mdi:comment-alert",
+      total: reportStats?.data?.total_vflix_reports || 0,
+      icon: "mdi:movie-open-play",
       bgcolor: "primary",
-      title: "Comment Reports",
+      title: "VFlix Reports",
+      shape: shape3,
+      link: "",
+    },
+    {
+      total: reportStats?.data?.total_trybe_reports || 0,
+      icon: "mdi:account-group",
+      bgcolor: "primary",
+      title: "Trybe Reports",
+      shape: shape3,
+      link: "",
+    },
+    {
+      total: reportStats?.data?.total_atc_reports || 0,
+      icon: "mdi:trophy",
+      bgcolor: "primary",
+      title: "ATC Reports",
       shape: shape3,
       link: "",
     },
@@ -75,14 +91,14 @@ const ReportTableWrapper = async ({
   page,
   limit,
   service,
-  type,
+  status,
 }: {
   page: number;
   limit: number;
   service?: string;
-  type?: string;
+  status?: string;
 }) => {
-  const reports = await getAllReports(page, limit, service, type);
+  const reports = await getAllReports(page, limit, service, status);
 
   const filterDropdowns = [
     {
@@ -90,21 +106,26 @@ const ReportTableWrapper = async ({
       key: "service",
       options: [
         { value: "", label: "All Services" },
+        { value: "user", label: "User" },
         { value: "post", label: "Post" },
         { value: "echo", label: "Echo" },
         { value: "livestream", label: "Live Stream" },
-        { value: "comment", label: "Comment" },
+        { value: "marketsquare", label: "MarketSquare" },
+        { value: "vflix", label: "VFlix" },
+        { value: "trybe", label: "Trybe" },
+        { value: "africa-talent-challenge", label: "ATC" },
       ],
       defaultValue: "",
     },
     {
-      label: "Report Type",
-      key: "type",
+      label: "Status",
+      key: "status",
       options: [
-        { value: "", label: "All Report Types" },
-        { value: "spam", label: "Spam" },
-        { value: "nudity", label: "Nudity" },
-        { value: "parody", label: "Parody" },
+        { value: "", label: "All statuses" },
+        { value: "open", label: "Open" },
+        { value: "in_review", label: "In review" },
+        { value: "resolved", label: "Resolved" },
+        { value: "dismissed", label: "Dismissed" },
       ],
       defaultValue: "",
     },
@@ -121,15 +142,12 @@ const ReportTableWrapper = async ({
   );
 };
 
-const Page = async ({
-  searchParams,
-}: {
-  searchParams: { [key: string]: string | string[] | undefined };
-}) => {
+const Page = async (props: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) => {
+  const searchParams = await props.searchParams;
   const page = Number(searchParams.page) || 1;
   const limit = Number(searchParams.limit) || 20;
   const service = searchParams.service?.toString();
-  const type = searchParams.type?.toString();
+  const status = searchParams.status?.toString();
 
   return (
     <>
@@ -140,12 +158,12 @@ const Page = async ({
           </Suspense>
         </div>
         <div className="col-span-12">
-          <Suspense key={`${page}-${limit}-${service}-${type}`} fallback={<div className="h-[500px] w-full animate-pulse bg-gray-100 dark:bg-gray-800 rounded-3xl" />}>
+          <Suspense key={`${page}-${limit}-${service}-${status}`} fallback={<div className="h-[500px] w-full animate-pulse bg-gray-100 dark:bg-gray-800 rounded-3xl" />}>
             <ReportTableWrapper
               page={page}
               limit={limit}
               service={service}
-              type={type}
+              status={status}
             />
           </Suspense>
         </div>

@@ -85,6 +85,9 @@ interface IReportStats {
   total_live_stream_reports: number;
   total_marketplace_reports: number;
   total_comment_reports: number;
+  total_vflix_reports?: number;
+  total_trybe_reports?: number;
+  total_atc_reports?: number;
 }
 
 interface IPostStats {
@@ -95,6 +98,150 @@ interface IPostStats {
   total_likes: number;
   ios_posts: number;
   android_posts: number;
+}
+
+interface IPostOverview {
+  kpis: {
+    total: number;
+    active: number;
+    taken_down: number;
+    shadow_limited: number;
+    open_reports: number;
+    in_review: number;
+    today: number;
+  };
+  by_status: Record<string, number>;
+  by_reason: { reason: string; count: number }[];
+  trends: { date: string; posts: number; reports: number }[];
+  engagement: { likes: number; replies: number; shares: number; views: number };
+  media_mix: { image: number; video: number; text: number };
+  funnel: { received: number; open: number; in_review: number; resolved: number; dismissed: number };
+  top_posts: IPosts[];
+  reported_posts: IPosts[];
+  recent_actions: IEnforcementAction[];
+}
+
+interface IAuthorRisk {
+  uuid: string;
+  name: string;
+  username: string;
+  profile_picture: string;
+  status: string;
+  strike_count: number;
+  suspended_until: string | null;
+  created_at: string;
+}
+
+interface IPostQueueRow extends IPosts {
+  author_risk: IAuthorRisk | null;
+  report_count: number;
+  first_reported: string;
+  last_reported: string;
+  top_reason: string;
+  priority: number;
+}
+
+interface IPostQueueResponse extends IPaginatedResponse<IPostQueueRow> {}
+
+interface IEnforcementAction {
+  uuid: string;
+  action: string;
+  service_type?: string;
+  target_id: string | null;
+  target_user_id: string | null;
+  report_id?: string | null;
+  admin_id?: string | null;
+  reason: string | null;
+  result: string;
+  created_at: string;
+}
+
+interface IEnforcementResponse extends IPaginatedResponse<IEnforcementAction> {}
+
+interface IPostDetailReport {
+  uuid: string;
+  status: string;
+  reason: string;
+  note?: string | null;
+  reporter: { uuid: string; name: string; username: string } | null;
+  created_at: string;
+}
+
+interface IPostDetailHistory {
+  uuid: string;
+  action: string;
+  scope: "content" | "author";
+  reason: string | null;
+  result: string;
+  admin_id: string | null;
+  created_at: string;
+}
+
+interface IPostSnapshot {
+  uuid: string;
+  caption: string;
+  status: string;
+  is_duplicate: boolean;
+  deleted_at: string | null;
+  created_at: string;
+  media: IMedia[];
+  user: { uuid: string; name: string; username: string; profile_picture: string } | null;
+  is_current?: boolean;
+}
+
+interface IPostThread {
+  root_id: string;
+  is_root: boolean;
+  part_count: number;
+  reply_count: number;
+  parts: IPostSnapshot[];
+}
+
+interface IPostReply extends IPostSnapshot {
+  likes_count: number;
+  replies_count: number;
+}
+
+interface IPostDetail {
+  // NOTE: the Admin API deep-snake-cases response keys, so this is post_details
+  // (not postDetails) and nested dates are created_at / updated_at.
+  post_details: {
+    uuid: string;
+    status: string;
+    is_duplicate: boolean;
+    deleted_at: string | null;
+    trybe_id: string | null;
+    // Anonymous in the app (a Trybe's Confessions-type tab); staff see the author.
+    is_anonymous?: boolean;
+    category_id?: number | null;
+    post_type: "single" | "thread" | "reply" | "quote";
+    is_reply: boolean;
+    is_quote: boolean;
+    thread: IPostThread;
+    parent: IPostSnapshot | null;
+    quoted: IPostSnapshot | null;
+    metrics: {
+      likes: number;
+      replies: number;
+      shares: number;
+      views: number;
+      impressions: number;
+      unique_views: number;
+      clicks: number;
+      engagements: number;
+      report_count: number;
+      open_report_count: number;
+      address: string;
+      audience: string;
+      created_at: string;
+      updated_at: string;
+    };
+    author: IAuthorRisk | null;
+    content: { caption: string; media: IMedia[] };
+    reports: IPostDetailReport[];
+    history: IPostDetailHistory[];
+    replies: IPostReply[];
+  };
 }
 
 interface IAtcStats {
@@ -180,7 +327,7 @@ interface IATCData {
     value: string;
     label: string;
   };
-  suggestion: ISuggestion;
+  suggestions: ISuggestion[];
 }
 
 interface IMarketSquareStats {
@@ -195,7 +342,7 @@ interface IEchoStats {
   new_echoes: number;
   live_echoes: number;
   total_participants: number;
-  total_comments: number;
+  total_gifts: number;
 }
 
 interface ILivestreamCategory {
@@ -206,6 +353,7 @@ interface ILivestreamCategory {
   description: string;
   status?: boolean;
   streams_count?: number;
+  trybe_type?: { uuid: string; name: string } | null;
   created_at: string;
   updated_at: string;
 }
@@ -227,6 +375,7 @@ interface ILivestreamStats {
   total_livestreams: number;
   new_livestreams: number;
   currently_live: number;
+  total_gifts?: number;
 }
 
 interface IOverviewData {
@@ -320,14 +469,14 @@ interface IUser {
       following: number;
       posts_count: number;
       is_private: boolean;
-      checkmark_verification_status: boolean;
-      premium_verification_status: boolean;
+      check_mark: boolean;
+      premium: boolean;
       online: boolean;
       verification_badge: string;
-      // check_mark: boolean;
-      // premium: boolean;
       account_type: string;
       registration_type: string;
+      referral_code?: string;
+      referral_count?: number;
       created_at: string;
     };
     shop: {
@@ -342,6 +491,76 @@ interface IUser {
 }
 
 interface IUsersResponse extends IPaginatedResponse<IUser> {}
+
+interface IUserLite {
+  uuid: string;
+  name: string;
+  username: string;
+  email: string;
+  profile_picture: string;
+  status: string;
+  account_type: string;
+  registration_type: string;
+  verification_badge: string;
+  online: boolean;
+  created_at: string;
+  report_count?: number;
+}
+
+interface IUserOverview {
+  kpis: {
+    total: number;
+    active: number;
+    new_7d: number;
+    verified: number;
+    online: number;
+    suspended: number;
+    banned: number;
+    flagged: number;
+    open_reports: number;
+  };
+  by_status: Record<string, number>;
+  by_account_type: Record<string, number>;
+  recent_signups: IUserLite[];
+  reported_users: IUserLite[];
+}
+
+interface IUserDetail {
+  user_details: {
+    profile: IUser["user_details"]["profile"];
+    content_counts: {
+      posts: number;
+      echoes: number;
+      livestreams: number;
+      followers: number;
+      following: number;
+    };
+    moderation: {
+      status: string;
+      strike_count: number;
+      suspended_until: string | null;
+      moderation_reason: string | null;
+      moderated_by: string | null;
+      moderated_at: string | null;
+      report_count: number;
+      open_report_count: number;
+    };
+    reports: IPostDetailReport[];
+    history: {
+      uuid: string;
+      action: string;
+      service_type?: string;
+      scope: "account" | "content";
+      reason: string | null;
+      result: string;
+      admin_id: string | null;
+      created_at: string;
+    }[];
+    shop: null | { logo?: string };
+    coin_wallet: { balance: number; newGiftsCount?: number; status?: string }[];
+    cowry_wallet: { balance: number; newGiftsCount?: number; status?: string; currency?: string }[];
+  };
+}
 
 interface IVerifiedUsers {
   uuid: string;
@@ -395,12 +614,29 @@ interface IVerifiedUsers {
 
 interface IVerifiedUsersResponse extends IPaginatedResponse<IVerifiedUsers> {}
 
+// A staff member's second step at sign-in (Settings → Security).
+interface ISignInMethod {
+  uuid: string;
+  type: "authenticator" | "passkey" | "email";
+  name: string;
+  email?: string;
+  created_at: string;
+  last_used_at: string | null;
+}
+
+interface ISecurityOverview {
+  methods: ISignInMethod[];
+  backup_codes_left: number;
+}
+
 interface IAdminUsers {
   uuid: string;
   email: string;
   name: string;
   is_active: boolean;
   is_super_admin: boolean;
+  must_change_password?: boolean;
+  totp_enabled_at?: string | null;
   role: string;
   status:
     | "active"
@@ -473,6 +709,22 @@ interface IBillingPlan {
   deleted_at: string | null;
 }
 
+interface IBillingOverview {
+  revenue: {
+    gross: number;
+    net: number;
+    fees: number;
+    this_month_net: number;
+    by_category: { category: string; net: number; count: number }[];
+    by_currency: { currency: string; net: number; count: number }[];
+    trends: { date: string; net: number }[];
+  };
+  payments: { total: number; success: number; failed: number; pending: number };
+  subscriptions: { active: number; total: number; by_status: Record<string, number> };
+  gifting: { total_sent: number; total_value: number };
+  plans: { total: number; active: number };
+}
+
 interface IUserStatusList {
   name: string;
   value: string;
@@ -510,6 +762,13 @@ interface IPosts {
   shares_count: number;
   likes_count: number;
   replies_count: number;
+  is_duplicate?: boolean;
+  report_count?: number;
+  is_reply?: boolean;
+  is_quote?: boolean;
+  in_thread?: boolean;
+  thread_part_count?: number;
+  post_type?: "single" | "thread" | "reply" | "quote";
   created_at: string;
   user: {
     uuid: string;
@@ -554,109 +813,230 @@ interface IPostResponse extends IPaginatedResponse<IPosts> {}
 interface ILivestreams {
   uuid: string;
   title: string;
+  cover: string;
+  status: EchoStatus;
+  privacy: string;
+  orientation: string;
   users: number;
   gifts: number;
+  likes: number;
+  diamonds: number;
+  cowries_earned: number;
+  comments_count: number;
+  shares_count: number;
   duration: number;
-  cover: string;
   created_at: string;
-  host: {
-    uuid: string;
-    name: string;
-    username: string;
-    email: string;
-    registration_type: string;
-    account_type: string;
-    phone_number: string | null;
-    profile_picture: string;
-    cover_photo: string | null;
-    gender: string | null;
-    dob: string | null;
-    country: string | null;
-    city: string | null;
-    profession: string | null;
-    bio: string | null;
-    timezone: string;
-    verified_status: number;
-    online: boolean;
-    last_online: string | null;
-    is_private: boolean;
-    has_two_factor_auth: boolean;
-    status: string;
-    address: string;
-    latitude: string | null;
-    longitude: string | null;
-    referrer: string | null;
-    referral_code: string;
-    referral_count: number;
-    can_reset_password: boolean;
-    created_at: string;
-    updated_at: string;
-    deleted_at: string | null;
-  };
-  category: {
-    id: number;
-    name: string;
-    created_at: string;
-    updated_at: string;
-  };
+  host: IEchoHostLite | null;
+  category: IEchoCategoryLite | null;
+  report_count?: number;
   actions?: any;
+}
+
+interface ILivestreamStatusList {
+  name: string;
+  value: string;
+}
+
+interface ILivestreamOverview {
+  kpis: {
+    total: number;
+    live: number;
+    scheduled: number;
+    ended: number;
+    total_viewers: number;
+    total_gifts: number;
+    open_reports: number;
+    today: number;
+  };
+  by_status: Record<string, number>;
+  by_category: { name: string; count: number }[];
+  engagement: { viewers: number; gifts: number; likes: number; comments: number; shares: number; diamonds: number; cowries: number };
+  live_now: ILivestreams[];
+  top_streams: ILivestreams[];
+  reported_streams: ILivestreams[];
+}
+
+interface ILivestreamDetail {
+  stream_details: {
+    uuid: string;
+    title: string;
+    cover: string;
+    status: EchoStatus;
+    privacy: string;
+    orientation: string;
+    category: IEchoCategoryLite | null;
+    settings: {
+      comments_enabled: boolean;
+      questions_enabled: boolean;
+      gifting_enabled: boolean;
+      requests_enabled: boolean;
+    };
+    timing: {
+      start_datetime: number;
+      end_datetime: number;
+      start_date: string;
+      start_time: string;
+      duration_minutes: number;
+      created_at: string;
+    };
+    metrics: {
+      viewers: number;
+      gifts: number;
+      likes: number;
+      diamonds: number;
+      cowries_earned: number;
+      comments_count: number;
+      shares_count: number;
+      avg_watch_time_seconds: number;
+      new_followers: number;
+      report_count: number;
+      open_report_count: number;
+    };
+    host: IEchoHostLite | null;
+    reports: IPostDetailReport[];
+    actions: { can_force_end: boolean };
+  };
 }
 
 interface ILivestreamResponse extends IPaginatedResponse<ILivestreams> {}
 
+interface IEchoHostLite {
+  uuid: string;
+  name: string;
+  username: string;
+  profile_picture: string;
+}
+
+interface IEchoCategoryLite {
+  id: number;
+  name: string;
+}
+
+type EchoStatus = "live" | "scheduled" | "ended" | "saved";
+
 interface IEchoes {
   uuid: string;
   title: string;
-  users: number;
-  gifts: number;
-  duration: number;
   cover: string;
-  status: "ended" | "live";
+  status: EchoStatus;
+  privacy: string;
+  is_recurring: boolean;
+  users: number;
+  peak_listener_count: number;
+  total_listeners_ever: number;
+  total_gifts: number;
+  total_likes: number;
+  total_reactions: number;
+  duration: number;
+  duration_seconds: number;
+  has_replay: boolean;
+  start_at: string | null;
+  started_at: string | null;
+  ended_at: string | null;
   created_at: string;
-  host: {
-    uuid: string;
-    name: string;
-    username: string;
-    email: string;
-    registration_type: string;
-    account_type: string;
-    phone_number: string | null;
-    profile_picture: string;
-    cover_photo: string;
-    gender: string;
-    dob: string | null;
-    country: string;
-    city: string;
-    profession: string;
-    bio: string;
-    timezone: string;
-    verified_status: number;
-    online: boolean;
-    last_online: string | null;
-    is_private: boolean;
-    has_two_factor_auth: boolean;
-    status: string;
-    address: string | null;
-    latitude: string | null;
-    longitude: string | null;
-    referrer: string | null;
-    referral_code: string;
-    referral_count: number;
-    can_reset_password: boolean;
-    created_at: string;
-    updated_at: string;
-    deleted_at: string | null;
-  };
-  category: {
-    id: number;
-    name: string;
-    created_at: string;
-    updated_at: string;
-  };
+  host: IEchoHostLite | null;
+  category: IEchoCategoryLite | null;
+  report_count?: number;
   actions?: any;
 }
 
 interface IEchosResponse extends IPaginatedResponse<IEchoes> {}
+
+interface IEchoStatusList {
+  name: string;
+  value: string;
+}
+
+interface IEchoCategory {
+  id: number;
+  name: string;
+  icon?: string;
+  echoes_count?: number;
+  trybe_type?: { uuid: string; name: string } | null;
+  created_at?: string;
+  updated_at?: string;
+}
+
+interface IEchoOverview {
+  kpis: {
+    total: number;
+    live: number;
+    scheduled: number;
+    ended: number;
+    total_listeners: number;
+    total_gifts: number;
+    open_reports: number;
+    today: number;
+  };
+  by_status: Record<string, number>;
+  by_category: { name: string; count: number }[];
+  engagement: { listeners: number; gifts: number; reactions: number; likes: number; chat: number };
+  live_now: IEchoes[];
+  top_echoes: IEchoes[];
+  reported_echoes: IEchoes[];
+}
+
+interface IEchoParticipant {
+  uuid: string;
+  name: string;
+  username: string;
+  profile_picture: string;
+  role: string;
+  status: string;
+}
+
+interface IEchoDetail {
+  echo_details: {
+    uuid: string;
+    title: string;
+    description: string | null;
+    cover: string;
+    status: EchoStatus;
+    privacy: string;
+    is_recurring: boolean;
+    recurrence_pattern: string | null;
+    category: IEchoCategoryLite | null;
+    settings: {
+      chat_enabled: boolean;
+      request_to_speak_enabled: boolean;
+      questions_enabled: boolean;
+      gifting_enabled: boolean;
+      recording_enabled: boolean;
+    };
+    timing: {
+      start_at: string | null;
+      started_at: string | null;
+      ended_at: string | null;
+      duration_seconds: number;
+      created_at: string;
+    };
+    metrics: {
+      peak_listener_count: number;
+      unique_listener_count: number;
+      total_listeners_ever: number;
+      average_listen_time_seconds: number;
+      total_reactions: number;
+      total_chat_messages: number;
+      total_gifts: number;
+      gift_revenue_ngn: number;
+      total_likes: number;
+      report_count: number;
+      open_report_count: number;
+    };
+    replay: { url: string; duration_seconds: number; views: number; hours_watched: number } | null;
+    host: IEchoHostLite | null;
+    speakers: IEchoParticipant[];
+    listeners: IEchoParticipant[];
+    room_bans: {
+      user: { uuid: string; name: string; username: string } | null;
+      banned_by: { uuid: string; name: string } | null;
+      reason: string | null;
+      created_at: string;
+    }[];
+    reports: IPostDetailReport[];
+    actions: { can_force_end: boolean };
+  };
+}
 
 interface IMarketProduct {
   uuid: string;
@@ -667,21 +1047,153 @@ interface IMarketProduct {
   updated_at: string;
 }
 
+type ShopStatus = "active" | "inactive" | "banned";
+
+interface IMarketUserLite {
+  uuid: string;
+  name: string;
+  username: string;
+  profile_picture: string;
+  created_at?: string;
+}
+
 interface IMarketSquareShops {
   uuid: string;
   name: string;
-  logo: string;
+  logo: string | null;
   tagline: string | null;
   website: string | null;
   location: string | null;
   address: string | null;
+  status: ShopStatus;
+  products_count: number;
   created_at: string;
   updated_at: string;
-  products: IMarketProduct[];
-  actions?: any;
+  user: IMarketUserLite;
 }
 
 interface IMarketSquareShopsResponse extends IPaginatedResponse<IMarketSquareShops> {}
+
+interface IProductMedia {
+  url: string;
+  thumbnail?: string;
+  filename?: string;
+  type?: "primary" | "gallery";
+  media_type?: string;
+  transcoded_media_url?: string;
+  order?: number;
+}
+
+interface IMarketProductLite {
+  uuid: string;
+  title: string;
+  price: number | null;
+  currency: { code: string; symbol: string } | null;
+  image: string | null;
+  featured: boolean;
+  in_stock: boolean;
+  quantity: number;
+  views_count: number;
+  reviews_count: number;
+  taken_down: boolean;
+  created_at: string;
+  shop: { uuid: string; name: string; status?: ShopStatus } | null;
+  category: { id: number; name: string } | null;
+  user: IMarketUserLite | null;
+  report_count?: number;
+}
+
+interface IMarketProductsResponse extends IPaginatedResponse<IMarketProductLite> {}
+
+interface IMarketReview {
+  uuid: string;
+  rating: number;
+  comment: string | null;
+  is_visible: boolean;
+  created_at: string;
+  user: IMarketUserLite | null;
+}
+
+interface IMarketProductDetail extends IMarketProductLite {
+  description: string | null;
+  address: string | null;
+  location: string | null;
+  has_discount: boolean;
+  discount_percentage: number | null;
+  tags: string[];
+  attributes: Record<string, any>;
+  wishlist_count: number;
+  purchase_count: number;
+  media: IProductMedia[];
+  updated_at: string;
+  moderation: { open_reports: number; taken_down: boolean };
+  reviews: IMarketReview[];
+}
+
+interface IMarketShopDetail {
+  uuid: string;
+  name: string;
+  logo: string | null;
+  tagline: string | null;
+  website: string | null;
+  location: string | null;
+  address: string | null;
+  status: ShopStatus;
+  created_at: string;
+  updated_at: string;
+  user: IMarketUserLite;
+  products_count: number;
+  products: IMarketProductLite[];
+}
+
+interface IMarketCategory {
+  id: number;
+  name: string;
+  description?: string | null;
+  icon: string | null;
+  icon_id?: string | null;
+  color: string | null;
+  products_count: number;
+  trybe_type?: { uuid: string; name: string } | null;
+  created_at?: string;
+}
+
+// A social home tab after the fixed ones. trybe_type null = General (main app).
+interface IPostCategory {
+  id: number;
+  name: string;
+  slug: string;
+  description: string | null;
+  icon: string | null;
+  is_anonymous: boolean;
+  is_enabled: boolean;
+  position: number;
+  posts_count: number;
+  trybe_type: { uuid: string; name: string } | null;
+  created_at: string;
+  updated_at: string;
+}
+
+interface IMarketOverview {
+  kpis: {
+    total_products: number;
+    total_shops: number;
+    today_products: number;
+    new_7d_products: number;
+    featured: number;
+    out_of_stock: number;
+    taken_down: number;
+    banned_shops: number;
+    total_categories: number;
+    total_reviews: number;
+    open_reports: number;
+  };
+  by_category: { name: string; count: number }[];
+  top_shops: { uuid: string; name: string; products: number }[];
+  trends: { date: string; products: number }[];
+  recent_products: IMarketProductLite[];
+  reported_products: IMarketProductLite[];
+}
 
 interface ITickerUser {
   name: string;
@@ -721,6 +1233,61 @@ interface IGifting {
 
 interface IGiftingResponse extends IPaginatedResponse<IGifting> {}
 
+interface IGiftStat {
+  uuid: string;
+  name: string;
+  icon: string;
+  value: number | string;
+  status: boolean;
+  created_at: string;
+  updated_at?: string;
+  sent_count: number;
+  value_sent: number;
+  share: number;
+}
+
+interface IGiftOverview {
+  totals: {
+    total_gifts: number;
+    active_gifts: number;
+    disabled_gifts: number;
+    total_sent: number;
+    total_value_sent: number;
+  };
+  gifts: IGiftStat[];
+  top_gifts: IGiftStat[];
+  trend: { date: string; sent: number }[];
+}
+
+interface ICoinStat {
+  uuid: string;
+  name: string | null;
+  amount: string;
+  price: string;
+  in_app_purchase_id: string;
+  tag: string | null;
+  description: string | null;
+  status: boolean;
+  created_at: string;
+  updated_at?: string;
+  purchases: number;
+  revenue: number;
+  coins_per_usd: number;
+}
+
+interface ICoinOverview {
+  totals: {
+    total_packages: number;
+    active_packages: number;
+    disabled_packages: number;
+    total_purchases: number;
+    total_revenue: number;
+    min_price: number;
+    max_price: number;
+  };
+  packages: ICoinStat[];
+}
+
 interface ICoins {
   uuid: string;
   name: string;
@@ -758,7 +1325,7 @@ interface ISinglePost {
       shares: number;
       views: number;
       address: string;
-      privacy: string;
+      audience: string;
       created_at: string;
       updated_at: string;
     };
@@ -813,24 +1380,92 @@ interface IReportUser {
   deleted_at: string | null;
 }
 
+interface IReportActionDetails {
+  resolved_at?: string;
+  resolved_by?: string;
+  resolved_reason?: string;
+  resolution_methods?: string[];
+  dismissed_at?: string;
+  dismissed_by?: string;
+  dismissed_reason?: string;
+  results?: IReportActionResult[];
+}
+
+// What each resolution outcome did: executed, unsupported (doesn't apply to
+// this kind of report) or failed.
+interface IReportActionResult {
+  action: string;
+  result: "executed" | "unsupported" | "failed";
+}
+
+interface IReportResolveResult {
+  results: IReportActionResult[];
+}
+
 interface IReport {
   id: string;
   reporter_id: string;
-  reported_user_id: string;
+  reported_id?: string;
   reason: string;
-  report_type: string;
-  reported_service_id: string;
   report_service_type: string;
+  status?: "open" | "in_review" | "resolved" | "dismissed";
+  handled_by?: string | null;
+  action_details?: IReportActionDetails | null;
   created_at: string;
   updated_at: string;
   deleted_at: string | null;
-  reporter: IReportUser;
-  reported_user: IReportUser;
+  reporter?: IReportUser;
+  reason_ref?: { title: string; description?: string } | null;
+  trybe_id?: string | null;
+}
+
+interface IReportPerson {
+  uuid: string;
+  name: string | null;
+  username: string | null;
+  profile_picture: string | null;
+  status?: string;
+}
+
+// What a report is about, by service type.
+interface IReportTarget {
+  kind: string;
+  uuid: string;
+  caption?: string | null;
+  title?: string | null;
+  name?: string | null;
+  username?: string | null;
+  slug?: string;
+  subtitle?: string | null;
+  status?: string;
+  privacy?: string;
+  audience?: string;
+  member_count?: number;
+  avatar?: string | null;
+  profile_picture?: string | null;
+  is_anonymous?: boolean;
+  is_duplicate?: boolean;
+  category?: string | null;
+  parent_post_id?: string | null;
+  trybe_id?: string | null;
+  occupation?: string | null;
+  votes_count?: number;
+  created_at?: string;
+  deleted_at?: string | null;
+  author?: IReportPerson | null;
+  admins?: IReportPerson[];
+  media?: { uuid: string; media_type: string; url: string | null; thumbnail: string | null; has_private_original: boolean }[];
+}
+
+interface IReportDetail extends IReport {
+  attachments_count: number;
+  target: IReportTarget | null;
+  trybe: { uuid: string; name: string; slug: string; status: string; avatar: string | null } | null;
 }
 
 interface IReportResponse extends IPaginatedResponse<IReport> {}
 
-interface IWithdrawalUser {
+interface IPayoutUser {
   uuid: string;
   name: string;
   username: string;
@@ -838,14 +1473,28 @@ interface IWithdrawalUser {
   profile_picture: string;
 }
 
-interface IPaystackBalance {
-  usd_value: {
-    balance: string;
+// Payouts held after a refund couldn't be fully taken back.
+interface IPayoutHold {
+  uuid: string;
+  user: {
+    uuid: string;
+    name: string | null;
+    username: string | null;
+    email: string | null;
+    profile_picture: string | null;
+    coin_balance: number;
+    cowry_balance: number;
   };
-  ngn_value: {
-    balance: string;
-  };
+  reason: string;
+  provider: string;
+  purchase_reference: string;
+  shortfall: number;
+  created_at: string;
+  released_at: string | null;
+  released_by: { uuid: string; name: string | null; email: string | null } | null;
 }
+
+interface IPayoutHoldsResponse extends IPaginatedResponse<IPayoutHold> {}
 
 interface ICowryBalance {
   cowry_value: {
@@ -859,6 +1508,19 @@ interface ICowryBalance {
   };
 }
 
+interface IFlutterwaveBalance {
+  available_balance?: { ngn: string; usd: string };
+  ledger_balance?: { ngn: string; usd: string };
+}
+
+interface ICowryTransferResult {
+  transfer_id: string;
+  cowries_each: number;
+  credited: string[];
+  already_credited: string[];
+  skipped: { user_id: string; reason: string }[];
+}
+
 interface IRecentTransfer {
   fullname: string;
   username: string;
@@ -869,7 +1531,7 @@ interface IRecentTransfer {
 
 interface IRecentTransferResponse extends IPaginatedResponse<IRecentTransfer> {}
 
-interface IPendingWithdrawals {
+interface IQueuedPayout {
   uuid: string;
   amount: number;
   transaction_type: string;
@@ -886,6 +1548,9 @@ interface IPendingWithdrawals {
     withdrawal_id: string;
     payment_provider: string;
     withdrawal_method: string;
+    // Set on automatic payouts waiting for review.
+    auto_payout?: { payout_id: string; number: number; cycle_id: string; level: string };
+    auto_payout_review?: string;
     withdrawal_init_data: {
       payout_kobo: number;
       naira_amount: string;
@@ -911,13 +1576,124 @@ interface IPendingWithdrawals {
     name: string;
   };
   cowry_balance: number;
-  last_withdrawal: {
+  last_payout: {
     amount: number;
     date: string;
+  } | null;
+}
+
+interface IPayoutQueueResponse extends IPaginatedResponse<IQueuedPayout> {}
+
+interface IPayoutAttention {
+  uuid: string;
+  reference_id: string;
+  transaction_status: "pending" | "failed" | string;
+  amount: number;
+  created_at: string;
+  payout_naira: number;
+  payout_destination: {
+    bank_name?: string;
+    account_name?: string;
+    account_number?: string;
+  } | null;
+  transfer_id: string | number | null;
+  unconfirmed: { at: string; message: string } | null;
+  review: { reason: string } | null;
+  can_requeue: boolean;
+  user: {
+    uuid: string;
+    name: string;
+    username: string;
+    email: string;
+    profile_picture: string;
   };
 }
 
-interface IPendingWithdrawalsResponse extends IPaginatedResponse<IPendingWithdrawals> {}
+interface IPayoutAttentionResponse extends IPaginatedResponse<IPayoutAttention> {}
+
+type PayoutVerificationLevel = "none" | "checkmark" | "premium";
+
+interface IPayoutLevel {
+  level: PayoutVerificationLevel;
+  can_be_paid: boolean;
+  cycle_days: number;
+  cycle_limit_usd: number | null;
+}
+
+interface IPayoutSettings {
+  min_followers: number;
+  first_cycle_starts_at: string | null;
+  min_payout_usd: number;
+  fx_spread_percent: number;
+  fixed_fee_ngn: number;
+  review_first_payout: boolean;
+  review_above_usd: number;
+  auto_payouts_enabled: boolean;
+  updated_at: string;
+  updated_by: string | null;
+  levels: IPayoutLevel[];
+}
+
+type IPayoutSettingsUpdate = Partial<
+  Omit<IPayoutSettings, "updated_at" | "updated_by">
+>;
+
+type PayoutStatus = "pending" | "review" | "processing" | "paid" | "failed" | "cancelled";
+
+interface IPayout {
+  uuid: string;
+  number: number;
+  status: PayoutStatus;
+  verification_level: PayoutVerificationLevel;
+  amount_usd: number;
+  fee_usd: number;
+  payout_ngn: number | null;
+  method: { bank_name?: string; account_number?: string; account_name?: string } | null;
+  review_reason: string | null;
+  failure_reason: string | null;
+  provider_reference: string;
+  provider_transfer_id: string | null;
+  ledger_transaction_id: string | null;
+  cycle: { uuid: string; number: number; ends_at: string };
+  user: { uuid: string; name: string; username: string; email: string; profile_picture: string | null };
+  created_at: string;
+  sent_at: string | null;
+  paid_at: string | null;
+  failed_at: string | null;
+}
+
+interface IPayoutsResponse extends IPaginatedResponse<IPayout> {}
+
+interface IPayoutCycle {
+  uuid: string;
+  level: PayoutVerificationLevel;
+  number: number;
+  starts_at: string;
+  ends_at: string;
+  status: "scheduled" | "running" | "completed" | "cancelled";
+  payouts: number;
+  paid: number;
+  review: number;
+  in_progress: number;
+  not_paid: number;
+  paid_usd: number;
+}
+
+interface ILegacyTransferReport {
+  opening_balances_copied: number;
+  opening_balances_started_at: string | null;
+  missing_count: number;
+  missing_cowries: number;
+  users: number;
+  missing: {
+    legacy_transaction_id: string;
+    user_id: string;
+    username: string | null;
+    amount: number;
+    transferred_at: string;
+    opening_balance_at: string | null;
+  }[];
+}
 
 interface IPendingVerification {
   uuid: string;
@@ -1181,6 +1957,8 @@ interface IPushNotifications {
   category: string;
   target: string[];
   status: string;
+  sent_by?: string | null;
+  sent_by_name?: string | null;
   created_at: string;
   updated_at: string;
   deleted_at: string | null;
@@ -1189,3 +1967,389 @@ interface IPushNotifications {
 interface IPushNotificationResponse extends IPaginatedResponse<IPushNotifications> {}
 
 interface IVerificationRequestedResponse extends IPaginatedResponse<IVerificationRequested> {}
+
+/* =========================================================================
+ * VFlix — short-form vertical video management
+ * Contract source: vflix-admin-management-guide.md (§4, §6)
+ * Status values are identical to PostStatus, so status chips are shared.
+ * ========================================================================= */
+
+type VflixStatus =
+  | "active"
+  | "disabled"
+  | "reported"
+  | "flagged"
+  | "banned"
+  | "shadow_hidden"
+  | "archived";
+
+type VflixContentType = "video" | "carousel";
+
+type VflixReportType = "spam" | "nudity" | "parody";
+
+type VflixReportStatus = "open" | "in_review" | "resolved" | "dismissed";
+
+interface IVflixMedia {
+  uuid: string;
+  media_url: string;
+  transcoded_media_url: string | null;
+  thumbnail: string;
+  media_type: "video" | "image";
+  duration: number; // seconds
+  is_transcode_complete: boolean;
+}
+
+interface IVflixCreator {
+  uuid: string;
+  name: string;
+  username: string;
+  profile_picture: string;
+}
+
+interface IVflixVideo {
+  uuid: string;
+  caption: string;
+  privacy: string;
+  content_type: VflixContentType;
+  status: VflixStatus;
+  is_featured: boolean;
+  is_duplicate: boolean;
+  views_count: number;
+  likes_count: number;
+  comments_count: number;
+  shares_count: number;
+  gifts_count: number;
+  created_at: string;
+  deleted_at: string | null;
+  moderated_at: string | null;
+  media: IVflixMedia[];
+  creator: IVflixCreator;
+  // present on moderation-queue items only
+  report_count?: number;
+}
+
+interface IVflixReport {
+  id: string;
+  reporter_id: string;
+  type: VflixReportType;
+  reason: string;
+  status: VflixReportStatus;
+  action_details?: IReportActionDetails | null;
+  created_at: string;
+}
+
+interface IVflixVideoDetail extends IVflixVideo {
+  moderated_by: string | null;
+  moderation_reason: string | null;
+  address: string | null;
+  latitude: string | null;
+  longitude: string | null;
+  language: string | null;
+  culture_tag: string | null;
+  series_id: string | null;
+  episode_number: number | null;
+  audio_id: string | null;
+  filter_id: string | null;
+  template_id: string | null;
+  reports: IVflixReport[];
+}
+
+interface IVflixListResponse {
+  data: IVflixVideo[];
+  total: number;
+  current_page: number;
+  per_page: number;
+  last_page: number;
+}
+
+interface IVflixStats {
+  total: number;
+  by_status: Partial<Record<VflixStatus, number>>;
+  featured: number;
+  removed: number;
+  created_last_7d: number;
+}
+
+interface IVflixCreatorSummary {
+  total: number;
+  by_status: Partial<Record<VflixStatus, number>>;
+  total_views: number;
+  total_likes: number;
+  strikes: number;
+}
+
+interface IVflixCreatorView {
+  creator: IVflixCreator;
+  summary: IVflixCreatorSummary;
+  videos: {
+    data: IVflixVideo[];
+    total: number;
+    current_page: number;
+    per_page: number;
+    last_page: number;
+  };
+}
+
+interface IVflixUploadPoint {
+  label: string;
+  count: number;
+}
+
+interface IVflixTopCreator {
+  creator: IVflixCreator;
+  videos: number;
+  views: number;
+  strikes: number;
+}
+
+interface IVflixTopSound {
+  id: string;
+  name: string;
+  tag: string;
+  uses: number;
+}
+
+interface IVflixCatalogCounts {
+  sounds: number;
+  filters: number;
+  templates: number;
+  stickers: number;
+  fonts: number;
+  colours: number;
+  pending_templates: number;
+}
+
+// Cross-segment summary for the VFlix landing dashboard (GET /vflix/overview).
+interface IVflixOverview {
+  kpis: {
+    total: number;
+    active: number;
+    in_moderation: number;
+    featured: number;
+    removed: number;
+    views_30d: number;
+  };
+  by_status: Partial<Record<VflixStatus, number>>;
+  uploads: IVflixUploadPoint[];
+  uploads_total: number;
+  uploads_delta_pct: number;
+  moderation: {
+    open: number;
+    reported: number;
+    flagged: number;
+    items: IVflixVideo[];
+  };
+  transcode: { complete: number; pending: number; failed: number };
+  top_creators: IVflixTopCreator[];
+  top_videos: IVflixVideo[];
+  top_sounds: IVflixTopSound[];
+  catalog: IVflixCatalogCounts;
+}
+
+// ---- Catalog / Studio assets ----
+type VflixAssetKind = "sound" | "filter" | "template" | "sticker" | "font" | "colour";
+
+interface IVflixSound {
+  id: string;
+  name: string;
+  artist: string;
+  category: string;
+  mood_tags: string[];
+  duration: number;
+  uses_count: number;
+  is_featured: boolean;
+  created_at: string;
+}
+
+interface IVflixFilter {
+  id: string;
+  name: string;
+  thumbnail: string;
+  category: string;
+  intensity: number;
+  uses_count: number;
+  is_active: boolean;
+  created_at: string;
+}
+
+interface IVflixTemplate {
+  id: string;
+  name: string;
+  cover: string;
+  category: string;
+  status: "pending" | "approved" | "rejected";
+  submitted_by: string;
+  uses_count: number;
+  created_at: string;
+}
+
+interface IVflixSticker {
+  id: string;
+  name: string;
+  image: string;
+  pack: string;
+  is_active: boolean;
+  uses_count: number;
+}
+
+interface IVflixFont {
+  id: string;
+  name: string;
+  family: string;
+  is_active: boolean;
+  uses_count: number;
+}
+
+interface IVflixColour {
+  id: string;
+  name: string;
+  hex: string;
+  is_active: boolean;
+  uses_count: number;
+}
+
+interface IVflixCatalogSummary {
+  sounds: number;
+  filters: number;
+  templates: number;
+  stickers: number;
+  fonts: number;
+  colours: number;
+  pending_templates: number;
+  featured_sounds: number;
+  active_filters: number;
+}
+
+interface IVflixPaged<T> {
+  data: T[];
+  total: number;
+  current_page: number;
+  per_page: number;
+  last_page: number;
+}
+
+interface IVflixStatusOption {
+  name: string;
+  value: string;
+}
+
+interface IVflixCreatorListItem {
+  creator: IVflixCreator;
+  videos: number;
+  views: number;
+  likes: number;
+  strikes: number;
+  status: "active" | "suspended" | "banned";
+  featured_count: number;
+  joined: string;
+}
+
+interface IVflixReportRow {
+  id: string;
+  video: { uuid: string; caption: string; thumbnail: string };
+  reported_user: IVflixCreator;
+  reporter_id: string;
+  type: VflixReportType;
+  reason: string;
+  status: VflixReportStatus;
+  action_details?: IReportActionDetails | null;
+  created_at: string;
+}
+
+// ---- Insights / Ops / Settings ----
+interface IVflixNamed {
+  name: string;
+  value: number;
+}
+
+interface IVflixTimePoint {
+  label: string;
+  views: number;
+  uploads: number;
+  engagement: number;
+}
+
+interface IVflixAnalytics {
+  kpis: {
+    views: number;
+    watch_through: number;
+    avg_watch_seconds: number;
+    engagement_rate: number;
+  };
+  trend: IVflixTimePoint[];
+  content_mix: { video: number; carousel: number };
+  top_videos: IVflixVideo[];
+  top_creators: IVflixTopCreator[];
+  top_sounds: IVflixTopSound[];
+  geography: IVflixNamed[];
+  retention: IVflixNamed[];
+}
+
+interface IVflixTrendItem {
+  rank: number;
+  video: IVflixVideo;
+  velocity: number;
+  boosted: boolean;
+  suppressed: boolean;
+}
+
+interface IVflixTrending {
+  trending: IVflixTrendItem[];
+  hot: IVflixTrendItem[];
+}
+
+interface IVflixSeries {
+  id: string;
+  title: string;
+  creator: IVflixCreator;
+  episodes: number;
+  views: number;
+  status: "ongoing" | "completed";
+  cover: string;
+  updated_at: string;
+}
+
+interface IVflixPipelineJob {
+  id: string;
+  video: { uuid: string; caption: string; thumbnail: string };
+  status: "queued" | "processing" | "complete" | "failed";
+  attempts: number;
+  duration_sec: number | null;
+  created_at: string;
+}
+
+interface IVflixPipeline {
+  kpis: { queued: number; processing: number; complete_24h: number; failed_24h: number };
+  throughput: IVflixNamed[];
+  jobs: IVflixPipelineJob[];
+}
+
+interface IVflixEarner {
+  creator: IVflixCreator;
+  gifts: number;
+  coins: number;
+}
+
+interface IVflixEarningVideo {
+  video: IVflixVideo;
+  gifts: number;
+  coins: number;
+}
+
+interface IVflixMonetization {
+  kpis: { total_gifts: number; coin_value: number; paid_out: number; top_earner: string };
+  gifts_trend: IVflixNamed[];
+  top_earning_videos: IVflixEarningVideo[];
+  top_earners: IVflixEarner[];
+}
+
+interface IVflixSettings {
+  uploads_enabled: boolean;
+  comments_default_on: boolean;
+  auto_moderation: boolean;
+  max_duration_sec: number;
+  auto_flag_reports: number;
+  weight_engagement: number;
+  weight_freshness: number;
+  weight_affinity: number;
+}

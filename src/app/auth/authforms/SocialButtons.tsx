@@ -1,10 +1,10 @@
 "use client";
 import Link from "next/link";
 import React from "react";
-import Google from "/public/images/svgs/google-icon.svg";
-import FB from "/public/images/svgs/facebook-icon.svg";
+import Google from "../../../../public/images/svgs/google-icon.svg";
+import FB from "../../../../public/images/svgs/facebook-icon.svg";
 import Image from "next/image";
-import { HR } from "flowbite-react";
+import { HR, HRText } from "flowbite-react";
 
 interface MyAppProps {
     title?:string;
@@ -29,7 +29,7 @@ const SocialButtons: React.FC<MyAppProps> = ({ title }) => {
         </Link>
       </div>
       {/* Divider */}
-      <HR.Text text={`${title}`} className="!border-t !border-ld !bg-transparent" />
+      <HRText text={`${title}`} className="!border-t !border-ld !bg-transparent" />
     </>
   );
 };

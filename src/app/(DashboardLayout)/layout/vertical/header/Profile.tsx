@@ -1,5 +1,6 @@
 import { Icon } from "@iconify/react";
-import { Button, Dropdown } from "flowbite-react";
+import { Dropdown } from "flowbite-react";
+import { Button } from "@/app/components/shared/Button";
 import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
@@ -55,7 +56,7 @@ const Profile = () => {
             >
               <div className="flex items-center w-full">
                 <div
-                  className={`h-11 w-11 flex-shrink-0 rounded-md flex justify-center items-center ${items.bgcolor}`}
+                  className={`h-11 w-11 shrink-0 rounded-md flex justify-center items-center ${items.bgcolor}`}
                 >
                   <Icon icon={items.icon} height={20} className={items.color} />
                 </div>
@@ -72,7 +73,8 @@ const Profile = () => {
           ))}
         </SimpleBar> */}
 
-        <div className='mx-6'>
+        <div className='mx-6 flex flex-col gap-2'>
+          <Link href='/dashboards/security' className='no-underline'>Security</Link>
           <Link href='/dashboards/update-password' className='no-underline'>Update Password</Link>
         </div>
 

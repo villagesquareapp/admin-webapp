@@ -1,0 +1,55 @@
+import { Suspense } from "react";
+import { getVflixCreators } from "@/app/api/vflix";
+import CreatorsView from "./CreatorsView";
+
+const Wrapper = async ({
+  page,
+  limit,
+  search,
+  at_risk,
+  sort,
+  status,
+}: {
+  page: number;
+  limit: number;
+  search?: string;
+  at_risk?: string;
+  sort?: string;
+  status?: string;
+}) => {
+  const res = await getVflixCreators(page, limit, {
+    search,
+    at_risk: at_risk === "true",
+    sort,
+    status,
+  });
+  return (
+    <CreatorsView
+      creators={res?.data?.data || []}
+      totalPages={res?.data?.last_page || 1}
+      currentPage={page}
+      pageSize={limit}
+    />
+  );
+};
+
+const Page = async (props: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) => {
+  const searchParams = await props.searchParams;
+  const page = Number(searchParams.page) || 1;
+  const limit = Number(searchParams.limit) || 15;
+  const search = searchParams.search as string | undefined;
+  const at_risk = searchParams.at_risk as string | undefined;
+  const sort = searchParams.sort as string | undefined;
+  const status = searchParams.status as string | undefined;
+
+  return (
+    <Suspense
+      key={`${page}-${limit}-${search}-${at_risk}-${sort}-${status}`}
+      fallback={<div className="h-[500px] w-full animate-pulse bg-gray-100 dark:bg-gray-800 rounded-3xl" />}
+    >
+      <Wrapper page={page} limit={limit} search={search} at_risk={at_risk} sort={sort} status={status} />
+    </Suspense>
+  );
+};
+
+export default Page;
