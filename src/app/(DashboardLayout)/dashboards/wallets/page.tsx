@@ -21,7 +21,7 @@ import PayoutQueue from "../../PayoutQueue";
 
 const skeleton = (h: string) => <div className={`${h} w-full animate-pulse bg-gray-100 dark:bg-gray-800 rounded-3xl`} />;
 
-const BalancesWrapper = async ({ token }: { token: string }) => {
+const BalancesWrapper = async () => {
   const [cowry, flutterwave] = await Promise.all([
     getCowryBalance(),
     getFlutterwaveBalance(),
@@ -30,7 +30,6 @@ const BalancesWrapper = async ({ token }: { token: string }) => {
     <TreasuryBalances
       cowry={cowry?.data || null}
       flutterwave={flutterwave?.data || null}
-      token={token}
     />
   );
 };
@@ -91,8 +90,8 @@ const TransfersWrapper = async ({ page, limit }: { page: number; limit: number }
 
 const Page = async (props: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) => {
   const searchParams = await props.searchParams;
-  const token = await getToken();
-  if (!token) throw new Error("No token found");
+  // The token stays on the server; client components call server actions.
+  if (!(await getToken())) throw new Error("No token found");
 
   const page = Number(searchParams.page) || 1;
   const limit = Number(searchParams.limit) || 10;
@@ -103,7 +102,7 @@ const Page = async (props: { searchParams: Promise<{ [key: string]: string | str
   return (
     <div className="flex flex-col gap-6">
       <Suspense fallback={skeleton("h-[220px]")}>
-        <BalancesWrapper token={token} />
+        <BalancesWrapper />
       </Suspense>
 
       <Suspense fallback={null}>

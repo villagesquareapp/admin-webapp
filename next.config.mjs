@@ -19,10 +19,13 @@ const securityHeaders = [
 const nextConfig = {
   reactStrictMode: false,
   poweredByHeader: false,
-  // Only API_URL is inlined: the browser-side gift upload still reads it.
-  // NEXTAUTH_SECRET and NEXTAUTH_URL are read at runtime on the server.
-  env: {
-    API_URL: process.env.API_URL,
+  // Nothing is inlined into the browser: API_URL, NEXTAUTH_SECRET and
+  // NEXTAUTH_URL are read at runtime on the server, and only the server calls
+  // the Admin API (VS-ADM-009/044).
+  experimental: {
+    // Gift icons go through a server action (up to 4 MB, checked again by the
+    // Admin API).
+    serverActions: { bodySizeLimit: "5mb" },
   },
   // Images load straight from their hosts; no /_next/image proxy.
   images: {

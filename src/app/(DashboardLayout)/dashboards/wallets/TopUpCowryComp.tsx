@@ -12,7 +12,6 @@ import Script from "next/script";
 interface TopUpModalProps {
   isOpen: boolean;
   onClose: () => void;
-  token?: string;
   onGiftAdded?: () => void;
   onSuccess?: () => void;
 }
@@ -127,7 +126,10 @@ const TopUpCowryComp: React.FC<TopUpModalProps> = ({
 
           try {
             const result = await verifyCowryTransaction(String(payment.transaction_id));
-            console.log("Transaction Verified:", result);
+            if (!result?.status) {
+              toast.error(result?.message || "Transaction verification failed");
+              return;
+            }
             toast.success("Cowry updated!");
             onSuccess?.();
             onClose();

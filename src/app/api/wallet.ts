@@ -85,9 +85,14 @@ export const getCowryTopupMetadata = async () => {
   return await apiGet<IGetCowryTopupMetadata>(`wallet/cowry/topup/metadata`, token)
 }
 
-export const verifyCowryTransaction = async (reference: string) => {
+// A POST: it credits the treasury (VS-ADM-017).
+export const verifyCowryTransaction = async (transactionId: string) => {
   const token = await getToken();
-  return await apiGet<any>(`wallet/cowry/topup/verify-transaction/${reference}`, token);
+  return await apiPost<{ credited: boolean; amount: number }>(
+    `wallet/cowry/topup/verify-transaction/${encodeURIComponent(transactionId)}`,
+    {},
+    token
+  );
 };
 
 export const transferCowry = async (
