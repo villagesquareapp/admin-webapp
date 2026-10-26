@@ -146,6 +146,20 @@ const Target = ({ target }: { target: IReportTarget | null }) => {
           Open the product page →
         </Link>
       )}
+      {target.kind === "africa-talent-challenge" && (
+        <>
+          {(target.occupation || target.votes_count != null) && (
+            <p className="text-sm text-darklink">
+              {target.occupation}
+              {target.occupation && target.votes_count != null ? " · " : ""}
+              {target.votes_count != null && `${Number(target.votes_count).toLocaleString()} votes`}
+            </p>
+          )}
+          <Link href={`/dashboards/africa-talent-challenge/applications/${target.uuid}`} className="text-sm text-primary font-semibold">
+            Open the ATC application →
+          </Link>
+        </>
+      )}
     </div>
   );
 };

@@ -30,6 +30,7 @@ const ITEM_PAGE: Record<string, string> = {
   marketsquare: "/dashboards/markets/products/",
   marketplace: "/dashboards/markets/products/",
   trybe: "/dashboards/trybes/",
+  "africa-talent-challenge": "/dashboards/africa-talent-challenge/applications/",
 };
 
 const ReportTable = ({

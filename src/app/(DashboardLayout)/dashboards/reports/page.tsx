@@ -74,6 +74,14 @@ const ReportStatsWrapper = async () => {
       shape: shape3,
       link: "",
     },
+    {
+      total: reportStats?.data?.total_atc_reports || 0,
+      icon: "mdi:trophy",
+      bgcolor: "primary",
+      title: "ATC Reports",
+      shape: shape3,
+      link: "",
+    },
   ];
 
   return <SmallCards overviewData={overviewData} />;
@@ -105,6 +113,7 @@ const ReportTableWrapper = async ({
         { value: "marketsquare", label: "MarketSquare" },
         { value: "vflix", label: "VFlix" },
         { value: "trybe", label: "Trybe" },
+        { value: "africa-talent-challenge", label: "ATC" },
       ],
       defaultValue: "",
     },

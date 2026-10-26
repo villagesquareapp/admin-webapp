@@ -87,6 +87,7 @@ interface IReportStats {
   total_comment_reports: number;
   total_vflix_reports?: number;
   total_trybe_reports?: number;
+  total_atc_reports?: number;
 }
 
 interface IPostStats {
@@ -1447,6 +1448,8 @@ interface IReportTarget {
   category?: string | null;
   parent_post_id?: string | null;
   trybe_id?: string | null;
+  occupation?: string | null;
+  votes_count?: number;
   created_at?: string;
   deleted_at?: string | null;
   author?: IReportPerson | null;

@@ -33,6 +33,7 @@ const NAV = [
   { href: "/dashboards/africa-talent-challenge/episodes", label: "Episodes", icon: "solar:clapperboard-play-linear" },
   { href: "/dashboards/africa-talent-challenge/leaderboard", label: "Leaderboard", icon: "solar:ranking-linear" },
   { href: "/dashboards/africa-talent-challenge/suggestions", label: "Suggestions", icon: "solar:magic-stick-3-linear" },
+  { href: "/dashboards/africa-talent-challenge/reports", label: "Reports", icon: "solar:flag-2-linear" },
 ];
 
 const ContestantAvatar = ({ src }: { src?: string }) => (
