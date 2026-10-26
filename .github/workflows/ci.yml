@@ -45,7 +45,9 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
       - run: npm ci
-      - name: TypeScript typecheck
-        run: npx tsc --noEmit
-      - name: Production build
+      # `next build` generates next-env.d.ts (the *.png/*.svg module decls) and
+      # type-checks the whole project — next.config sets no ignoreBuildErrors —
+      # so the build is the typecheck gate. A standalone `tsc --noEmit` would
+      # fail in CI because next-env.d.ts isn't generated until the build runs.
+      - name: Production build (type-checks the project)
         run: npm run build
