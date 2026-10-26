@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  push:
+    branches: ['feat-*']
+  pull_request:
+    branches: [main, dev]
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: admin-webapp-ci-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: '24'
+  NEXT_TELEMETRY_DISABLED: '1'
+
+jobs:
+  branch-policy:
+    name: Enforce feat-* branch policy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require same-repository feat-* source branch
+        env:
+          BRANCH: ${{ github.event_name == 'pull_request' && github.head_ref || github.ref_name }}
+          HEAD_REPO: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name || github.repository }}
+        run: |
+          set -euo pipefail
+          [[ "$BRANCH" == feat-* ]] || { echo "::error::Feature branches must start with feat-. Received: $BRANCH"; exit 1; }
+          [[ "$HEAD_REPO" == "$GITHUB_REPOSITORY" ]] || { echo "::error::PRs must originate in $GITHUB_REPOSITORY."; exit 1; }
+
+  checks:
+    name: Typecheck and build
+    needs: branch-policy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-node@v5
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - run: npm ci
+      - name: TypeScript typecheck
+        run: npx tsc --noEmit
+      - name: Production build
+        run: npm run build
