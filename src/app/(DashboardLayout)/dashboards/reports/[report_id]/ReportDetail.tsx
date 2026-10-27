@@ -38,7 +38,7 @@ const Screenshots = ({ report }: { report: IReportDetail }) => {
         )}
       </div>
       {links.data ? (
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div className="grid grid-cols-2 gap-3">
           {links.data.links.map((url, i) => (
             <PrivatePicture key={i} url={url} label={`Screenshot ${i + 1}`} />
           ))}
