@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Badge, Spinner } from "flowbite-react";
@@ -38,7 +38,7 @@ const Screenshots = ({ report }: { report: IReportDetail }) => {
         )}
       </div>
       {links.data ? (
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div className="grid grid-cols-2 gap-3">
           {links.data.links.map((url, i) => (
             <PrivatePicture key={i} url={url} label={`Screenshot ${i + 1}`} />
           ))}
@@ -50,8 +50,14 @@ const Screenshots = ({ report }: { report: IReportDetail }) => {
   );
 };
 
-const When = ({ value }: { value?: string | null }) =>
-  value ? <span>{new Date(value).toLocaleString()}</span> : null;
+// In the viewer's own locale and time zone, which the server doesn't know:
+// written once the page runs in the browser, so the server HTML matches.
+const noSubscribe = () => () => {};
+const When = ({ value }: { value?: string | null }) => {
+  const inBrowser = useSyncExternalStore(noSubscribe, () => true, () => false);
+  if (!value) return null;
+  return <time dateTime={value}>{inBrowser ? new Date(value).toLocaleString() : ""}</time>;
+};
 
 const Target = ({ target }: { target: IReportTarget | null }) => {
   if (!target) {

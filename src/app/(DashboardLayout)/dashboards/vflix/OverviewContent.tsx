@@ -1,6 +1,7 @@
 "use client";
 
-import type { CSSProperties } from "react";
+import { useContext, type CSSProperties } from "react";
+import { CustomizerContext } from "@/app/context/customizerContext";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import Image from "next/image";
@@ -28,7 +29,7 @@ const STATUS_COLORS: Record<string, string> = {
   banned: "#FF6692",
   disabled: "#8965E5",
   shadow_hidden: "#00ceb6",
-  archived: "#7b8893",
+  archived: "#868686",
 };
 
 const SectionTitle = ({
@@ -56,6 +57,7 @@ const SectionTitle = ({
 );
 
 const OverviewContent = ({ data }: { data: IVflixOverview | null }) => {
+  const { activeMode } = useContext(CustomizerContext);
   if (!data) {
     return (
       <CardBox>
@@ -97,12 +99,12 @@ const OverviewContent = ({ data }: { data: IVflixOverview | null }) => {
   // ----- charts -----
   const uploadsSeries = [{ name: "Uploads", data: data.uploads.map((u) => u.count) }];
   const uploadsOptions: any = {
-    chart: { type: "area", height: 260, fontFamily: "inherit", foreColor: "#8b98a9", toolbar: { show: false }, animations: { speed: 500 } },
+    chart: { type: "area", height: 260, fontFamily: "inherit", foreColor: "#979797", toolbar: { show: false }, animations: { speed: 500 } },
     colors: ["#00A1FF"],
     dataLabels: { enabled: false },
     stroke: { curve: "smooth", width: 2.5 },
     fill: { type: "gradient", gradient: { shadeIntensity: 1, opacityFrom: 0.35, opacityTo: 0, stops: [0, 95] } },
-    grid: { borderColor: "rgba(136,152,169,0.15)", strokeDashArray: 4, padding: { left: 8, right: 8 } },
+    grid: { borderColor: "rgba(151,151,151,0.15)", strokeDashArray: 4, padding: { left: 8, right: 8 } },
     xaxis: { categories: data.uploads.map((u) => u.label), tickAmount: 6, axisBorder: { show: false }, axisTicks: { show: false }, labels: { style: { fontSize: "11px" } } },
     yaxis: { labels: { formatter: (v: number) => (v >= 1000 ? (v / 1000).toFixed(1) + "k" : String(v)), style: { fontSize: "11px" } } },
     tooltip: { theme: "dark" },
@@ -113,8 +115,8 @@ const OverviewContent = ({ data }: { data: IVflixOverview | null }) => {
   const donutOptions: any = {
     chart: { type: "donut", fontFamily: "inherit" },
     labels: statusKeys.map((s) => formatStatusLabel(s)),
-    colors: statusKeys.map((s) => STATUS_COLORS[s] || "#7b8893"),
-    stroke: { width: 2, colors: ["#1a2537"] },
+    colors: statusKeys.map((s) => STATUS_COLORS[s] || "#868686"),
+    stroke: { width: 2, colors: [activeMode === "dark" ? "#252525" : "#ffffff"] },
     legend: { show: false },
     dataLabels: { enabled: false },
     plotOptions: {
@@ -123,7 +125,7 @@ const OverviewContent = ({ data }: { data: IVflixOverview | null }) => {
           size: "70%",
           labels: {
             show: true,
-            total: { show: true, label: "Total", fontSize: "12px", color: "#8b98a9", formatter: () => formatCount(k.total) },
+            total: { show: true, label: "Total", fontSize: "12px", color: "#979797", formatter: () => formatCount(k.total) },
             value: { fontSize: "20px", fontWeight: 800, color: "#adb0bb", formatter: (v: string) => formatCount(Number(v)) },
           },
         },
@@ -227,7 +229,7 @@ const OverviewContent = ({ data }: { data: IVflixOverview | null }) => {
                 <div className="flex flex-col gap-2 justify-center">
                   {statusKeys.map((s) => (
                     <div key={s} className="flex items-center gap-2 text-[12.5px]">
-                      <span className="size-2.5 rounded-sm shrink-0" style={{ background: STATUS_COLORS[s] || "#7b8893" }} />
+                      <span className="size-2.5 rounded-sm shrink-0" style={{ background: STATUS_COLORS[s] || "#868686" }} />
                       <span className="text-darklink">{formatStatusLabel(s)}</span>
                       <span className="ml-auto font-bold tabular-nums">{formatCount((data.by_status as any)[s])}</span>
                     </div>

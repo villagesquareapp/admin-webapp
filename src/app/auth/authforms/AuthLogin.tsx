@@ -2,14 +2,14 @@
 
 import { loginSchema, type LoginFormValues } from "@/lib/validations/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Checkbox, Label, TextInput } from "flowbite-react";
-import { Button } from "@/app/components/shared/Button";
+import { Icon } from "@iconify/react";
+import { Checkbox } from "flowbite-react";
 import { signIn } from "next-auth/react";
 import React from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { HiEye, HiEyeOff } from "react-icons/hi";
 import { QRCodeSVG } from "qrcode.react";
+import { AuthButton, AuthField, AuthHeading, OrDivider, SetupProgress, TextAction } from "./AuthUi";
 import { browserSupportsWebAuthn, startAuthentication, startRegistration } from "@simplewebauthn/browser";
 import {
   beginMfaSetup,
@@ -193,35 +193,41 @@ const AuthLogin = () => {
     setConfirmPassword("");
   };
 
-  const heading = (title: string, text?: string) => (
-    <div className="mb-4 text-center">
-      <p className="text-2xl font-bold">{title}</p>
-      {text && <p className="text-sm text-darklink mt-2">{text}</p>}
+  const copy = (text: string) => navigator.clipboard?.writeText(text).then(() => toast.success("Copied"));
+
+  const footerAction = (label: string, onClick: () => void) => (
+    <div className="mt-6 text-center">
+      <TextAction onClick={onClick}>{label}</TextAction>
     </div>
   );
 
   if (step === "change_password") {
+    const rules = [
+      { ok: newPassword.length >= 12, text: "At least 12 characters" },
+      { ok: !!confirmPassword && newPassword === confirmPassword, text: "Both passwords match" },
+    ];
     return (
-      <form key="change_password" method="post" className="mt-6" onSubmit={onNewPassword}>
-        {heading("Choose your password", "Replace the temporary password with your own. Use at least 12 characters.")}
-        <div className="mb-4">
-          <Label htmlFor="new-password" className="mb-2 block">New password</Label>
-          <TextInput id="new-password" type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} autoComplete="new-password" required />
-        </div>
-        <div className="mb-6">
-          <Label htmlFor="confirm-password" className="mb-2 block">Confirm new password</Label>
-          <TextInput id="confirm-password" type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} autoComplete="new-password" required />
-        </div>
-        <Button type="submit" color="primary" className="w-full" disabled={busy}>
-          {busy ? "Saving..." : "Set password"}
-        </Button>
-        <button type="button" onClick={restart} className="w-full text-sm text-darklink mt-4">Start again</button>
+      <form key="change_password" method="post" onSubmit={onNewPassword}>
+        <SetupProgress step={1} />
+        <AuthHeading title="Choose your password" text="Replace the temporary password with one only you know." />
+        <AuthField id="new-password" label="New password" icon="solar:lock-password-line-duotone" type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} autoComplete="new-password" required />
+        <AuthField id="confirm-password" label="Confirm new password" icon="solar:lock-password-line-duotone" type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} autoComplete="new-password" required />
+        <ul className="-mt-1 mb-7 space-y-1.5 text-sm">
+          {rules.map((r) => (
+            <li key={r.text} className={`flex items-center gap-2 ${r.ok ? "text-success" : "text-darklink"}`}>
+              <Icon icon={r.ok ? "solar:check-circle-bold" : "solar:record-circle-line-duotone"} width={17} />
+              {r.text}
+            </li>
+          ))}
+        </ul>
+        <AuthButton type="submit" busy={busy}>{busy ? "Saving…" : "Set password"}</AuthButton>
+        {footerAction("Start again", restart)}
       </form>
     );
   }
 
   if (step === "mfa_setup" && !setupKind) {
-    const option = (kind: "authenticator" | "passkey", title: string, text: string, disabled = false) => (
+    const option = (kind: "authenticator" | "passkey", icon: string, title: string, text: string, disabled = false) => (
       <button
         type="button"
         disabled={disabled}
@@ -229,46 +235,53 @@ const AuthLogin = () => {
           setMethodName(kind === "authenticator" ? "Authenticator app" : "Passkey");
           setSetupKind(kind);
         }}
-        className="w-full text-left rounded-md border border-ld p-4 mb-3 hover:border-primary disabled:opacity-50 disabled:hover:border-ld"
+        className="group flex w-full items-center gap-4 rounded-2xl border border-border p-4 text-left transition hover:border-primary disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:border-border dark:border-darkborder dark:hover:border-primary dark:disabled:hover:border-darkborder"
       >
-        <p className="font-semibold">{title}</p>
-        <p className="text-sm text-darklink mt-1">{text}</p>
+        <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-lightprimary text-primary">
+          <Icon icon={icon} width={22} />
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="block font-semibold text-ld">{title}</span>
+          <span className="mt-0.5 block text-sm leading-snug text-darklink">{text}</span>
+        </span>
+        <Icon icon="solar:alt-arrow-right-linear" width={18} className="shrink-0 text-darklink transition group-hover:translate-x-0.5 group-hover:text-primary group-disabled:translate-x-0 group-disabled:text-darklink" />
       </button>
     );
     return (
-      <div className="mt-6">
-        {heading("Add a second step", "You'll use it every time you sign in, after your password. You can add more later under Security.")}
-        {option("authenticator", "Authenticator app", "A 6-digit code from Google Authenticator, Microsoft Authenticator, 1Password or similar.")}
-        {option(
-          "passkey",
-          "Passkey or security key",
-          passkeysWork
-            ? "Face ID, Touch ID, Windows Hello or a YubiKey. Nothing to type."
-            : "This browser can't use passkeys. Use an authenticator app, or another browser.",
-          !passkeysWork,
-        )}
-        <button type="button" onClick={restart} className="w-full text-sm text-darklink mt-2">Start again</button>
+      <div key="mfa_choose">
+        <SetupProgress step={2} />
+        <AuthHeading title="Add a second step" text="You'll use it every time you sign in, after your password. You can add more later under Security." />
+        <div className="space-y-3">
+          {option("authenticator", "solar:smartphone-2-line-duotone", "Authenticator app", "A 6-digit code from Google Authenticator, Microsoft Authenticator, 1Password or similar.")}
+          {option(
+            "passkey",
+            "solar:key-minimalistic-square-line-duotone",
+            "Passkey or security key",
+            passkeysWork
+              ? "Face ID, Touch ID, Windows Hello or a YubiKey. Nothing to type."
+              : "This browser can't use passkeys. Use an authenticator app, or another browser.",
+            !passkeysWork,
+          )}
+        </div>
+        {footerAction("Start again", restart)}
       </div>
     );
   }
 
   const nameField = (id: string, hint: string) => (
-    <div className="mb-4">
-      <Label htmlFor={id} className="mb-2 block">Name it</Label>
-      <TextInput id={id} value={methodName} maxLength={60} onChange={(e) => setMethodName(e.target.value)} />
-      <p className="text-xs text-darklink mt-1">{hint}</p>
-    </div>
+    <AuthField id={id} label="Name it" icon="solar:tag-horizontal-line-duotone" value={methodName} maxLength={60} onChange={(e) => setMethodName(e.target.value)} hint={hint} />
   );
 
   if (step === "mfa_setup" && setupKind === "passkey") {
     return (
-      <form key="passkey_setup" method="post" className="mt-6" onSubmit={onCreatePasskey}>
-        {heading("Set up a passkey", "Your browser will ask you to use Face ID, Touch ID, Windows Hello, your phone or a security key.")}
+      <form key="passkey_setup" method="post" onSubmit={onCreatePasskey}>
+        <SetupProgress step={2} />
+        <AuthHeading title="Set up a passkey" text="Your browser will ask you to use Face ID, Touch ID, Windows Hello, your phone or a security key." />
         {nameField("passkey-name", "So you can tell your passkeys apart, e.g. \"MacBook Touch ID\" or \"YubiKey\".")}
-        <Button type="submit" color="primary" className="w-full" disabled={busy}>
-          {busy ? "Waiting for your passkey..." : "Create passkey"}
-        </Button>
-        <button type="button" onClick={() => setSetupKind(null)} className="w-full text-sm text-darklink mt-4">Choose another way</button>
+        <AuthButton type="submit" busy={busy} icon="solar:key-minimalistic-square-line-duotone" className="mt-2">
+          {busy ? "Waiting for your passkey…" : "Create passkey"}
+        </AuthButton>
+        {footerAction("Choose another way", () => setSetupKind(null))}
       </form>
     );
   }
@@ -276,48 +289,59 @@ const AuthLogin = () => {
   if (step === "mfa_setup") {
     const grouped = setup?.secret.match(/.{1,4}/g)?.join(" ");
     return (
-      <form key="mfa_setup" method="post" className="mt-6" onSubmit={onConfirmSetup}>
-        {heading("Set up your authenticator app", "Scan the QR code with an authenticator app (Google Authenticator, Microsoft Authenticator, 1Password…).")}
-        <div className="flex justify-center mb-3">
-          <div className="rounded-md bg-white p-3">
+      <form key="mfa_setup" method="post" onSubmit={onConfirmSetup}>
+        <SetupProgress step={2} />
+        <AuthHeading title="Set up your authenticator app" text="Scan the QR code with Google Authenticator, Microsoft Authenticator, 1Password or similar." />
+        <div className="mb-6 flex flex-col items-center gap-5 rounded-2xl border border-border bg-lightgray p-5 dark:border-darkborder dark:bg-darkgray sm:flex-row sm:items-start">
+          <div className="shrink-0 rounded-xl bg-white p-2.5 ring-1 ring-black/5">
             {setup ? (
-              <QRCodeSVG value={setup.otpauthUrl} size={176} level="M" title="Authenticator app QR code" />
+              <QRCodeSVG value={setup.otpauthUrl} size={140} level="M" title="Authenticator app QR code" />
             ) : (
-              <div className="h-[176px] w-[176px] grid place-items-center text-sm text-gray-500">Loading…</div>
+              <div className="grid size-[140px] place-items-center text-sm text-gray-500">Loading…</div>
             )}
           </div>
-        </div>
-        <p className="text-sm text-darklink text-center mb-2">
-          Can&apos;t scan it? Add an account with this setup key
-          {setup && (
-            <>
-              , or <a href={setup.otpauthUrl} className="text-primary font-medium">open it in the app</a> on this phone
-            </>
-          )}
-          :
-        </p>
-        <div className="mb-4 rounded-md border border-ld bg-lightgray dark:bg-dark p-3 text-center font-mono text-base tracking-wider select-all break-all">
-          {grouped || "Loading…"}
+          <div className="min-w-0 flex-1 text-sm">
+            <p className="font-semibold text-ld">Can&apos;t scan it?</p>
+            <p className="mt-1 leading-relaxed text-darklink">
+              Add an account with this setup key
+              {setup && (
+                <>
+                  , or <a href={setup.otpauthUrl} className="font-medium text-primary hover:underline">open it in the app</a> on this phone
+                </>
+              )}
+              .
+            </p>
+            <div className="mt-3 flex items-start gap-2 rounded-lg border border-border bg-white px-3 py-2 dark:border-darkborder dark:bg-dark">
+              <span className="min-w-0 flex-1 select-all break-all font-mono text-[13px] leading-relaxed tracking-wide text-ld">{grouped || "Loading…"}</span>
+              {setup && (
+                <button type="button" aria-label="Copy the setup key" onClick={() => copy(setup.secret)} className="mt-0.5 text-darklink transition hover:text-primary">
+                  <Icon icon="solar:copy-line-duotone" width={17} />
+                </button>
+              )}
+            </div>
+          </div>
         </div>
         {nameField("setup-name", "So you can tell your apps apart, e.g. \"Work phone\".")}
-        <div className="mb-6">
-          <Label htmlFor="setup-code" className="mb-2 block">Then enter the 6-digit code it shows</Label>
-          <TextInput id="setup-code" inputMode="numeric" autoComplete="one-time-code" maxLength={6} value={code} onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))} required />
-        </div>
-        <Button type="submit" color="primary" className="w-full" disabled={busy || !setup || code.length !== 6}>
-          {busy ? "Checking..." : "Confirm"}
-        </Button>
-        <button
-          type="button"
-          onClick={() => {
-            setSetupKind(null);
-            setSetup(null);
-            setCode("");
-          }}
-          className="w-full text-sm text-darklink mt-4"
-        >
-          Choose another way
-        </button>
+        <AuthField
+          id="setup-code"
+          label="Then enter the 6-digit code it shows"
+          inputMode="numeric"
+          autoComplete="one-time-code"
+          maxLength={6}
+          value={code}
+          onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
+          required
+          placeholder="000000"
+          className="text-center font-mono text-xl tracking-[0.4em]"
+        />
+        <AuthButton type="submit" busy={busy} disabled={!setup || code.length !== 6} className="mt-2">
+          {busy ? "Checking…" : "Confirm"}
+        </AuthButton>
+        {footerAction("Choose another way", () => {
+          setSetupKind(null);
+          setSetup(null);
+          setCode("");
+        })}
       </form>
     );
   }
@@ -332,24 +356,28 @@ const AuthLogin = () => {
       URL.revokeObjectURL(a.href);
     };
     return (
-      <div className="mt-6">
-        {heading("Save your backup codes", "If you lose your phone, each of these codes signs you in once. They won't be shown again.")}
-        <div className="grid grid-cols-2 gap-2 mb-4 font-mono text-sm">
-          {backupCodes.map((c) => (
-            <div key={c} className="rounded border border-ld px-3 py-2 text-center">{c}</div>
+      <div key="backup_codes">
+        <SetupProgress step={3} />
+        <AuthHeading title="Save your backup codes" text="If you lose your phone, each of these codes signs you in once. They won't be shown again." />
+        <ol className="mb-4 grid grid-cols-2 gap-x-6 gap-y-2.5 rounded-2xl border border-border bg-lightgray p-5 font-mono text-[15px] text-ld dark:border-darkborder dark:bg-darkgray">
+          {backupCodes.map((c, i) => (
+            <li key={c} className="flex items-center gap-3">
+              <span className="w-5 text-right font-sans text-xs text-darklink">{i + 1}</span>
+              {c}
+            </li>
           ))}
+        </ol>
+        <div className="mb-6 grid grid-cols-2 gap-3">
+          <AuthButton type="button" variant="secondary" icon="solar:copy-line-duotone" onClick={() => copy(backupCodes.join("\n"))}>Copy</AuthButton>
+          <AuthButton type="button" variant="secondary" icon="solar:download-minimalistic-line-duotone" onClick={download}>Download</AuthButton>
         </div>
-        <div className="flex gap-2 mb-4">
-          <Button color="light" className="flex-1" onClick={() => navigator.clipboard?.writeText(backupCodes.join("\n")).then(() => toast.success("Copied"))}>Copy</Button>
-          <Button color="light" className="flex-1" onClick={download}>Download</Button>
-        </div>
-        <div className="flex items-center gap-2 mb-6">
+        <label htmlFor="saved-codes" className="mb-6 flex cursor-pointer items-center gap-3 rounded-xl border border-border p-4 text-sm text-ld dark:border-darkborder">
           <Checkbox id="saved-codes" checked={savedCodes} onChange={(e) => setSavedCodes(e.target.checked)} />
-          <Label htmlFor="saved-codes" className="font-normal">I&apos;ve saved these codes somewhere safe</Label>
-        </div>
-        <Button color="primary" className="w-full" disabled={busy || !savedCodes} onClick={() => run(async () => void (await finish(challenge)))}>
-          {busy ? "Signing in..." : "Continue"}
-        </Button>
+          I&apos;ve saved these codes somewhere safe
+        </label>
+        <AuthButton type="button" busy={busy} disabled={!savedCodes} onClick={() => run(async () => void (await finish(challenge)))}>
+          {busy ? "Signing in…" : "Continue"}
+        </AuthButton>
       </div>
     );
   }
@@ -364,99 +392,99 @@ const AuthLogin = () => {
       .filter(Boolean)
       .join(" or ");
     return (
-      <form key="mfa" method="post" className="mt-6" onSubmit={onCode}>
-        {heading("Confirm it's you", usePasskey ? "Use your passkey, or enter a code." : `Enter the 6-digit code from ${codeHint || "your authenticator app"}.`)}
+      <form key="mfa" method="post" onSubmit={onCode}>
+        <AuthHeading
+          eyebrow={
+            <span className="mb-5 grid size-12 place-items-center rounded-2xl bg-lightprimary text-primary">
+              <Icon icon="solar:shield-keyhole-line-duotone" width={26} />
+            </span>
+          }
+          title="Confirm it's you"
+          text={usePasskey ? "Use your passkey, or enter a code." : `Enter the 6-digit code from ${codeHint || "your authenticator app"}.`}
+        />
         {usePasskey && (
           <>
-            <Button type="button" color="primary" className="w-full" disabled={busy} onClick={onUsePasskey}>
-              {busy ? "Waiting for your passkey..." : "Use passkey"}
-            </Button>
-            <div className="flex items-center gap-3 my-5 text-xs text-darklink">
-              <span className="h-px flex-1 bg-border dark:bg-darkborder" />
-              or enter a code
-              <span className="h-px flex-1 bg-border dark:bg-darkborder" />
-            </div>
+            <AuthButton type="button" busy={busy} icon="solar:key-minimalistic-square-line-duotone" onClick={onUsePasskey}>
+              {busy ? "Waiting for your passkey…" : "Use passkey"}
+            </AuthButton>
+            <OrDivider>or enter a code</OrDivider>
           </>
         )}
-        <div className="mb-2">
-          <Label htmlFor="mfa-code" className="mb-2 block">Code</Label>
-          <TextInput id="mfa-code" autoComplete="one-time-code" maxLength={9} value={code} onChange={(e) => setCode(e.target.value)} autoFocus={!usePasskey} />
-        </div>
+        <AuthField
+          id="mfa-code"
+          label="Code"
+          autoComplete="one-time-code"
+          maxLength={9}
+          value={code}
+          onChange={(e) => setCode(e.target.value)}
+          autoFocus={!usePasskey}
+          placeholder="000000"
+          className="text-center font-mono text-xl tracking-[0.3em]"
+          hint="Lost your phone? Enter one of your backup codes."
+        />
         {emails.length > 0 && (
-          <div className="mb-2 text-sm">
-            {emailSentTo ? (
-              <p className="text-darklink">We sent a code to {emailSentTo}. It works for 10 minutes.</p>
-            ) : null}
-            {emails.map((m) => (
-              <button key={m.uuid} type="button" disabled={busy} onClick={() => onEmailCode(m.uuid)} className="text-primary font-medium me-3">
-                {emailSentTo ? "Send another code" : `Email me a code${emails.length > 1 ? ` (${m.sent_to})` : ""}`}
-              </button>
-            ))}
+          <div className="-mt-2 mb-6 text-sm">
+            {emailSentTo && <p className="mb-1 text-darklink">We sent a code to {emailSentTo}. It works for 10 minutes.</p>}
+            <div className="flex flex-wrap gap-x-4 gap-y-1">
+              {emails.map((m) => (
+                <button key={m.uuid} type="button" disabled={busy} onClick={() => onEmailCode(m.uuid)} className="inline-flex items-center gap-1.5 font-medium text-primary hover:underline disabled:opacity-50">
+                  <Icon icon="solar:letter-line-duotone" width={17} />
+                  {emailSentTo ? "Send another code" : `Email me a code${emails.length > 1 ? ` (${m.sent_to})` : ""}`}
+                </button>
+              ))}
+            </div>
           </div>
         )}
-        <p className="text-xs text-darklink mb-6">Lost your phone? Enter one of your backup codes.</p>
-        <Button type="submit" color={usePasskey ? "light" : "primary"} className="w-full" disabled={busy || code.trim().length < 6}>
-          {busy && !usePasskey ? "Signing in..." : "Sign in with code"}
-        </Button>
-        <button type="button" onClick={restart} className="w-full text-sm text-darklink mt-4">Use a different account</button>
+        <AuthButton type="submit" variant={usePasskey ? "secondary" : "primary"} busy={busy && !usePasskey} disabled={busy || code.trim().length < 6} className="mt-2">
+          {busy && !usePasskey ? "Signing in…" : "Sign in with code"}
+        </AuthButton>
+        {footerAction("Use a different account", restart)}
       </form>
     );
   }
 
+  const errors = form.formState.errors;
   // POST: a submit before the page has loaded must never put the password
   // in the URL.
   return (
-    <form
-      key="credentials"
-      method="post"
-      className="mt-6"
-      onSubmit={form.handleSubmit(onCredentials)}
-    >
-      {heading("Admin Dashboard")}
-      <div className="mb-4">
-        <div className="mb-2 block">
-          <Label htmlFor="email">Email</Label>
-        </div>
-        <TextInput
-          id="email"
-          type="text"
-          sizing="md"
-          autoComplete="username"
-          {...form.register("email")}
-          className={`form-control ${form.formState.errors.email ? "border-red-500" : ""}`}
-        />
-        {form.formState.errors.email && (
-          <p className="mt-1 text-sm text-red-500">{form.formState.errors.email.message}</p>
-        )}
-      </div>
-      <div className="mb-4">
-        <div className="mb-2 block">
-          <Label htmlFor="password">Password</Label>
-        </div>
-        <div className="relative">
-          <TextInput
-            id="password"
-            type={showPassword ? "text" : "password"}
-            sizing="md"
-            autoComplete="current-password"
-            {...form.register("password")}
-            className={`form-control ${form.formState.errors.password ? "border-red-500" : ""}`}
-          />
+    <form key="credentials" method="post" noValidate onSubmit={form.handleSubmit(onCredentials)}>
+      <AuthHeading title="Sign in" text="Welcome back. Sign in to the VillageSquare staff console." />
+      <AuthField
+        id="email"
+        label="Email"
+        icon="solar:letter-line-duotone"
+        type="email"
+        autoComplete="username"
+        placeholder="Your work email"
+        error={errors.email?.message}
+        {...form.register("email")}
+      />
+      <AuthField
+        id="password"
+        label="Password"
+        icon="solar:lock-password-line-duotone"
+        type={showPassword ? "text" : "password"}
+        autoComplete="current-password"
+        placeholder="Your password"
+        error={errors.password?.message}
+        trailing={
           <button
             type="button"
-            className="absolute inset-y-0 right-0 flex items-center pr-3"
+            aria-label={showPassword ? "Hide password" : "Show password"}
             onClick={() => setShowPassword(!showPassword)}
+            className="grid size-9 place-items-center rounded-lg text-darklink transition hover:text-ld"
           >
-            {showPassword ? <HiEyeOff className="h-5 w-5 text-gray-500" /> : <HiEye className="h-5 w-5 text-gray-500" />}
+            <Icon icon={showPassword ? "solar:eye-closed-line-duotone" : "solar:eye-line-duotone"} width={20} />
           </button>
-        </div>
-        {form.formState.errors.password && (
-          <p className="mt-1 text-sm text-red-500">{form.formState.errors.password.message}</p>
-        )}
-      </div>
-      <Button type="submit" color="primary" className="w-full" disabled={busy}>
-        {busy ? "Signing in..." : "Sign in"}
-      </Button>
+        }
+        {...form.register("password")}
+      />
+      <AuthButton type="submit" busy={busy} className="mt-2">
+        {busy ? "Signing in…" : "Sign in"}
+      </AuthButton>
+      <p className="mt-8 text-center text-sm leading-relaxed text-darklink">
+        Can&apos;t sign in? Ask a super admin to reset your password or second step.
+      </p>
     </form>
   );
 };
