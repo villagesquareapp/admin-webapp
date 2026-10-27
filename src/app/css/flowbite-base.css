@@ -99,7 +99,7 @@
 
 .dark [role="tooltip"] > [data-popper-arrow]:before {
     border-style: solid;
-    border-color: #4b5563;
+    border-color: #525252;
   }
 
 [role="tooltip"] > [data-popper-arrow]:after {
@@ -109,7 +109,7 @@
 
 .dark [role="tooltip"] > [data-popper-arrow]:after {
     border-style: solid;
-    border-color: #4b5563;
+    border-color: #525252;
   }
 
 [data-popover][role="tooltip"][data-popper-placement^='top'] > [data-popper-arrow]:before {
@@ -362,7 +362,7 @@ input[type=file]::file-selector-button {
     color: white;
     background: var(--gray-600);
     &:hover {
-      background: #6B7280;
+      background: #737373;
     }
   }
 

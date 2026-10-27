@@ -16,7 +16,7 @@ export default function StatsCard({ label, href, icon, background }: StatsCardPr
     <Link
       href={href}
       className={`rounded-2xl p-6 flex flex-col justify-center shadow-md transition-all hover:scale-[1.02] ${
-        background || "bg-[#1b2233]"
+        background || "bg-[#1b2233] dark:bg-darkgray"
       }`}
     >
       <div className="w-12 h-12 rounded-full flex items-center justify-center bg-white/10">

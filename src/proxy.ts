@@ -24,11 +24,12 @@ export const config = {
         /*
          * Match all request paths except for the ones starting with:
          * - auth/auth2/login (login page)
+         * - auth/error (sign-in errors; it's shown signed out)
          * - api (API routes)
          * - _next/static (static files)
          * - _next/image (image optimization files)
          * - favicon.ico (favicon file)
          */
-        "/((?!auth/auth2/login|api|_next/static|_next/image|images|vs_images|favicon.ico).*)",
+        "/((?!auth/auth2/login|auth/error|api|_next/static|_next/image|images|vs_images|favicon.ico).*)",
     ],
 };

@@ -1,14 +1,17 @@
 "use client";
 
+import { useContext } from "react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import CardBox from "@/app/components/shared/CardBox";
 import { formatCount } from "../vflixStatus";
 import { KpiTile, PanelTitle, BarRow } from "../VflixUi";
+import { CustomizerContext } from "@/app/context/customizerContext";
 
 const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
 const AnalyticsContent = ({ data }: { data: IVflixAnalytics | null }) => {
+  const { activeMode } = useContext(CustomizerContext);
   if (!data) {
     return (
       <CardBox>
@@ -19,23 +22,23 @@ const AnalyticsContent = ({ data }: { data: IVflixAnalytics | null }) => {
   const k = data.kpis;
 
   const trendOptions: any = {
-    chart: { type: "area", height: 280, fontFamily: "inherit", foreColor: "#8b98a9", toolbar: { show: false } },
+    chart: { type: "area", height: 280, fontFamily: "inherit", foreColor: "#979797", toolbar: { show: false } },
     colors: ["#00A1FF"],
     dataLabels: { enabled: false },
     stroke: { curve: "smooth", width: 2.5 },
     fill: { type: "gradient", gradient: { shadeIntensity: 1, opacityFrom: 0.35, opacityTo: 0, stops: [0, 95] } },
-    grid: { borderColor: "rgba(136,152,169,0.15)", strokeDashArray: 4 },
+    grid: { borderColor: "rgba(151,151,151,0.15)", strokeDashArray: 4 },
     xaxis: { categories: data.trend.map((t) => t.label), tickAmount: 6, axisBorder: { show: false }, axisTicks: { show: false }, labels: { style: { fontSize: "11px" } } },
     yaxis: { labels: { formatter: (v: number) => (v >= 1e6 ? (v / 1e6).toFixed(1) + "M" : (v / 1000).toFixed(0) + "k"), style: { fontSize: "11px" } } },
     tooltip: { theme: "dark", y: { formatter: (v: number) => v.toLocaleString() } },
   };
 
   const engOptions: any = {
-    chart: { type: "line", height: 200, fontFamily: "inherit", foreColor: "#8b98a9", toolbar: { show: false } },
+    chart: { type: "line", height: 200, fontFamily: "inherit", foreColor: "#979797", toolbar: { show: false } },
     colors: ["#8965E5"],
     dataLabels: { enabled: false },
     stroke: { curve: "smooth", width: 2.5 },
-    grid: { borderColor: "rgba(136,152,169,0.15)", strokeDashArray: 4 },
+    grid: { borderColor: "rgba(151,151,151,0.15)", strokeDashArray: 4 },
     xaxis: { categories: data.trend.map((t) => t.label), tickAmount: 5, axisBorder: { show: false }, axisTicks: { show: false }, labels: { style: { fontSize: "10px" } } },
     yaxis: { labels: { formatter: (v: number) => v.toFixed(1) + "%", style: { fontSize: "10px" } } },
     tooltip: { theme: "dark", y: { formatter: (v: number) => v.toFixed(1) + "%" } },
@@ -45,10 +48,10 @@ const AnalyticsContent = ({ data }: { data: IVflixAnalytics | null }) => {
     chart: { type: "donut", fontFamily: "inherit" },
     labels: ["Video", "Carousel"],
     colors: ["#00A1FF", "#8965E5"],
-    stroke: { width: 2, colors: ["#1a2537"] },
+    stroke: { width: 2, colors: [activeMode === "dark" ? "#252525" : "#ffffff"] },
     legend: { show: false },
     dataLabels: { enabled: false },
-    plotOptions: { pie: { donut: { size: "70%", labels: { show: true, total: { show: true, label: "Video", fontSize: "12px", color: "#8b98a9", formatter: () => data.content_mix.video + "%" }, value: { fontSize: "20px", fontWeight: 800, color: "#adb0bb", formatter: (v: string) => v + "%" } } } } },
+    plotOptions: { pie: { donut: { size: "70%", labels: { show: true, total: { show: true, label: "Video", fontSize: "12px", color: "#979797", formatter: () => data.content_mix.video + "%" }, value: { fontSize: "20px", fontWeight: 800, color: "#adb0bb", formatter: (v: string) => v + "%" } } } } },
     tooltip: { theme: "dark", y: { formatter: (v: number) => v + "%" } },
   };
 

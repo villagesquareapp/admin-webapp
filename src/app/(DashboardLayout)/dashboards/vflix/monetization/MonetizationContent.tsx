@@ -13,12 +13,12 @@ const MonetizationContent = ({ data }: { data: IVflixMonetization | null }) => {
   const k = data.kpis;
 
   const trendOptions: any = {
-    chart: { type: "area", height: 260, fontFamily: "inherit", foreColor: "#8b98a9", toolbar: { show: false } },
+    chart: { type: "area", height: 260, fontFamily: "inherit", foreColor: "#979797", toolbar: { show: false } },
     colors: ["#FFB900"],
     dataLabels: { enabled: false },
     stroke: { curve: "smooth", width: 2.5 },
     fill: { type: "gradient", gradient: { shadeIntensity: 1, opacityFrom: 0.35, opacityTo: 0, stops: [0, 95] } },
-    grid: { borderColor: "rgba(136,152,169,0.15)", strokeDashArray: 4 },
+    grid: { borderColor: "rgba(151,151,151,0.15)", strokeDashArray: 4 },
     xaxis: { categories: data.gifts_trend.map((t) => t.name), tickAmount: 6, axisBorder: { show: false }, axisTicks: { show: false }, labels: { style: { fontSize: "11px" } } },
     yaxis: { labels: { formatter: (v: number) => (v >= 1000 ? (v / 1000).toFixed(1) + "k" : String(v)), style: { fontSize: "11px" } } },
     tooltip: { theme: "dark", y: { formatter: (v: number) => `${v.toLocaleString()} gifts` } },
