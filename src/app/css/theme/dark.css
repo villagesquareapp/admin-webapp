@@ -2,8 +2,17 @@
     border-top: 1px dashed var(--color-darkborder);
 }
 
+/* Dark mode is neutral grey: each value has the lightness of the navy it
+   replaced, with no blue. Light mode keeps the values in default-colors.css.
+   Flowbite's gray scale is in globals.css. */
 .dark:root{
-    --color-surface-ld: #1A2537;
+    --color-surface-ld: #252525;
+    --color-dark: #1c1c1c;
+    --color-darkgray: #252525;
+    --color-darkmuted: #383838;
+    --color-darkborder: #3f3f3f;
+    --color-darklink: #868686;
+    --shadow-dark-md: rgba(156, 156, 156, 0.3) 0px 0px 2px 0px, rgba(156, 156, 156, 0.02) 0px 12px 24px -4px;
 }
 
 .dark .timeline-tabs .timeline .timeline-icon:after {

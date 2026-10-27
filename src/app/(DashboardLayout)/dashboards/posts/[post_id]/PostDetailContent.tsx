@@ -119,7 +119,7 @@ const PostDetailContent = ({ detail, postId }: { detail: Detail | null; postId: 
       <div className="grid grid-cols-12 gap-5 items-start">
         {/* media stage */}
         <div className="col-span-12 lg:col-span-5">
-          <div className="rounded-2xl p-4 sm:p-5 bg-gradient-to-b from-[#141f33] to-[#0b1320] shadow-lg">
+          <div className="rounded-2xl p-4 sm:p-5 bg-gradient-to-b from-[#141f33] to-[#0b1320] dark:from-[#1f1f1f] dark:to-[#131313] shadow-lg">
             <div className="relative w-full max-w-[420px] mx-auto">
               {media.length > 1 && (
                 <>

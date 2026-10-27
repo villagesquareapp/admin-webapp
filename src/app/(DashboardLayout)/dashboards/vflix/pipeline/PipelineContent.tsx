@@ -31,11 +31,11 @@ const PipelineContent = ({ data }: { data: IVflixPipeline | null }) => {
     });
 
   const barOptions: any = {
-    chart: { type: "bar", height: 260, fontFamily: "inherit", foreColor: "#8b98a9", toolbar: { show: false } },
+    chart: { type: "bar", height: 260, fontFamily: "inherit", foreColor: "#979797", toolbar: { show: false } },
     colors: ["#00A1FF"],
     plotOptions: { bar: { borderRadius: 4, columnWidth: "45%" } },
     dataLabels: { enabled: false },
-    grid: { borderColor: "rgba(136,152,169,0.15)", strokeDashArray: 4 },
+    grid: { borderColor: "rgba(151,151,151,0.15)", strokeDashArray: 4 },
     xaxis: { categories: data.throughput.map((t) => t.name), axisBorder: { show: false }, axisTicks: { show: false }, labels: { style: { fontSize: "11px" } } },
     yaxis: { labels: { style: { fontSize: "11px" } } },
     tooltip: { theme: "dark", y: { formatter: (v: number) => `${v} jobs` } },

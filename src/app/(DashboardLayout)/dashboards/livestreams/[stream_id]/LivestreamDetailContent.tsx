@@ -111,7 +111,7 @@ const LivestreamDetailContent = ({ detail, streamId }: { detail: Detail | null; 
       <div className="grid grid-cols-12 gap-5 items-start">
         {/* left — cover + stats */}
         <div className="col-span-12 lg:col-span-6">
-          <div className="rounded-2xl p-4 sm:p-6 bg-gradient-to-b from-[#141f33] to-[#0b1320] shadow-lg">
+          <div className="rounded-2xl p-4 sm:p-6 bg-gradient-to-b from-[#141f33] to-[#0b1320] dark:from-[#1f1f1f] dark:to-[#131313] shadow-lg">
             <div className={`relative w-full mx-auto rounded-xl overflow-hidden bg-black/40 ${detail.orientation === "landscape" ? "aspect-video max-w-full" : "aspect-[9/16] max-w-[440px]"}`}>
               {detail.cover && <Image src={detail.cover} alt="" fill sizes="(min-width:1024px) 45vw, 90vw" className="object-cover" />}
               <span className="absolute top-3 left-3 flex items-center gap-1.5 text-[11px] font-semibold text-white bg-black/50 px-2 py-1 rounded-full">
