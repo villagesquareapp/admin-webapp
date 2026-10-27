@@ -1465,6 +1465,60 @@ interface IReportDetail extends IReport {
 
 interface IReportResponse extends IPaginatedResponse<IReport> {}
 
+interface IFeedbackStats {
+  total_sessions: number;
+  total_feedback: number;
+  total_feature_requests: number;
+  total_untyped: number;
+  total_active: number;
+  total_completed: number;
+  total_abandoned: number;
+  total_reviewed: number;
+  total_converted: number;
+}
+
+interface IFeedbackReview {
+  session_id: string;
+  reviewed_at: string | null;
+  reviewed_by: string | null;
+  converted_ticket_id: string | null;
+}
+
+interface IFeedbackPerson {
+  uuid: string;
+  name?: string | null;
+  username?: string | null;
+  profile_picture?: string | null;
+  status?: string;
+}
+
+interface IFeedbackSession {
+  uuid: string;
+  user_id: string;
+  type: "feedback" | "feature_request" | null;
+  status: "active" | "completed" | "abandoned";
+  summary: string | null;
+  message_count?: number;
+  created_at: string;
+  updated_at?: string;
+  completed_at?: string | null;
+  user?: IFeedbackPerson | null;
+  review?: IFeedbackReview | null;
+}
+
+interface IFeedbackMessage {
+  uuid: string;
+  role: "user" | "assistant";
+  content: string;
+  created_at: string;
+}
+
+interface IFeedbackSessionDetail extends IFeedbackSession {
+  messages: IFeedbackMessage[];
+}
+
+interface IFeedbackResponse extends IPaginatedResponse<IFeedbackSession> {}
+
 interface IPayoutUser {
   uuid: string;
   name: string;

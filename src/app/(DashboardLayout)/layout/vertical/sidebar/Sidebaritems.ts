@@ -163,6 +163,13 @@ const SidebarContent: MenuItem[] = [
             url: "/dashboards/reports",
           },
           {
+            name: "Feedback",
+            permission: "tickets.view",
+            icon: "solar:chat-square-like-line-duotone",
+            id: uniqueId(),
+            url: "/dashboards/feedback",
+          },
+          {
             name: "Monetization",
             permission: "finance.view",
             icon: "solar:dollar-minimalistic-line-duotone",
