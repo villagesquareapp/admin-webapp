@@ -76,13 +76,29 @@ const MeetingDetail = ({ meeting: m }: { meeting: IMeetingDetail }) => {
         </CardBox>
         <CardBox>
           <p className="text-sm font-semibold mb-2">AI PM usage</p>
-          <KV name="Calls to OpenAI" value={m.assistant_usage.calls} />
+          <KV name="Led by the PM" value={m.pm_lead ? `Yes, ${m.minutes_per_person} min per person` : "No"} />
+          <KV name="Calls" value={m.assistant_usage.calls} />
           <KV name="Failed" value={m.assistant_usage.failed} />
           <KV name="Spoken" value={`${m.assistant_usage.tts_chars.toLocaleString()} characters`} />
           <KV name="Listened" value={`${Math.round(m.assistant_usage.stt_seconds)} s`} />
           <KV name="Estimated cost" value={usd(m.assistant_usage.est_cost_usd)} />
+          {m.pm_lead && <KV name="Of which Claude" value={usd(m.assistant_usage.claude_cost_usd)} />}
         </CardBox>
       </div>
+
+      {m.pm_lead && (
+        <CardBox>
+          <p className="text-sm font-semibold mb-2">PM&apos;s notes</p>
+          {m.agenda && <p className="text-xs text-darklink mb-2">Topics: {m.agenda.split("\n").join(" · ")}</p>}
+          {m.pm_notes ? (
+            <p className="text-sm whitespace-pre-wrap leading-relaxed">{m.pm_notes}</p>
+          ) : (
+            <p className="text-sm text-darklink">
+              {m.status === "live" ? "The PM writes its notes when the meeting ends." : "No notes for this meeting."}
+            </p>
+          )}
+        </CardBox>
+      )}
 
       {late.length > 0 && (
         <CardBox>

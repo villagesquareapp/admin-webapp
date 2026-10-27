@@ -12,12 +12,18 @@ interface IMeetingPmUsage {
   tts_chars: number;
   stt_seconds: number;
   llm_tokens: number;
+  /** OpenAI and Claude, at list prices. */
   est_cost_usd: number;
+  /** The PM leading meetings, on Claude. */
+  claude_cost_usd: number;
 }
 
 interface IMeetingAssistantSettings {
   enabled: boolean;
   default_grace_min: number;
+  /** The PM may lead meetings (on Claude) until lead_until. */
+  lead_enabled: boolean;
+  lead_until: string;
 }
 
 interface IMeetingsOverview {
@@ -64,6 +70,11 @@ interface IMeetingDetail extends Omit<IMeetingListItem, "participant_count" | "l
   host_id: string;
   starts_at: string | null;
   grace_min: number;
+  pm_lead: boolean;
+  minutes_per_person: number;
+  agenda: string | null;
+  /** The PM's notes when it led the meeting (written when it ends). */
+  pm_notes: string | null;
   participants: IMeetingParticipant[];
   assistant_usage: IMeetingPmUsage;
 }

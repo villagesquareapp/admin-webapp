@@ -12,6 +12,12 @@ import { usd } from "../meetingsUi";
 
 const GRACE = [0, 2, 5, 10, 15, 20, 30];
 
+/** The date part of an ISO time, as the calendar day in Lagos. */
+function lagosDate(iso?: string): string {
+  if (!iso || isNaN(Date.parse(iso))) return "";
+  return new Intl.DateTimeFormat("en-CA", { timeZone: "Africa/Lagos" }).format(new Date(iso));
+}
+
 const AssistantContent = ({
   settings,
   usage,
@@ -23,13 +29,26 @@ const AssistantContent = ({
 }) => {
   const [enabled, setEnabled] = useState(settings?.enabled ?? true);
   const [grace, setGrace] = useState(settings?.default_grace_min ?? 5);
+  const [lead, setLead] = useState(settings?.lead_enabled ?? true);
+  const [leadUntil, setLeadUntil] = useState(lagosDate(settings?.lead_until));
   const [saving, setSaving] = useState(false);
-  const dirty = !!settings && (enabled !== settings.enabled || grace !== settings.default_grace_min);
+  const dirty =
+    !!settings &&
+    (enabled !== settings.enabled ||
+      grace !== settings.default_grace_min ||
+      lead !== settings.lead_enabled ||
+      leadUntil !== lagosDate(settings.lead_until));
 
   const save = async () => {
     setSaving(true);
     try {
-      const res = await updateMeetingAssistant({ enabled, default_grace_min: grace });
+      const res = await updateMeetingAssistant({
+        enabled,
+        default_grace_min: grace,
+        lead_enabled: lead,
+        // The end of that day in Lagos.
+        ...(leadUntil ? { lead_until: `${leadUntil}T23:59:59+01:00` } : {}),
+      });
       if (res?.status) toast.success(enabled ? "AI PM saved" : "AI PM switched off for every meeting");
       else toast.error(res?.message || "Couldn't save");
     } catch {
@@ -51,7 +70,7 @@ const AssistantContent = ({
               <div>
                 <p className="text-sm font-semibold">AI PM for every meeting</p>
                 <p className="text-xs text-darklink">
-                  Off hides latecomer check-in in the meeting app and stops all PM calls to OpenAI.
+                  Off takes the PM out of every meeting and stops all its calls to OpenAI and Claude.
                 </p>
               </div>
               <ToggleSwitch checked={enabled} onChange={setEnabled} label="" />
@@ -70,6 +89,28 @@ const AssistantContent = ({
                   </option>
                 ))}
               </Select>
+            </div>
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="text-sm font-semibold">PM can lead meetings</p>
+                <p className="text-xs text-darklink">
+                  Runs a round of updates, answers questions, keeps time and writes notes, on Claude. When the Claude
+                  credit runs out, or after this date, the PM goes back to latecomer check-in only.
+                </p>
+              </div>
+              <ToggleSwitch checked={lead} onChange={setLead} label="" />
+            </div>
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="text-sm font-semibold">Leads until</p>
+                <p className="text-xs text-darklink">The last day it may lead (Lagos time), e.g. when the Claude credit expires.</p>
+              </div>
+              <input
+                type="date"
+                value={leadUntil}
+                onChange={(e) => setLeadUntil(e.target.value)}
+                className="w-40 shrink-0 rounded-lg border border-border dark:border-darkborder bg-transparent px-3 py-2 text-sm"
+              />
             </div>
             <div>
               <Button color="primary" onClick={() => void save()} disabled={saving || !dirty}>
@@ -103,13 +144,15 @@ const AssistantContent = ({
       ) : (
         <>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <KpiCard icon="solar:cpu-bolt-line-duotone" value={t.calls} label="Calls to OpenAI" tone="bg-lightprimary text-primary" />
+            <KpiCard icon="solar:cpu-bolt-line-duotone" value={t.calls} label="Calls" tone="bg-lightprimary text-primary" />
             <KpiCard icon="solar:danger-triangle-line-duotone" value={t.failed} label="Failed" tone="bg-lighterror text-error" />
             <KpiCard icon="solar:microphone-3-line-duotone" value={Math.round(t.stt_seconds)} label="Seconds listened" tone="bg-lightinfo text-info" suffix="s" />
             <div className="bg-white dark:bg-darkgray border border-ld rounded-xl px-3.5 py-3 shadow-sm">
               <p className="text-[11px] text-darklink">Estimated cost</p>
               <p className="text-lg font-bold tabular-nums mt-1">{usd(t.est_cost_usd)}</p>
-              <p className="text-[11px] text-darklink mt-1">at OpenAI list prices</p>
+              <p className="text-[11px] text-darklink mt-1">
+                {usd(t.claude_cost_usd)} of it on Claude (leading)
+              </p>
             </div>
           </div>
           <CardBox>
