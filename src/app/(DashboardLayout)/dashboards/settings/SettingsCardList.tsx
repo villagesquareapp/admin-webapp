@@ -150,14 +150,14 @@ function AddNewSettingCard({
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className="bg-blue-50 dark:bg-blue-900/20 rounded-lg shadow-sm border-2 border-blue-200 dark:border-blue-700 overflow-hidden my-4"
+      className="bg-lightprimary/50 dark:bg-darkgray rounded-xl shadow-sm border border-primary/30 overflow-hidden my-4"
     >
       {/* Card Header */}
-      <div className="flex items-center justify-between p-4 border-b border-blue-200 dark:border-blue-700">
-        <h3 className="font-semibold text-lg text-blue-800 dark:text-blue-200">
+      <div className="flex items-center justify-between p-4 border-b border-primary/20">
+        <h3 className="font-semibold text-lg text-primary">
           Add New Setting
         </h3>
-        <span className="text-xs px-2 py-1 bg-blue-100 dark:bg-blue-800 text-blue-600 dark:text-blue-300 rounded-full">
+        <span className="text-xs px-2 py-1 bg-primary/10 text-primary rounded-full">
           New
         </span>
       </div>
@@ -166,27 +166,27 @@ function AddNewSettingCard({
       <div className="p-4 space-y-4">
         {/* Name Input */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label className="block text-sm font-medium text-darklink mb-1">
             Setting Name
           </label>
           <input
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+            className="w-full px-3 py-2 border border-ld rounded-md focus:outline-none focus:ring-2 focus:ring-primary bg-transparent dark:bg-darkgray dark:text-white"
             placeholder="Enter setting name"
           />
         </div>
 
         {/* Value Type Selection */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label className="block text-sm font-medium text-darklink mb-1">
             Value Type
           </label>
           <select
             value={valueType}
             onChange={(e) => setValueType(e.target.value as "string" | "boolean" | "json")}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+            className="w-full px-3 py-2 border border-ld rounded-md focus:outline-none focus:ring-2 focus:ring-primary bg-transparent dark:bg-darkgray dark:text-white"
           >
             <option value="string">String</option>
             <option value="boolean">Boolean</option>
@@ -196,7 +196,7 @@ function AddNewSettingCard({
 
         {/* Value Input based on type */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label className="block text-sm font-medium text-darklink mb-1">
             Value
           </label>
 
@@ -205,7 +205,7 @@ function AddNewSettingCard({
               type="text"
               value={stringValue}
               onChange={(e) => setStringValue(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+              className="w-full px-3 py-2 border border-ld rounded-md focus:outline-none focus:ring-2 focus:ring-primary bg-transparent dark:bg-darkgray dark:text-white"
               placeholder="Enter string value"
             />
           )}
@@ -214,7 +214,7 @@ function AddNewSettingCard({
             <select
               value={booleanValue.toString()}
               onChange={(e) => setBooleanValue(e.target.value === "true")}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+              className="w-full px-3 py-2 border border-ld rounded-md focus:outline-none focus:ring-2 focus:ring-primary bg-transparent dark:bg-darkgray dark:text-white"
             >
               <option value="false">False</option>
               <option value="true">True</option>
@@ -229,21 +229,21 @@ function AddNewSettingCard({
                     type="text"
                     value={item.key}
                     onChange={(e) => handleJsonFieldChange(index, "key", e.target.value)}
-                    className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                    className="flex-1 px-3 py-2 border border-ld rounded-md focus:outline-none focus:ring-2 focus:ring-primary bg-transparent dark:bg-darkgray dark:text-white"
                     placeholder="Key"
                   />
                   <input
                     type="text"
                     value={item.value}
                     onChange={(e) => handleJsonFieldChange(index, "value", e.target.value)}
-                    className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                    className="flex-1 px-3 py-2 border border-ld rounded-md focus:outline-none focus:ring-2 focus:ring-primary bg-transparent dark:bg-darkgray dark:text-white"
                     placeholder="Value"
                   />
                   {jsonKeyValues.length > 1 && (
                     <button
                       type="button"
                       onClick={() => handleRemoveJsonField(index)}
-                      className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md"
+                      className="p-2 text-error hover:bg-lighterror rounded-md"
                     >
                       <IconTrash size={16} />
                     </button>
@@ -253,7 +253,7 @@ function AddNewSettingCard({
               <button
                 type="button"
                 onClick={handleAddJsonField}
-                className="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200 text-sm"
+                className="flex items-center gap-2 text-primary hover:text-primary/80 text-sm"
               >
                 <IconPlus size={16} />
                 Add Field
@@ -267,7 +267,7 @@ function AddNewSettingCard({
           <button
             onClick={handleSave}
             disabled={!name.trim() || isLoading}
-            className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white px-4 py-2 rounded-md font-medium transition-colors flex items-center justify-center gap-2"
+            className="flex-1 bg-primary hover:bg-primary/90 disabled:opacity-60 text-white px-4 py-2 rounded-md font-medium transition-colors flex items-center justify-center gap-2"
           >
             {isLoading ? (
               <>
@@ -280,7 +280,7 @@ function AddNewSettingCard({
           </button>
           <button
             onClick={onCancel}
-            className="flex-1 bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md font-medium transition-colors"
+            className="flex-1 border border-ld text-darklink hover:bg-lightgray dark:hover:bg-white/5 px-4 py-2 rounded-md font-medium transition-colors"
           >
             Cancel
           </button>
@@ -425,16 +425,16 @@ function SettingsCard({
       transition={{ duration: 0.3, delay: index * 0.1 }}
       className={`rounded-lg shadow-sm hover:shadow-md transition-all duration-200 border overflow-hidden my-4 w-full grid ${
         isEditing
-          ? "bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-700"
-          : "bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700"
+          ? "bg-lightwarning/40 dark:bg-darkgray border-warning/30"
+          : "bg-white dark:bg-darkgray border-ld"
       }`}
     >
       {/* Card Header */}
       <div
         className={`flex items-center justify-between p-4 border-b ${
           isEditing
-            ? "border-yellow-200 dark:border-yellow-700"
-            : "border-gray-100 dark:border-gray-700"
+            ? "border-warning/30"
+            : "border-ld"
         }`}
       >
         {isEditing ? (
@@ -442,7 +442,7 @@ function SettingsCard({
             type="text"
             value={editName}
             onChange={(e) => setEditName(e.target.value)}
-            className="font-semibold text-lg bg-transparent border-b border-gray-300 dark:border-gray-600 focus:outline-none focus:border-blue-500 text-gray-800 dark:text-white"
+            className="font-semibold text-lg bg-transparent border-b border-ld focus:outline-none focus:border-primary dark:text-white"
           />
         ) : (
           <h3 className="font-semibold text-lg text-gray-800 dark:text-white">
@@ -454,8 +454,8 @@ function SettingsCard({
           <span
             className={`text-xs px-2 py-1 rounded-full ${
               isEditing
-                ? "bg-yellow-100 dark:bg-yellow-800 text-yellow-600 dark:text-yellow-300"
-                : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300"
+                ? "bg-warning/10 text-warning"
+                : "bg-lightgray dark:bg-white/5 text-darklink"
             }`}
           >
             {isEditing ? "Editing" : settings.value_type}
@@ -466,8 +466,8 @@ function SettingsCard({
               label=""
               dismissOnClick={true}
               renderTrigger={() => (
-                <button className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
-                  <IconDotsVertical size={20} className="text-gray-500 dark:text-gray-400" />
+                <button className="p-1 rounded-full hover:bg-lightgray dark:hover:bg-white/5">
+                  <IconDotsVertical size={20} className="text-darklink" />
                 </button>
               )}
             >
@@ -482,7 +482,7 @@ function SettingsCard({
       <div className="p-4 space-y-4 w-full grid">
         {/* Values Section */}
         <div className="w-full grid">
-          <h4 className="font-medium text-sm text-gray-500 dark:text-gray-400 mb-2">
+          <h4 className="font-medium text-sm text-darklink mb-2">
             Values:
           </h4>
 
@@ -494,7 +494,7 @@ function SettingsCard({
                   type="text"
                   value={editStringValue}
                   onChange={(e) => setEditStringValue(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                  className="w-full px-3 py-2 border border-ld rounded-md focus:outline-none focus:ring-2 focus:ring-primary bg-transparent dark:bg-darkgray dark:text-white"
                   placeholder="Enter string value"
                 />
               )}
@@ -503,7 +503,7 @@ function SettingsCard({
                 <select
                   value={editBooleanValue.toString()}
                   onChange={(e) => setEditBooleanValue(e.target.value === "true")}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                  className="w-full px-3 py-2 border border-ld rounded-md focus:outline-none focus:ring-2 focus:ring-primary bg-transparent dark:bg-darkgray dark:text-white"
                 >
                   <option value="false">False</option>
                   <option value="true">True</option>
@@ -518,21 +518,21 @@ function SettingsCard({
                         type="text"
                         value={item.key}
                         onChange={(e) => handleJsonFieldChange(index, "key", e.target.value)}
-                        className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                        className="flex-1 px-3 py-2 border border-ld rounded-md focus:outline-none focus:ring-2 focus:ring-primary bg-transparent dark:bg-darkgray dark:text-white"
                         placeholder="Key"
                       />
                       <input
                         type="text"
                         value={item.value}
                         onChange={(e) => handleJsonFieldChange(index, "value", e.target.value)}
-                        className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                        className="flex-1 px-3 py-2 border border-ld rounded-md focus:outline-none focus:ring-2 focus:ring-primary bg-transparent dark:bg-darkgray dark:text-white"
                         placeholder="Value"
                       />
                       {editJsonKeyValues.length > 1 && (
                         <button
                           type="button"
                           onClick={() => handleRemoveJsonField(index)}
-                          className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md"
+                          className="p-2 text-error hover:bg-lighterror rounded-md"
                         >
                           <IconTrash size={16} />
                         </button>
@@ -542,7 +542,7 @@ function SettingsCard({
                   <button
                     type="button"
                     onClick={handleAddJsonField}
-                    className="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200 text-sm"
+                    className="flex items-center gap-2 text-primary hover:text-primary/80 text-sm"
                   >
                     <IconPlus size={16} />
                     Add Field
@@ -555,7 +555,7 @@ function SettingsCard({
                 <button
                   onClick={handleSaveEdit}
                   disabled={!editName.trim()}
-                  className="flex-1 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white px-4 py-2 rounded-md font-medium transition-colors"
+                  className="flex-1 bg-success hover:bg-success/90 disabled:opacity-60 text-white px-4 py-2 rounded-md font-medium transition-colors"
                 >
                   {isUpdating ? (
                     <>
@@ -568,36 +568,36 @@ function SettingsCard({
                 </button>
                 <button
                   onClick={handleCancelEdit}
-                  className="flex-1 bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md font-medium transition-colors"
+                  className="flex-1 border border-ld text-darklink hover:bg-lightgray dark:hover:bg-white/5 px-4 py-2 rounded-md font-medium transition-colors"
                 >
                   Cancel
                 </button>
               </div>
             </div>
           ) : (
-            <div className="bg-gray-50 dark:bg-gray-700/50 rounded-md p-3 w-full">
+            <div className="bg-lightgray dark:bg-white/5 rounded-md p-3 w-full">
               {value_type === "json" && typeof value === "object" && value !== null && (
                 <div className="space-y-2 w-full">
                   {Object.entries(value).map(([key, val]) => (
                     <div key={key} className="flex items-center gap-2 text-sm">
-                      <span className="font-medium text-gray-600 dark:text-gray-300 min-w-[100px]">
+                      <span className="font-medium text-darklink min-w-[100px]">
                         {key.split("_").join(" ")}:
                       </span>
                       <div className="flex-1 flex items-center gap-2 w-full">
-                        <span className="font-mono w-[20px] overflow-x-auto whitespace-nowrap text-xs bg-white dark:bg-gray-700 px-2 py-1 rounded border border-gray-200 dark:border-gray-600 flex-1">
+                        <span className="font-mono w-[20px] overflow-x-auto whitespace-nowrap text-xs bg-white dark:bg-darkgray px-2 py-1 rounded border border-ld flex-1">
                           {visibleJsonKeys[key] ? String(val) : "•••••••••••"}
                         </span>
                         <button
                           onClick={() => toggleJsonKeyVisibility(key)}
-                          className="p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                          className="p-1 rounded-full hover:bg-lightgray dark:hover:bg-white/10 transition-colors"
                         >
                           {visibleJsonKeys[key] ? (
                             <IconEyeOff
                               size={16}
-                              className="text-gray-500 dark:text-gray-400"
+                              className="text-darklink"
                             />
                           ) : (
-                            <IconEye size={16} className="text-gray-500 dark:text-gray-400" />
+                            <IconEye size={16} className="text-darklink" />
                           )}
                         </button>
                       </div>
@@ -608,17 +608,17 @@ function SettingsCard({
 
               {(value_type === "string" || (value_type === "boolean" && value !== null)) && (
                 <div className="flex items-center gap-2">
-                  <div className="font-mono text-sm text-gray-700 dark:text-gray-300 flex-1 bg-white dark:bg-gray-700 px-2 py-1 rounded border border-gray-200 dark:border-gray-600">
+                  <div className="font-mono text-sm text-gray-700 dark:text-gray-300 flex-1 bg-white dark:bg-darkgray px-2 py-1 rounded border border-ld">
                     {isValueVisible ? String(value) || "N/A" : "•••••••••••"}
                   </div>
                   <button
                     onClick={() => setIsValueVisible(!isValueVisible)}
-                    className="p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                    className="p-1 rounded-full hover:bg-lightgray dark:hover:bg-white/10 transition-colors"
                   >
                     {isValueVisible ? (
-                      <IconEyeOff size={16} className="text-gray-500 dark:text-gray-400" />
+                      <IconEyeOff size={16} className="text-darklink" />
                     ) : (
-                      <IconEye size={16} className="text-gray-500 dark:text-gray-400" />
+                      <IconEye size={16} className="text-darklink" />
                     )}
                   </button>
                 </div>
@@ -630,18 +630,18 @@ function SettingsCard({
         {!isEditing && (
           <>
             {/* Divider */}
-            <hr className="border-gray-100 dark:border-gray-700" />
+            <hr className="border-ld" />
 
             {/* Metadata Section */}
             <div className="flex item-center justify-between gap-3 text-sm">
               <div>
-                <p className="text-gray-500 dark:text-gray-400 text-xs mb-1">Date created</p>
+                <p className="text-darklink text-xs mb-1">Date created</p>
                 <p className="font-medium text-gray-700 dark:text-gray-300">
                   {formatDate(settings.created_at)}
                 </p>
               </div>
               <div>
-                <p className="text-gray-500 dark:text-gray-400 text-xs mb-1">Last updated</p>
+                <p className="text-darklink text-xs mb-1">Last updated</p>
                 <p className="font-medium text-gray-700 dark:text-gray-300">
                   {formatDate(settings.updated_at)}
                 </p>
@@ -677,20 +677,20 @@ function SettingsCard({
                 <DialogTitle className="text-lg font-semibold text-gray-900 dark:text-white">
                   Delete Setting
                 </DialogTitle>
-                <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                <p className="mt-2 text-sm text-darklink">
                   Are you sure you want to delete <strong>{settings.name}</strong>? This action cannot be undone.
                 </p>
                 <div className="mt-6 flex justify-end gap-3">
                   <button
                     onClick={() => setShowDeleteModal(false)}
-                    className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-md transition-colors"
+                    className="px-4 py-2 text-sm font-medium text-darklink bg-lightgray dark:bg-white/5 hover:bg-lightgray/70 dark:hover:bg-white/10 rounded-md transition-colors"
                   >
                     Cancel
                   </button>
                   <button
                     onClick={confirmDelete}
                     disabled={isDeleting}
-                    className="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 disabled:bg-red-400 rounded-md transition-colors flex items-center gap-2"
+                    className="px-4 py-2 text-sm font-medium text-white bg-error hover:bg-error/90 disabled:opacity-60 rounded-md transition-colors flex items-center gap-2"
                   >
                     {isDeleting ? (
                       <>

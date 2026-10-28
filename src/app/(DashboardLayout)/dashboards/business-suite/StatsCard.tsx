@@ -1,30 +1,61 @@
 "use client";
 
-import { Icon } from "@iconify/react/dist/iconify.js";
+import { Icon } from "@iconify/react";
 import Link from "next/link";
-import { ReactNode } from "react";
+import CardBox from "@/app/components/shared/CardBox";
+
+type ColorKey = "primary" | "secondary" | "success" | "warning" | "error";
+
+// Literal class strings so Tailwind keeps them (no dynamic interpolation).
+const COLORS: Record<ColorKey, string> = {
+  primary: "bg-lightprimary text-primary",
+  secondary: "bg-lightsecondary text-secondary",
+  success: "bg-lightsuccess text-success",
+  warning: "bg-lightwarning text-warning",
+  error: "bg-lighterror text-error",
+};
 
 interface StatsCardProps {
   label: string;
   href: string;
   icon: string;
-  background?: string; 
+  description?: string;
+  color?: ColorKey;
 }
 
-export default function StatsCard({ label, href, icon, background }: StatsCardProps) {
+export default function StatsCard({
+  label,
+  href,
+  icon,
+  description,
+  color = "primary",
+}: StatsCardProps) {
   return (
-    <Link
-      href={href}
-      className={`rounded-2xl p-6 flex flex-col justify-center shadow-md transition-all hover:scale-[1.02] ${
-        background || "bg-[#1b2233] dark:bg-darkgray"
-      }`}
-    >
-      <div className="w-12 h-12 rounded-full flex items-center justify-center bg-white/10">
-        <Icon icon={icon} width={28} height={28} className="text-white" />
-      </div>
-      <div className="text-gray-300 text-lg font-medium whitespace-nowrap">
-        {label}
-      </div>
+    <Link href={href} className="group block h-full">
+      <CardBox className="h-full transition-all duration-300 hover:-translate-y-1 hover:shadow-md dark:hover:shadow-dark-md">
+        <div className="flex flex-col gap-4 p-2">
+          <div className="flex items-center justify-between">
+            <span
+              className={`w-12 h-12 rounded-xl flex items-center justify-center ${COLORS[color]}`}
+            >
+              <Icon icon={icon} height={26} />
+            </span>
+            <Icon
+              icon="solar:alt-arrow-right-line-duotone"
+              height={22}
+              className="text-darklink transition-transform duration-300 group-hover:translate-x-1 group-hover:text-primary"
+            />
+          </div>
+          <div>
+            <h5 className="text-lg font-semibold">{label}</h5>
+            {description && (
+              <p className="text-sm text-darklink mt-1 leading-relaxed">
+                {description}
+              </p>
+            )}
+          </div>
+        </div>
+      </CardBox>
     </Link>
   );
 }

@@ -134,14 +134,21 @@ const SettingsComp = ({ settings: initialSettings }: { settings: ISettings[] | n
 
   if (!initialSettings?.length && !showAddForm && settings.length === 0) {
     return (
-      <div className="bg-lightgray dark:bg-gray-800/70 p-6 my-6 rounded-md">
-        <div className="p-20 gap-2 items-center flex flex-col text-center">
-          <PiEmpty className="size-20" />
-          <p className="text-base font-semibold">No key settings available!</p>
+      <CardBox>
+        <div className="py-16 px-6 flex flex-col items-center text-center gap-4">
+          <span className="w-16 h-16 rounded-full bg-lightprimary text-primary flex items-center justify-center">
+            <PiEmpty className="size-8" />
+          </span>
+          <div>
+            <h3 className="text-lg font-semibold">No settings yet</h3>
+            <p className="text-sm text-darklink mt-1 max-w-sm mx-auto">
+              Configuration keys and feature flags you add will show up here.
+            </p>
+          </div>
           <Button
             color={"primary"}
             onClick={handleAddNew}
-            className="mt-4 hover:bg-lightprimary hover:text-primary"
+            className="mt-1"
           >
             {isAddingNew ? (
               <>
@@ -155,26 +162,27 @@ const SettingsComp = ({ settings: initialSettings }: { settings: ISettings[] | n
             )}
           </Button>
         </div>
-      </div>
+      </CardBox>
     );
   }
 
   return (
     <CardBox>
-      <div className="flex justify-between items-center">
-        <h2 className="text-lg font-semibold mb-4">Settings Key</h2>
+      <div className="flex flex-wrap gap-3 justify-between items-start">
+        <div>
+          <h2 className="text-xl font-semibold">Settings Keys</h2>
+          <p className="text-sm text-darklink mt-1">
+            Platform configuration keys and feature flags.
+          </p>
+        </div>
 
         {!showAddForm && (
-          <Button
-            color={"primary"}
-            onClick={handleAddNew}
-            className="hover:bg-lightprimary hover:text-primary"
-          >
+          <Button color={"primary"} onClick={handleAddNew}>
             <FaPlus /> Add New
           </Button>
         )}
       </div>
-      <hr className="dark:border-white/20" />
+      <hr className="my-4 border-ld" />
 
       <SettingsCardList
         settings={settings}
