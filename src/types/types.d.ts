@@ -279,8 +279,30 @@ interface ISuggestion {
   target_month: string;
   approved_by?: string;
   approved_at?: string;
+  // Picked by the monthly cycle rather than staff; another name can replace it.
+  auto?: boolean;
   created_at: string;
   updated_at: string;
+}
+
+type IATCCycleAction = "created" | "already_set_up" | "needs_staff" | "busy";
+
+interface IATCCycleEpisode {
+  uuid: string;
+  name: string;
+  status: string;
+  start_date: string;
+  end_date: string;
+}
+
+interface IATCCycle {
+  month: { value: string; label: string; start: string; end: string };
+  episode: IATCCycleEpisode | null;
+  active_episode: IATCCycleEpisode | null;
+  suggestions: { total: number; pending: number; approved: number; rejected: number };
+  picked: { uuid: string; name: string; auto: boolean; approved_at: string } | null;
+  ai_enabled: boolean;
+  next_check_at: string;
 }
 
 interface IKeyInformation {

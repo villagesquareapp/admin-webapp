@@ -1,16 +1,31 @@
 import { Suspense } from "react";
-import { getATCSettings } from "@/app/api/atc";
+import BreadcrumbComp from "@/app/(DashboardLayout)/layout/shared/breadcrumb/BreadcrumbComp";
+import { getATCCycle, getATCSettings } from "@/app/api/atc";
+import ATCCycleCard from "./ATCCycleCard";
 import ATCSettingsForm from "./ATCSettingsForm";
 
+const BCrumb = [
+  { to: "/", title: "Home" },
+  { title: "ATC Management" },
+];
+
 const SettingsWrapper = async () => {
-  const res = await getATCSettings();
-  return <ATCSettingsForm settings={res?.data || null} />;
+  const [cycle, settings] = await Promise.all([getATCCycle(), getATCSettings()]);
+  return (
+    <div className="flex flex-col gap-5">
+      <ATCCycleCard cycle={cycle?.data ?? null} />
+      <ATCSettingsForm settings={settings?.data || null} />
+    </div>
+  );
 };
 
 const Page = async () => (
-  <Suspense fallback={<div className="h-[500px] w-full animate-pulse bg-gray-100 dark:bg-gray-800 rounded-3xl" />}>
-    <SettingsWrapper />
-  </Suspense>
+  <>
+    <BreadcrumbComp title="ATC Management" items={BCrumb} />
+    <Suspense fallback={<div className="h-[500px] w-full animate-pulse bg-lightgray dark:bg-white/5 rounded-3xl" />}>
+      <SettingsWrapper />
+    </Suspense>
+  </>
 );
 
 export default Page;
