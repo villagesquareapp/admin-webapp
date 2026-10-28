@@ -14,6 +14,7 @@ import { runATCCycle } from "@/app/api/atc";
 const ACTION_MESSAGE: Record<IATCCycleAction, string> = {
   created: "This month’s episode is live and applications are open.",
   already_set_up: "This month already has its episode.",
+  window_closed: "This month’s applications have already closed, so it waits for next month. Start it yourself from Suggestions if you need to.",
   needs_staff: "This month needs a staff pick: approve one of the suggestions.",
   busy: "A check is already running. Try again in a moment.",
 };
@@ -38,7 +39,7 @@ const ATCCycleCard = ({ cycle }: { cycle: IATCCycle | null }) => {
     const res = await runATCCycle();
     if (res?.status && res.data) {
       const msg = ACTION_MESSAGE[res.data.action] ?? "Checked";
-      if (res.data.action === "needs_staff") toast.warning(msg);
+      if (res.data.action === "needs_staff" || res.data.action === "window_closed") toast.warning(msg);
       else toast.success(msg);
       router.refresh();
     } else {
