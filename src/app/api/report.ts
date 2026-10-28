@@ -6,14 +6,21 @@ import { getToken } from '@/lib/getToken';
 import { revalidateCurrentPath } from '@/lib/revalidate';
 
 // Generic report resolution — works for every report service type.
+// `reason` is staff's own note (never sent to anyone); `duration_days` is
+// for a suspension or restriction.
 export const resolveReport = async (
     id: string,
     reason: string,
-    resolution_methods: string[]
+    resolution_methods: string[],
+    duration_days?: number
 ) => {
     const token = await getToken();
     if (!token) return null;
-    const r = await apiPut<IReportResolveResult>(`reports/${id}/resolve`, { reason, resolution_methods }, token);
+    const r = await apiPut<IReportResolveResult>(
+        `reports/${id}/resolve`,
+        { reason: reason || undefined, resolution_methods, duration_days },
+        token
+    );
     if (r.status) await revalidateCurrentPath();
     return r;
 };

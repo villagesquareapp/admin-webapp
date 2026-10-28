@@ -212,6 +212,7 @@ const LivestreamDetailContent = ({ detail, streamId }: { detail: Detail | null; 
       </div>
 
       <ResolveReportModal
+        serviceType="livestream"
         reportId={reportModal?.id ?? null}
         action={reportModal?.action ?? "resolve"}
         onClose={() => setReportModal(null)}

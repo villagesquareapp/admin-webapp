@@ -395,6 +395,7 @@ const VideoDetailContent = ({ video }: { video: IVflixVideoDetail | null }) => {
         </div>
       </div>
       <ResolveReportModal
+        serviceType="vflix"
         reportId={reportModal?.id ?? null}
         action={reportModal?.action ?? "resolve"}
         onClose={() => setReportModal(null)}
