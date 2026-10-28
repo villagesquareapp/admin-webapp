@@ -6,6 +6,7 @@ import { Button } from "@/app/components/shared/Button";
 import ReusableTable from "@/app/components/shared/ReusableTable";
 import { createColumnHelper } from "@/utils/table";
 import VflixSearch from "../vflix/VflixSearch";
+import SuiteHeader from "../business-suite/SuiteHeader";
 import Actions from "./Actions";
 import PushComposer, { ComposerDraft } from "./PushComposer";
 import PushDetail from "./PushDetail";
@@ -64,12 +65,14 @@ const Delivery = ({ n }: { n: IPushNotifications }) => {
 const PushNotification = ({
   notifications,
   stats,
+  statsRow,
   totalPages,
   currentPage,
   pageSize,
 }: {
   notifications: IPushNotificationResponse | null;
   stats: IPushStats | null;
+  statsRow?: React.ReactNode;
   totalPages: number;
   currentPage: number;
   pageSize: number;
@@ -174,7 +177,18 @@ const PushNotification = ({
   ];
 
   return (
-    <>
+    <div className="flex flex-col gap-5">
+      <SuiteHeader
+        title="Push Notifications"
+        subtitle="Send or schedule pushes to everyone, one platform or chosen users, and see what reached people."
+        back="/dashboards/business-suite"
+        actions={
+          <Button color="primary" className="h-10 whitespace-nowrap" onClick={() => setComposer({ draft: null })}>
+            <Icon icon="solar:add-circle-bold" height={18} className="me-1" /> New push
+          </Button>
+        }
+      />
+      {statsRow}
       <ReusableTable
         tableData={Array.isArray(notifications?.data) ? notifications!.data : []}
         columns={columns}
@@ -184,14 +198,7 @@ const PushNotification = ({
         tableTitle="Push history"
         filterDropdowns={FILTERS}
         onRowClick={(row) => setViewing(row)}
-        extraButtons={
-          <div className="flex items-center gap-3 flex-col md:flex-row">
-            <VflixSearch placeholder="Search title or message…" />
-            <Button color="primary" className="h-10 whitespace-nowrap" onClick={() => setComposer({ draft: null })}>
-              <Icon icon="solar:add-circle-bold" height={18} className="me-1" /> New push
-            </Button>
-          </div>
-        }
+        extraButtons={<VflixSearch placeholder="Search title or message…" />}
       />
 
       <PushComposer
@@ -201,7 +208,7 @@ const PushNotification = ({
         onClose={() => setComposer(null)}
       />
       <PushDetail row={viewing} onClose={() => setViewing(null)} onDuplicate={duplicate} />
-    </>
+    </div>
   );
 };
 

@@ -6,6 +6,7 @@ import { useState } from "react";
 import { FaPlus } from "react-icons/fa6";
 import { PiEmpty } from "react-icons/pi";
 import SettingsCardList from "./SettingsCardList";
+import SuiteHeader from "../business-suite/SuiteHeader";
 import { addNewSettings, updateSettings, deleteSettings } from "@/app/api/setting";
 import { toast } from "sonner";
 
@@ -132,8 +133,25 @@ const SettingsComp = ({ settings: initialSettings }: { settings: ISettings[] | n
     }
   };
 
+  const header = (
+    <SuiteHeader
+      title="Settings"
+      subtitle={`Platform configuration keys and feature flags${settings.length ? ` · ${settings.length} ${settings.length === 1 ? "key" : "keys"}` : ""}`}
+      back="/dashboards/business-suite"
+      actions={
+        settings.length > 0 && !showAddForm ? (
+          <Button color={"primary"} className="h-10" onClick={handleAddNew}>
+            <FaPlus /> Add New
+          </Button>
+        ) : null
+      }
+    />
+  );
+
   if (!initialSettings?.length && !showAddForm && settings.length === 0) {
     return (
+      <div className="flex flex-col gap-5">
+      {header}
       <CardBox>
         <div className="py-16 px-6 flex flex-col items-center text-center gap-4">
           <span className="w-16 h-16 rounded-full bg-lightprimary text-primary flex items-center justify-center">
@@ -163,27 +181,14 @@ const SettingsComp = ({ settings: initialSettings }: { settings: ISettings[] | n
           </Button>
         </div>
       </CardBox>
+      </div>
     );
   }
 
   return (
+    <div className="flex flex-col gap-5">
+    {header}
     <CardBox>
-      <div className="flex flex-wrap gap-3 justify-between items-start">
-        <div>
-          <h2 className="text-xl font-semibold">Settings Keys</h2>
-          <p className="text-sm text-darklink mt-1">
-            Platform configuration keys and feature flags.
-          </p>
-        </div>
-
-        {!showAddForm && (
-          <Button color={"primary"} onClick={handleAddNew}>
-            <FaPlus /> Add New
-          </Button>
-        )}
-      </div>
-      <hr className="my-4 border-ld" />
-
       <SettingsCardList
         settings={settings}
         showAddForm={showAddForm}
@@ -195,6 +200,7 @@ const SettingsComp = ({ settings: initialSettings }: { settings: ISettings[] | n
         loadingStates={loadingStates}
       />
     </CardBox>
+    </div>
   );
 };
 

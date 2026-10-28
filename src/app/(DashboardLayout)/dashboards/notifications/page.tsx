@@ -1,15 +1,9 @@
 import { Suspense } from "react";
 import { getToken } from "@/lib/getToken";
-import BreadcrumbComp from "@/app/(DashboardLayout)/layout/shared/breadcrumb/BreadcrumbComp";
 import KpiCard from "@/app/components/shared/KpiCard";
 import PushNotification from "./PushNotification";
 import { getPushNotifications, getPushStats } from "@/app/api/push-notification";
 import { formatDateTime } from "./pushUi";
-
-const BCrumb = [
-  { to: "/", title: "Home" },
-  { title: "Push Notifications" },
-];
 
 const Stats = ({ stats }: { stats: IPushStats | null }) => {
   if (!stats) return null;
@@ -60,16 +54,14 @@ const NotificationsWrapper = async ({
     getPushStats(),
   ]);
   return (
-    <div className="flex flex-col gap-6">
-      <Stats stats={stats?.data ?? null} />
-      <PushNotification
-        notifications={notifications?.data || null}
-        stats={stats?.data ?? null}
-        totalPages={notifications?.data?.last_page || 1}
-        currentPage={page}
-        pageSize={limit}
-      />
-    </div>
+    <PushNotification
+      notifications={notifications?.data || null}
+      stats={stats?.data ?? null}
+      statsRow={<Stats stats={stats?.data ?? null} />}
+      totalPages={notifications?.data?.last_page || 1}
+      currentPage={page}
+      pageSize={limit}
+    />
   );
 };
 
@@ -85,15 +77,12 @@ const Page = async (props: { searchParams: Promise<{ [key: string]: string | str
   if (!token) throw new Error("No token found");
 
   return (
-    <>
-      <BreadcrumbComp title="Push Notifications" items={BCrumb} />
-      <Suspense
+    <Suspense
         key={`${page}-${limit}-${search}-${status}-${audience}`}
         fallback={<div className="h-[600px] w-full animate-pulse bg-lightgray dark:bg-white/5 rounded-3xl" />}
       >
         <NotificationsWrapper page={page} limit={limit} search={search} status={status} audience={audience} />
       </Suspense>
-    </>
   );
 };
 

@@ -1,13 +1,8 @@
 import { Suspense } from "react";
-import BreadcrumbComp from "@/app/(DashboardLayout)/layout/shared/breadcrumb/BreadcrumbComp";
+import SuiteHeader from "../business-suite/SuiteHeader";
 import { getATCCycle, getATCSettings } from "@/app/api/atc";
 import ATCCycleCard from "./ATCCycleCard";
 import ATCSettingsForm from "./ATCSettingsForm";
-
-const BCrumb = [
-  { to: "/", title: "Home" },
-  { title: "ATC Management" },
-];
 
 const SettingsWrapper = async () => {
   const [cycle, settings] = await Promise.all([getATCCycle(), getATCSettings()]);
@@ -20,12 +15,16 @@ const SettingsWrapper = async () => {
 };
 
 const Page = async () => (
-  <>
-    <BreadcrumbComp title="ATC Management" items={BCrumb} />
+  <div className="flex flex-col gap-5">
+    <SuiteHeader
+      title="ATC Management"
+      subtitle="The monthly Africa Talent Challenge cycle, its timeline and How it works content."
+      back="/dashboards/business-suite"
+    />
     <Suspense fallback={<div className="h-[500px] w-full animate-pulse bg-lightgray dark:bg-white/5 rounded-3xl" />}>
       <SettingsWrapper />
     </Suspense>
-  </>
+  </div>
 );
 
 export default Page;
