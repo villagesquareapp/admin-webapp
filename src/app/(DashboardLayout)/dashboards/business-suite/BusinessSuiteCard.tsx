@@ -1,29 +1,36 @@
 import React from "react";
 import StatsCard from "./StatsCard";
 
+const items = [
+  {
+    label: "Settings",
+    href: "/dashboards/settings",
+    icon: "solar:settings-bold-duotone",
+    description: "Platform configuration keys and feature flags.",
+    color: "primary" as const,
+  },
+  {
+    label: "Push Notifications",
+    href: "/dashboards/notifications",
+    icon: "solar:bell-bing-bold-duotone",
+    description: "Send now or schedule pushes to everyone, a platform or chosen users, and see what was delivered.",
+    color: "secondary" as const,
+  },
+  {
+    label: "ATC Management",
+    href: "/dashboards/atc-management",
+    icon: "solar:cup-star-bold-duotone",
+    description: "The monthly Africa Talent Challenge cycle, its timeline and How it works content.",
+    color: "success" as const,
+  },
+];
+
 const BusinessSuiteCard = () => {
   return (
-    <div>
-      <h5 className="text-2xl flex gap-3 items-center my-4">
-        Business Suite
-      </h5>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        <StatsCard
-          label="Settings"
-          href="/dashboards/settings"
-          icon="solar:settings-line-duotone"
-        />
-        <StatsCard
-          label="Push Notifications"
-          href="/dashboards/notifications"
-          icon="bxs:notification"
-        />
-        <StatsCard
-          label="ATC Management"
-          href="/dashboards/atc-management"
-          icon="mdi:settings-play-outline"
-        />
-      </div>
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {items.map((item) => (
+        <StatsCard key={item.href} {...item} />
+      ))}
     </div>
   );
 };

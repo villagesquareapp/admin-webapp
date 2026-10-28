@@ -28,6 +28,7 @@ const SuggestionsView = ({ data }: { data: IATCData | null }) => {
   const month = data?.current_month;
   const hasAny = suggestions.length > 0;
   const anApproved = data?.approved || suggestions.some((s) => s.status === "approved");
+  const autoPick = suggestions.find((s) => s.status === "approved" && s.auto);
 
   const run = async (key: string, fn: () => Promise<any>, ok: string) => {
     setBusy(key);
@@ -43,7 +44,7 @@ const SuggestionsView = ({ data }: { data: IATCData | null }) => {
     const del = await deleteATCSuggestions(month.value);
     if (!del?.status) { toast.error(del?.message || "Could not clear existing suggestions"); setBusy(null); return; }
     const gen = await generateATCSuggestions(month.value);
-    if (gen?.status) { toast.success("Fresh suggestions generated"); router.refresh(); }
+    if (gen?.status) { toast.success((gen.data as any)?.message || "Fresh suggestions generated"); router.refresh(); }
     else toast.error(gen?.message || "Generation failed");
     setBusy(null);
   };
@@ -82,7 +83,10 @@ const SuggestionsView = ({ data }: { data: IATCData | null }) => {
 
       {anApproved && (
         <div className="flex items-center gap-2 text-sm text-success bg-lightsuccess/60 dark:bg-lightsuccess/10 rounded-xl px-4 py-2.5">
-          <Icon icon="solar:check-circle-bold" height={16} /> An episode has been approved for {month?.label} from these suggestions.
+          <Icon icon="solar:check-circle-bold" height={16} />
+          {autoPick
+            ? <>“{autoPick.name}” was picked automatically for {month?.label}. Prefer another name? Use it instead and the live episode is renamed, keeping its entries and votes.</>
+            : <>An episode has been approved for {month?.label} from these suggestions.</>}
         </div>
       )}
 
@@ -97,7 +101,7 @@ const SuggestionsView = ({ data }: { data: IATCData | null }) => {
                   </span>
                   <p className="text-sm font-bold truncate">{s.name}</p>
                 </div>
-                <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full capitalize shrink-0 ${SUG_TONE[s.status] || ""}`}>{s.status}</span>
+                <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full capitalize shrink-0 ${SUG_TONE[s.status] || ""}`}>{s.auto ? "Auto-picked" : s.status}</span>
               </div>
               <p className="text-xs text-darklink line-clamp-3 mt-2.5 break-words">{s.description}</p>
               {s.status === "pending" && (
@@ -111,6 +115,15 @@ const SuggestionsView = ({ data }: { data: IATCData | null }) => {
                     onClick={() => run(`rej-${s.uuid}`, () => rejectATCSuggestion(s.uuid), "Rejected")}>
                     {(busy === `rej-${s.uuid}`) && <Spinner size="sm" light />}
                     Reject
+                  </Button>
+                </div>
+              )}
+              {autoPick && s.status === "rejected" && (
+                <div className="flex items-center gap-2 mt-3 pt-3 border-t border-ld">
+                  <Button color="light" size="xs" disabled={!!busy}
+                    onClick={() => run(`swap-${s.uuid}`, () => approveATCSuggestion(s.uuid), `Episode renamed to “${s.name}”`)}>
+                    {(busy === `swap-${s.uuid}`) && <Spinner size="sm" light />}
+                    <Icon icon="solar:refresh-linear" height={14} className="mr-1" /> Use this name instead
                   </Button>
                 </div>
               )}

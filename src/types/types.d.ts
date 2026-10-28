@@ -279,8 +279,30 @@ interface ISuggestion {
   target_month: string;
   approved_by?: string;
   approved_at?: string;
+  // Picked by the monthly cycle rather than staff; another name can replace it.
+  auto?: boolean;
   created_at: string;
   updated_at: string;
+}
+
+type IATCCycleAction = "created" | "already_set_up" | "needs_staff" | "busy";
+
+interface IATCCycleEpisode {
+  uuid: string;
+  name: string;
+  status: string;
+  start_date: string;
+  end_date: string;
+}
+
+interface IATCCycle {
+  month: { value: string; label: string; start: string; end: string };
+  episode: IATCCycleEpisode | null;
+  active_episode: IATCCycleEpisode | null;
+  suggestions: { total: number; pending: number; approved: number; rejected: number };
+  picked: { uuid: string; name: string; auto: boolean; approved_at: string } | null;
+  ai_enabled: boolean;
+  next_check_at: string;
 }
 
 interface IKeyInformation {
@@ -2012,13 +2034,24 @@ interface IVerificationRequested {
   };
 }
 
+type PushAudience = "all" | "ios" | "android" | "users";
+type PushStatus = "scheduled" | "sending" | "sent" | "partial" | "failed" | "cancelled";
+
 interface IPushNotifications {
   uuid: string;
   title: string;
   body: string;
   category: string;
   target: string[];
-  status: string;
+  status: PushStatus | string;
+  audience?: PushAudience;
+  image_url?: string | null;
+  scheduled_at?: string | null;
+  sent_at?: string | null;
+  recipients_count?: number | null;
+  success_count?: number | null;
+  failure_count?: number | null;
+  error?: string | null;
   sent_by?: string | null;
   sent_by_name?: string | null;
   created_at: string;
@@ -2027,6 +2060,31 @@ interface IPushNotifications {
 }
 
 interface IPushNotificationResponse extends IPaginatedResponse<IPushNotifications> {}
+
+interface IPushDetail extends IPushNotifications {
+  recipients: { uuid: string; name: string; username: string; profile_picture?: string | null }[];
+}
+
+interface IPushStats {
+  sent: number;
+  sent_24h: number;
+  sent_7d: number;
+  scheduled: number;
+  failed_30d: number;
+  delivered_30d: number;
+  refused_30d: number;
+  devices: { ios: number; android: number; total: number };
+  broadcasts: { used: number; limit: number; remaining: number; next_slot_at: string | null };
+}
+
+interface IPushSendPayload {
+  title: string;
+  body: string;
+  audience: PushAudience;
+  user_ids?: string[];
+  image_url?: string;
+  scheduled_at?: string;
+}
 
 interface IVerificationRequestedResponse extends IPaginatedResponse<IVerificationRequested> {}
 

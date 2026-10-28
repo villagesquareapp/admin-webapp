@@ -6,6 +6,7 @@ import { useState } from "react";
 import { FaPlus } from "react-icons/fa6";
 import { PiEmpty } from "react-icons/pi";
 import SettingsCardList from "./SettingsCardList";
+import SuiteHeader from "../business-suite/SuiteHeader";
 import { addNewSettings, updateSettings, deleteSettings } from "@/app/api/setting";
 import { toast } from "sonner";
 
@@ -132,16 +133,40 @@ const SettingsComp = ({ settings: initialSettings }: { settings: ISettings[] | n
     }
   };
 
+  const header = (
+    <SuiteHeader
+      title="Settings"
+      subtitle={`Platform configuration keys and feature flags${settings.length ? ` · ${settings.length} ${settings.length === 1 ? "key" : "keys"}` : ""}`}
+      back="/dashboards/business-suite"
+      actions={
+        settings.length > 0 && !showAddForm ? (
+          <Button color={"primary"} className="h-10" onClick={handleAddNew}>
+            <FaPlus /> Add New
+          </Button>
+        ) : null
+      }
+    />
+  );
+
   if (!initialSettings?.length && !showAddForm && settings.length === 0) {
     return (
-      <div className="bg-lightgray dark:bg-gray-800/70 p-6 my-6 rounded-md">
-        <div className="p-20 gap-2 items-center flex flex-col text-center">
-          <PiEmpty className="size-20" />
-          <p className="text-base font-semibold">No key settings available!</p>
+      <div className="flex flex-col gap-5">
+      {header}
+      <CardBox>
+        <div className="py-16 px-6 flex flex-col items-center text-center gap-4">
+          <span className="w-16 h-16 rounded-full bg-lightprimary text-primary flex items-center justify-center">
+            <PiEmpty className="size-8" />
+          </span>
+          <div>
+            <h3 className="text-lg font-semibold">No settings yet</h3>
+            <p className="text-sm text-darklink mt-1 max-w-sm mx-auto">
+              Configuration keys and feature flags you add will show up here.
+            </p>
+          </div>
           <Button
             color={"primary"}
             onClick={handleAddNew}
-            className="mt-4 hover:bg-lightprimary hover:text-primary"
+            className="mt-1"
           >
             {isAddingNew ? (
               <>
@@ -155,27 +180,15 @@ const SettingsComp = ({ settings: initialSettings }: { settings: ISettings[] | n
             )}
           </Button>
         </div>
+      </CardBox>
       </div>
     );
   }
 
   return (
+    <div className="flex flex-col gap-5">
+    {header}
     <CardBox>
-      <div className="flex justify-between items-center">
-        <h2 className="text-lg font-semibold mb-4">Settings Key</h2>
-
-        {!showAddForm && (
-          <Button
-            color={"primary"}
-            onClick={handleAddNew}
-            className="hover:bg-lightprimary hover:text-primary"
-          >
-            <FaPlus /> Add New
-          </Button>
-        )}
-      </div>
-      <hr className="dark:border-white/20" />
-
       <SettingsCardList
         settings={settings}
         showAddForm={showAddForm}
@@ -187,6 +200,7 @@ const SettingsComp = ({ settings: initialSettings }: { settings: ISettings[] | n
         loadingStates={loadingStates}
       />
     </CardBox>
+    </div>
   );
 };
 
