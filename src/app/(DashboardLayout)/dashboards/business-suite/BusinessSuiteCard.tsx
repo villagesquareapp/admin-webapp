@@ -13,14 +13,14 @@ const items = [
     label: "Push Notifications",
     href: "/dashboards/notifications",
     icon: "solar:bell-bing-bold-duotone",
-    description: "Compose and send push notifications to users.",
+    description: "Send now or schedule pushes to everyone, a platform or chosen users, and see what was delivered.",
     color: "secondary" as const,
   },
   {
     label: "ATC Management",
     href: "/dashboards/atc-management",
     icon: "solar:cup-star-bold-duotone",
-    description: "Manage Africa Talent Challenge entries and voting.",
+    description: "The monthly Africa Talent Challenge cycle, its timeline and How it works content.",
     color: "success" as const,
   },
 ];

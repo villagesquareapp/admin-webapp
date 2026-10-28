@@ -25,7 +25,9 @@ const LABELS: Record<string, string> = {
   reject_verification: "Rejected verification",
   send_push: "Sent a push",
   resend_push: "Resent a push",
-  broadcast_push: "Pushed to all users",
+  broadcast_push: "Pushed to a whole audience",
+  schedule_push: "Scheduled a push",
+  cancel_push: "Cancelled a scheduled push",
   delete_push: "Deleted a push",
   add_setting: "Added a setting",
   change_setting: "Changed a setting",
@@ -55,6 +57,7 @@ const TONE_KIND: Record<string, "error" | "warning" | "success" | "info"> = {
   reject_template: "warning",
   reject_verification: "warning",
   delete_push: "warning",
+  cancel_push: "warning",
   delete_setting: "warning",
 };
 
