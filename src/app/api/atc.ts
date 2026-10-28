@@ -186,6 +186,19 @@ export const approveATCSuggestion = async (uuid: string) => {
     );
 };
 
+// ---- Monthly cycle ----
+export const getATCCycle = async () => {
+    const token = await getToken();
+    return await apiGet<IATCCycle>(`africa-talent-challenge/cycle`, token);
+};
+
+export const runATCCycle = async () => {
+    const token = await getToken();
+    const r = await apiPost<IATCCycle & { action: IATCCycleAction }>(`africa-talent-challenge/cycle/run`, {}, token);
+    if (r.status) await revalidateCurrentPath();
+    return r;
+};
+
 export const getATCSettings = async () => {
     const token = await getToken();
     return await apiGet<IATCSettings>(`africa-talent-challenge/settings`, token);
