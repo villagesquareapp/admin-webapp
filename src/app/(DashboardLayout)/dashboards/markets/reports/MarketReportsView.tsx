@@ -142,6 +142,7 @@ const MarketReportsView = ({
         filterDropdowns={[statusFilter]}
       />
       <ResolveReportModal
+        serviceType="marketsquare"
         reportId={modal?.id ?? null}
         action={modal?.action ?? "resolve"}
         onClose={() => setModal(null)}

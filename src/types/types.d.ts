@@ -1395,11 +1395,14 @@ interface IReportActionDetails {
 // this kind of report) or failed.
 interface IReportActionResult {
   action: string;
-  result: "executed" | "unsupported" | "failed";
+  // unchanged: it was already that way (e.g. removed by an earlier report).
+  result: "executed" | "unchanged" | "unsupported" | "failed";
 }
 
 interface IReportResolveResult {
   results: IReportActionResult[];
+  // This report plus the other open ones on the same item.
+  reports_closed?: number;
 }
 
 interface IReport {

@@ -153,6 +153,7 @@ const ReportsView = ({
         filterDropdowns={[statusFilter]}
       />
       <ResolveReportModal
+        serviceType="vflix"
         reportId={modal?.id ?? null}
         action={modal?.action ?? "resolve"}
         onClose={() => setModal(null)}

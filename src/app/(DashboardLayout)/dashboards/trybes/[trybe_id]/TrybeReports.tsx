@@ -38,7 +38,7 @@ const TrybeReports = ({ trybeId }: { trybeId: string }) => {
   const [status, setStatus] = useState("open");
   const [page, setPage] = useState(1);
   const [lastPage, setLastPage] = useState(1);
-  const [open, setOpen] = useState<{ id: string; action: ReportAction } | null>(null);
+  const [open, setOpen] = useState<{ id: string; action: ReportAction; type?: string } | null>(null);
 
   const load = useCallback(async () => {
     setRows(null);
@@ -100,10 +100,10 @@ const TrybeReports = ({ trybeId }: { trybeId: string }) => {
               </div>
               {(r.status === "open" || r.status === "in_review") && (
                 <div className="flex gap-2">
-                  <Button size="xs" color="primary" onClick={() => setOpen({ id: r.id, action: "resolve" })}>
+                  <Button size="xs" color="primary" onClick={() => setOpen({ id: r.id, action: "resolve", type: r.report_service_type })}>
                     Resolve
                   </Button>
-                  <Button size="xs" color="light" onClick={() => setOpen({ id: r.id, action: "dismiss" })}>
+                  <Button size="xs" color="light" onClick={() => setOpen({ id: r.id, action: "dismiss", type: r.report_service_type })}>
                     Dismiss
                   </Button>
                 </div>
@@ -130,6 +130,7 @@ const TrybeReports = ({ trybeId }: { trybeId: string }) => {
       <ResolveReportModal
         reportId={open?.id ?? null}
         action={open?.action ?? "resolve"}
+        serviceType={open?.type}
         onClose={() => setOpen(null)}
         onDone={() => {
           setOpen(null);

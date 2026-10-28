@@ -152,6 +152,7 @@ const PostReportsView = ({
         filterDropdowns={[statusFilter]}
       />
       <ResolveReportModal
+        serviceType="post"
         reportId={modal?.id ?? null}
         action={modal?.action ?? "resolve"}
         onClose={() => setModal(null)}

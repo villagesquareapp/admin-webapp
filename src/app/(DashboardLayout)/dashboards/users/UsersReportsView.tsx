@@ -112,7 +112,8 @@ const UsersReportsView = ({
         backTo="/dashboards/users"
         filterDropdowns={[statusFilter]}
       />
-      <ResolveReportModal reportId={modal?.id ?? null} action={modal?.action ?? "resolve"} onClose={() => setModal(null)} onDone={() => router.refresh()} />
+      <ResolveReportModal
+        serviceType="user" reportId={modal?.id ?? null} action={modal?.action ?? "resolve"} onClose={() => setModal(null)} onDone={() => router.refresh()} />
     </>
   );
 };
