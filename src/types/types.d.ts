@@ -285,7 +285,7 @@ interface ISuggestion {
   updated_at: string;
 }
 
-type IATCCycleAction = "created" | "already_set_up" | "needs_staff" | "busy";
+type IATCCycleAction = "created" | "already_set_up" | "window_closed" | "needs_staff" | "busy";
 
 interface IATCCycleEpisode {
   uuid: string;
