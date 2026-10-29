@@ -17,6 +17,13 @@ const items = [
     color: "secondary" as const,
   },
   {
+    label: "Help & FAQ",
+    href: "/dashboards/faq",
+    icon: "solar:question-circle-bold-duotone",
+    description: "The questions and answers people see under Help in the app.",
+    color: "warning" as const,
+  },
+  {
     label: "ATC Management",
     href: "/dashboards/atc-management",
     icon: "solar:cup-star-bold-duotone",
@@ -27,7 +34,7 @@ const items = [
 
 const BusinessSuiteCard = () => {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
       {items.map((item) => (
         <StatsCard key={item.href} {...item} />
       ))}

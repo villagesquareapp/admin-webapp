@@ -88,7 +88,7 @@ export const ConfirmPushAction = ({
   };
 
   return (
-    <Modal show={!!kind} size="md" onClose={() => !busy && onClose()} popup>
+    <Modal show={!!kind} size="md" onClose={() => !busy && onClose()} popup className="z-[110]">
       <ModalBody>
         {copy && (
           <div className="text-center pt-6">
