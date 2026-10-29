@@ -9,7 +9,7 @@ import { executeModeration } from "@/app/api/moderation";
 const USER_ACTIONS: { value: string; label: string }[] = [
   { value: "warn_user", label: "Warn user" },
   { value: "strike_user", label: "Add a strike" },
-  { value: "restrict_user", label: "Restrict account" },
+  { value: "restrict_user", label: "Restrict (can't post, comment or go live)" },
   { value: "suspend_user", label: "Suspend (temporary)" },
   { value: "shadowban_user", label: "Shadowban (limit reach)" },
   { value: "ban_user", label: "Ban (permanent)" },
@@ -49,7 +49,8 @@ const ModerateUserModal = ({
     if (!action) return toast.error("Select an action");
     setLoading(true);
     try {
-      const params = action === "suspend_user" ? { duration_days: Number(days) || 7 } : undefined;
+      const timed = action === "suspend_user" || action === "restrict_user";
+      const params = timed ? { duration_days: Number(days) || 7 } : undefined;
       const res = await executeModeration({
         service_type: "user",
         target_id: userId,
@@ -86,7 +87,7 @@ const ModerateUserModal = ({
               ))}
             </Select>
           </div>
-          {action === "suspend_user" && (
+          {(action === "suspend_user" || action === "restrict_user") && (
             <div>
               <Label>Duration (days)</Label>
               <TextInput

@@ -273,6 +273,7 @@ const ReportDetail = ({ report }: { report: IReportDetail | null }) => {
       <ResolveReportModal
         reportId={action ? report.id : null}
         action={action ?? "resolve"}
+        serviceType={report.report_service_type}
         onClose={() => setAction(null)}
         onDone={() => router.refresh()}
       />

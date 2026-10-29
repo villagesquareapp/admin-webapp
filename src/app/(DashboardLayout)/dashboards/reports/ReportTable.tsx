@@ -47,7 +47,7 @@ const ReportTable = ({
   filterDropdowns: any;
 }) => {
   const router = useRouter();
-  const [modal, setModal] = useState<{ id: string; action: ReportAction } | null>(null);
+  const [modal, setModal] = useState<{ id: string; action: ReportAction; type?: string } | null>(null);
   if (!reports) return <LoadingComponent />;
   const columnHelper = createColumnHelper<IReport>();
 
@@ -145,13 +145,13 @@ const ReportTable = ({
           <div className="flex items-center gap-2">
             {view}
             <button
-              onClick={() => setModal({ id: r.id, action: "resolve" })}
+              onClick={() => setModal({ id: r.id, action: "resolve", type: r.report_service_type })}
               className="flex items-center gap-1 text-xs font-semibold bg-lightsuccess text-success px-2.5 py-1.5 rounded-md"
             >
               <Icon icon="solar:check-circle-bold" height={15} /> Resolve
             </button>
             <button
-              onClick={() => setModal({ id: r.id, action: "dismiss" })}
+              onClick={() => setModal({ id: r.id, action: "dismiss", type: r.report_service_type })}
               className="text-xs font-semibold bg-lightgray dark:bg-dark text-darklink px-2.5 py-1.5 rounded-md"
             >
               Dismiss
@@ -175,6 +175,7 @@ const ReportTable = ({
       <ResolveReportModal
         reportId={modal?.id ?? null}
         action={modal?.action ?? "resolve"}
+        serviceType={modal?.type}
         onClose={() => setModal(null)}
         onDone={() => router.refresh()}
       />

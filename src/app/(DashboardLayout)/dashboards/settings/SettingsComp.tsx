@@ -6,6 +6,7 @@ import { useState } from "react";
 import { FaPlus } from "react-icons/fa6";
 import { PiEmpty } from "react-icons/pi";
 import SettingsCardList from "./SettingsCardList";
+import ReviewTestPurchasesCard from "./ReviewTestPurchasesCard";
 import SuiteHeader from "../business-suite/SuiteHeader";
 import { addNewSettings, updateSettings, deleteSettings } from "@/app/api/setting";
 import { toast } from "sonner";
@@ -133,6 +134,17 @@ const SettingsComp = ({ settings: initialSettings }: { settings: ISettings[] | n
     }
   };
 
+  const handleCardSaved = (saved: Pick<ISettings, "uuid" | "name" | "value_type" | "value">) => {
+    const now = new Date().toISOString();
+    setSettings((prev) =>
+      prev.some((s) => s.name === saved.name)
+        ? prev.map((s) => (s.name === saved.name ? { ...s, ...saved, updated_at: now } : s))
+        : [...prev, { ...saved, created_at: now, updated_at: now }]
+    );
+  };
+
+  const reviewCard = <ReviewTestPurchasesCard settings={settings} onSaved={handleCardSaved} />;
+
   const header = (
     <SuiteHeader
       title="Settings"
@@ -152,6 +164,7 @@ const SettingsComp = ({ settings: initialSettings }: { settings: ISettings[] | n
     return (
       <div className="flex flex-col gap-5">
       {header}
+      {reviewCard}
       <CardBox>
         <div className="py-16 px-6 flex flex-col items-center text-center gap-4">
           <span className="w-16 h-16 rounded-full bg-lightprimary text-primary flex items-center justify-center">
@@ -188,6 +201,7 @@ const SettingsComp = ({ settings: initialSettings }: { settings: ISettings[] | n
   return (
     <div className="flex flex-col gap-5">
     {header}
+    {reviewCard}
     <CardBox>
       <SettingsCardList
         settings={settings}

@@ -255,7 +255,8 @@ const UserDetailContent = ({ detail, userId }: { detail: Detail | null; userId: 
       </div>
 
       <ModerateUserModal userId={moderate ? userId : null} open={moderate} onClose={() => setModerate(false)} onDone={() => router.refresh()} />
-      <ResolveReportModal reportId={reportModal?.id ?? null} action={reportModal?.action ?? "resolve"} onClose={() => setReportModal(null)} onDone={() => router.refresh()} />
+      <ResolveReportModal
+        serviceType="user" reportId={reportModal?.id ?? null} action={reportModal?.action ?? "resolve"} onClose={() => setReportModal(null)} onDone={() => router.refresh()} />
     </div>
   );
 };

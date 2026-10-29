@@ -13,13 +13,13 @@ type Detail = IPostDetail["post_details"];
 const CONTENT_ACTIONS = [
   { action: "remove_content", label: "Take down", desc: "Remove from feed", danger: true, confirm: true },
   { action: "restore_content", label: "Restore", desc: "Reinstate the post", danger: false, confirm: false },
-  { action: "limit_visibility", label: "Limit reach", desc: "Shadow / down-rank", danger: false, confirm: false },
+  { action: "limit_visibility", label: "Hide", desc: "From everyone but the author", danger: false, confirm: false },
 ];
 
 const AUTHOR_ACTIONS = [
   { action: "warn_user", label: "Warn", desc: "In-app notice", danger: false, confirm: false },
   { action: "strike_user", label: "Strike", desc: "Escalates on repeat", danger: false, confirm: true },
-  { action: "restrict_user", label: "Restrict", desc: "Limit account", danger: false, confirm: true },
+  { action: "restrict_user", label: "Restrict", desc: "No posting or going live, timed", danger: false, confirm: true },
   { action: "suspend_user", label: "Suspend", desc: "Temporary, auto-lifts", danger: true, confirm: true },
   { action: "ban_user", label: "Ban", desc: "+ force logout", danger: true, confirm: true },
   { action: "reinstate_user", label: "Reinstate", desc: "Back to active", danger: false, confirm: false },
@@ -83,8 +83,9 @@ const PostModerationPanel = ({
   ) => {
     if (opts?.confirm && !window.confirm(`${opts.label || actionLabel(action)} — are you sure?`)) return;
     let params: Record<string, any> | undefined = opts?.params;
-    if (action === "suspend_user") {
-      const days = window.prompt("Suspend for how many days?", "7");
+    if (action === "suspend_user" || action === "restrict_user") {
+      const verb = action === "suspend_user" ? "Suspend" : "Restrict";
+      const days = window.prompt(`${verb} for how many days?`, "7");
       if (days === null) return;
       params = { ...params, duration_days: Number(days) || 7 };
     }
@@ -282,6 +283,7 @@ const PostModerationPanel = ({
       </div>
 
       <ResolveReportModal
+        serviceType="post"
         reportId={modal?.id ?? null}
         action={modal?.action ?? "resolve"}
         onClose={() => setModal(null)}

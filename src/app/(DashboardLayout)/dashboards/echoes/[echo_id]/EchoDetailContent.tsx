@@ -290,6 +290,7 @@ const EchoDetailContent = ({ detail, echoId }: { detail: Detail | null; echoId: 
       </div>
 
       <ResolveReportModal
+        serviceType="echo"
         reportId={reportModal?.id ?? null}
         action={reportModal?.action ?? "resolve"}
         onClose={() => setReportModal(null)}
