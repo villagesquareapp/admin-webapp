@@ -65,7 +65,7 @@ export const getRandomUsers = async (page: number = 1, limit: number = 10) => {
 
 export const getSearchUser = async (search: string) => {
     const token = await getToken();
-    return await apiGet<IRandomUsers[]>(`users/search?q=${search}`, token)
+    return await apiGet<IRandomUsers[]>(`users/search?q=${encodeURIComponent(search)}`, token)
 }
 
 export const getUserStatus = async () => {
