@@ -2473,3 +2473,231 @@ interface IVflixSettings {
   weight_freshness: number;
   weight_affinity: number;
 }
+
+/* =========================================================================
+ * Admin coverage: ledger, FAQ, discovery (hashtags, mentions, trending),
+ * referrals, notifications sent. Shapes from the Admin API (snake_case).
+ * ========================================================================= */
+
+interface IUserBrief {
+  uuid: string;
+  name?: string | null;
+  username?: string | null;
+  profile_picture?: string | null;
+}
+
+interface ILedgerOwner extends Partial<IUserBrief> {
+  system?: boolean;
+}
+
+interface ILedgerAccount {
+  uuid: string;
+  owner_id: string;
+  owner_type: "user" | "system";
+  account_type: string;
+  currency_type: "vs_coin" | "cowry";
+  status: "active" | "frozen" | "closed";
+  created_at?: string;
+  owner?: ILedgerOwner;
+  balance?: string;
+}
+
+interface ILedgerEntry {
+  uuid: string;
+  account_id: string;
+  entry_type: "debit" | "credit";
+  amount: string;
+  currency_type: string;
+  description: string;
+  account?: { account_type: string; owner_type: string; owner?: ILedgerOwner; status: string } | null;
+}
+
+interface ILedgerTransaction {
+  uuid: string;
+  transaction_type: string;
+  transaction_category: string | null;
+  transaction_status: string | null;
+  reference_type: string | null;
+  reference_id: string | null;
+  description: string;
+  reversal_of: string | null;
+  payment_provider: string | null;
+  created_at: string;
+  entries: ILedgerEntry[];
+}
+
+interface ILedgerPage<T> {
+  data: T[];
+  total: number;
+  page: number;
+  per_page: number;
+  last_page: number;
+}
+
+interface ILedgerOverview {
+  accounts: { total: number; users: number; frozen: number; closed: number };
+  system_accounts: { uuid: string; account_type: string; currency_type: string; status: string; balance: string }[];
+  last_24h: { transactions: number; failed: number };
+  last_7d: { category: string; currency_type: string; count: number; volume: string }[];
+  last_30d: { reversals: number; failed: number };
+}
+
+interface ILedgerAccountDetail {
+  account: ILedgerAccount;
+  balance: string;
+  owner?: ILedgerOwner;
+  entries?: number;
+  last_entry_at?: string | null;
+}
+
+interface ILedgerReconciliation {
+  total_transactions: number;
+  balanced_transactions: number;
+  discrepancies: { transaction_id: string; debit_sum: string; credit_sum: string; difference: string }[];
+}
+
+interface IFaqItem {
+  id: number;
+  category_id: number;
+  question: string;
+  answer: string;
+  created_at: string;
+  updated_at: string;
+}
+
+interface IFaqCategory {
+  id: number;
+  name: string;
+  created_at: string;
+  updated_at: string;
+  faqs: IFaqItem[];
+}
+
+interface IFaqList {
+  total_questions: number;
+  categories: IFaqCategory[];
+}
+
+interface IHashtag {
+  uuid: string;
+  display_form: string;
+  canonical_form: string;
+  usage_count: number;
+  last_used_at: string | null;
+  created_at: string;
+  deleted_at: string | null;
+  off_trending?: boolean;
+}
+
+interface IHashtagStats {
+  total: number;
+  hidden: number;
+  new_7d: number;
+  used_24h: number;
+  top_this_week: { uuid: string; display_form: string; usage_count: number; last_used_at: string }[];
+}
+
+interface IDiscoveryPost {
+  uuid: string;
+  caption: string | null;
+  status: string;
+  is_anonymous: boolean;
+  likes?: number;
+  replies?: number;
+  shares?: number;
+  views?: number;
+  created_at: string;
+  deleted_at?: string | null;
+  author?: IUserBrief | null;
+}
+
+interface IHashtagDetail extends IHashtag {
+  daily_uses: { day: string; uses: number }[];
+  recent_posts: IDiscoveryPost[];
+}
+
+interface IMention {
+  uuid: string;
+  created_at: string;
+  post_id: string;
+  caption: string | null;
+  post_status: string;
+  is_comment: boolean;
+  is_anonymous: boolean;
+  mentioned_user: IUserBrief;
+  author: IUserBrief | null;
+}
+
+interface IMentionStats {
+  last_24h: number;
+  last_7d: number;
+  most_mentioned: { count: number; user: IUserBrief }[];
+  top_mentioners: { count: number; people: number; user: IUserBrief }[];
+}
+
+interface ITrendingHidden {
+  kind: "topic" | "post";
+  item_key: string;
+  label: string | null;
+  reason: string | null;
+  hidden_by: string | null;
+  hidden_by_name: string | null;
+  created_at: string;
+  post?: { uuid: string; caption: string | null; author: IUserBrief | null; is_anonymous: boolean } | null;
+}
+
+interface ITrendingView {
+  window: "1h" | "24h" | "7d";
+  source: "live" | "snapshot";
+  as_of: string | null;
+  hiding_available: boolean;
+  topics: { key: string; topic: string; type: string; trend_score: number; mention_count: number; hidden: boolean }[];
+  posts: { post_id: string; trend_score: number; hidden: boolean; post: IDiscoveryPost; author: IUserBrief | null }[];
+  hidden: ITrendingHidden[];
+}
+
+interface IReferral {
+  uuid: string;
+  referrer: IUserBrief;
+  referred_user: IUserBrief;
+  welcome_bonus_rewarded: boolean;
+  welcome_bonus_rewarded_at: string | null;
+  profile_completion_rewarded: boolean;
+  profile_completion_rewarded_at: string | null;
+  engagement_milestone_rewarded: boolean;
+  engagement_milestone_rewarded_at: string | null;
+  login_days: number;
+  engagement_expired: boolean;
+  created_at: string;
+}
+
+interface IReferralStats {
+  total: number;
+  last_7d: number;
+  last_30d: number;
+  profile_completed: number;
+  engaged: number;
+  expired: number;
+  cowries_paid: { category: string; count: number; amount: string }[];
+  rewards: { welcome: number; profile_completion: number; engagement_milestone: number; engagement_login_days: number; engagement_window_days: number };
+  top_referrers: { referrals: number; rewarded: number; last_24h: number; last_at: string; user: IUserBrief }[];
+}
+
+interface ISentNotification {
+  uuid: string;
+  type: string;
+  message: string | null;
+  data: Record<string, any> | null;
+  service_type: string | null;
+  service_id: string | null;
+  is_read: boolean;
+  trybe_id: string | null;
+  initiator_anonymous: boolean;
+  initiator: IUserBrief | null;
+  created_at: string;
+}
+
+interface ISentNotificationsPage extends IPaginatedResponse<ISentNotification> {
+  user: IUserBrief;
+  summary: { total: number; unread: number; last_at: string | null; by_type_30d: { type: string; count: number }[] };
+}
