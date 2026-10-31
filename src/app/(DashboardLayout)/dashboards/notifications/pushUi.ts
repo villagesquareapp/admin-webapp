@@ -9,13 +9,26 @@ export const AUDIENCES: { value: PushAudience; label: string; icon: string; hint
   { value: "users", label: "Chosen users", icon: "solar:user-check-rounded-bold-duotone", hint: "People you pick" },
 ];
 
-export const audienceOf = (n: IPushNotifications): PushAudience =>
-  n.audience ?? ((n.target ?? []).includes(BROADCAST_UUID) ? "all" : "users");
+export const SEGMENT_AUDIENCE = { value: "segment", label: "Segments", icon: "solar:target-bold-duotone" } as const;
+
+export const recipientIds = (n: IPushNotifications) => (Array.isArray(n.target) ? n.target : []);
+
+export const segmentOf = (n: IPushNotifications): PushSegmentTarget | null =>
+  n.audience === "segment" && n.target && !Array.isArray(n.target) ? n.target : null;
+
+export const audienceOf = (n: IPushNotifications): PushAudience | "segment" =>
+  n.audience ?? (recipientIds(n).includes(BROADCAST_UUID) ? "all" : "users");
+
+export const audienceIcon = (n: IPushNotifications) => {
+  const a = audienceOf(n);
+  return a === "segment" ? SEGMENT_AUDIENCE.icon : AUDIENCES.find((x) => x.value === a)?.icon ?? AUDIENCES[0].icon;
+};
 
 export const audienceLabel = (n: IPushNotifications) => {
   const a = audienceOf(n);
-  if (a !== "users") return AUDIENCES.find((x) => x.value === a)!.label;
-  const count = n.recipients_count ?? n.target?.length ?? 0;
+  if (a === "segment") return `Segment: ${segmentOf(n)?.label ?? "unknown"}`;
+  if (a !== "users") return AUDIENCES.find((x) => x.value === a)?.label ?? a;
+  const count = n.recipients_count ?? recipientIds(n).length;
   return `${count} ${count === 1 ? "user" : "users"}`;
 };
 

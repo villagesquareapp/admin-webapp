@@ -12,6 +12,7 @@ const KpiCard = ({
   tone,
   prefix = "",
   suffix = "",
+  extra,
 }: {
   icon: string;
   value: number;
@@ -19,6 +20,8 @@ const KpiCard = ({
   tone: string;
   prefix?: string;
   suffix?: string;
+  // An optional line under the label, e.g. the change since last period.
+  extra?: React.ReactNode;
 }) => (
   <div className="bg-white dark:bg-darkgray border border-ld rounded-xl px-3.5 py-3 shadow-sm">
     <span className={`size-8 rounded-md grid place-items-center ${tone}`}>
@@ -26,6 +29,7 @@ const KpiCard = ({
     </span>
     <p className="text-lg font-bold tabular-nums mt-2 leading-none">{prefix}{fmt(value)}{suffix}</p>
     <p className="text-[11px] text-darklink mt-1">{label}</p>
+    {extra && <div className="text-[11px] mt-1">{extra}</div>}
   </div>
 );
 
