@@ -8,6 +8,10 @@ import { useSession } from "next-auth/react";
  */
 export type Permission = string;
 
+// Product analytics (the Analytics pages). Pushing to a segment also needs push.send.
+export const ANALYTICS_VIEW: Permission = "analytics.view";
+export const PUSH_SEND: Permission = "push.send";
+
 export const STAFF_ROLES = [
   { value: "super_admin", label: "Super admin" },
   { value: "admin", label: "Admin" },

@@ -11,7 +11,7 @@ import {
   deletePushNotification,
   resendPushNotification,
 } from "@/app/api/push-notification";
-import { audienceOf } from "./pushUi";
+import { audienceOf, segmentOf } from "./pushUi";
 
 export type PushActionKind = "resend" | "cancel" | "delete";
 
@@ -66,6 +66,7 @@ export const ConfirmPushAction = ({
   const [busy, setBusy] = useState(false);
   const copy = kind ? COPY[kind] : null;
   const mass = audienceOf(notification) !== "users";
+  const segment = segmentOf(notification);
 
   const run = async () => {
     if (!kind) return;
@@ -96,7 +97,13 @@ export const ConfirmPushAction = ({
               <Icon icon={copy.icon} height={28} />
             </span>
             <h3 className="text-lg font-semibold">{copy.title}</h3>
-            <p className="text-sm text-darklink mt-1.5">{copy.text}</p>
+            <p className="text-sm text-darklink mt-1.5">
+              {segment && kind === "resend"
+                ? `It goes out now to “${segment.label}”. The segment is worked out again, so it reaches whoever is in it today.`
+                : segment && kind === "cancel"
+                  ? "It won’t go out. You can push to the segment again from Analytics → Audience."
+                  : copy.text}
+            </p>
             {kind === "resend" && mass && (
               <p className="text-xs text-warning mt-2">This counts towards the 3 whole-audience pushes allowed in 24 hours.</p>
             )}
@@ -140,7 +147,9 @@ const Actions = ({
         )}
       >
         <DropdownItem onClick={onView} icon={() => <Icon icon="solar:eye-linear" height={16} className="me-2" />}>View details</DropdownItem>
-        <DropdownItem onClick={onDuplicate} icon={() => <Icon icon="solar:copy-linear" height={16} className="me-2" />}>Duplicate</DropdownItem>
+        {audienceOf(notification) !== "segment" && (
+          <DropdownItem onClick={onDuplicate} icon={() => <Icon icon="solar:copy-linear" height={16} className="me-2" />}>Duplicate</DropdownItem>
+        )}
         {s !== "scheduled" && s !== "sending" && (
           <DropdownItem onClick={() => setKind("resend")} icon={() => <Icon icon="solar:restart-linear" height={16} className="me-2" />}>Send again</DropdownItem>
         )}

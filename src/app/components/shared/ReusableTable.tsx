@@ -38,6 +38,7 @@ function ReusableTable({
   extraButtons,
   dense = false,
   compactTitle = false,
+  paginated = true,
 }: {
   tableData: any[];
   columns: any[];
@@ -52,6 +53,8 @@ function ReusableTable({
   filterDropdowns?: FilterDropdown[];
   dense?: boolean;
   compactTitle?: boolean;
+  // False for short lists that come back whole: hides the page controls.
+  paginated?: boolean;
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -243,6 +246,7 @@ function ReusableTable({
             </tbody>
           </table>
         </div>
+        {paginated && (
         <div className="sm:flex sm:flex-wrap gap-2 pt-3 items-center justify-between">
           <div className="flex items-center gap-2">
             <h1 className="text-gray-700">{tableData.length} Rows</h1>
@@ -313,6 +317,7 @@ function ReusableTable({
             </div>
           </div>
         </div>
+        )}
       </CardBox>
     </>
   );
