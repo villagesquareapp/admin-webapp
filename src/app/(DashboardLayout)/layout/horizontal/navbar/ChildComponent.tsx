@@ -4,6 +4,7 @@ import { IconChevronDown } from '@tabler/icons-react';
 import { usePathname } from "next/navigation";
 import { Icon } from "@iconify/react";
 import { useTranslation } from 'react-i18next';
+import { usePermissions } from '@/utils/permissions';
 const ChildComponent = ({ item, isActive, handleMouseEnter, handleMouseLeave, onClick }: any) => {
     const [isSubMenuOpen, setIsSubMenuOpen] = useState(false);
 
@@ -17,6 +18,7 @@ const ChildComponent = ({ item, isActive, handleMouseEnter, handleMouseLeave, on
         setIsSubMenuOpen(false);
     };
     const { t } = useTranslation();
+    const { can } = usePermissions();
     return (
         <div
             className="relative group"
@@ -42,7 +44,7 @@ const ChildComponent = ({ item, isActive, handleMouseEnter, handleMouseLeave, on
             {isSubMenuOpen && item.children && (
                 <div className="absolute left-full rtl:right-full  top-0 mt-0 w-56 bg-white dark:bg-dark rounded-md shadow-lg ">
                     <ul className="p-3 flex flex-col gap-2">
-                        {item.children.map((child: any) => (
+                        {item.children.filter((child: any) => !child.permission || can(child.permission)).map((child: any) => (
                             <li key={child.id}>
                                 {child.children ? (
                                     <ChildComponent
