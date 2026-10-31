@@ -2039,15 +2039,17 @@ interface IVerificationRequested {
 
 type PushAudience = "all" | "ios" | "android" | "users";
 type PushStatus = "scheduled" | "sending" | "sent" | "partial" | "failed" | "cancelled";
+// A push to an analytics segment; its target is the segment, not user ids.
+type PushSegmentTarget = { segment: string; label: string };
 
 interface IPushNotifications {
   uuid: string;
   title: string;
   body: string;
   category: string;
-  target: string[];
+  target: string[] | PushSegmentTarget;
   status: PushStatus | string;
-  audience?: PushAudience;
+  audience?: PushAudience | "segment";
   image_url?: string | null;
   scheduled_at?: string | null;
   sent_at?: string | null;

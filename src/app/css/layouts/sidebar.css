@@ -92,8 +92,11 @@
   margin: 0 4px;
 }
 
-[data-sidebar-type="mini-sidebar"] .page-wrapper {
-  margin-left: 80px;
+/* Only where the sidebar shows; below xl the page has no left margin. */
+@media screen and (width >= 80rem) {
+  [data-sidebar-type="mini-sidebar"] .page-wrapper {
+    margin-left: 80px;
+  }
 }
 
 /* For Minisidebar Tooltip Fix */

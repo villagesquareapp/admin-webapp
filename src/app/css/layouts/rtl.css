@@ -1,11 +1,13 @@
+/* Mirrors container.css: room for the 240px sidebar only (the 80px icon strip
+   it used to leave room for is commented out in Sidebar.tsx). */
 html[dir="rtl"] .page-wrapper {
-    margin-right: calc(240px + 80px);
+    margin-right: 240px;
     margin-left: 0;
 }
 
 html[dir="rtl"] .menu-sidebar {
     left: unset;
-    right: 80px;
+    right: 0;
 }
 
 html[dir="rtl"][data-sidebar-type="mini-sidebar"] .page-wrapper {
@@ -17,7 +19,8 @@ html[dir="rtl"][data-layout='horizontal'] .page-wrapper{
     margin-right:0 !important
 }
 
-@media (max-width: 1199px) {
+/* Below Tailwind's xl (80rem), where the sidebar is hidden. */
+@media (width < 80rem) {
     html[dir="rtl"][data-sidebar-type="mini-sidebar"] .menu-sidebar{
         left:unset;
         right:-240px 
