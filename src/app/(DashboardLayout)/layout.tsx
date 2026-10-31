@@ -16,7 +16,7 @@ export default function Layout({
   return (
     <div className="flex w-full min-h-screen">
       {isCollapse == "mini-sidebar" ? (
-        <div className="flex fixed left-4 top-5 items-center gap-3 ">
+        <div className="hidden xl:flex fixed left-4 top-5 items-center gap-3">
           <Logo size={40} />{" "}
         </div>
       ) : null}

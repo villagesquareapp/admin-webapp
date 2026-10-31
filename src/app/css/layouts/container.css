@@ -3,7 +3,9 @@
   transition: 0.2s ease-in;
 }
 
-@media screen and (max-width: 1280px) {
+/* Below Tailwind's xl (80rem), where the sidebar is hidden. max-width: 1280px
+   also matched exactly 1280px, where the sidebar shows, so they overlapped. */
+@media screen and (width < 80rem) {
   .page-wrapper {
     margin-left: 0;
   }
