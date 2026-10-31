@@ -47,6 +47,8 @@ const SidebarContent: MenuItem[] = [
               { name: "All Users", icon: "solar:users-group-rounded-line-duotone", id: uniqueId(), url: "/dashboards/users/list" },
               { name: "Reports", icon: "solar:danger-triangle-line-duotone", id: uniqueId(), url: "/dashboards/users/reports" },
               { name: "Enforcement Log", icon: "solar:clipboard-list-line-duotone", id: uniqueId(), url: "/dashboards/users/enforcement" },
+              { name: "Referrals", icon: "solar:user-plus-rounded-line-duotone", id: uniqueId(), url: "/dashboards/users/referrals" },
+              { name: "Notifications Sent", icon: "solar:bell-line-duotone", id: uniqueId(), url: "/dashboards/users/notifications" },
             ],
           },
           {
@@ -61,6 +63,17 @@ const SidebarContent: MenuItem[] = [
               { name: "Moderation Queue", icon: "solar:shield-warning-line-duotone", id: uniqueId(), url: "/dashboards/posts/queue" },
               { name: "Reports", icon: "solar:danger-triangle-line-duotone", id: uniqueId(), url: "/dashboards/posts/reports" },
               { name: "Enforcement Log", icon: "solar:clipboard-list-line-duotone", id: uniqueId(), url: "/dashboards/posts/enforcement" },
+            ],
+          },
+          {
+            name: "Discovery",
+            permission: "content.view",
+            icon: "solar:hashtag-circle-line-duotone",
+            id: uniqueId(),
+            children: [
+              { name: "Trending", icon: "solar:fire-line-duotone", id: uniqueId(), url: "/dashboards/discovery/trending" },
+              { name: "Hashtags", icon: "solar:hashtag-line-duotone", id: uniqueId(), url: "/dashboards/discovery/hashtags" },
+              { name: "Mentions", icon: "solar:mention-circle-line-duotone", id: uniqueId(), url: "/dashboards/discovery/mentions" },
             ],
           },
           {
@@ -180,6 +193,7 @@ const SidebarContent: MenuItem[] = [
               { name: "Gifts", icon: "solar:gift-line-duotone", id: uniqueId(), url: "/dashboards/gifts" },
               { name: "Treasury & Wallets", icon: "solar:wallet-money-line-duotone", id: uniqueId(), url: "/dashboards/wallets" },
               { name: "Payout Holds", icon: "solar:shield-warning-line-duotone", id: uniqueId(), url: "/dashboards/payout-holds" },
+              { name: "Ledger", icon: "solar:book-2-line-duotone", id: uniqueId(), url: "/dashboards/ledger" },
             ],
           },
           {

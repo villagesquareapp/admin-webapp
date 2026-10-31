@@ -59,7 +59,7 @@ const PushDetail = ({
   const recipientCount = n?.recipients_count ?? n?.target?.length ?? 0;
 
   return (
-    <Drawer open={!!row} onClose={onClose} position="right" className="z-[60] dark:bg-darkgray w-full max-w-[460px] p-0">
+    <Drawer open={!!row} onClose={onClose} position="right" className="z-[100] dark:bg-darkgray w-full max-w-[460px] p-0">
       {n && (
         <div className="flex flex-col h-full">
           <div className="flex items-start justify-between gap-3 px-5 py-4 border-b border-ld">
