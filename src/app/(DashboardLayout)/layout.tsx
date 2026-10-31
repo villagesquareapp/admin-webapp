@@ -20,10 +20,11 @@ export default function Layout({
           <Logo size={40} />{" "}
         </div>
       ) : null}
-      <div className="page-wrapper flex w-full">
+      {/* min-w-0: wide content (tables) scrolls in its card instead of widening the page */}
+      <div className="page-wrapper flex w-full min-w-0">
         {/* Header/sidebar */}
         {activeLayout == "vertical" ? <Sidebar /> : null}
-        <div className="body-wrapper w-full bg-lightgray dark:bg-dark">
+        <div className="body-wrapper w-full min-w-0 bg-lightgray dark:bg-dark">
           {/* Top Header  */}
           {activeLayout == "horizontal" ? (
             <Header layoutType="horizontal" />
