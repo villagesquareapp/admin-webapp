@@ -75,7 +75,7 @@ const SidebarLayout = () => {
                 {contentToDisplay &&
                   contentToDisplay.items?.map((item, index) => (
                     <React.Fragment key={index}>
-                      <h5 className="text-link font-semibold text-sm caption">
+                      <h5 className="text-link font-semibold text-xs caption">
                         {item.heading}
                       </h5>
                       {item.children?.filter((child) => !child.permission || can(child.permission)).map((child, index) => (
