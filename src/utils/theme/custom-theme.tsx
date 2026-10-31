@@ -587,7 +587,7 @@ const customTheme = {
       inner: "bg-white dark:bg-darkgray rounded-none",
     },
     item: {
-      base: "flex items-center justify-center rounded-lg px-4 py-3 mb-1 gap-3  !text-[15px] text-start  leading-[normal] font-normal text-link hover:bg-lightprimary hover:text-primary dark:text-white  dark:hover:text-primary",
+      base: "flex items-center justify-center rounded-lg px-4 py-3 mb-1 gap-3  !text-sm text-start  leading-[normal] font-normal text-link hover:bg-lightprimary hover:text-primary dark:text-white  dark:hover:text-primary",
       content: {
         base: "flex-1 whitespace-nowrap px-0",
       },
@@ -597,7 +597,7 @@ const customTheme = {
 
     collapse: {
       button:
-        "group flex gap-3 items-center  rounded-lg px-4 py-3 mb-1 text-[15px] text-start truncate leading-[normal] font-normal text-link hover:bg-lightprimary hover:text-primary dark:text-white w-full dark:hover:text-primary",
+        "group flex gap-3 items-center  rounded-lg px-4 py-3 mb-1 text-sm text-start truncate leading-[normal] font-normal text-link hover:bg-lightprimary hover:text-primary dark:text-white w-full dark:hover:text-primary",
       icon: {
         base: "h-6 w-6 text-link text-base",
       },
