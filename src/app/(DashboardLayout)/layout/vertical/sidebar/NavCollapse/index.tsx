@@ -9,6 +9,7 @@ import { HiOutlineChevronDown } from "react-icons/hi";
 import { twMerge } from "tailwind-merge";
 import { usePathname } from "next/navigation";
 import { useTranslation } from "react-i18next";
+import { usePermissions } from "@/utils/permissions";
 
 interface NavCollapseProps {
   item: ChildItem;
@@ -16,8 +17,13 @@ interface NavCollapseProps {
 
 const NavCollapse: React.FC<NavCollapseProps> = ({ item }: any) => {
   const pathname = usePathname();
-  const activeDD = item.children.find((t: { url: string; }) => t.url === pathname)
   const { t } = useTranslation();
+  const { can } = usePermissions();
+  const children = item.children.filter((c: ChildItem) => !c.permission || can(c.permission));
+  // A group with only one page the staff member can open shows as that page.
+  if (!children.length) return null;
+  if (children.length === 1 && !children[0].children) return <NavItems item={children[0]} />;
+  const activeDD = children.find((t: { url: string; }) => t.url === pathname)
   return (
     <>
       <SidebarCollapse
@@ -38,9 +44,9 @@ const NavCollapse: React.FC<NavCollapseProps> = ({ item }: any) => {
         }}
       >
         {/* Render child items */}
-        {item.children && (
+        {children.length > 0 && (
           <SidebarItemGroup className="sidebar-dropdown">
-            {item.children.map((child: any) => (
+            {children.map((child: any) => (
               <React.Fragment key={child.id}>
                 {/* Render NavItems for child items */}
                 {child.children ? (
