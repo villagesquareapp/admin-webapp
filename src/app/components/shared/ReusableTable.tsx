@@ -124,7 +124,7 @@ function ReusableTable({
       <CardBox className="border rounded-md md:rounded-3xl  shadow-md border-ld overflow-hidden">
         {(backTo || tableTitle || filterDropdowns || extraButtons || dropdownItems) && (
         <div className="flex md:items-center md:justify-between mb-2.5">
-          <div className="flex items-center gap-4 w-full justify-between flex-col md:flex-row">
+          <div className="flex items-center gap-4 w-full justify-between flex-col md:flex-row md:flex-wrap">
             {(backTo || tableTitle) && (
               <div className="flex items-center gap-2 shrink-0">
                 {backTo && (
@@ -139,10 +139,10 @@ function ReusableTable({
                 {tableTitle && <h5 className={compactTitle ? "text-sm font-semibold text-dark dark:text-white" : "card-title"}>{tableTitle}</h5>}
               </div>
             )}
-            <div className="flex items-center gap-3 flex-col md:flex-row ml-auto justify-end">
+            <div className="flex items-center gap-3 flex-col md:flex-row md:flex-wrap ml-auto justify-end">
               {/* Add the filter dropdowns */}
               {filterDropdowns && (
-                <div className="flex items-center gap-3 flex-col md:flex-row">
+                <div className="flex items-center gap-3 flex-col md:flex-row md:flex-wrap">
                   {filterDropdowns.map((filter, index) => (
                     <div key={index} className="min-w-[200px]">
                       <Select
@@ -247,11 +247,11 @@ function ReusableTable({
           </table>
         </div>
         {paginated && (
-        <div className="sm:flex gap-2 pt-3 items-center justify-between">
+        <div className="sm:flex sm:flex-wrap gap-2 pt-3 items-center justify-between">
           <div className="flex items-center gap-2">
             <h1 className="text-gray-700">{tableData.length} Rows</h1>
           </div>
-          <div className="sm:flex items-center gap-2">
+          <div className="sm:flex sm:flex-wrap items-center gap-2">
             <div className="flex">
               <h2 className="text-gray-700 pe-1">Page</h2>
               <h2 className="font-semibold text-gray-900">
