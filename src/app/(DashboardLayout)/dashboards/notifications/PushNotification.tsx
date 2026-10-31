@@ -11,12 +11,14 @@ import Actions from "./Actions";
 import PushComposer, { ComposerDraft } from "./PushComposer";
 import PushDetail from "./PushDetail";
 import {
+  audienceIcon,
   audienceLabel,
   audienceOf,
   AUDIENCES,
   compact,
   formatDateTime,
   relative,
+  SEGMENT_AUDIENCE,
   STATUS_LABEL,
   STATUS_TONE,
   whenOf,
@@ -36,7 +38,11 @@ const FILTERS = [
     label: "Audience",
     key: "audience",
     defaultValue: "",
-    options: [{ value: "", label: "All audiences" }, ...AUDIENCES.map((a) => ({ value: a.value, label: a.label }))],
+    options: [
+      { value: "", label: "All audiences" },
+      ...AUDIENCES.map((a) => ({ value: a.value, label: a.label })),
+      { value: SEGMENT_AUDIENCE.value, label: SEGMENT_AUDIENCE.label },
+    ],
   },
 ];
 
@@ -80,14 +86,17 @@ const PushNotification = ({
   const [composer, setComposer] = useState<{ draft: ComposerDraft | null } | null>(null);
   const [viewing, setViewing] = useState<IPushNotifications | null>(null);
 
+  // Segment pushes aren't offered for duplicating: the composer has no segments.
   const duplicate = (n: IPushNotifications | IPushDetail) => {
+    const audience = audienceOf(n);
+    if (audience === "segment") return;
     setViewing(null);
     setComposer({
       draft: {
         title: n.title,
         body: n.body,
         image_url: n.image_url,
-        audience: audienceOf(n),
+        audience,
         users: "recipients" in n ? n.recipients : [],
       },
     });
@@ -119,15 +128,12 @@ const PushNotification = ({
     col.display({
       id: "audience",
       header: () => <span>Audience</span>,
-      cell: (info) => {
-        const a = AUDIENCES.find((x) => x.value === audienceOf(info.row.original))!;
-        return (
-          <span className="inline-flex items-center gap-1.5 text-xs font-medium text-darklink whitespace-nowrap">
-            <Icon icon={a.icon} height={16} />
-            {audienceLabel(info.row.original)}
-          </span>
-        );
-      },
+      cell: (info) => (
+        <span className="inline-flex items-center gap-1.5 text-xs font-medium text-darklink" title={audienceLabel(info.row.original)}>
+          <Icon icon={audienceIcon(info.row.original)} height={16} className="shrink-0" />
+          <span className="whitespace-normal max-w-[140px]">{audienceLabel(info.row.original)}</span>
+        </span>
+      ),
     }),
     col.accessor("status", {
       header: () => <span>Status</span>,

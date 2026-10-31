@@ -38,6 +38,17 @@ const SidebarContent: MenuItem[] = [
             url: "/",
           },
           {
+            name: "Analytics",
+            permission: "analytics.view",
+            icon: "solar:graph-up-line-duotone",
+            id: uniqueId(),
+            children: [
+              { name: "Overview", icon: "solar:widget-add-line-duotone", id: uniqueId(), url: "/dashboards/analytics" },
+              { name: "Retention", icon: "solar:refresh-circle-line-duotone", id: uniqueId(), url: "/dashboards/analytics/retention" },
+              { name: "Audience", icon: "solar:users-group-two-rounded-line-duotone", id: uniqueId(), url: "/dashboards/analytics/audience" },
+            ],
+          },
+          {
             name: "Users",
             permission: "users.view",
             icon: "solar:users-group-rounded-line-duotone",
