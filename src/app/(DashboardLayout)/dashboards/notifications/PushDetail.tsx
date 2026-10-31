@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { Drawer, Spinner } from "flowbite-react";
 import { Icon } from "@iconify/react";
 import { Button } from "@/app/components/shared/Button";
@@ -12,7 +13,9 @@ import {
   audienceOf,
   compact,
   formatDateTime,
+  recipientIds,
   relative,
+  segmentOf,
   STATUS_LABEL,
   STATUS_TONE,
 } from "./pushUi";
@@ -56,7 +59,8 @@ const PushDetail = ({
   const bad = n?.failure_count ?? null;
   const total = (ok ?? 0) + (bad ?? 0);
   const recipients = detail?.recipients ?? [];
-  const recipientCount = n?.recipients_count ?? n?.target?.length ?? 0;
+  const recipientCount = n?.recipients_count ?? (n ? recipientIds(n).length : 0);
+  const segment = n ? segmentOf(n) : null;
 
   return (
     <Drawer open={!!row} onClose={onClose} position="right" className="z-[100] dark:bg-darkgray w-full max-w-[460px] p-0">
@@ -128,6 +132,21 @@ const PushDetail = ({
               )}
             </div>
 
+            {segment && (
+              <div className="rounded-xl border border-ld p-4">
+                <p className="text-sm font-semibold">{segment.label}</p>
+                <p className="text-xs text-darklink mt-1">
+                  {recipientCount ? `${recipientCount.toLocaleString()} people with a recent push token. ` : ""}
+                  {n.status === "scheduled"
+                    ? "Who gets it is worked out again when it goes out."
+                    : "Sending it again works the segment out again, so it reaches whoever is in it then."}
+                </p>
+                <Link href="/dashboards/analytics/audience" className="text-xs font-semibold text-primary inline-flex items-center gap-0.5 mt-2">
+                  See segments <Icon icon="solar:alt-arrow-right-linear" height={13} />
+                </Link>
+              </div>
+            )}
+
             {audience === "users" && (
               <div className="rounded-xl border border-ld p-4">
                 <p className="text-sm font-semibold mb-3">
@@ -162,9 +181,11 @@ const PushDetail = ({
           </div>
 
           <div className="flex flex-wrap gap-2 px-5 py-4 border-t border-ld">
-            <Button color="primary" size="sm" onClick={() => onDuplicate(n)}>
-              <Icon icon="solar:copy-linear" height={16} className="me-1" /> Duplicate
-            </Button>
+            {!segment && (
+              <Button color="primary" size="sm" onClick={() => onDuplicate(n)}>
+                <Icon icon="solar:copy-linear" height={16} className="me-1" /> Duplicate
+              </Button>
+            )}
             {n.status !== "scheduled" && n.status !== "sending" && (
               <Button color="light" size="sm" onClick={() => setKind("resend")}>
                 <Icon icon="solar:restart-linear" height={16} className="me-1" /> Send again
