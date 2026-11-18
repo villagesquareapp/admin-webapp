@@ -103,6 +103,28 @@ export const getVflixVideoDetail = async (id: string) => {
   return await apiGet<IVflixVideoDetail>(`vflix/${id}`, token);
 };
 
+// A video's comments, newest first, and a comment's replies, oldest first;
+// removed ones included. Remove/restore through moderation (vflix_comment).
+export const getVflixComments = async (id: string, page: number = 1, limit: number = 20) => {
+  const token = await getToken();
+  return await apiGet<IPaginatedResponse<IVflixComment>>(
+    `vflix/${id}/comments?page=${page}&limit=${limit}`,
+    token
+  );
+};
+
+export const getVflixCommentReplies = async (
+  commentId: string,
+  page: number = 1,
+  limit: number = 20
+) => {
+  const token = await getToken();
+  return await apiGet<IPaginatedResponse<IVflixComment>>(
+    `vflix/comments/${commentId}/replies?page=${page}&limit=${limit}`,
+    token
+  );
+};
+
 // §4.6 — moderate (take down / restore / shadow-hide / flag). This is the
 // takedown mechanism; there is no separate delete endpoint.
 export const updateVflixStatus = async (

@@ -762,7 +762,23 @@ interface IUserStatusListResponse extends IPaginatedResponse<IUserStatusList> {}
 interface IMedia {
   thumbnail: string;
   url: string;
-  type: "image" | "video";
+  type: "image" | "video" | "audio";
+  // Voice notes: url is the preview card older apps show; play audio_url.
+  audio_url?: string | null;
+  duration?: number | null;
+  waveform?: number[] | null;
+}
+
+interface IVflixComment {
+  uuid: string;
+  // The author's own words; null when the comment is only a voice note.
+  text: string | null;
+  voice: { url: string; duration: number | null; waveform: number[] | null } | null;
+  likes_count: number;
+  replies_count: number;
+  removed: boolean;
+  created_at: string;
+  user: { uuid: string; name: string | null; username: string | null; profile_picture: string | null } | null;
 }
 
 interface IPosts {
@@ -2662,10 +2678,40 @@ interface ILedgerOverview {
 
 interface ILedgerAccountDetail {
   account: ILedgerAccount;
+  // Stored (what the apps use); ledger_balance re-adds the entries.
   balance: string;
+  ledger_balance?: string;
   owner?: ILedgerOwner;
   entries?: number;
   last_entry_at?: string | null;
+}
+
+// An account whose stored balance disagreed with its entries (nightly check).
+interface ILedgerBalanceMismatch {
+  uuid: string;
+  account_id: string;
+  ledger_balance: string;
+  stored_balance: string;
+  froze_account: boolean;
+  found_at: string;
+  resolved_at: string | null;
+  resolution: string | null;
+  resolved_by_name: string | null;
+  owner_id: string;
+  owner_type: string;
+  account_type: string;
+  currency_type: string;
+  account_status: string;
+  owner_name: string | null;
+  owner_username: string | null;
+}
+
+interface ILedgerRebuildResult {
+  account_id: string;
+  previous_balance: string;
+  balance: string;
+  mismatches_closed: number;
+  unfrozen: boolean;
 }
 
 interface ILedgerReconciliation {

@@ -9,6 +9,8 @@ import { formatDistanceToNow } from "date-fns";
 import CardBox from "@/app/components/shared/CardBox";
 import PostVideo from "../PostVideo";
 import PostModerationPanel from "../PostModerationPanel";
+import RepliesPanel from "../RepliesPanel";
+import VoiceNotePlayer from "@/app/components/shared/VoiceNotePlayer";
 import PostTypeBadge from "../PostTypeBadge";
 import { PostOriginals } from "@/app/components/shared/PrivateFiles";
 import { formatDate } from "@/utils/dateUtils";
@@ -27,13 +29,22 @@ const StatusBadge = ({ status, deleted }: { status: string; deleted?: boolean })
   );
 };
 
-const Stat = ({ icon, value, label }: { icon: string; value: number; label: string }) => (
-  <div className="flex flex-col items-center gap-1 rounded-lg bg-white/5 py-2.5">
-    <Icon icon={icon} height={17} className="text-white/80" />
-    <span className="text-[13px] font-bold text-white tabular-nums">{fmt(value)}</span>
-    <span className="text-[10px] text-white/50">{label}</span>
-  </div>
-);
+const Stat = ({ icon, value, label, onClick }: { icon: string; value: number; label: string; onClick?: () => void }) => {
+  const body = (
+    <>
+      <Icon icon={icon} height={17} className="text-white/80" />
+      <span className="text-[13px] font-bold text-white tabular-nums">{fmt(value)}</span>
+      <span className="text-[10px] text-white/50">{label}</span>
+    </>
+  );
+  return onClick ? (
+    <button type="button" onClick={onClick} className="flex flex-col items-center gap-1 rounded-lg bg-white/5 py-2.5 hover:bg-white/15 transition">
+      {body}
+    </button>
+  ) : (
+    <div className="flex flex-col items-center gap-1 rounded-lg bg-white/5 py-2.5">{body}</div>
+  );
+};
 
 const Tile = ({ icon, label, value }: { icon: string; label: string; value?: string | number | null }) => (
   <div className="bg-lightgray dark:bg-dark rounded-md p-3 min-w-0">
@@ -144,6 +155,16 @@ const PostDetailContent = ({ detail, postId }: { detail: Detail | null; postId: 
                     <p className="text-sm">Text-only post</p>
                   </div>
                 </div>
+              ) : cur?.type === "audio" && cur.audio_url ? (
+                <div className="aspect-[4/5] grid place-items-center px-2">
+                  <div className="w-full flex flex-col items-center gap-4">
+                    <span className="size-16 rounded-full grid place-items-center bg-white/10 text-white">
+                      <Icon icon="solar:microphone-3-bold" height={30} />
+                    </span>
+                    <VoiceNotePlayer src={cur.audio_url} duration={cur.duration} waveform={cur.waveform} onDark size="md" />
+                    <p className="text-xs text-white/60">Voice note</p>
+                  </div>
+                </div>
               ) : cur?.type === "video" ? (
                 <PostVideo src={cur.url} showEchoButtons={false} />
               ) : (
@@ -168,7 +189,12 @@ const PostDetailContent = ({ detail, postId }: { detail: Detail | null; postId: 
             <div className="mt-4 grid grid-cols-4 gap-2">
               <Stat icon="solar:eye-bold" value={m.views} label="Views" />
               <Stat icon="solar:heart-bold" value={m.likes} label="Likes" />
-              <Stat icon="solar:chat-round-bold" value={m.replies} label="Replies" />
+              <Stat
+                icon="solar:chat-round-bold"
+                value={m.replies}
+                label="Replies"
+                onClick={m.replies ? () => document.getElementById("post-replies")?.scrollIntoView({ behavior: "smooth" }) : undefined}
+              />
               <Stat icon="solar:share-bold" value={m.shares} label="Shares" />
             </div>
             <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
@@ -277,52 +303,15 @@ const PostDetailContent = ({ detail, postId }: { detail: Detail | null; postId: 
           </CardBox>
 
           {/* replies (posts are Twitter-style — a reply is itself a post) */}
-          <CardBox>
-            <h5 className="card-title mb-3 flex items-center gap-2">
-              <Icon icon="solar:reply-2-linear" height={18} className="text-info" />
-              Replies {m.replies ? `· ${fmt(m.replies)}` : ""}
-            </h5>
-            {detail.replies?.length ? (
-              <div className="flex flex-col gap-2">
-                {detail.replies.map((r) => (
-                  <Link
-                    key={r.uuid}
-                    href={`/dashboards/posts/${r.uuid}`}
-                    className="flex gap-2.5 p-2.5 rounded-lg border border-border dark:border-darkborder hover:border-primary transition"
-                  >
-                    <div className="relative w-8 h-8 rounded-full overflow-hidden bg-lightgray dark:bg-dark shrink-0">
-                      {r.user?.profile_picture && <Image src={r.user.profile_picture} alt="" fill className="object-cover" />}
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-2">
-                        <span className="font-semibold text-sm truncate">{r.user?.name || "Unknown"}</span>
-                        <span className="text-xs text-darklink truncate">@{r.user?.username}</span>
-                        {r.created_at && (
-                          <span className="text-xs text-darklink shrink-0">
-                            · {formatDistanceToNow(new Date(r.created_at), { addSuffix: true })}
-                          </span>
-                        )}
-                      </div>
-                      {r.caption && <p className="text-sm mt-0.5 line-clamp-2">{r.caption}</p>}
-                      <div className="flex items-center gap-3 mt-1 text-[11px] text-darklink">
-                        <span className="flex items-center gap-1"><Icon icon="solar:heart-linear" height={12} />{fmt(r.likes_count)}</span>
-                        <span className="flex items-center gap-1"><Icon icon="solar:reply-2-linear" height={12} />{fmt(r.replies_count)}</span>
-                        {r.media?.length ? <span className="flex items-center gap-1"><Icon icon="solar:gallery-linear" height={12} />{r.media.length}</span> : null}
-                      </div>
-                    </div>
-                    <StatusBadge status={r.status} deleted={!!r.deleted_at} />
-                  </Link>
-                ))}
-                {m.replies > detail.replies.length && (
-                  <p className="text-xs text-darklink text-center pt-1">
-                    Showing {detail.replies.length} of {fmt(m.replies)} replies
-                  </p>
-                )}
-              </div>
-            ) : (
-              <p className="text-sm text-darklink py-2">No replies yet.</p>
-            )}
-          </CardBox>
+          <div id="post-replies" className="scroll-mt-24">
+            <CardBox>
+              <h5 className="card-title mb-3 flex items-center gap-2">
+                <Icon icon="solar:reply-2-linear" height={18} className="text-info" />
+                Replies {m.replies ? `· ${fmt(m.replies)}` : ""}
+              </h5>
+              <RepliesPanel postId={detail.uuid} />
+            </CardBox>
+          </div>
         </div>
       </div>
     </div>

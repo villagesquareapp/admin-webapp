@@ -1,5 +1,6 @@
 import { Suspense } from "react";
-import { getLedgerAccounts, getLedgerOverview, getLedgerTransactions } from "@/app/api/ledger";
+import { getLedgerAccounts, getLedgerBalanceChecks, getLedgerOverview, getLedgerTransactions } from "@/app/api/ledger";
+import BalanceChecks from "./BalanceChecks";
 import LedgerOverview from "./LedgerOverview";
 import TransactionsTable from "./TransactionsTable";
 import AccountsTable from "./AccountsTable";
@@ -10,6 +11,11 @@ const str = (v: string | string[] | undefined) => (typeof v === "string" && v ? 
 const Overview = async () => {
   const res = await getLedgerOverview();
   return <LedgerOverview overview={res?.data ?? null} />;
+};
+
+const Checks = async () => {
+  const res = await getLedgerBalanceChecks("open");
+  return <BalanceChecks mismatches={res?.data ?? null} />;
 };
 
 const List = async ({ params }: { params: Params }) => {
@@ -41,6 +47,9 @@ const Page = async (props: { searchParams: Promise<Params> }) => {
   const params = await props.searchParams;
   return (
     <div className="flex flex-col gap-5">
+      <Suspense fallback={null}>
+        <Checks />
+      </Suspense>
       <Suspense fallback={<div className="h-[340px] w-full animate-pulse bg-gray-100 dark:bg-gray-800 rounded-3xl" />}>
         <Overview />
       </Suspense>
