@@ -11,6 +11,8 @@ import PostVideo from "../PostVideo";
 import PostModerationPanel from "../PostModerationPanel";
 import RepliesPanel from "../RepliesPanel";
 import VoiceNotePlayer from "@/app/components/shared/VoiceNotePlayer";
+import VoiceTranscript from "@/app/components/shared/VoiceTranscript";
+import { getPostTranscript } from "@/app/api/post";
 import PostTypeBadge from "../PostTypeBadge";
 import { PostOriginals } from "@/app/components/shared/PrivateFiles";
 import { formatDate } from "@/utils/dateUtils";
@@ -163,6 +165,7 @@ const PostDetailContent = ({ detail, postId }: { detail: Detail | null; postId: 
                     </span>
                     <VoiceNotePlayer src={cur.audio_url} duration={cur.duration} waveform={cur.waveform} onDark size="md" />
                     <p className="text-xs text-white/60">Voice note</p>
+                    <VoiceTranscript onDark load={() => getPostTranscript(detail.uuid)} />
                   </div>
                 </div>
               ) : cur?.type === "video" ? (

@@ -4,8 +4,9 @@ import { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
 import { Icon } from "@iconify/react";
 import { formatDistanceToNow } from "date-fns";
-import { getVflixCommentReplies, getVflixComments } from "@/app/api/vflix";
+import { getVflixCommentReplies, getVflixCommentTranscript, getVflixComments } from "@/app/api/vflix";
 import VoiceNotePlayer from "@/app/components/shared/VoiceNotePlayer";
+import VoiceTranscript from "@/app/components/shared/VoiceTranscript";
 import RemoveRestore from "@/app/components/shared/RemoveRestore";
 
 type Page = IPaginatedResponse<IVflixComment>;
@@ -64,7 +65,10 @@ const CommentRow = ({ comment, isReply }: { comment: IVflixComment; isReply?: bo
         </div>
         {comment.text && <p className="text-sm whitespace-pre-wrap break-words">{comment.text}</p>}
         {comment.voice && (
-          <VoiceNotePlayer src={comment.voice.url} duration={comment.voice.duration} waveform={comment.voice.waveform} />
+          <>
+            <VoiceNotePlayer src={comment.voice.url} duration={comment.voice.duration} waveform={comment.voice.waveform} />
+            <VoiceTranscript load={() => getVflixCommentTranscript(comment.uuid)} />
+          </>
         )}
         <div className="flex items-center gap-3 text-[11px] text-darklink flex-wrap">
           <span className="flex items-center gap-1">

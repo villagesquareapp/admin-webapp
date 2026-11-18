@@ -1,6 +1,7 @@
 'use server'
 
 import { apiGet, apiPost } from '@/lib/api';
+import { baseApiCall } from '@/lib/api/base';
 import { getToken } from '@/lib/getToken';
 import { revalidateCurrentPath } from '@/lib/revalidate';
 
@@ -38,6 +39,13 @@ export const getPostReplies = async (uuid: string, page: number = 1, limit: numb
         `posts/${uuid}/replies?page=${page}&limit=${limit}`,
         token,
     );
+};
+
+// A voice post's or voice reply's transcript. Asking again is safe: it's made
+// once. Not apiPost, which would revalidate the page on every poll.
+export const getPostTranscript = async (uuid: string) => {
+    const token = await getToken();
+    return await baseApiCall<IVoiceTranscript>('POST', `posts/${uuid}/transcript`, { body: '{}', cache: 'no-store' }, token);
 };
 
 export const getPostDetail = async (uuid: string) => {
