@@ -649,6 +649,8 @@ const PendingVerificationDialog = ({
                       >
                         Close
                       </FlowbiteButton>
+                      {/* Only a pending request can be decided. */}
+                      {(pendingVerification?.status ?? "pending") === "pending" && (
                       <div className="flex gap-3">
                         <FlowbiteButton
                           color="failure"
@@ -667,6 +669,7 @@ const PendingVerificationDialog = ({
                           Approve
                         </FlowbiteButton>
                       </div>
+                      )}
                     </div>
                   </>
                 )}

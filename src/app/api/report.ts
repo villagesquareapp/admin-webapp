@@ -1,6 +1,6 @@
 'use server'
 
-import { apiGet, apiPut } from '@/lib/api';
+import { apiDelete, apiGet, apiPatch, apiPost, apiPut } from '@/lib/api';
 import { baseApiCall } from '@/lib/api/base';
 import { getToken } from '@/lib/getToken';
 import { revalidateCurrentPath } from '@/lib/revalidate';
@@ -41,11 +41,13 @@ export const getReportStats = async () => {
     );
 };
 
+// handled_by: 'me' for the reports you're reviewing or closed.
 export const getAllReports = async (
     page: number = 1,
     limit: number = 20,
     service?: string,
-    status?: string
+    status?: string,
+    filters: { reason_id?: string; handled_by?: string } = {}
 ) => {
     const token = await getToken();
 
@@ -61,6 +63,8 @@ export const getAllReports = async (
     if (status) {
         params.append('status', status);
     }
+    if (filters.reason_id) params.append('reason_id', filters.reason_id);
+    if (filters.handled_by) params.append('handled_by', filters.handled_by);
 
     return await apiGet<IReportResponse>(
         `reports/service?${params.toString()}`,
@@ -94,4 +98,67 @@ export const getPostOriginals = async (postId: string) => {
         originals: { media_id: string; media_type: string; url: string | null }[];
         expires_in: number;
     }>('GET', `posts/${encodeURIComponent(postId)}/private-originals`, { cache: 'no-store' }, token);
+};
+
+// Taking a report for review, handing it back, and reopening a dismissed one.
+const reportStep = async (id: string, step: 'review' | 'release' | 'reopen', body: object = {}) => {
+    const token = await getToken();
+    if (!token) return null;
+    const r = await apiPut<{ status: string; handled_by: string | null }>(
+        `reports/${encodeURIComponent(id)}/${step}`,
+        body,
+        token
+    );
+    if (r.status) await revalidateCurrentPath();
+    return r;
+};
+export const startReportReview = async (id: string) => reportStep(id, 'review');
+export const releaseReportReview = async (id: string) => reportStep(id, 'release');
+export const reopenReport = async (id: string, reason?: string) =>
+    reportStep(id, 'reopen', { reason: reason || undefined });
+
+// The reasons the app's report sheet offers.
+export const getReportReasons = async () => {
+    const token = await getToken();
+    return apiGet<IReportReason[]>('reports/reasons', token);
+};
+
+export type ReportReasonInput = {
+    title?: string;
+    description?: string;
+    service_type?: string | null;
+    is_active?: boolean;
+};
+
+export const createReportReason = async (input: ReportReasonInput) => {
+    const token = await getToken();
+    if (!token) return null;
+    const r = await apiPost<IReportReason>('reports/reasons', input, token);
+    if (r.status) await revalidateCurrentPath();
+    return r;
+};
+
+export const updateReportReason = async (id: string, input: ReportReasonInput) => {
+    const token = await getToken();
+    if (!token) return null;
+    const r = await apiPatch<IReportReason>(`reports/reasons/${encodeURIComponent(id)}`, input, token);
+    if (r.status) await revalidateCurrentPath();
+    return r;
+};
+
+// Every reason of one list, in the new order.
+export const reorderReportReasons = async (ids: string[]) => {
+    const token = await getToken();
+    if (!token) return null;
+    const r = await apiPut<IReportReason[]>('reports/reasons/order', { ids }, token);
+    if (r.status) await revalidateCurrentPath();
+    return r;
+};
+
+export const deleteReportReason = async (id: string) => {
+    const token = await getToken();
+    if (!token) return null;
+    const r = await apiDelete(`reports/reasons/${encodeURIComponent(id)}`, token);
+    if (r.status) await revalidateCurrentPath();
+    return r;
 };

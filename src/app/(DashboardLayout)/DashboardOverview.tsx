@@ -80,7 +80,7 @@ const DashboardOverview = ({ data }: { data: DashboardData }) => {
 
   const needCards = [
     { label: "Payouts waiting", value: needs_action.payouts_waiting, icon: "solar:money-bag-linear", tone: "bg-lightwarning text-warning", href: "/dashboards/wallets" },
-    { label: "Pending verifications", value: needs_action.pending_verifications, icon: "solar:verified-check-linear", tone: "bg-lightinfo text-info", href: "/dashboards/verified-users" },
+    { label: "Pending verifications", value: needs_action.pending_verifications, icon: "solar:verified-check-linear", tone: "bg-lightinfo text-info", href: "/dashboards/verification" },
     { label: "Open reports", value: needs_action.open_reports, icon: "solar:flag-2-linear", tone: "bg-lighterror text-error", href: "/dashboards/posts/reports" },
     { label: "Flagged users", value: needs_action.flagged_users, icon: "solar:user-block-linear", tone: "bg-lightwarning text-warning", href: "/dashboards/users/list?status=flagged" },
     { label: "Taken-down content", value: needs_action.taken_down, icon: "solar:trash-bin-trash-linear", tone: "bg-lighterror text-error", href: "/dashboards/posts/list?status=disabled" },

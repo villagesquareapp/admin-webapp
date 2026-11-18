@@ -178,7 +178,17 @@ const SidebarContent: MenuItem[] = [
             permission: "reports.view",
             icon: "solar:chart-2-line-duotone",
             id: uniqueId(),
-            url: "/dashboards/reports",
+            children: [
+              { name: "All Reports", icon: "solar:flag-line-duotone", id: uniqueId(), url: "/dashboards/reports" },
+              { name: "Report Reasons", icon: "solar:list-check-line-duotone", id: uniqueId(), url: "/dashboards/reports/reasons" },
+            ],
+          },
+          {
+            name: "Verification",
+            permission: "verification.view",
+            icon: "solar:verified-check-line-duotone",
+            id: uniqueId(),
+            url: "/dashboards/verification",
           },
           {
             name: "Feedback",

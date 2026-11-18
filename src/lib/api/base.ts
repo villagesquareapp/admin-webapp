@@ -17,7 +17,9 @@ async function baseApiCall<T>(
     const url = `${API_URL?.replace(/\/+$/, '')}${cleanRoute}`
 
     const headers = new Headers(options.headers)
-    if (!headers.has('Content-Type') && !options.isFormData) {
+    // Only with a body: the Admin API (Fastify) refuses a JSON content type
+    // with an empty body, which is every DELETE.
+    if (!headers.has('Content-Type') && !options.isFormData && options.body != null) {
         headers.set('Content-Type', 'application/json')
     }
 

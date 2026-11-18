@@ -222,7 +222,7 @@ const PendingVerifications = ({
       cell: (info) => {
         return (
           <p className="text-darklink dark:text-bodytext text-sm">
-            {formatDate(info.getValue())}
+            {formatDate(info.getValue() ?? "")}
           </p>
         );
       },
