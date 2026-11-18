@@ -31,6 +31,15 @@ export const getPostQueue = async (
     return await apiGet<IPostQueueResponse>(`posts/queue?${q}`, token);
 };
 
+// A post's direct replies (they are posts), newest first, removed ones included.
+export const getPostReplies = async (uuid: string, page: number = 1, limit: number = 20) => {
+    const token = await getToken();
+    return await apiGet<IPaginatedResponse<IPostReply>>(
+        `posts/${uuid}/replies?page=${page}&limit=${limit}`,
+        token,
+    );
+};
+
 export const getPostDetail = async (uuid: string) => {
     const token = await getToken();
     return await apiGet<IPostDetail>(`posts/${uuid}`, token);
