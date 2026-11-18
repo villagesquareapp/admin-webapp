@@ -12,6 +12,7 @@ import { createColumnHelper } from "@/utils/table";
 import { getLedgerAccount, setLedgerAccountStatus } from "@/app/api/ledger";
 import PostSearch from "../posts/PostSearch";
 import { ACCOUNT_LABEL, amount, OwnerCell, StatusChip, when } from "./ledgerUi";
+import { RebuildBalanceModal } from "./BalanceChecks";
 
 const FILTERS = [
   {
@@ -68,6 +69,7 @@ const AccountDrawer = ({ account, onClose }: { account: ILedgerAccount | null; o
   const router = useRouter();
   const [detail, setDetail] = useState<ILedgerAccountDetail | null>(null);
   const [change, setChange] = useState<StatusChange | null>(null);
+  const [rebuilding, setRebuilding] = useState(false);
 
   useEffect(() => {
     if (!account) return;
@@ -101,6 +103,17 @@ const AccountDrawer = ({ account, onClose }: { account: ILedgerAccount | null; o
               {system && <span className="text-[11px] text-darklink">Only a super admin can change a system pool</span>}
             </div>
           </div>
+          {detail?.ledger_balance != null && Number(detail.ledger_balance) !== Number(detail.balance) && (
+            <div className="rounded-xl border border-warning/40 bg-lightwarning/40 p-3 text-sm">
+              <p className="font-semibold">The stored balance doesn&apos;t match the entries</p>
+              <p className="text-xs text-darklink mt-0.5">
+                Its entries add up to {amount(detail.ledger_balance, account.currency_type)}.
+              </p>
+              <Button size="xs" color="warning" className="mt-2" onClick={() => setRebuilding(true)}>
+                Rebuild balance
+              </Button>
+            </div>
+          )}
           {!detail ? (
             <div className="flex justify-center py-4"><Spinner size="sm" /></div>
           ) : (
@@ -141,6 +154,22 @@ const AccountDrawer = ({ account, onClose }: { account: ILedgerAccount | null; o
           )}
         </div>
       </div>
+      <RebuildBalanceModal
+        target={
+          rebuilding && detail
+            ? {
+                accountId: account.uuid,
+                name: account.owner?.name || ACCOUNT_LABEL[account.account_type] || "This account",
+                frozen: status === "frozen",
+                entries: detail.ledger_balance ?? detail.balance,
+                stored: detail.balance,
+                currency: account.currency_type,
+              }
+            : null
+        }
+        onClose={() => setRebuilding(false)}
+        onDone={onClose}
+      />
       <ReasonModal
         open={!!change}
         title={change?.title ?? ""}

@@ -66,3 +66,21 @@ export const reconcileLedger = async (from: string, to: string) => {
   const token = await getToken();
   return await apiPost<ILedgerReconciliation>(`admin/ledger/reconcile`, { from, to }, token);
 };
+
+// Stored balances the nightly check found wrong. status: open, resolved or all.
+export const getLedgerBalanceChecks = async (status: "open" | "resolved" | "all" = "open") => {
+  const token = await getToken();
+  return await apiGet<ILedgerBalanceMismatch[]>(`admin/ledger/balance-checks?status=${status}`, token);
+};
+
+// Sets the stored balance from the entries; optionally unfreezes the account.
+export const rebuildLedgerBalance = async (accountId: string, reason: string, unfreeze: boolean) => {
+  const token = await getToken();
+  const r = await apiPost<ILedgerRebuildResult>(
+    `admin/ledger/accounts/${accountId}/rebuild-balance`,
+    { reason, unfreeze },
+    token
+  );
+  if (r.status) await revalidateCurrentPath();
+  return r;
+};
