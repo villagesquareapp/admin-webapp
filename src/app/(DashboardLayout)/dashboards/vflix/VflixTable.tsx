@@ -10,6 +10,8 @@ import { useRouter } from "next/navigation";
 import { getVflixStatusList } from "@/app/api/vflix";
 import VflixActions from "./VflixActions";
 import VflixStatusBadge from "./VflixStatusBadge";
+import CommentsPanel from "./CommentsPanel";
+import SidePanel from "@/app/components/shared/SidePanel";
 import { formatCount, formatDuration } from "./vflixStatus";
 
 interface FilterDropdown {
@@ -43,6 +45,7 @@ const VflixTable = ({
   const router = useRouter();
   const [statuses, setStatuses] = useState<IVflixStatusOption[]>([]);
   const [statusLoading, setStatusLoading] = useState(false);
+  const [commentsFor, setCommentsFor] = useState<IVflixVideo | null>(null);
 
   useEffect(() => {
     const fetchStatuses = async () => {
@@ -124,6 +127,26 @@ const VflixTable = ({
       ),
       header: () => <span>Likes</span>,
     }),
+    columnHelper.accessor("comments_count", {
+      cell: (info) =>
+        Number(info.getValue()) > 0 ? (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              setCommentsFor(info.row.original);
+            }}
+            className="flex items-center gap-1 text-sm font-semibold text-primary hover:underline"
+            title="See the comments"
+          >
+            <Icon icon="solar:chat-round-line-linear" height={15} />
+            {formatCount(info.getValue())}
+          </button>
+        ) : (
+          <p className="text-darklink dark:text-bodytext text-sm">0</p>
+        ),
+      header: () => <span>Comments</span>,
+    }),
     ...(showReportCount
       ? [
           columnHelper.accessor("report_count", {
@@ -183,6 +206,15 @@ const VflixTable = ({
         filterDropdowns={filterDropdowns}
         extraButtons={extraButtons}
       />
+      <SidePanel
+        open={!!commentsFor}
+        onClose={() => setCommentsFor(null)}
+        icon="solar:chat-round-line-linear"
+        title="Comments"
+        subtitle={commentsFor?.caption || undefined}
+      >
+        {commentsFor && <CommentsPanel vflixId={commentsFor.uuid} />}
+      </SidePanel>
     </div>
   );
 };

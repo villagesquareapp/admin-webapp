@@ -761,7 +761,23 @@ interface IUserStatusListResponse extends IPaginatedResponse<IUserStatusList> {}
 interface IMedia {
   thumbnail: string;
   url: string;
-  type: "image" | "video";
+  type: "image" | "video" | "audio";
+  // Voice notes: url is the preview card older apps show; play audio_url.
+  audio_url?: string | null;
+  duration?: number | null;
+  waveform?: number[] | null;
+}
+
+interface IVflixComment {
+  uuid: string;
+  // The author's own words; null when the comment is only a voice note.
+  text: string | null;
+  voice: { url: string; duration: number | null; waveform: number[] | null } | null;
+  likes_count: number;
+  replies_count: number;
+  removed: boolean;
+  created_at: string;
+  user: { uuid: string; name: string | null; username: string | null; profile_picture: string | null } | null;
 }
 
 interface IPosts {
