@@ -9,6 +9,9 @@ import { useRouter } from "next/navigation";
 import PostActions from "./PostActions";
 import PostTypeBadge from "./PostTypeBadge";
 import { getPostStatus } from "@/app/api/post";
+import { Icon } from "@iconify/react";
+import SidePanel from "@/app/components/shared/SidePanel";
+import RepliesPanel from "./RepliesPanel";
 
 const PostTable = ({
   posts,
@@ -32,6 +35,7 @@ const PostTable = ({
   const router = useRouter();
   const [statuses, setStatuses] = useState<IPostStatusList[]>([]);
   const [statusLoading, setStatusLoading] = useState<boolean>(false);
+  const [repliesFor, setRepliesFor] = useState<IPosts | null>(null);
 
   useEffect(() => {
     const fetchStatuses = async () => {
@@ -111,11 +115,23 @@ const PostTable = ({
       header: () => <span>Likes</span>,
     }),
     columnHelper.accessor("replies_count", {
-      cell: (info) => (
-        <p className="text-darklink dark:text-bodytext text-sm">
-          {info.getValue() || 0}
-        </p>
-      ),
+      cell: (info) =>
+        Number(info.getValue()) > 0 ? (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              setRepliesFor(info.row.original);
+            }}
+            className="flex items-center gap-1 text-sm font-semibold text-primary hover:underline"
+            title="See the replies"
+          >
+            <Icon icon="solar:chat-round-line-linear" height={15} />
+            {info.getValue()}
+          </button>
+        ) : (
+          <p className="text-darklink dark:text-bodytext text-sm">0</p>
+        ),
       header: () => <span>Replies</span>,
     }),
     columnHelper.accessor("created_at", {
@@ -216,6 +232,15 @@ const PostTable = ({
         extraButtons={extraButtons}
         onRowClick={handleRowClick}
       />
+      <SidePanel
+        open={!!repliesFor}
+        onClose={() => setRepliesFor(null)}
+        icon="solar:reply-2-linear"
+        title="Replies"
+        subtitle={repliesFor?.caption || undefined}
+      >
+        {repliesFor && <RepliesPanel postId={repliesFor.uuid} />}
+      </SidePanel>
     </div>
   );
 };

@@ -9,6 +9,8 @@ import { toast } from "sonner";
 import CardBox from "@/app/components/shared/CardBox";
 import VflixStatusBadge from "../../VflixStatusBadge";
 import VflixVideoPlayer from "../../VflixVideoPlayer";
+import CommentsPanel from "../../CommentsPanel";
+import SidePanel from "@/app/components/shared/SidePanel";
 import { formatCount, formatDuration, formatStatusLabel } from "../../vflixStatus";
 import { formatDate } from "@/utils/dateUtils";
 import {
@@ -21,13 +23,34 @@ import ResolveReportModal, { ReportAction } from "@/app/components/shared/Resolv
 const STATUS_OPTIONS = ["active", "reported", "flagged", "shadow_hidden", "disabled", "banned", "archived"];
 
 /* engagement stat cell (shown below the video) */
-const StatCell = ({ icon, value, label, tint }: { icon: string; value: number; label: string; tint?: string }) => (
-  <div className="flex flex-col items-center gap-1 rounded-lg bg-white/5 py-2.5">
-    <Icon icon={icon} height={18} className={tint || "text-white/80"} />
-    <span className="text-[13px] font-bold text-white tabular-nums">{formatCount(value)}</span>
-    <span className="text-[10px] text-white/50">{label}</span>
-  </div>
-);
+const StatCell = ({
+  icon,
+  value,
+  label,
+  tint,
+  onClick,
+}: {
+  icon: string;
+  value: number;
+  label: string;
+  tint?: string;
+  onClick?: () => void;
+}) => {
+  const body = (
+    <>
+      <Icon icon={icon} height={18} className={tint || "text-white/80"} />
+      <span className="text-[13px] font-bold text-white tabular-nums">{formatCount(value)}</span>
+      <span className="text-[10px] text-white/50">{label}</span>
+    </>
+  );
+  return onClick ? (
+    <button type="button" onClick={onClick} className="flex flex-col items-center gap-1 rounded-lg bg-white/5 py-2.5 hover:bg-white/15 transition">
+      {body}
+    </button>
+  ) : (
+    <div className="flex flex-col items-center gap-1 rounded-lg bg-white/5 py-2.5">{body}</div>
+  );
+};
 
 /* metadata tile (no thin dividers — soft tiles instead) */
 const Tile = ({ icon, label, value }: { icon: string; label: string; value?: string | number | null }) => (
@@ -42,6 +65,7 @@ const Tile = ({ icon, label, value }: { icon: string; label: string; value?: str
 const VideoDetailContent = ({ video }: { video: IVflixVideoDetail | null }) => {
   const [detail, setDetail] = useState<IVflixVideoDetail | null>(video);
   const [mediaIndex, setMediaIndex] = useState(0);
+  const [commentsOpen, setCommentsOpen] = useState(false);
   const [selected, setSelected] = useState("");
   const [reason, setReason] = useState("");
   const [pending, startTransition] = useTransition();
@@ -156,7 +180,12 @@ const VideoDetailContent = ({ video }: { video: IVflixVideoDetail | null }) => {
             <div className="mt-4 grid grid-cols-5 gap-2">
               <StatCell icon="solar:eye-bold" value={detail.views_count} label="Views" />
               <StatCell icon="solar:heart-bold" value={detail.likes_count} label="Likes" tint="text-[#ff6692]" />
-              <StatCell icon="solar:chat-round-bold" value={detail.comments_count} label="Comments" />
+              <StatCell
+                icon="solar:chat-round-bold"
+                value={detail.comments_count}
+                label="Comments"
+                onClick={() => setCommentsOpen(true)}
+              />
               <StatCell icon="solar:share-bold" value={detail.shares_count} label="Shares" />
               <StatCell icon="solar:gift-bold" value={detail.gifts_count} label="Gifts" tint="text-[#ffb900]" />
             </div>
@@ -401,6 +430,15 @@ const VideoDetailContent = ({ video }: { video: IVflixVideoDetail | null }) => {
         onClose={() => setReportModal(null)}
         onDone={onReportDone}
       />
+      <SidePanel
+        open={commentsOpen}
+        onClose={() => setCommentsOpen(false)}
+        icon="solar:chat-round-line-linear"
+        title="Comments"
+        subtitle={detail?.caption || undefined}
+      >
+        {detail && <CommentsPanel vflixId={detail.uuid} />}
+      </SidePanel>
     </div>
   );
 };
