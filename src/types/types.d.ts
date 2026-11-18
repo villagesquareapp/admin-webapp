@@ -769,6 +769,15 @@ interface IMedia {
   waveform?: number[] | null;
 }
 
+// A voice note's transcript, made the first time anyone asks for it.
+interface IVoiceTranscript {
+  status: "ready" | "processing" | "no_speech" | "unavailable";
+  text: string | null;
+  language: string | null;
+  retry_after: number | null;
+  message: string | null;
+}
+
 interface IVflixComment {
   uuid: string;
   // The author's own words; null when the comment is only a voice note.
