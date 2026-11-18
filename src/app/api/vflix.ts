@@ -6,6 +6,7 @@
  */
 
 import { apiGet, apiPost } from "@/lib/api";
+import { baseApiCall } from "@/lib/api/base";
 import { getToken } from "@/lib/getToken";
 import { revalidateCurrentPath } from "@/lib/revalidate";
 
@@ -121,6 +122,17 @@ export const getVflixCommentReplies = async (
   const token = await getToken();
   return await apiGet<IPaginatedResponse<IVflixComment>>(
     `vflix/comments/${commentId}/replies?page=${page}&limit=${limit}`,
+    token
+  );
+};
+
+// A voice comment's transcript, made once on the first request.
+export const getVflixCommentTranscript = async (commentId: string) => {
+  const token = await getToken();
+  return await baseApiCall<IVoiceTranscript>(
+    "POST",
+    `vflix/comments/${commentId}/transcript`,
+    { body: "{}", cache: "no-store" },
     token
   );
 };

@@ -5,8 +5,9 @@ import Link from "next/link";
 import Image from "next/image";
 import { Icon } from "@iconify/react";
 import { formatDistanceToNow } from "date-fns";
-import { getPostReplies } from "@/app/api/post";
+import { getPostReplies, getPostTranscript } from "@/app/api/post";
 import VoiceNotePlayer from "@/app/components/shared/VoiceNotePlayer";
+import VoiceTranscript from "@/app/components/shared/VoiceTranscript";
 import RemoveRestore from "@/app/components/shared/RemoveRestore";
 import { POST_STATUS_TONE } from "@/utils/moderationLabels";
 
@@ -15,7 +16,12 @@ const fmt = (n: number) => new Intl.NumberFormat("en", { notation: "compact" }).
 const ReplyMedia = ({ media, replyId }: { media: IMedia[]; replyId: string }) => {
   const voice = media.find((m) => m.type === "audio" && m.audio_url);
   if (voice) {
-    return <VoiceNotePlayer src={voice.audio_url!} duration={voice.duration} waveform={voice.waveform} />;
+    return (
+      <div className="flex flex-col gap-1.5">
+        <VoiceNotePlayer src={voice.audio_url!} duration={voice.duration} waveform={voice.waveform} />
+        <VoiceTranscript load={() => getPostTranscript(replyId)} />
+      </div>
+    );
   }
   const visual = media.filter((m) => m.type === "image" || m.type === "video");
   if (!visual.length) return null;
