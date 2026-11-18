@@ -12,6 +12,7 @@ import ResolveReportModal, { ReportAction } from "@/app/components/shared/Resolv
 import { getReportScreenshots } from "@/app/api/report";
 import { PostOriginals, PrivatePicture, usePrivateLinks } from "@/app/components/shared/PrivateFiles";
 import { Person, TrybeAvatar } from "../../trybes/trybeUi";
+import { History, Records, RelatedReports, ReviewButtons, reviewerName } from "./ReportRecords";
 
 const STATUS_COLOR: Record<string, string> = {
   open: "warning",
@@ -205,16 +206,24 @@ const ReportDetail = ({ report }: { report: IReportDetail | null }) => {
             <Badge color={STATUS_COLOR[report.status ?? "open"] ?? "gray"} className="capitalize">
               {(report.status ?? "open").replace(/_/g, " ")}
             </Badge>
+            {report.status === "in_review" && reviewerName(report) && (
+              <span className="text-xs">with {reviewerName(report)}</span>
+            )}
           </p>
         </div>
-        {open && (
-          <div className="flex gap-2">
-            <Button color="success" onClick={() => setAction("resolve")}>
-              Resolve
-            </Button>
-            <Button color="light" onClick={() => setAction("dismiss")}>
-              Dismiss
-            </Button>
+        {(open || report.status === "dismissed") && (
+          <div className="flex flex-wrap gap-2">
+            <ReviewButtons report={report} />
+            {open && (
+              <>
+                <Button color="success" onClick={() => setAction("resolve")}>
+                  Resolve
+                </Button>
+                <Button color="light" onClick={() => setAction("dismiss")}>
+                  Dismiss
+                </Button>
+              </>
+            )}
           </div>
         )}
       </div>
@@ -225,6 +234,9 @@ const ReportDetail = ({ report }: { report: IReportDetail | null }) => {
             <h5 className="font-semibold mb-3">Reported {report.report_service_type}</h5>
             <Target target={report.target} />
           </CardBox>
+          <div className="mt-30">
+            <History report={report} />
+          </div>
         </div>
         <div className="col-span-12 lg:col-span-5 flex flex-col gap-30">
           <CardBox>
@@ -267,6 +279,8 @@ const ReportDetail = ({ report }: { report: IReportDetail | null }) => {
             </div>
           </CardBox>
           <Screenshots report={report} />
+          <Records report={report} />
+          <RelatedReports report={report} />
         </div>
       </div>
 

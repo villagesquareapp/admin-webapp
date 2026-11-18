@@ -88,6 +88,7 @@ interface IReportStats {
   total_vflix_reports?: number;
   total_trybe_reports?: number;
   total_atc_reports?: number;
+  by_status?: { open: number; in_review: number; resolved: number; dismissed: number; closed_today: number };
 }
 
 interface IPostStats {
@@ -1486,6 +1487,116 @@ interface IReportDetail extends IReport {
   attachments_count: number;
   target: IReportTarget | null;
   trybe: { uuid: string; name: string; slug: string; status: string; avatar: string | null } | null;
+  history?: IReportHistoryEntry[];
+  related?: { total: number; open: number; items: IRelatedReport[] };
+  reporter_record?: { total: number; resolved: number; dismissed: number; open: number } | null;
+  owner_record?: {
+    user_id: string;
+    enforcement_count: number;
+    account_reports_count: number;
+    recent_enforcement: {
+      uuid: string;
+      action: string;
+      service_type: string | null;
+      reason: string | null;
+      created_at: string;
+      report_id: string | null;
+      admin_name: string | null;
+    }[];
+  } | null;
+}
+
+// A staff step on a report (review, release, dismiss, reopen, resolve, or a
+// moderation action it ran).
+interface IReportHistoryEntry {
+  uuid: string;
+  action: string;
+  reason: string | null;
+  result: string;
+  metadata: Record<string, any> | null;
+  created_at: string;
+  admin_id: string | null;
+  admin_name: string | null;
+}
+
+interface IRelatedReport {
+  id: string;
+  status: string;
+  created_at: string;
+  reason: string | null;
+  reason_title: string | null;
+  reporter_id: string | null;
+  reporter_name: string | null;
+  reporter_username: string | null;
+  reporter_picture: string | null;
+}
+
+interface IReportReason {
+  uuid: string;
+  title: string;
+  description: string | null;
+  // null: offered on every surface.
+  service_type: string | null;
+  position: number;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+  reports_count: number;
+  open_reports_count: number;
+}
+
+interface IVerificationStats {
+  pending_requests: number;
+  approved_30d: number;
+  rejected_30d: number;
+  paid_active: number;
+  granted_active: number;
+  expiring_7d: number;
+  badges: { greencheck: number; premium: number };
+}
+
+// A verification subscription: paid by the person or granted by staff.
+interface IVerifiedAccount {
+  uuid: string;
+  state: "active" | "ended" | "revoked";
+  status: string;
+  source: "paid" | "granted";
+  badge: "greencheck" | "premium";
+  plan: { uuid: string; name: string };
+  starts_at: string | null;
+  ends_at: string | null;
+  is_recurring: boolean;
+  renewal_count: number;
+  created_at: string;
+  note: string | null;
+  by_admin: { uuid: string; name: string | null } | null;
+  user: {
+    uuid: string;
+    name: string | null;
+    username: string | null;
+    profile_picture: string | null;
+    verification_badge: string;
+    status: string;
+  };
+}
+
+interface IVerifiedAccountsResponse extends IPaginatedResponse<IVerifiedAccount> {}
+
+interface IGrantVerificationResult {
+  badge: string;
+  ends_at: string;
+  granted: number;
+  extended: number;
+  unchanged: number;
+  skipped: number;
+  results: {
+    user_id: string;
+    name: string | null;
+    username: string | null;
+    outcome: "granted" | "extended" | "unchanged" | "skipped";
+    message?: string;
+    ends_at?: string;
+  }[];
 }
 
 interface IReportResponse extends IPaginatedResponse<IReport> {}
@@ -1791,6 +1902,8 @@ interface IPendingVerification {
   current_stage: number;
   reviewed_by: string | null;
   reviewed_at: string | null;
+  reviewer?: { uuid: string; name: string | null } | null;
+  documents_count?: number;
   created_at: string;
   updated_at: string;
   deleted_at: string | null;
