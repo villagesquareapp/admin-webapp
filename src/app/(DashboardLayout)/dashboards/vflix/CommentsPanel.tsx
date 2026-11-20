@@ -64,6 +64,17 @@ const CommentRow = ({ comment, isReply }: { comment: IVflixComment; isReply?: bo
           )}
         </div>
         {comment.text && <p className="text-sm whitespace-pre-wrap break-words">{comment.text}</p>}
+        {comment.image && (
+          <a
+            href={comment.image.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Open the photo"
+            className="relative size-24 rounded-md overflow-hidden bg-lightgray dark:bg-dark self-start"
+          >
+            <Image src={comment.image.thumbnail || comment.image.url} alt="" fill sizes="96px" className="object-cover" />
+          </a>
+        )}
         {comment.voice && (
           <>
             <VoiceNotePlayer src={comment.voice.url} duration={comment.voice.duration} waveform={comment.voice.waveform} />
@@ -116,7 +127,7 @@ const Replies = ({ commentId }: { commentId: string }) => {
   );
 };
 
-// A VFlix's comments, newest first: words, voice notes, replies under each,
+// A VFlix's comments, newest first: words, photos, voice notes, replies under each,
 // removed ones included so they can be restored.
 const CommentsPanel = ({ vflixId }: { vflixId: string }) => {
   const fetchPage = useCallback((page: number) => getVflixComments(vflixId, page), [vflixId]);
