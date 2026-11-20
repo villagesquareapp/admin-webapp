@@ -780,9 +780,10 @@ interface IVoiceTranscript {
 
 interface IVflixComment {
   uuid: string;
-  // The author's own words; null when the comment is only a voice note.
+  // The author's own words; null when the comment is only a photo or a voice note.
   text: string | null;
   voice: { url: string; duration: number | null; waveform: number[] | null } | null;
+  image?: { url: string; thumbnail: string | null } | null;
   likes_count: number;
   replies_count: number;
   removed: boolean;
