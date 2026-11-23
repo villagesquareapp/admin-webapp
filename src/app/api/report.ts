@@ -8,17 +8,20 @@ import { revalidateCurrentPath } from '@/lib/revalidate';
 // Generic report resolution — works for every report service type.
 // `reason` is staff's own note (never sent to anyone); `duration_days` is
 // for a suspension or restriction.
+// `reason_code`: for a suspension or ban, the guideline the person is shown
+// (left out, the report's reason decides).
 export const resolveReport = async (
     id: string,
     reason: string,
     resolution_methods: string[],
-    duration_days?: number
+    duration_days?: number,
+    reason_code?: string
 ) => {
     const token = await getToken();
     if (!token) return null;
     const r = await apiPut<IReportResolveResult>(
         `reports/${id}/resolve`,
-        { reason: reason || undefined, resolution_methods, duration_days },
+        { reason: reason || undefined, resolution_methods, duration_days, reason_code: reason_code || undefined },
         token
     );
     if (r.status) await revalidateCurrentPath();
