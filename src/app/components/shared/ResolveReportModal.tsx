@@ -5,6 +5,7 @@ import { Label, Modal, ModalBody, ModalFooter, ModalHeader, Radio, Select, Texta
 import { Button } from "@/app/components/shared/Button";
 import { toast } from "sonner";
 import { resolveReport, dismissReport } from "@/app/api/report";
+import GuidelineReasonSelect from "@/app/components/shared/GuidelineReasonSelect";
 
 export type ReportAction = "resolve" | "dismiss";
 
@@ -78,6 +79,7 @@ const ResolveReportModal = ({
   const [content, setContent] = useState<ContentChoice>("none");
   const [account, setAccount] = useState<AccountChoice>("none");
   const [days, setDays] = useState(7);
+  const [guideline, setGuideline] = useState("");
   const [note, setNote] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -86,11 +88,13 @@ const ResolveReportModal = ({
   const canHide = !serviceType || CAN_HIDE.includes(type);
   const hasAccount = !NO_ACCOUNT.includes(type);
   const timed = ACCOUNT_OPTIONS.find((o) => o.value === account)?.timed;
+  const sanction = account === "user_suspended" || account === "user_banned";
 
   const reset = () => {
     setContent("none");
     setAccount("none");
     setDays(7);
+    setGuideline("");
     setNote("");
   };
   const close = () => {
@@ -113,7 +117,8 @@ const ResolveReportModal = ({
               reportId,
               note.trim(),
               methods.length ? methods : ["other"],
-              timed ? days : undefined
+              timed ? days : undefined,
+              sanction ? guideline : undefined
             )
           : await dismissReport(reportId, note.trim());
       if (res?.status) {
@@ -200,19 +205,32 @@ const ResolveReportModal = ({
                       () => setAccount(o.value),
                       o.label,
                       o.hint,
-                      o.timed && account === o.value ? (
-                        <Select
-                          sizing="sm"
-                          className="mt-2 w-36"
-                          value={days}
-                          onChange={(e) => setDays(Number(e.target.value))}
-                        >
-                          {DURATIONS.map((d) => (
-                            <option key={d} value={d}>
-                              {d === 1 ? "1 day" : `${d} days`}
-                            </option>
-                          ))}
-                        </Select>
+                      account === o.value && (o.timed || sanction) ? (
+                        <div className="mt-2 flex flex-wrap gap-2">
+                          {o.timed && (
+                            <Select
+                              sizing="sm"
+                              className="w-36"
+                              value={days}
+                              onChange={(e) => setDays(Number(e.target.value))}
+                            >
+                              {DURATIONS.map((d) => (
+                                <option key={d} value={d}>
+                                  {d === 1 ? "1 day" : `${d} days`}
+                                </option>
+                              ))}
+                            </Select>
+                          )}
+                          {sanction && (
+                            <GuidelineReasonSelect
+                              sizing="sm"
+                              value={guideline}
+                              onChange={setGuideline}
+                              emptyLabel="Guideline: from the report's reason"
+                              className="min-w-0 flex-1"
+                            />
+                          )}
+                        </div>
                       ) : undefined
                     )
                   )}

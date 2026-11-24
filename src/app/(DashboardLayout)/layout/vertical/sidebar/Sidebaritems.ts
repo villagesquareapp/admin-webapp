@@ -184,6 +184,13 @@ const SidebarContent: MenuItem[] = [
             ],
           },
           {
+            name: "Appeals",
+            permission: "users.view",
+            icon: "solar:shield-user-line-duotone",
+            id: uniqueId(),
+            url: "/dashboards/appeals",
+          },
+          {
             name: "Verification",
             permission: "verification.view",
             icon: "solar:verified-check-line-duotone",
