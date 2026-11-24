@@ -9,6 +9,7 @@ import { Button } from "@/app/components/shared/Button";
 import { toast } from "sonner";
 import { getUsers, getUserStatus, updateUserStatus } from "@/app/api/user";
 import ModerateUserModal from "@/app/components/shared/ModerateUserModal";
+import GuidelineReasonSelect from "@/app/components/shared/GuidelineReasonSelect";
 
 const UserActions = ({ user, statuses, statusLoading }: { user: IUser, statuses: IUserStatusList[], statusLoading: boolean }) => {
   const [showModal, setShowModal] = useState<boolean>(false);
@@ -16,7 +17,9 @@ const UserActions = ({ user, statuses, statusLoading }: { user: IUser, statuses:
   const [selected, setSelected] = useState("");
   const [reason, setReason] = useState("");
   const [days, setDays] = useState(7);
+  const [reasonCode, setReasonCode] = useState("");
   const [loading, setLoading] = useState<boolean>(false);
+  const sanction = selected === "suspended" || selected === "banned";
   
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation(); 
@@ -27,9 +30,10 @@ const UserActions = ({ user, statuses, statusLoading }: { user: IUser, statuses:
     e.preventDefault();
     if (!selected) return toast.error("Please select a status");
     if (!reason.trim()) return toast.error("Please give a reason");
+    if (sanction && !reasonCode) return toast.error("Choose the guideline they broke");
     setLoading(true);
     try {
-      const res = await updateUserStatus(user.user_details.profile.id, selected, reason.trim(), days);
+      const res = await updateUserStatus(user.user_details.profile.id, selected, reason.trim(), days, reasonCode);
       if (res?.status) {
         toast.success("User status updated");
         setShowModal(false);
@@ -153,8 +157,15 @@ const UserActions = ({ user, statuses, statusLoading }: { user: IUser, statuses:
                       />
                     </div>
                   )}
+                  {sanction && (
+                    <div className="w-full mt-4">
+                      <Label htmlFor="status-guideline">Guideline broken</Label>
+                      <GuidelineReasonSelect id="status-guideline" value={reasonCode} onChange={setReasonCode} className="mt-1" />
+                      <p className="text-xs text-darklink mt-2">They see this, with a link to the guideline, when they try to sign in.</p>
+                    </div>
+                  )}
                   <div className="w-full mt-4">
-                    <Label htmlFor="status-reason">Reason</Label>
+                    <Label htmlFor="status-reason">Staff note</Label>
                     <TextInput
                       id="status-reason"
                       value={reason}
@@ -165,7 +176,7 @@ const UserActions = ({ user, statuses, statusLoading }: { user: IUser, statuses:
                       className="mt-1"
                     />
                     <p className="text-xs text-darklink mt-2">
-                      Ban and suspend sign the user out and send them a notice with this reason.
+                      Ban and suspend sign the user out. They never see this note.
                     </p>
                   </div>
                   <div className="flex justify-end gap-4 mt-8">

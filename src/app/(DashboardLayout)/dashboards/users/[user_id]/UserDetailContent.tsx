@@ -14,6 +14,7 @@ import ResolveReportModal, { ReportAction } from "@/app/components/shared/Resolv
 import { formatDate } from "@/utils/dateUtils";
 import { POST_STATUS_TONE, REPORT_STATUS_TONE, actionIcon, actionLabel, actionTone } from "@/utils/moderationLabels";
 import { getUserStatus, updateUserStatus } from "@/app/api/user";
+import GuidelineReasonSelect from "@/app/components/shared/GuidelineReasonSelect";
 
 type Detail = IUserDetail["user_details"];
 const fmt = (n: number) => new Intl.NumberFormat("en", { notation: "compact" }).format(n || 0);
@@ -41,7 +42,9 @@ const UserDetailContent = ({ detail, userId }: { detail: Detail | null; userId: 
   const [statusVal, setStatusVal] = useState("");
   const [statusReason, setStatusReason] = useState("");
   const [suspendDays, setSuspendDays] = useState(7);
+  const [statusGuideline, setStatusGuideline] = useState("");
   const [busy, setBusy] = useState(false);
+  const sanction = statusVal === "suspended" || statusVal === "banned";
 
   useEffect(() => {
     getUserStatus().then((r) => setStatuses(r?.data || [])).catch(() => {});
@@ -66,10 +69,11 @@ const UserDetailContent = ({ detail, userId }: { detail: Detail | null; userId: 
   const applyStatus = async () => {
     if (!statusVal) return;
     if (!statusReason.trim()) return toast.error("Please give a reason");
+    if (sanction && !statusGuideline) return toast.error("Choose the guideline they broke");
     setBusy(true);
     try {
-      const res = await updateUserStatus(userId, statusVal, statusReason.trim(), suspendDays);
-      if (res?.status) { toast.success("Status updated"); setStatusVal(""); setStatusReason(""); router.refresh(); }
+      const res = await updateUserStatus(userId, statusVal, statusReason.trim(), suspendDays, statusGuideline);
+      if (res?.status) { toast.success("Status updated"); setStatusVal(""); setStatusReason(""); setStatusGuideline(""); router.refresh(); }
       else toast.error(res?.message || "Failed to update status");
     } finally { setBusy(false); }
   };
@@ -192,7 +196,7 @@ const UserDetailContent = ({ detail, userId }: { detail: Detail | null; userId: 
                   value={statusReason}
                   onChange={(e) => setStatusReason(e.target.value)}
                   maxLength={1000}
-                  placeholder="Reason (required, shown to the user on ban or suspend)"
+                  placeholder="Staff note (required, never shown to the user)"
                   className="flex-1 text-sm rounded-md border border-ld bg-transparent px-3 py-2"
                 />
                 {statusVal === "suspended" && (
@@ -207,6 +211,14 @@ const UserDetailContent = ({ detail, userId }: { detail: Detail | null; userId: 
                   />
                 )}
               </div>
+            )}
+            {sanction && (
+              <GuidelineReasonSelect
+                value={statusGuideline}
+                onChange={setStatusGuideline}
+                emptyLabel="Guideline broken (shown to the user)…"
+                className="mt-2"
+              />
             )}
           </CardBox>
 
