@@ -15,22 +15,17 @@ import { formatDate } from "@/utils/dateUtils";
 import { POST_STATUS_TONE, REPORT_STATUS_TONE, actionIcon, actionLabel, actionTone } from "@/utils/moderationLabels";
 import { getUserStatus, updateUserStatus } from "@/app/api/user";
 import GuidelineReasonSelect from "@/app/components/shared/GuidelineReasonSelect";
+import { Segmented } from "../../analytics/analyticsUi";
+import UserActivityPanel, { useUserActivity } from "./UserActivityPanel";
+import UserWalletCard from "./UserWalletCard";
+import UserReferralsCard from "./UserReferralsCard";
 
 type Detail = IUserDetail["user_details"];
-const fmt = (n: number) => new Intl.NumberFormat("en", { notation: "compact" }).format(n || 0);
 
 const KV = ({ label, value }: { label: string; value?: string | number | null }) => (
   <div className="flex justify-between gap-3 py-1.5 text-sm border-b border-dashed border-border dark:border-darkborder last:border-0">
     <span className="text-darklink">{label}</span>
     <span className="font-medium text-right truncate max-w-[220px]">{value ?? "—"}</span>
-  </div>
-);
-
-const CountTile = ({ icon, value, label }: { icon: string; value: number; label: string }) => (
-  <div className="rounded-xl border border-border dark:border-darkborder p-3 text-center">
-    <Icon icon={icon} height={18} className="mx-auto text-primary" />
-    <p className="text-lg font-bold tabular-nums mt-1">{fmt(value)}</p>
-    <p className="text-[11px] text-darklink">{label}</p>
   </div>
 );
 
@@ -45,6 +40,10 @@ const UserDetailContent = ({ detail, userId }: { detail: Detail | null; userId: 
   const [statusGuideline, setStatusGuideline] = useState("");
   const [busy, setBusy] = useState(false);
   const sanction = statusVal === "suspended" || statusVal === "banned";
+  const activity = useUserActivity(userId);
+  const [tab, setTab] = useState<"activity" | "moderation">(
+    detail?.moderation?.open_report_count ? "moderation" : "activity",
+  );
 
   useEffect(() => {
     getUserStatus().then((r) => setStatuses(r?.data || [])).catch(() => {});
@@ -64,7 +63,6 @@ const UserDetailContent = ({ detail, userId }: { detail: Detail | null; userId: 
 
   const p = detail.profile;
   const m = detail.moderation;
-  const c = detail.content_counts;
 
   const applyStatus = async () => {
     if (!statusVal) return;
@@ -128,32 +126,24 @@ const UserDetailContent = ({ detail, userId }: { detail: Detail | null; userId: 
             </div>
           </CardBox>
 
-          <CardBox>
-            <h5 className="card-title mb-3">Activity</h5>
-            <div className="grid grid-cols-3 gap-3">
-              <CountTile icon="solar:document-text-linear" value={c.posts} label="Posts" />
-              <CountTile icon="solar:microphone-3-linear" value={c.echoes} label="Echoes" />
-              <CountTile icon="solar:play-stream-linear" value={c.livestreams} label="Streams" />
-              <CountTile icon="solar:users-group-rounded-linear" value={c.followers} label="Followers" />
-              <CountTile icon="solar:user-plus-linear" value={c.following} label="Following" />
-            </div>
-            {(detail.coin_wallet.length > 0 || detail.cowry_wallet.length > 0) && (
-              <div className="grid grid-cols-2 gap-3 mt-3">
-                <div className="rounded-xl bg-lightwarning/40 p-3">
-                  <p className="text-[11px] text-darklink">Coins</p>
-                  <p className="text-lg font-bold tabular-nums">{fmt(Number(detail.coin_wallet[0]?.balance) || 0)}</p>
-                </div>
-                <div className="rounded-xl bg-lightprimary/40 p-3">
-                  <p className="text-[11px] text-darklink">Cowries</p>
-                  <p className="text-lg font-bold tabular-nums">{fmt(Number(detail.cowry_wallet[0]?.balance) || 0)}</p>
-                </div>
-              </div>
-            )}
-          </CardBox>
+          <UserWalletCard userId={userId} username={p.username} />
+          <UserReferralsCard referrals={activity.data?.referrals} loading={activity.state === "loading"} />
         </div>
 
-        {/* right — moderation */}
+        {/* right — activity or moderation */}
         <div className="col-span-12 lg:col-span-7 flex flex-col gap-5">
+          <Segmented
+            value={tab}
+            onChange={setTab}
+            options={[
+              { value: "activity", label: "Activity" },
+              { value: "moderation", label: m.open_report_count ? `Moderation · ${m.open_report_count} open` : "Moderation" },
+            ]}
+          />
+          {tab === "activity" ? (
+            <UserActivityPanel activity={activity} />
+          ) : (
+          <>
           <CardBox>
             <h5 className="card-title mb-3">Moderation state</h5>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
@@ -263,6 +253,8 @@ const UserDetailContent = ({ detail, userId }: { detail: Detail | null; userId: 
               </div>
             ) : <p className="text-sm text-darklink py-2">No enforcement actions yet.</p>}
           </CardBox>
+          </>
+          )}
         </div>
       </div>
 
