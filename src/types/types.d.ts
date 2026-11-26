@@ -428,6 +428,63 @@ interface IUserPost {
   created_at: string;
 }
 
+interface IUserActivityPerson {
+  uuid: string;
+  name: string | null;
+  username: string;
+  profile_picture: string | null;
+  created_at?: string;
+}
+
+interface IUserActivity {
+  window_days: number;
+  today: string;
+  usage: {
+    online: boolean;
+    last_online: string | null;
+    days_active: { d7: number; d30: number; d90: number; total: number };
+    first_active_day: string | null;
+    last_active_day: string | null;
+    platform: string | null;
+    app_version: string | null;
+    visits_tracked_since: string | null;
+    sections: { section: string; days: number }[] | null;
+  } | null;
+  // Estimated from 5-minute slots with a signed-in request; null until recorded.
+  time: {
+    tracked_since: string;
+    total_minutes: number;
+    active_days: number;
+    avg_minutes_per_active_day: number;
+    today_minutes: number;
+    last_seen_at: string | null;
+    by_hour: number[];
+  } | null;
+  series: { day: string; active: boolean | null; minutes: number | null; created: number | null }[];
+  content: Record<
+    | "posts" | "replies" | "vflix" | "vflix_comments" | "echoes_hosted" | "livestreams_hosted"
+    | "meetings_hosted" | "products" | "atc_entries" | "bookmarks",
+    number | null
+  > | null;
+  engagement: Record<
+    | "followers" | "following" | "likes_received" | "views_received" | "likes_given" | "messages_sent"
+    | "calls" | "votes_cast" | "trybes" | "reports_filed" | "gifts_sent" | "gift_coins_sent"
+    | "gifts_received" | "gift_coins_received",
+    number | null
+  > | null;
+  referrals: {
+    invited: number;
+    referral_count: number;
+    welcome_paid: number | null;
+    profile_completed: number | null;
+    engagement_reached: number | null;
+    invited_by: IUserActivityPerson | null;
+    recent: IUserActivityPerson[];
+  } | null;
+  interests: { key: string; label: string }[] | null;
+  devices: { platform: string; updated_at: string }[] | null;
+}
+
 interface IUserWallet {
   balance: string;
   new_gifts_count: number;
@@ -583,6 +640,51 @@ interface IUserDetail {
     coin_wallet: { balance: number; newGiftsCount?: number; status?: string }[];
     cowry_wallet: { balance: number; newGiftsCount?: number; status?: string; currency?: string }[];
   };
+}
+
+interface IUserWallet {
+  coins: { account_id: string; status: string; balance: number } | null;
+  earnings: { account_id: string; status: string; cowries: number; usd: number } | null;
+  totals: {
+    coins_bought: number;
+    coins_on_gifts: number;
+    coins_on_votes: number;
+    coins_from_staff: number;
+    earned_from_gifts_usd: number;
+    rewards_usd: number;
+    earnings_from_staff_usd: number;
+    paid_out_usd: number;
+    in_payout_usd: number;
+  };
+  staff_credits: {
+    transaction_id: string;
+    created_at: string;
+    unit: "coins" | "earnings";
+    coins: number | null;
+    usd: number;
+    description: string;
+    staff_note: string | null;
+    staff: { id: string; name: string } | null;
+  }[];
+  cowry_rate_usd: number;
+}
+
+interface IWalletCreditRequest {
+  unit: "coins" | "earnings";
+  amount: number;
+  description: string;
+  staff_note?: string;
+  request_id: string;
+}
+
+interface IWalletCreditResult {
+  transaction_id: string;
+  unit: "coins" | "earnings";
+  coins: number | null;
+  usd: number | null;
+  cowries: number | null;
+  description: string;
+  already_credited: boolean;
 }
 
 interface IVerifiedUsers {
