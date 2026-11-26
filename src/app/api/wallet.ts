@@ -220,3 +220,14 @@ export const getPayoutCycles = async (limit: number = 12) => {
   const token = await getToken();
   return await apiGet<IPayoutCycle[]>(`wallet/payouts/cycles?limit=${limit}`, token);
 };
+
+// One user's wallet on the user page: ledger balances, totals and staff credits.
+export const getUserWallet = async (userId: string) => {
+  const token = await getToken();
+  return await apiGet<IUserWallet>(`wallet/users/${userId}`, token);
+};
+
+export const creditUserWallet = async (userId: string, body: IWalletCreditRequest) => {
+  const token = await getToken();
+  return await apiPost<IWalletCreditResult>(`wallet/users/${userId}/credit`, body, token);
+};

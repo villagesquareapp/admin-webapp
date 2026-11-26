@@ -55,6 +55,11 @@ export const getUserDetails = async (id: string) => {
     );
 };
 
+export const getUserActivity = async (id: string, days: number = 30) => {
+    const token = await getToken();
+    return await apiGet<IUserActivity>(`users/${id}/activity?days=${days}`, token);
+};
+
 export const getRandomUsers = async (page: number = 1, limit: number = 10) => {
     const token = await getToken();
     return await apiGet<IRandomUsers[]>(
